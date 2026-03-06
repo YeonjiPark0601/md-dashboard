@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>삼성메디슨 발주 계산기</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    min-height: 100vh;
+    background: #0f172a;
+    font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+    color: #e2e8f0;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .container { width: 100%; max-width: 920px; }
+
+  h1 { font-size: 22px; font-weight: 700; color: #38bdf8; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #64748b; margin-bottom: 24px; }
+  .month-badge {
+    display: inline-block;
+    background: #38bdf8;
+    color: #0f172a;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 3px 10px;
+    border-radius: 6px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  /* Summary cards */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .card {
+    background: #1e293b;
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .card .label { font-size: 11px; color: #64748b; margin-bottom: 2px; }
+  .card .val { font-size: 20px; font-weight: 700; }
+  .card .val.blue { color: #38bdf8; }
+  .card .val.green { color: #4ade80; }
+  .card .val.orange { color: #fb923c; }
+  .card .val.red { color: #f87171; }
+  .card .sub { font-size: 11px; color: #64748b; margin-top: 2px; }
+
+  /* Progress bar */
+  .progress-row { margin-bottom: 20px; }
+  .progress-label { font-size: 11px; color: #64748b; margin-bottom: 4px; }
+  .progress-bar { height: 8px; background: #334155; border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 4px; transition: width 0.3s, background 0.3s; }
+
+  /* Table */
+  .table-wrap {
+    background: #1e293b;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  thead th {
+    background: #334155;
+    color: #94a3b8;
+    font-weight: 600;
+    padding: 10px 12px;
+    text-align: center;
+    font-size: 12px;
+  }
+  thead th:first-child { text-align: left; }
+  /* Two-row header */
+  .th-group { border-bottom: 2px solid #475569; }
+  .th-product { color: #38bdf8; }
+  .th-demo { color: #a78bfa; }
+  .col-sep { border-left: 2px solid #334155; }
+
+  tbody td {
+    padding: 10px 12px;
+    text-align: center;
+    border-bottom: 1px solid #0f172a;
+  }
+  tbody tr { background: #1e293b; transition: background 0.1s; }
+  tbody tr:hover { background: #263348; }
+  tbody td:first-child {
+    text-align: left;
+    font-weight: 700;
+    color: #e2e8f0;
+    font-size: 15px;
+  }
+  .price-cell { color: #64748b; font-size: 12px; }
+  .amount-cell { font-size: 13px; color: #94a3b8; }
+  .amount-cell.has-value { color: #cbd5e1; }
+
+  /* Sum row */
+  .row-sum td {
+    background: #162032 !important;
+    font-weight: 700;
+    color: #cbd5e1;
+    border-top: 2px solid #334155;
+    font-size: 14px;
+  }
+
+  input[type="number"] {
+    width: 56px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    color: #e2e8f0;
+    padding: 8px 6px;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    -moz-appearance: textfield;
+  }
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+  input[type="number"]:focus { outline: none; border-color: #38bdf8; background: #1a2744; box-shadow: 0 0 0 3px rgba(56,189,248,0.15); }
+  input.demo-input:focus { border-color: #a78bfa; box-shadow: 0 0 0 3px rgba(167,139,250,0.15); }
+
+  .total-row-label { color: #94a3b8 !important; font-size: 13px !important; }
+
+  /* Option section */
+  .section-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #94a3b8;
+    margin: 24px 0 10px;
+    padding-left: 10px;
+    border-left: 3px solid #fb923c;
+  }
+  input[type="text"] {
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    color: #e2e8f0;
+    padding: 8px 8px;
+    font-size: 13px;
+    font-family: inherit;
+    width: 100%;
+  }
+  input[type="text"]:focus { outline: none; border-color: #fb923c; background: #1a2744; box-shadow: 0 0 0 3px rgba(251,146,60,0.15); }
+  input[type="text"]::placeholder { color: #475569; }
+  .opt-name { min-width: 100px; }
+  .opt-cost { min-width: 100px; }
+  .btn-add, .btn-del {
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 12px;
+    transition: all 0.15s;
+  }
+  .btn-add {
+    background: #334155;
+    color: #94a3b8;
+    margin-top: 10px;
+  }
+  .btn-add:hover { background: #475569; color: #e2e8f0; }
+  .btn-del {
+    background: transparent;
+    color: #64748b;
+    padding: 4px 8px;
+    font-size: 16px;
+  }
+  .btn-del:hover { color: #f87171; }
+  .th-option { color: #fb923c; }
+  .th-lastyear { color: #64748b; }
+  .lastyear-cell { font-size: 12px; color: #64748b; }
+
+  @media (max-width: 600px) {
+    body { padding: 16px; }
+    h1 { font-size: 18px; }
+    .cards { grid-template-columns: 1fr 1fr; }
+    input[type="number"] { width: 46px; padding: 6px 4px; font-size: 14px; }
+    table { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>삼성메디슨 발주 계산기 <span class="month-badge" id="monthBadge">3월</span></h1>
+  <p class="subtitle">월 목표: 433,333,333원 (VAT 별도) | 연간 목표: 52억</p>
+
+  <div class="cards">
+    <div class="card">
+      <div class="label">상품 발주 (VAT별도)</div>
+      <div class="val blue" id="cardProduct">0</div>
+    </div>
+    <div class="card">
+      <div class="label">견본 발주 (VAT별도)</div>
+      <div class="val" id="cardDemo" style="color:#a78bfa">0</div>
+    </div>
+    <div class="card">
+      <div class="label">옵션 발주 (VAT별도)</div>
+      <div class="val" id="cardOption" style="color:#fb923c">0</div>
+    </div>
+    <div class="card">
+      <div class="label">총 발주 (VAT별도)</div>
+      <div class="val green" id="cardTotal">0</div>
+      <div class="sub" id="cardTotalVat"></div>
+    </div>
+    <div class="card">
+      <div class="label">월 목표 달성율</div>
+      <div class="val" id="cardRate">0%</div>
+    </div>
+  </div>
+
+  <div class="progress-row">
+    <div class="progress-label">월 목표 대비 <span id="progressPct">0%</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr class="th-group">
+          <th rowspan="2">모델</th>
+          <th rowspan="2">공급가</th>
+          <th colspan="2" class="th-product col-sep">상품</th>
+          <th colspan="2" class="th-demo col-sep">견본</th>
+          <th rowspan="2" class="col-sep">합계 금액</th>
+          <th rowspan="2" class="col-sep th-lastyear">작년 동월</th>
+        </tr>
+        <tr>
+          <th class="th-product col-sep">수량</th>
+          <th class="th-product">금액</th>
+          <th class="th-demo col-sep">수량</th>
+          <th class="th-demo">금액</th>
+        </tr>
+      </thead>
+      <tbody id="mainBody"></tbody>
+    </table>
+  </div>
+
+  <div class="section-title">옵션 발주 (S/W 등)</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align:left">모델</th>
+          <th>옵션명</th>
+          <th>공급가 (VAT별도)</th>
+          <th class="th-option">수량</th>
+          <th class="th-option">금액</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="optionBody"></tbody>
+    </table>
+  </div>
+  <button class="btn-add" onclick="addOption()">+ 옵션 추가</button>
+
+  <div class="cards" style="margin-top:20px">
+    <div class="card">
+      <div class="label">판매 예상 (VAT포함)</div>
+      <div class="val green" id="cardSales">0</div>
+    </div>
+    <div class="card">
+      <div class="label">마진 예상 (VAT포함)</div>
+      <div class="val orange" id="cardMargin">0</div>
+    </div>
+    <div class="card">
+      <div class="label">상품 수량</div>
+      <div class="val" style="color:#38bdf8" id="cardProductQty">0</div>
+    </div>
+    <div class="card">
+      <div class="label">견본 수량</div>
+      <div class="val" style="color:#a78bfa" id="cardDemoQty">0</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const PRODUCTS = [
+  { name: 'HS40',    cost: 18202566, price: 24200000 },
+  { name: 'HS50',    cost: 24235299, price: 32500000 },
+  { name: 'V5',      cost: 22756210, price: 34000000 },
+  { name: 'V6',      cost: 28106250, price: 39600000 },
+  { name: 'V7',      cost: 33648733, price: 48400000 },
+  { name: 'V8',      cost: 43175028, price: 60500000 },
+  { name: 'RS85',    cost: 75419017, price: 99000000 },
+  { name: 'R20',     cost: 88078675, price: 130000000 },
+  { name: 'HM70Evo', cost: 19715500, price: 23990000 },
+];
+
+const MONTHLY_TARGET = 433333333;
+
+// 25년 3월 실적 (입고 기준, BDTS 시트)
+const LAST_YEAR = {
+  'HS40':    0,
+  'HS50':    0,
+  'V5':      109664818,  // 상품 89,624,842 + 견본 20,039,976
+  'V6':      23116251,   // 상품 23,116,251
+  'V7':      55271732,   // 견본 55,271,732
+  'V8':      96922080,   // 상품 96,922,080
+  'RS85':    57005614,   // 견본 57,005,614 (RS85 Prestige)
+  'R20':     0,
+  'HM70Evo': 0,
+};
+
+// Current month (0-indexed)
+const NOW = new Date();
+const CUR_MONTH = NOW.getMonth(); // 0=Jan
+document.getElementById('monthBadge').textContent = (CUR_MONTH + 1) + '월';
+
+// State
+const productQty = new Array(PRODUCTS.length).fill(0);
+const demoQty = new Array(PRODUCTS.length).fill(0);
+
+// Pre-fill with 3월 plan data
+const plan3Product = [0, 0, 4, 3, 3, 2, 0, 0, 0]; // V5:4, V6:3, V7:3, V8:2
+const plan3Demo    = [0, 0, 0, 1, 1, 1, 0, 0, 0]; // V6:1, V7:1, V8:1
+plan3Product.forEach((v, i) => productQty[i] = v);
+plan3Demo.forEach((v, i) => demoQty[i] = v);
+
+// Option rows: { model, name, cost, qty }
+const options = [];
+
+function addOption(model = '', name = '', cost = 0, qty = 1) {
+  options.push({ model, name, cost, qty });
+  render();
+}
+
+function removeOption(idx) {
+  options.splice(idx, 1);
+  render();
+}
+
+function updateOption(idx, field, val) {
+  if (field === 'cost' || field === 'qty') {
+    options[idx][field] = Math.max(0, parseInt(val.replace(/,/g, '')) || 0);
+  } else {
+    options[idx][field] = val;
+  }
+  render();
+}
+
+function fmt(n) { return Math.round(n).toLocaleString('ko-KR'); }
+
+function renderOptions() {
+  const tbody = document.getElementById('optionBody');
+  tbody.innerHTML = '';
+  let sumAmt = 0;
+
+  options.forEach((opt, i) => {
+    const amt = opt.cost * opt.qty;
+    sumAmt += amt;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="padding:6px 8px"><input type="text" class="opt-name" value="${opt.model}" placeholder="V7"
+        onchange="updateOption(${i},'model',this.value)"></td>
+      <td style="padding:6px 8px"><input type="text" class="opt-name" value="${opt.name}" placeholder="ORIENTAL PKG1"
+        onchange="updateOption(${i},'name',this.value)"></td>
+      <td style="padding:6px 8px"><input type="text" class="opt-cost" value="${opt.cost ? fmt(opt.cost) : ''}" placeholder="1,000,000"
+        onchange="updateOption(${i},'cost',this.value)" onfocus="this.select()"></td>
+      <td style="padding:6px 8px"><input type="number" min="0" max="99" value="${opt.qty}" style="width:56px"
+        onchange="updateOption(${i},'qty',this.value)" onfocus="this.select()"></td>
+      <td class="amount-cell ${amt ? 'has-value' : ''}">${amt ? fmt(amt) : '-'}</td>
+      <td style="padding:6px 4px"><button class="btn-del" onclick="removeOption(${i})">&times;</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Sum row if options exist
+  if (options.length > 0) {
+    const sumTr = document.createElement('tr');
+    sumTr.className = 'row-sum';
+    sumTr.innerHTML = `
+      <td class="total-row-label" colspan="3">옵션 합계</td>
+      <td>${options.reduce((s, o) => s + o.qty, 0)}</td>
+      <td style="color:#fb923c">${fmt(sumAmt)}</td>
+      <td></td>
+    `;
+    tbody.appendChild(sumTr);
+  }
+
+  return sumAmt;
+}
+
+function render() {
+  const tbody = document.getElementById('mainBody');
+  tbody.innerHTML = '';
+
+  let sumProductAmt = 0, sumDemoAmt = 0, sumSales = 0, sumMargin = 0;
+  let sumProductQty = 0, sumDemoQty = 0;
+
+  PRODUCTS.forEach((p, i) => {
+    const pq = productQty[i];
+    const dq = demoQty[i];
+    const pAmt = pq * p.cost;
+    const dAmt = dq * p.cost; // 견본도 공급가 기준
+    const total = pAmt + dAmt;
+
+    sumProductAmt += pAmt;
+    sumDemoAmt += dAmt;
+    sumProductQty += pq;
+    sumDemoQty += dq;
+    sumSales += pq * p.price;
+    sumMargin += pq * (p.price - p.cost * 1.1);
+
+    const ly = LAST_YEAR[p.name] || 0;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${p.name}</td>
+      <td class="price-cell">${fmt(p.cost)}</td>
+      <td class="col-sep"><input type="number" min="0" max="99" value="${pq}"
+        onchange="setQty('product',${i},this.value)" onfocus="this.select()"></td>
+      <td class="amount-cell ${pAmt ? 'has-value' : ''}">${pAmt ? fmt(pAmt) : '-'}</td>
+      <td class="col-sep"><input type="number" min="0" max="99" value="${dq}" class="demo-input"
+        onchange="setQty('demo',${i},this.value)" onfocus="this.select()"></td>
+      <td class="amount-cell ${dAmt ? 'has-value' : ''}">${dAmt ? fmt(dAmt) : '-'}</td>
+      <td class="col-sep amount-cell ${total ? 'has-value' : ''}" style="font-weight:600">${total ? fmt(total) : '-'}</td>
+      <td class="col-sep lastyear-cell">${ly ? fmt(ly) : '-'}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Sum row
+  const sumTotal = sumProductAmt + sumDemoAmt;
+  const sumLastYear = Object.values(LAST_YEAR).reduce((a, b) => a + b, 0);
+  const sumTr = document.createElement('tr');
+  sumTr.className = 'row-sum';
+  sumTr.innerHTML = `
+    <td class="total-row-label">기기 합계</td>
+    <td></td>
+    <td class="col-sep" style="color:#38bdf8">${sumProductQty}</td>
+    <td style="color:#38bdf8">${fmt(sumProductAmt)}</td>
+    <td class="col-sep" style="color:#a78bfa">${sumDemoQty}</td>
+    <td style="color:#a78bfa">${fmt(sumDemoAmt)}</td>
+    <td class="col-sep" style="color:#4ade80">${fmt(sumTotal)}</td>
+    <td class="col-sep lastyear-cell" style="font-weight:700">${fmt(sumLastYear)}</td>
+  `;
+  tbody.appendChild(sumTr);
+
+  // Render options and get total
+  const optionAmt = renderOptions();
+  const grandTotal = sumTotal + optionAmt;
+
+  // Update cards
+  document.getElementById('cardProduct').textContent = fmt(sumProductAmt);
+  document.getElementById('cardDemo').textContent = fmt(sumDemoAmt);
+  document.getElementById('cardOption').textContent = fmt(optionAmt);
+  document.getElementById('cardTotal').textContent = fmt(grandTotal);
+  document.getElementById('cardTotalVat').textContent = 'VAT포함: ' + fmt(grandTotal * 1.1);
+  document.getElementById('cardSales').textContent = fmt(sumSales);
+  document.getElementById('cardMargin').textContent = fmt(sumMargin);
+  document.getElementById('cardProductQty').textContent = sumProductQty;
+  document.getElementById('cardDemoQty').textContent = sumDemoQty;
+
+  const rate = grandTotal / MONTHLY_TARGET;
+  const ratePct = (rate * 100).toFixed(1) + '%';
+  const rateEl = document.getElementById('cardRate');
+  rateEl.textContent = ratePct;
+  rateEl.className = 'val ' + (rate >= 1 ? 'green' : rate >= 0.8 ? 'orange' : 'red');
+
+  document.getElementById('progressPct').textContent = ratePct;
+  const fill = document.getElementById('progressFill');
+  fill.style.width = Math.min(rate * 100, 100) + '%';
+  fill.style.background = rate >= 1 ? '#4ade80' : rate >= 0.8 ? '#fbbf24' : '#f87171';
+}
+
+function setQty(type, idx, val) {
+  const v = Math.max(0, parseInt(val) || 0);
+  if (type === 'product') productQty[idx] = v;
+  else demoQty[idx] = v;
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
