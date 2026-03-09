@@ -891,25 +891,36 @@ function setQty(type, idx, val) {
 render();
 
 // 구글시트에서 월별 목표 실시간 로드
+function parseCSVRow(row) {
+  const result = [];
+  let cur = '', inQuote = false;
+  for (let i = 0; i < row.length; i++) {
+    const ch = row[i];
+    if (ch === '"') { inQuote = !inQuote; }
+    else if (ch === ',' && !inQuote) { result.push(cur.trim()); cur = ''; }
+    else { cur += ch; }
+  }
+  result.push(cur.trim());
+  return result;
+}
+
 fetch(SHEET_CSV_URL)
   .then(r => r.text())
   .then(csv => {
-    const rows = csv.split('\n').map(r => r.split(',').map(c => c.replace(/"/g, '').trim()));
-    // 헤더: 월,1월,2월,...,12월,sum / 데이터: ,433333333,...
-    if (rows.length >= 2) {
-      const header = rows[0];
-      const vals = rows[1];
-      const monthIdx = CUR_MONTH + 1; // 1~12
-      const colIdx = header.findIndex(h => h === monthIdx + '월');
-      if (colIdx >= 0 && vals[colIdx]) {
-        const parsed = parseInt(vals[colIdx].replace(/,/g, ''));
-        if (parsed > 0) {
-          MONTHLY_TARGET = parsed;
-          document.querySelector('.subtitle').textContent =
-            '월 목표: ' + MONTHLY_TARGET.toLocaleString('ko-KR') + '원 (VAT 별도) | 연간 목표: ' +
-            (MONTHLY_TARGET * 12 / 100000000).toFixed(0) + '억';
-          render();
-        }
+    const lines = csv.split('\n').filter(l => l.trim());
+    if (lines.length < 2) return;
+    const header = parseCSVRow(lines[0]);
+    const vals = parseCSVRow(lines[1]);
+    const monthIdx = CUR_MONTH + 1; // 1~12
+    const colIdx = header.findIndex(h => h === monthIdx + '월');
+    if (colIdx >= 0 && vals[colIdx]) {
+      const parsed = parseInt(vals[colIdx].replace(/,/g, ''));
+      if (parsed > 0) {
+        MONTHLY_TARGET = parsed;
+        document.querySelector('.subtitle').textContent =
+          '월 목표: ' + MONTHLY_TARGET.toLocaleString('ko-KR') + '원 (VAT 별도) | 연간 목표: ' +
+          (MONTHLY_TARGET * 12 / 100000000).toFixed(0) + '억';
+        render();
       }
     }
   })
