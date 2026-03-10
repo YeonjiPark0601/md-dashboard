@@ -929,20 +929,52 @@ fetch(SHEET_CSV_URL + '&_t=' + Date.now(), { redirect: 'follow' })
     document.querySelector('.subtitle').textContent += ' (⚠ 시트 연동 실패 - 기본값 사용)';
   });
 
-// ============ 추천 발주 엔진 ============
+// ============ 추천 발주 엔진 (v2 — 재고 기반 + 판매 추이) ============
 
-// 14개월 평균 발주 패턴 (BDTS 분석 결과 - 시스템 본체 기준)
-const AVG_PATTERN = {
-  'HS40':    { avgQty: 0,   avgAmt: 0,         avgDemo: 0.6 },
-  'HS50':    { avgQty: 0,   avgAmt: 0,         avgDemo: 0.3 },
-  'V5':      { avgQty: 3.4, avgAmt: 78853586,  avgDemo: 0.8 },
-  'V6':      { avgQty: 2.0, avgAmt: 57186436,  avgDemo: 1.4 },
-  'V7':      { avgQty: 3.6, avgAmt: 122992081, avgDemo: 1.6 },
-  'V8':      { avgQty: 2.1, avgAmt: 89708184,  avgDemo: 1.4 },
-  'RS85':    { avgQty: 0.1, avgAmt: 4103972,   avgDemo: 0.1 },
-  'R20':     { avgQty: 0.2, avgAmt: 17730274,  avgDemo: 0.1 },
-  'HM70Evo': { avgQty: 0,   avgAmt: 0,         avgDemo: 0.1 },
+// 최근 6개월 BDTS 판매 실적 (시스템 본체, 입고월 기준)
+// 25-09 ~ 26-02 (26-02는 BDTS Qty 미확정으로 발주계획 수량 대체)
+const RECENT_SALES = {
+  'HS40':    { monthly: [0, 0, 0, 0, 0, 0], demo: [0, 0, 0, 0, 0, 0] },
+  'HS50':    { monthly: [0, 0, 0, 0, 0, 0], demo: [0, 0, 0, 0, 0, 0] },
+  'V5':      { monthly: [2, 6, 2, 0, 2, 4], demo: [0, 2, 0, 1, 1, 0] },
+  'V6':      { monthly: [1, 0, 3, 0, 2, 3], demo: [1, 0, 0, 0, 1, 1] },
+  'V7':      { monthly: [2, 4, 0, 1, 2, 3], demo: [2, 0, 0, 0, 1, 1] },
+  'V8':      { monthly: [0, 1, 1, 0, 0, 2], demo: [1, 0, 0, 0, 2, 1] },
+  'RS85':    { monthly: [0, 0, 0, 0, 0, 0], demo: [0, 0, 0, 0, 0, 0] },
+  'R20':     { monthly: [0, 0, 1, 0, 1, 0], demo: [0, 0, 1, 0, 0, 0] },
+  'HM70Evo': { monthly: [0, 0, 0, 0, 0, 0], demo: [0, 0, 0, 0, 0, 0] },
 };
+const RECENT_MONTHS = ['25-09','25-10','25-11','25-12','26-01','26-02'];
+
+// 판매 추이 분석 함수
+function analyzeTrend(monthlyArr) {
+  const total = monthlyArr.reduce((a, b) => a + b, 0);
+  const avg = total / monthlyArr.length;
+  // 전반 3개월 vs 후반 3개월
+  const firstHalf = monthlyArr.slice(0, 3).reduce((a, b) => a + b, 0);
+  const secondHalf = monthlyArr.slice(3).reduce((a, b) => a + b, 0);
+  let trend = 'stable'; // stable, up, down
+  let trendFactor = 1.0;
+  if (total > 0) {
+    const ratio = firstHalf > 0 ? secondHalf / firstHalf : (secondHalf > 0 ? 2 : 1);
+    if (ratio >= 1.3) { trend = 'up'; trendFactor = 1.15; }
+    else if (ratio <= 0.7) { trend = 'down'; trendFactor = 0.85; }
+  }
+  // 가중 평균 (최근 3개월 가중치 2배)
+  const weightedAvg = total > 0
+    ? (firstHalf + secondHalf * 2) / (monthlyArr.length + 3)
+    : 0;
+  return { avg, weightedAvg, trend, trendFactor, total, firstHalf, secondHalf };
+}
+
+// 하위 호환용 AVG_PATTERN (인사이트 표시 등에서 참조)
+const AVG_PATTERN = {};
+PRODUCTS.forEach(p => {
+  const s = RECENT_SALES[p.name];
+  const t = analyzeTrend(s.monthly);
+  const d = analyzeTrend(s.demo);
+  AVG_PATTERN[p.name] = { avgQty: t.avg, avgAmt: t.avg * p.cost, avgDemo: d.avg };
+});
 
 // 모델별 옵션 부착률 — BDTS 실제 분석 기반
 // 시스템 동반 옵션: 시스템 1대당 평균 옵션 수 (84% 케이스)
@@ -987,15 +1019,27 @@ function generateRecommend() {
   });
   const qTarget = MONTHLY_TARGET * 3;
 
-  // 작년 동분기 합계 — 이번달 발주가 이 값 이상이어야 함
+  // 작년 동분기 합계
   const lastYearQTotal = LAST_YEAR_Q_TOTAL[qIdx] || 0;
-  const minForQuarter = Math.max(0, lastYearQTotal - qPastTotal); // 이번달 최소 발주액
+  const minForQuarter = Math.max(0, lastYearQTotal - qPastTotal);
 
   // 주력 모델 우선순위 (수량 부족 시 증량 순서)
   const boostOrder = ['V7', 'V5', 'V8', 'V6', 'RS85', 'R20'];
 
+  // 모델별 추이 분석 (사전 계산)
+  const trendData = {};
+  PRODUCTS.forEach(p => {
+    const s = RECENT_SALES[p.name];
+    trendData[p.name] = {
+      product: analyzeTrend(s.monthly),
+      demo: analyzeTrend(s.demo),
+    };
+  });
+
   // 시나리오 생성 함수
-  function buildScenario(label, desc, qtyMultiplier, optionLevel) {
+  // coverageMonths: 적정 재고 = 월평균 판매 × 이 값 (1=1개월치, 1.5=1.5개월치)
+  // optionLevel: 옵션 추천 강도 (0~1)
+  function buildScenario(label, desc, coverageMonths, optionLevel) {
     const recProduct = [];
     const recDemo = [];
     const recOptions = [];
@@ -1003,26 +1047,33 @@ function generateRecommend() {
     let totalOptAmt = 0;
 
     PRODUCTS.forEach((p, i) => {
-      const pattern = AVG_PATTERN[p.name];
+      const td = trendData[p.name];
       const stock = productStock[i];
       const dStock = demoStock[i];
 
-      // 상품: 평균 기반 + 재고 고려
-      let pQty = Math.round(pattern.avgQty * qtyMultiplier);
-      if (stock >= 3 && pQty > 0) pQty = Math.max(1, pQty - 1);
-      if (pattern.avgQty === 0) pQty = 0;
+      // ── 상품: 재고 기반 추천 ──
+      // 예상 월 판매 = 가중 평균 × 추이 보정
+      const expectedSales = td.product.weightedAvg * td.product.trendFactor;
+      // 적정 재고 = 예상 판매 × 커버리지
+      const targetStock = expectedSales * coverageMonths;
+      // 추천 발주 = 적정재고 - 현재재고 + 이번달 예상판매
+      let pQty = Math.max(0, Math.round(targetStock - stock + expectedSales));
+      // 판매 실적 없는 모델은 0
+      if (td.product.total === 0) pQty = 0;
 
-      // 견본: 평균 패턴 기반 + 재고 고려
-      let dQty = Math.round(pattern.avgDemo * qtyMultiplier);
-      // 견본 재고 충분하면 줄이기
-      if (dStock >= 4 && dQty > 0) dQty = Math.max(0, dQty - 1);
-      if (dStock >= 6 && dQty > 0) dQty = 0;
-      if (pattern.avgDemo === 0) dQty = 0;
+      // ── 견본: 재고 기반 추천 ──
+      const dExpected = td.demo.weightedAvg * td.demo.trendFactor;
+      const dTargetStock = dExpected * coverageMonths;
+      let dQty = Math.max(0, Math.round(dTargetStock - dStock + dExpected));
+      if (td.demo.total === 0) dQty = 0;
+      // 견본 재고 충분하면 추가 억제
+      if (dStock >= 5 && dQty > 0) dQty = Math.max(0, dQty - 1);
+      if (dStock >= 7) dQty = 0;
 
       const pAmt = pQty * p.cost;
       const dAmt = dQty * p.cost;
       totalAmt += pAmt + dAmt;
-      recProduct.push({ name: p.name, qty: pQty, amt: pAmt, cost: p.cost });
+      recProduct.push({ name: p.name, qty: pQty, amt: pAmt, cost: p.cost, expectedSales, trend: td.product.trend, stock });
       recDemo.push({ name: p.name, qty: dQty, amt: dAmt });
 
       // 옵션: 시스템 동반 옵션만 (현실적 부착률)
@@ -1038,13 +1089,13 @@ function generateRecommend() {
       }
     });
 
-    // 단독 옵션 발주 (16% 패턴 반영, 적극적 시나리오에서만)
+    // 단독 옵션 발주 (16% 패턴, 적극적에서만)
     if (optionLevel >= 1.0) {
       Object.keys(OPT_STANDALONE_RATE).forEach(model => {
         const tops = TOP_OPTIONS[model];
         if (!tops || tops.length === 0) return;
         const rate = OPT_STANDALONE_RATE[model];
-        const numStandalone = Math.round(rate * 14 * optionLevel / 14); // 월평균
+        const numStandalone = Math.round(rate * 14 * optionLevel / 14);
         if (numStandalone > 0) {
           const opt = tops[0];
           recOptions.push({ model, name: opt.name + ' (단독)', cost: opt.cost, qty: numStandalone });
@@ -1059,7 +1110,6 @@ function generateRecommend() {
     let totalDemoQty = recDemo.reduce((s, d) => s + d.qty, 0);
     const demoAvailable = DEMO_YEAR_LIMIT - DEMO_YEAR_USED;
     if (totalDemoQty > demoAvailable) {
-      // 초과분 차감 (avgDemo 낮은 모델부터)
       let excess = totalDemoQty - demoAvailable;
       const demoSorted = recDemo.map((d, i) => ({ i, qty: d.qty, avg: AVG_PATTERN[PRODUCTS[i].name].avgDemo }))
         .filter(d => d.qty > 0).sort((a, b) => a.avg - b.avg);
@@ -1087,7 +1137,7 @@ function generateRecommend() {
         if (pIdx === -1) continue;
         const p = PRODUCTS[pIdx];
         const addQty = Math.ceil(deficit / p.cost);
-        const actualAdd = Math.min(addQty, 3); // 최대 3대씩 증량
+        const actualAdd = Math.min(addQty, 3);
         if (actualAdd > 0) {
           recProduct[pIdx].qty += actualAdd;
           const addAmt = actualAdd * p.cost;
@@ -1105,13 +1155,13 @@ function generateRecommend() {
     const lyRate = lastYearQTotal > 0 ? (qTotal / lastYearQTotal * 100).toFixed(1) : '-';
 
     return { label, desc, recProduct, recDemo, recOptions, totalAmt, totalOptAmt,
-             monthRate, qRate, qTotal, lyRate, boostInfo, minForQuarter };
+             monthRate, qRate, qTotal, lyRate, boostInfo, minForQuarter, trendData };
   }
 
   return [
-    buildScenario('보수적', '평균 이하 + 작년 분기 달성 보장', 0.7, 0.5),
-    buildScenario('균형', '평균 수준 + 작년 분기 초과', 1.0, 0.8),
-    buildScenario('적극적', '목표 달성 + 옵션 확대 + 작년 대비 성장', 1.3, 1.0),
+    buildScenario('보수적', '재고 1개월치 유지 + 작년 분기 보장', 1.0, 0.5),
+    buildScenario('균형', '재고 1.5개월치 유지 + 추이 반영', 1.5, 0.8),
+    buildScenario('적극적', '재고 2개월치 유지 + 옵션 확대', 2.0, 1.0),
   ];
 }
 
@@ -1122,7 +1172,7 @@ function showRecommend() {
   const lastYearQTotal = LAST_YEAR_Q_TOTAL[qIdx] || 0;
 
   let html = `<h2>추천 발주 시나리오</h2>
-    <div class="modal-sub">BDTS 14개월 패턴 + 재고 + 작년 분기 보장 기반</div>`;
+    <div class="modal-sub">최근 6개월 판매 추이 + 현재 재고 + 적정 재고 유지 기반</div>`;
 
   // 분기 기준선 안내
   const qStart = Math.floor(CUR_MONTH / 3) * 3;
@@ -1139,24 +1189,51 @@ function showRecommend() {
     <strong style="color:#fb923c">→ 이번달 최소 ${fmt(minThisMonth)} 이상 발주 필요</strong>
   </div>`;
 
-  // 인사이트
-  const topModels = PRODUCTS.filter((_, i) => AVG_PATTERN[PRODUCTS[i].name].avgQty > 0)
-    .sort((a, b) => AVG_PATTERN[b.name].avgQty - AVG_PATTERN[a.name].avgQty);
-  const stockHigh = PRODUCTS.filter((_, i) => productStock[i] >= 3).map(p => p.name);
-  const stockZero = PRODUCTS.filter((_, i) => productStock[i] === 0 && AVG_PATTERN[PRODUCTS[i].name].avgQty > 0).map(p => p.name);
+  // 추이 분석 인사이트
+  const trendIcons = { up: '↑', down: '↓', stable: '→' };
+  const trendColors = { up: '#4ade80', down: '#f87171', stable: '#94a3b8' };
+  const activeModels = PRODUCTS.filter(p => RECENT_SALES[p.name].monthly.some(v => v > 0));
+  const stockHigh = PRODUCTS.filter((_, i) => productStock[i] >= 3 && AVG_PATTERN[PRODUCTS[i].name].avgQty > 0).map(p => p.name);
+  const stockLow = PRODUCTS.filter((_, i) => productStock[i] <= 1 && AVG_PATTERN[PRODUCTS[i].name].avgQty > 0).map(p => p.name);
 
+  // 월별 판매 추이 테이블
   html += `<div class="insight">
-    <strong>패턴 분석:</strong> 주력 모델 ${topModels.slice(0, 4).map(p => p.name + '(' + AVG_PATTERN[p.name].avgQty.toFixed(1) + '대/월)').join(', ')}
-    ${stockHigh.length ? '<br><strong>재고 주의:</strong> ' + stockHigh.join(', ') + ' (3대 이상 보유)' : ''}
-    ${stockZero.length ? '<br><strong>재고 부족:</strong> ' + stockZero.join(', ') + ' (상품 재고 0)' : ''}
-  </div>`;
+    <strong>최근 6개월 판매 추이 (상품 기준)</strong>
+    <table style="margin-top:6px;font-size:12px"><thead><tr>
+      <th>모델</th>${RECENT_MONTHS.map(m => '<th>' + m.slice(3) + '월</th>').join('')}
+      <th>평균</th><th>추이</th><th>재고</th>
+    </tr></thead><tbody>`;
+  activeModels.forEach(p => {
+    const s = RECENT_SALES[p.name];
+    const t = analyzeTrend(s.monthly);
+    const pIdx = PRODUCTS.indexOf(p);
+    const stk = productStock[pIdx];
+    const stkColor = stk <= 1 ? '#f87171' : stk >= 4 ? '#fbbf24' : '#4ade80';
+    // 재고 몇 개월치인지
+    const stkMonths = t.weightedAvg > 0 ? (stk / t.weightedAvg).toFixed(1) : '-';
+    html += `<tr>
+      <td>${p.name}</td>
+      ${s.monthly.map(v => '<td>' + (v || '-') + '</td>').join('')}
+      <td style="font-weight:600">${t.weightedAvg.toFixed(1)}</td>
+      <td style="color:${trendColors[t.trend]};font-weight:700">${trendIcons[t.trend]} ${t.trend === 'up' ? '증가' : t.trend === 'down' ? '감소' : '보합'}</td>
+      <td style="color:${stkColor}">${stk}대 (${stkMonths}개월)</td>
+    </tr>`;
+  });
+  html += `</tbody></table></div>`;
+
+  if (stockHigh.length || stockLow.length) {
+    html += `<div class="insight">
+      ${stockLow.length ? '<strong style="color:#f87171">재고 부족:</strong> ' + stockLow.join(', ') + ' (1대 이하 → 발주 증량 권고)<br>' : ''}
+      ${stockHigh.length ? '<strong style="color:#fbbf24">재고 과다:</strong> ' + stockHigh.join(', ') + ' (3대 이상 → 발주 감량 반영)' : ''}
+    </div>`;
+  }
 
   scenarios.forEach((s, si) => {
     const colors = ['#38bdf8', '#4ade80', '#fb923c'];
     html += `<div class="section-label" style="border-left-color:${colors[si]}">${s.label} — ${s.desc}</div>`;
 
     html += `<table><thead><tr>
-      <th>모델</th><th>상품</th><th>견본</th><th>기기 금액</th>
+      <th>모델</th><th>현재고</th><th>월평균</th><th>추이</th><th>상품</th><th>견본</th><th>기기 금액</th>
     </tr></thead><tbody>`;
 
     let sumP = 0, sumD = 0, sumEquipAmt = 0;
@@ -1165,15 +1242,20 @@ function showRecommend() {
       if (p.qty === 0 && d.qty === 0) return;
       const equipAmt = p.amt + d.amt;
       sumP += p.qty; sumD += d.qty; sumEquipAmt += equipAmt;
+      const tIcon = p.trend === 'up' ? '↑' : p.trend === 'down' ? '↓' : '→';
+      const tColor = p.trend === 'up' ? '#4ade80' : p.trend === 'down' ? '#f87171' : '#94a3b8';
       html += `<tr>
         <td>${p.name}</td>
+        <td style="color:#facc15">${p.stock}대</td>
+        <td>${p.expectedSales ? p.expectedSales.toFixed(1) : '-'}</td>
+        <td style="color:${tColor}">${tIcon}</td>
         <td style="color:#38bdf8">${p.qty || '-'}</td>
         <td style="color:#a78bfa">${d.qty || '-'}</td>
         <td>${fmt(equipAmt)}</td>
       </tr>`;
     });
     html += `<tr class="row-sum">
-      <td>기기 소계</td><td style="color:#38bdf8">${sumP}</td><td style="color:#a78bfa">${sumD}</td>
+      <td>기기 소계</td><td></td><td></td><td></td><td style="color:#38bdf8">${sumP}</td><td style="color:#a78bfa">${sumD}</td>
       <td>${fmt(sumEquipAmt)}</td>
     </tr></tbody></table>`;
 
