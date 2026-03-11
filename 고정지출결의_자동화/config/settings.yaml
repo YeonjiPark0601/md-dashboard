@@ -1,0 +1,32 @@
+# 고정 지출결의 자동화 - 설정
+
+# 다우오피스 설정
+daou:
+  base_url: "https://gw.integrationcorp.co.kr"
+  form_url: "/app/approval/document/new/50/2219"  # 부서ID: 50, 양식ID: 2219
+  # 로그인 정보는 환경변수 사용: DAOU_ID=yeonji.park, DAOU_PW=비밀번호
+
+# 결재라인
+approval_line:
+  - name: "박연지"
+    role: "기안"
+  - name: "전진영"
+    role: "결재"
+  - name: "조대현"
+    role: "결재"
+  - name: "이예림"
+    role: "참조"
+
+# 자금집행일정 캘린더 (구글시트)
+calendar:
+  spreadsheet_id: "1zFnYpznSnXtdaHWcJ79jVLBL7G2Q9SY0RjsII6xxq4w"
+  sheet_name: "자금집행일정캘린더"
+
+# 첨부파일 기본 경로
+attachment_base_path: "C:/Users/admin/Desktop/박연지/★인티그레이션"
+
+# 기본 동작
+defaults:
+  action: "temp_save"            # temp_save (임시저장) / submit (결재요청)
+  screenshot_on_complete: true   # 완료 시 스크린샷 저장
+  log_enabled: true

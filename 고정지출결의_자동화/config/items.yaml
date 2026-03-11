@@ -1,0 +1,125 @@
+# 고정 지출결의 항목 정의
+# type: fixed (고정) / variable (변동)
+# timing: month_end (매월 말) / month_start (매월 초)
+# payment_date_type: fixed_day (고정일) / calendar_first (자금집행 캘린더 첫 출금일)
+
+items:
+  # ─────────────────────────────────────────────
+  # 롯데렌탈 (6건, 매월 말 상신, 다음달 20일 지급)
+  # ─────────────────────────────────────────────
+  - id: "lotte_rental"
+    name: "영업차량 렌트비용"
+    vendor: "롯데렌탈(주)"
+    timing: month_end            # 매월 마지막주 상신
+    payment_date_type: fixed_day
+    payment_day: 20              # 다음달 20일
+    payment_next_month: true
+    transfer_method: "자동이체"
+    attachment_source: email      # 이메일 청구서
+    attachment_folder: "고정지출/영업차량 렌트비용(매월 말)"
+    sub_items:
+      - no: 1
+        description: "영업매니저 차량 렌트비용 (177허8771)"
+        amount: 399000
+        type: fixed
+        manager: "박원"
+        plate_suffix: "8771"
+      - no: 2
+        description: "영업매니저 차량 렌트비용 (230허2350)"
+        amount: 444500
+        type: fixed
+        manager: "유승준"
+        plate_suffix: "2350"
+      - no: 3
+        description: "영업매니저 차량 렌트비용 (230허2349)"
+        amount: 444500
+        type: fixed
+        manager: "주봉현"
+        plate_suffix: "2349"
+      - no: 4
+        description: "영업매니저 차량 렌트비용 (231허4576)"
+        amount: 478000
+        type: fixed
+        manager: "홍한솔"
+        plate_suffix: "4576"
+      - no: 5
+        description: "영업매니저 차량 렌트비용 (231허3827)"
+        amount: 478000
+        type: fixed
+        manager: "김상민"
+        plate_suffix: "3827"
+      - no: 6
+        description: "물류매니저 차량 렌트비용 (822도2576)"
+        amount: 670600
+        type: fixed
+        manager: "김요한"
+        plate_suffix: "2576"
+    total_amount: 2914600
+    bank_info: null               # 자동이체
+
+  # ─────────────────────────────────────────────
+  # 동보빌딩 (2건, 매월 초 상신, 자금집행 캘린더 첫 출금일)
+  # ─────────────────────────────────────────────
+  - id: "dongbo"
+    name: "선릉 의료기기센터 임대료/관리비"
+    vendor: "동보빌딩"
+    timing: month_start           # 매월 초 상신
+    payment_date_type: calendar_first  # 자금집행 캘린더 첫 출금일
+    transfer_method: "계좌이체"
+    attachment_source: email       # 이메일 세금계산서
+    attachment_folder: "고정지출/센터 임대료(매월 초)/선릉"
+    sub_items:
+      - no: 1
+        description_template: "{prev_month}월 선릉 의료기기센터 임대료"
+        amount: 5500000
+        type: fixed
+      - no: 2
+        description_template: "{prev_month}월 선릉 의료기기센터 관리비"
+        amount: 880000
+        type: fixed
+    total_amount: 6380000
+    bank_info:
+      bank: "국민은행"
+      account: "3588010-41-76896"
+      holder: "강민석(동보빌딩)"
+
+  # ─────────────────────────────────────────────
+  # 신대림빌딩 (3건, 매월 초 상신, 자금집행 캘린더 첫 출금일)
+  # ─────────────────────────────────────────────
+  - id: "sindaerim"
+    name: "대전 신대림빌딩 임대료/관리비/공과금"
+    vendor: "신대림빌딩"
+    timing: month_start
+    payment_date_type: calendar_first
+    transfer_method: "계좌이체"
+    attachment_source: email
+    attachment_folder: "고정지출/센터 임대료(매월 초)/대전"
+    sub_items:
+      - no: 1
+        description_template: "{prev_month}월 대전 신대림빌딩 임대료"
+        amount: 1650000
+        type: fixed
+        bank_info:
+          bank: "하나은행"
+          account: "608-910006-38504"
+          holder: "신대림(주)"
+      - no: 2
+        description_template: "{prev_month}월 대전 신대림빌딩 관리비"
+        amount: null              # 변동 - 세금계산서 확인
+        type: variable
+        bank_info:
+          bank: "하나은행"
+          account: "608-910006-46004"
+          holder: "신대림(주)"
+      - no: 3
+        description_template: "{prev_month}월 대전 신대림빌딩 공과금"
+        amount: null              # 변동 - 세금계산서 확인
+        type: variable
+        bank_info:
+          bank: "하나은행"
+          account: "608-910006-46004"
+          holder: "신대림(주)"
+    bank_info:                     # 기본 (임대료용)
+      bank: "하나은행"
+      account: "608-910006-38504"
+      holder: "신대림(주)"
