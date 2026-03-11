@@ -69,18 +69,12 @@ def find_attachments(item_config: dict, settings: dict, year: int, month: int) -
         return sorted(glob.glob(os.path.join(full_path, f"{ym}*")))
 
 
-def make_title(item_config: dict, year: int, month: int) -> str:
-    prev_month = month - 1 if month > 1 else 12
-    item_id = item_config["id"]
-
-    if item_id == "lotte_rental":
-        return f"{month}월 영업차량 렌트비용"
-    elif item_id == "dongbo":
-        return f"{prev_month}월 선릉 의료기기센터 임대료/관리비"
-    elif item_id == "sindaerim":
-        return f"{prev_month}월 대전 신대림빌딩 임대료/관리비/공과금"
-    else:
-        return f"{month}월 {item_config['name']}"
+def make_title(item_config: dict, payment_date: date, total_amount: int) -> str:
+    """제목 생성: [MD] YYYYMMDD_업체명_금액원"""
+    date_str = payment_date.strftime("%Y%m%d")
+    vendor = item_config["vendor"]
+    amount_str = f"{total_amount:,}원"
+    return f"[MD] {date_str}_{vendor}_{amount_str}"
 
 
 async def process_item(
@@ -139,16 +133,17 @@ async def process_item(
 
         rows.append({
             "vendor": item_config["vendor"],
-            "desc": desc,
+            "description": desc,
             "amount": format_amount(amount),
-            "date": format_pay_date(payment_date),
+            "pay_date": format_pay_date(payment_date),
             "bank": "자동이체" if transfer == "자동이체" else (bank_info.get("bank", "") if bank_info else ""),
             "account": "" if transfer == "자동이체" else (bank_info.get("account", "") if bank_info else ""),
             "holder": "" if transfer == "자동이체" else (bank_info.get("holder", "") if bank_info else ""),
         })
 
     # 4. 제목
-    title = make_title(item_config, year, month)
+    total_amount = sum(int(r["amount"].replace(",", "")) for r in rows)
+    title = make_title(item_config, payment_date, total_amount)
 
     # 5. 브라우저 자동화
     browser = DaouBrowser(headless=False)

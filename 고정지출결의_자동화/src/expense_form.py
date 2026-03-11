@@ -33,8 +33,12 @@ def get_row_field_ids(row_idx: int) -> list[str]:
 class ExpenseForm:
     def __init__(self, page: Page):
         self.page = page
-        # confirm 다이얼로그 자동 수락
-        self.page.on("dialog", lambda dialog: dialog.accept())
+        # confirm 다이얼로그 자동 수락 (async handler 필요)
+        self.page.on("dialog", self._handle_dialog)
+
+    async def _handle_dialog(self, dialog):
+        print(f"  [다이얼로그] {dialog.type}: {dialog.message}")
+        await dialog.accept()
 
     async def _set_field_js(self, field_id: str, value: str):
         """JS로 필드 값 설정 (readonly/datepicker 대응)"""
@@ -101,26 +105,45 @@ class ExpenseForm:
                 await self.page.wait_for_timeout(2000)
                 print(f"  [첨부] {os.path.basename(file_path)}")
 
+    async def _click_go_confirm(self):
+        """다우오피스 커스텀 confirm 팝업($.goConfirm)의 확인 버튼 클릭"""
+        await self.page.wait_for_timeout(2000)
+        clicked = await self.page.evaluate("""
+            () => {
+                const popup = document.getElementById('gpopupLayer');
+                if (!popup) return false;
+                const style = window.getComputedStyle(popup);
+                if (style.display === 'none') return false;
+                const btns = popup.querySelectorAll('a, button');
+                for (const btn of btns) {
+                    if (btn.textContent.trim() === '확인') {
+                        btn.click();
+                        return true;
+                    }
+                }
+                return false;
+            }
+        """)
+        if clicked:
+            await self.page.wait_for_timeout(5000)
+        return clicked
+
     async def temp_save(self):
         """임시저장"""
-        save_btn = await self.page.query_selector('a.btn_tool:has-text("임시저장")')
-        if save_btn:
-            await save_btn.click()
-            await self.page.wait_for_timeout(3000)
+        await self.page.click('#act_temp_save')
+        if await self._click_go_confirm():
             print("  [완료] 임시저장")
             return True
-        print("  [경고] 임시저장 버튼 못 찾음")
+        print("  [경고] 임시저장 confirm 팝업을 찾지 못함")
         return False
 
     async def submit(self):
         """결재요청 (상신)"""
-        submit_btn = await self.page.query_selector('a.btn_tool:has-text("결재요청")')
-        if submit_btn:
-            await submit_btn.click()
-            await self.page.wait_for_timeout(3000)
+        await self.page.click('#act_save')
+        if await self._click_go_confirm():
             print("  [완료] 결재요청")
             return True
-        print("  [경고] 결재요청 버튼 못 찾음")
+        print("  [경고] 결재요청 confirm 팝업을 찾지 못함")
         return False
 
     async def set_approval_ref(self, name: str, member_id: str = ""):
