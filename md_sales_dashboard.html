@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MD 의료기기 매출 대시보드</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', -apple-system, sans-serif; background: #f0f2f5; color: #333; }
+.header { background: linear-gradient(135deg, #1a1a2e, #16213e); color: #fff; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; }
+.header h1 { font-size: 20px; font-weight: 600; }
+.header .updated { font-size: 12px; color: #8899aa; }
+.filters { background: #fff; padding: 16px 30px; border-bottom: 1px solid #e0e0e0; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+.filter-group { display: flex; align-items: center; gap: 6px; }
+.filter-group label { font-size: 13px; font-weight: 600; color: #555; }
+.filter-group select, .filter-group input { padding: 6px 10px; border: 1px solid #d0d0d0; border-radius: 6px; font-size: 13px; background: #fff; }
+.active-filter { background: #e8f0fe; border: 1px solid #4285f4; border-radius: 16px; padding: 4px 12px; font-size: 12px; color: #1967d2; display: none; align-items: center; gap: 6px; cursor: pointer; }
+.active-filter.show { display: inline-flex; }
+.active-filter:hover { background: #d2e3fc; }
+.container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+.kpi-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.kpi-card .label { font-size: 12px; color: #888; margin-bottom: 4px; }
+.kpi-card .value { font-size: 28px; font-weight: 700; color: #1a1a2e; }
+.kpi-card .sub { font-size: 12px; margin-top: 4px; }
+.kpi-card .up { color: #0d9488; }
+.kpi-card .down { color: #e53e3e; }
+.chart-row { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 20px; }
+.chart-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.chart-card h3 { font-size: 14px; font-weight: 600; color: #555; margin-bottom: 12px; }
+.chart-row-full { margin-bottom: 20px; }
+.table-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); overflow-x: auto; }
+.table-card h3 { font-size: 14px; font-weight: 600; color: #555; margin-bottom: 12px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { background: #f7f8fa; padding: 10px 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; cursor: pointer; white-space: nowrap; }
+th:hover { background: #eef0f4; }
+td { padding: 8px 12px; border-bottom: 1px solid #f0f0f0; }
+tr:hover { background: #f7f9fc; }
+.text-right { text-align: right; }
+.loading { text-align: center; padding: 60px; color: #888; font-size: 16px; }
+@media (max-width: 900px) {
+  .kpi-row { grid-template-columns: repeat(2, 1fr); }
+  .chart-row { grid-template-columns: 1fr; }
+  .filters { flex-direction: column; align-items: flex-start; }
+}
+@media (max-width: 500px) {
+  .kpi-row { grid-template-columns: 1fr; }
+  .header h1 { font-size: 16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>MD 의료기기 통합 매출 대시보드</h1>
+  <div class="updated" id="lastUpdated">데이터 로딩중...</div>
+</div>
+
+<div class="filters">
+  <div class="filter-group">
+    <label>기간</label>
+    <input type="month" id="startMonth">
+    <span>~</span>
+    <input type="month" id="endMonth">
+  </div>
+  <div class="filter-group">
+    <label>카테고리</label>
+    <select id="categoryFilter"><option value="">전체</option></select>
+  </div>
+  <div class="filter-group">
+    <label>구분</label>
+    <select id="typeFilter"><option value="">전체</option></select>
+  </div>
+  <span class="active-filter" id="drillFilter" onclick="clearDrill()">
+    <span id="drillLabel"></span> ✕
+  </span>
+</div>
+
+<div class="container">
+  <div class="loading" id="loadingMsg">Google Sheets에서 데이터를 불러오는 중...</div>
+
+  <div id="dashboardContent" style="display:none;">
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="label">총 매출</div>
+        <div class="value" id="kpiTotal">-</div>
+        <div class="sub" id="kpiTotalSub"></div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">건수</div>
+        <div class="value" id="kpiCount">-</div>
+        <div class="sub" id="kpiCountSub"></div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">평균 건단가</div>
+        <div class="value" id="kpiAvg">-</div>
+        <div class="sub" id="kpiAvgSub"></div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">YoY 성장률</div>
+        <div class="value" id="kpiYoy">-</div>
+        <div class="sub" id="kpiYoySub"></div>
+      </div>
+    </div>
+
+    <div class="chart-row">
+      <div class="chart-card">
+        <h3>월별 매출 트렌드 (YoY)</h3>
+        <canvas id="trendChart" height="80"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>구분별 매출 비중</h3>
+        <canvas id="typeChart" height="160"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-row">
+      <div class="chart-card">
+        <h3>카테고리별 매출 (클릭하여 필터)</h3>
+        <canvas id="categoryChart" height="80"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>카테고리별 매출 비중</h3>
+        <canvas id="categoryPieChart" height="160"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-row-full">
+      <div class="table-card">
+        <h3>공급처별 매출 상세</h3>
+        <table id="supplierTable">
+          <thead>
+            <tr>
+              <th onclick="sortTable(0)">카테고리</th>
+              <th onclick="sortTable(1)">공급업체</th>
+              <th onclick="sortTable(2)" class="text-right">매출금액</th>
+              <th onclick="sortTable(3)" class="text-right">공급가</th>
+              <th onclick="sortTable(4)" class="text-right">건수</th>
+              <th onclick="sortTable(5)" class="text-right">수량</th>
+              <th onclick="sortTable(6)" class="text-right">마진율</th>
+            </tr>
+          </thead>
+          <tbody id="supplierBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SHEET_ID = '1s34C5qB-K_A8vJEJQaOOyJ44YM3netORbfCVVfM3idw';
+const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+
+let allData = [];
+let drillCategory = null;
+let trendChart, typeChart, categoryChart, categoryPieChart;
+let sortCol = -1, sortAsc = true;
+
+// Fetch data from Google Sheets
+async function fetchData() {
+  try {
+    const resp = await fetch(SHEET_URL);
+    const text = await resp.text();
+    const json = JSON.parse(text.substring(47, text.length - 2));
+    const cols = json.table.cols.map(c => c.label);
+    const rows = json.table.rows;
+
+    allData = rows.map(r => {
+      const obj = {};
+      cols.forEach((col, i) => {
+        const cell = r.c[i];
+        obj[col] = cell ? (cell.v !== null ? cell.v : '') : '';
+      });
+      obj['매출금액'] = Number(obj['매출금액']) || 0;
+      obj['공급가'] = Number(obj['공급가']) || 0;
+      obj['수량'] = Number(obj['수량']) || 0;
+      return obj;
+    });
+
+    initFilters();
+    render();
+    document.getElementById('loadingMsg').style.display = 'none';
+    document.getElementById('dashboardContent').style.display = 'block';
+    document.getElementById('lastUpdated').textContent = `데이터: ${allData.length}건 | ${new Date().toLocaleString('ko-KR')}`;
+  } catch (e) {
+    document.getElementById('loadingMsg').textContent = '데이터 로딩 실패: ' + e.message;
+  }
+}
+
+function initFilters() {
+  const months = [...new Set(allData.map(d => d['연월']).filter(Boolean))].sort();
+  const categories = [...new Set(allData.map(d => d['카테고리']).filter(Boolean))].sort();
+  const types = [...new Set(allData.map(d => d['구분']).filter(Boolean))].sort();
+
+  if (months.length) {
+    document.getElementById('startMonth').value = months[0];
+    document.getElementById('endMonth').value = months[months.length - 1];
+  }
+
+  const catSel = document.getElementById('categoryFilter');
+  categories.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; catSel.appendChild(o); });
+
+  const typeSel = document.getElementById('typeFilter');
+  types.forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; typeSel.appendChild(o); });
+
+  document.getElementById('startMonth').addEventListener('change', render);
+  document.getElementById('endMonth').addEventListener('change', render);
+  document.getElementById('categoryFilter').addEventListener('change', render);
+  document.getElementById('typeFilter').addEventListener('change', render);
+}
+
+function getFilteredData() {
+  const start = document.getElementById('startMonth').value;
+  const end = document.getElementById('endMonth').value;
+  const cat = document.getElementById('categoryFilter').value;
+  const type = document.getElementById('typeFilter').value;
+
+  return allData.filter(d => {
+    if (start && d['연월'] < start) return false;
+    if (end && d['연월'] > end) return false;
+    if (cat && d['카테고리'] !== cat) return false;
+    if (type && d['구분'] !== type) return false;
+    if (drillCategory && d['카테고리'] !== drillCategory) return false;
+    return true;
+  });
+}
+
+function getYoyData(filtered) {
+  const start = document.getElementById('startMonth').value;
+  const end = document.getElementById('endMonth').value;
+  const cat = document.getElementById('categoryFilter').value;
+  const type = document.getElementById('typeFilter').value;
+
+  const prevStart = start ? yearShift(start, -1) : null;
+  const prevEnd = end ? yearShift(end, -1) : null;
+
+  return allData.filter(d => {
+    if (prevStart && d['연월'] < prevStart) return false;
+    if (prevEnd && d['연월'] > prevEnd) return false;
+    if (cat && d['카테고리'] !== cat) return false;
+    if (type && d['구분'] !== type) return false;
+    if (drillCategory && d['카테고리'] !== drillCategory) return false;
+    return true;
+  });
+}
+
+function yearShift(ym, delta) {
+  const [y, m] = ym.split('-').map(Number);
+  return `${y + delta}-${String(m).padStart(2, '0')}`;
+}
+
+function fmt(n) {
+  if (Math.abs(n) >= 100000000) return (n / 100000000).toFixed(1) + '억';
+  if (Math.abs(n) >= 10000) return (n / 10000).toFixed(0) + '만';
+  return n.toLocaleString();
+}
+
+function fmtFull(n) { return n.toLocaleString('ko-KR') + '원'; }
+
+function render() {
+  const data = getFilteredData();
+  const yoyData = getYoyData(data);
+
+  // KPIs
+  const totalSales = data.reduce((s, d) => s + d['매출금액'], 0);
+  const totalCount = data.length;
+  const avgPrice = totalCount ? totalSales / totalCount : 0;
+  const prevSales = yoyData.reduce((s, d) => s + d['매출금액'], 0);
+  const yoyRate = prevSales ? ((totalSales - prevSales) / prevSales * 100) : 0;
+
+  document.getElementById('kpiTotal').textContent = fmt(totalSales);
+  document.getElementById('kpiTotalSub').innerHTML = `<span>${fmtFull(totalSales)}</span>`;
+  document.getElementById('kpiCount').textContent = totalCount.toLocaleString();
+  document.getElementById('kpiAvg').textContent = fmt(avgPrice);
+  document.getElementById('kpiYoy').textContent = (prevSales ? (yoyRate > 0 ? '+' : '') + yoyRate.toFixed(1) + '%' : '-');
+  document.getElementById('kpiYoy').className = 'value';
+  if (prevSales) {
+    document.getElementById('kpiYoySub').innerHTML = `<span class="${yoyRate >= 0 ? 'up' : 'down'}">전년 동기 대비</span>`;
+  }
+
+  renderTrendChart(data);
+  renderTypeChart(data);
+  renderCategoryChart(data);
+  renderCategoryPieChart(data);
+  renderTable(data);
+}
+
+function renderTrendChart(data) {
+  const months = [...new Set(data.map(d => d['연월']))].sort();
+  const thisYear = {};
+  const prevYear = {};
+
+  data.forEach(d => { thisYear[d['연월']] = (thisYear[d['연월']] || 0) + d['매출금액']; });
+
+  // Get previous year data for same month range
+  const start = document.getElementById('startMonth').value;
+  const end = document.getElementById('endMonth').value;
+  const cat = document.getElementById('categoryFilter').value;
+  const type = document.getElementById('typeFilter').value;
+
+  allData.forEach(d => {
+    if (cat && d['카테고리'] !== cat) return;
+    if (type && d['구분'] !== type) return;
+    if (drillCategory && d['카테고리'] !== drillCategory) return;
+    const ym = d['연월'];
+    if (!ym) return;
+    const shifted = yearShift(ym, 1);
+    if (months.includes(shifted)) {
+      prevYear[shifted] = (prevYear[shifted] || 0) + d['매출금액'];
+    }
+  });
+
+  const cfg = {
+    type: 'bar',
+    data: {
+      labels: months.map(m => m.substring(2)),
+      datasets: [
+        { label: '올해', data: months.map(m => thisYear[m] || 0), backgroundColor: '#4285f4', borderRadius: 4, order: 1 },
+        { label: '전년', data: months.map(m => prevYear[m] || 0), backgroundColor: '#e0e0e0', borderRadius: 4, order: 2 }
+      ]
+    },
+    options: {
+      responsive: true,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + fmt(ctx.raw) } } },
+      scales: { y: { ticks: { callback: v => fmt(v) } } }
+    }
+  };
+
+  if (trendChart) trendChart.destroy();
+  trendChart = new Chart(document.getElementById('trendChart'), cfg);
+}
+
+function renderTypeChart(data) {
+  const types = {};
+  data.forEach(d => { types[d['구분']] = (types[d['구분']] || 0) + d['매출금액']; });
+
+  const labels = Object.keys(types);
+  const values = Object.values(types);
+  const colors = ['#4285f4', '#ea4335', '#fbbc04', '#34a853', '#ff6d01', '#46bdc6'];
+
+  const cfg = {
+    type: 'doughnut',
+    data: { labels, datasets: [{ data: values, backgroundColor: colors.slice(0, labels.length), borderWidth: 0 }] },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 11 } } },
+        tooltip: { callbacks: { label: ctx => ctx.label + ': ' + fmt(ctx.raw) + ' (' + (ctx.raw / values.reduce((a,b) => a+b, 0) * 100).toFixed(1) + '%)' } }
+      }
+    }
+  };
+
+  if (typeChart) typeChart.destroy();
+  typeChart = new Chart(document.getElementById('typeChart'), cfg);
+}
+
+function renderCategoryChart(data) {
+  const cats = {};
+  data.forEach(d => { cats[d['카테고리']] = (cats[d['카테고리']] || 0) + d['매출금액']; });
+
+  const sorted = Object.entries(cats).sort((a, b) => b[1] - a[1]);
+  const labels = sorted.map(s => s[0]);
+  const values = sorted.map(s => s[1]);
+  const colors = ['#4285f4', '#ea4335', '#fbbc04', '#34a853', '#ff6d01', '#46bdc6', '#9334e6', '#e8710a'];
+  const bgColors = labels.map((l, i) => l === drillCategory ? '#1a73e8' : colors[i % colors.length]);
+
+  const cfg = {
+    type: 'bar',
+    data: { labels, datasets: [{ data: values, backgroundColor: bgColors, borderRadius: 4 }] },
+    options: {
+      responsive: true,
+      indexAxis: 'y',
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => fmt(ctx.raw) } } },
+      scales: { x: { ticks: { callback: v => fmt(v) } } },
+      onClick: (e, elements) => {
+        if (elements.length > 0) {
+          const idx = elements[0].index;
+          const clicked = labels[idx];
+          if (drillCategory === clicked) {
+            clearDrill();
+          } else {
+            drillCategory = clicked;
+            document.getElementById('drillLabel').textContent = clicked;
+            document.getElementById('drillFilter').classList.add('show');
+            render();
+          }
+        }
+      }
+    }
+  };
+
+  if (categoryChart) categoryChart.destroy();
+  categoryChart = new Chart(document.getElementById('categoryChart'), cfg);
+}
+
+function renderCategoryPieChart(data) {
+  const cats = {};
+  data.forEach(d => { cats[d['카테고리']] = (cats[d['카테고리']] || 0) + d['매출금액']; });
+
+  const sorted = Object.entries(cats).sort((a, b) => b[1] - a[1]);
+  const labels = sorted.map(s => s[0]);
+  const values = sorted.map(s => s[1]);
+  const colors = ['#4285f4', '#ea4335', '#fbbc04', '#34a853', '#ff6d01', '#46bdc6', '#9334e6', '#e8710a'];
+
+  const cfg = {
+    type: 'doughnut',
+    data: { labels, datasets: [{ data: values, backgroundColor: colors.slice(0, labels.length), borderWidth: 0 }] },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 11 } } },
+        tooltip: { callbacks: { label: ctx => ctx.label + ': ' + fmt(ctx.raw) + ' (' + (ctx.raw / values.reduce((a,b) => a+b, 0) * 100).toFixed(1) + '%)' } }
+      }
+    }
+  };
+
+  if (categoryPieChart) categoryPieChart.destroy();
+  categoryPieChart = new Chart(document.getElementById('categoryPieChart'), cfg);
+}
+
+function renderTable(data) {
+  const groups = {};
+  data.forEach(d => {
+    const key = d['카테고리'] + '||' + d['공급업체'];
+    if (!groups[key]) groups[key] = { 카테고리: d['카테고리'], 공급업체: d['공급업체'], 매출금액: 0, 공급가: 0, 건수: 0, 수량: 0 };
+    groups[key].매출금액 += d['매출금액'];
+    groups[key].공급가 += d['공급가'];
+    groups[key].건수 += 1;
+    groups[key].수량 += d['수량'];
+  });
+
+  let rows = Object.values(groups).sort((a, b) => b.매출금액 - a.매출금액);
+
+  if (sortCol >= 0) {
+    const keys = ['카테고리', '공급업체', '매출금액', '공급가', '건수', '수량', 'margin'];
+    rows.sort((a, b) => {
+      let va, vb;
+      if (sortCol === 6) {
+        va = a.공급가 ? (a.매출금액 - a.공급가) / a.매출금액 : 0;
+        vb = b.공급가 ? (b.매출금액 - b.공급가) / b.매출금액 : 0;
+      } else {
+        va = a[keys[sortCol]]; vb = b[keys[sortCol]];
+      }
+      if (typeof va === 'string') return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+      return sortAsc ? va - vb : vb - va;
+    });
+  }
+
+  const tbody = document.getElementById('supplierBody');
+  tbody.innerHTML = rows.map(r => {
+    const margin = r.매출금액 ? ((r.매출금액 - r.공급가) / r.매출금액 * 100).toFixed(1) : '-';
+    return `<tr>
+      <td>${r.카테고리}</td>
+      <td>${r.공급업체}</td>
+      <td class="text-right">${r.매출금액.toLocaleString()}</td>
+      <td class="text-right">${r.공급가.toLocaleString()}</td>
+      <td class="text-right">${r.건수}</td>
+      <td class="text-right">${r.수량}</td>
+      <td class="text-right">${margin}%</td>
+    </tr>`;
+  }).join('');
+}
+
+function sortTable(col) {
+  if (sortCol === col) sortAsc = !sortAsc;
+  else { sortCol = col; sortAsc = col < 2; }
+  render();
+}
+
+function clearDrill() {
+  drillCategory = null;
+  document.getElementById('drillFilter').classList.remove('show');
+  render();
+}
+
+fetchData();
+</script>
+</body>
+</html>
