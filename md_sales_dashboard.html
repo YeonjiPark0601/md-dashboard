@@ -150,31 +150,45 @@ tr:hover { background: #f7f9fc; }
 
 <script>
 const SHEET_ID = '1s34C5qB-K_A8vJEJQaOOyJ44YM3netORbfCVVfM3idw';
-const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+const SHEET_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&headers=1&_t=${Date.now()}`;
 
 let allData = [];
 let drillCategory = null;
 let trendChart, typeChart, categoryChart, categoryPieChart;
 let sortCol = -1, sortAsc = true;
 
-// Fetch data from Google Sheets
+function parseCSVRow(line) {
+  const result = [];
+  let cur = '', inQuote = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (inQuote && line[i + 1] === '"') { cur += '"'; i++; }
+      else { inQuote = !inQuote; }
+    } else if (ch === ',' && !inQuote) { result.push(cur); cur = ''; }
+    else { cur += ch; }
+  }
+  result.push(cur);
+  return result;
+}
+
+// Fetch data from Google Sheets (CSV)
 async function fetchData() {
   try {
-    const resp = await fetch(SHEET_URL);
-    const text = await resp.text();
-    const json = JSON.parse(text.substring(47, text.length - 2));
-    const cols = json.table.cols.map(c => c.label);
-    const rows = json.table.rows;
+    const resp = await fetch(SHEET_CSV_URL);
+    if (!resp.ok) throw new Error(resp.status);
+    const csv = (await resp.text()).replace(/\r/g, '');
+    const lines = csv.split('\n').filter(l => l.trim());
+    if (lines.length < 2) throw new Error('데이터 없음');
+    const cols = parseCSVRow(lines[0]);
 
-    allData = rows.map(r => {
+    allData = lines.slice(1).map(line => {
+      const vals = parseCSVRow(line);
       const obj = {};
-      cols.forEach((col, i) => {
-        const cell = r.c[i];
-        obj[col] = cell ? (cell.v !== null ? cell.v : '') : '';
-      });
-      obj['매출금액'] = Number(obj['매출금액']) || 0;
-      obj['공급가'] = Number(obj['공급가']) || 0;
-      obj['수량'] = Number(obj['수량']) || 0;
+      cols.forEach((col, i) => { obj[col] = vals[i] || ''; });
+      obj['매출금액'] = Number(String(obj['매출금액']).replace(/,/g, '')) || 0;
+      obj['공급가'] = Number(String(obj['공급가']).replace(/,/g, '')) || 0;
+      obj['수량'] = Number(String(obj['수량']).replace(/,/g, '')) || 0;
       return obj;
     });
 
