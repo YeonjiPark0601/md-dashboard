@@ -25,7 +25,11 @@ body { font-family: 'Segoe UI', -apple-system, sans-serif; background: #f0f2f5; 
 .active-filter { background: #e8f0fe; border: 1px solid #4285f4; border-radius: 16px; padding: 4px 12px; font-size: 12px; color: #1967d2; display: none; align-items: center; gap: 6px; cursor: pointer; }
 .active-filter.show { display: inline-flex; }
 .active-filter:hover { background: #d2e3fc; }
-.container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+.container { max-width: 1400px; margin: 0 auto; padding: 20px; padding-left: 170px; }
+.side-nav { position: fixed; left: 0; top: 140px; width: 150px; background: #fff; border-right: 1px solid #e0e0e0; padding: 12px 0; z-index: 90; box-shadow: 1px 0 3px rgba(0,0,0,0.05); border-radius: 0 8px 8px 0; }
+.side-nav a { display: block; padding: 8px 16px; font-size: 12px; color: #555; text-decoration: none; border-left: 3px solid transparent; transition: all 0.15s; }
+.side-nav a:hover { background: #f0f2f5; color: #1a73e8; }
+.side-nav a.active { border-left-color: #1a73e8; color: #1a73e8; font-weight: 600; background: #eef3ff; }
 .kpi-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
 .kpi-card { background: #fff; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
 .kpi-card .label { font-size: 12px; color: #888; margin-bottom: 6px; font-weight: 600; }
@@ -59,6 +63,8 @@ tr:hover { background: #f7f9fc; }
   .chart-row-3 { grid-template-columns: 1fr; }
   .filters { flex-direction: column; align-items: flex-start; }
   .tabs { overflow-x: auto; }
+  .side-nav { display: none; }
+  .container { padding-left: 20px; }
 }
 </style>
 </head>
@@ -97,10 +103,19 @@ tr:hover { background: #f7f9fc; }
 </div>
 </div>
 
+<nav class="side-nav" id="sideNav">
+  <a href="#sec-kpi" onclick="scrollTo2('sec-kpi')">KPI</a>
+  <a href="#sec-trend" onclick="scrollTo2('sec-trend')">매출 트렌드</a>
+  <a href="#sec-charts" onclick="scrollTo2('sec-charts')">차트</a>
+  <a href="#sec-supplier-chart" onclick="scrollTo2('sec-supplier-chart')">공급처별 매출</a>
+  <a href="#sec-monthly" onclick="scrollTo2('sec-monthly')">월별 매출</a>
+  <a href="#sec-detail" onclick="scrollTo2('sec-detail')">매출 상세</a>
+</nav>
+
 <div class="container">
   <div class="loading" id="loadingMsg">Google Sheets에서 데이터를 불러오는 중...</div>
   <div id="dashboardContent" style="display:none;">
-    <div class="kpi-row">
+    <div id="sec-kpi" class="kpi-row">
       <div class="kpi-card">
         <div class="label">이번 주 매출 (월~일)</div>
         <div class="main-row"><div class="value" id="kpiWeekSales">-</div><div class="rate" id="kpiWeekRate">-</div></div>
@@ -120,6 +135,7 @@ tr:hover { background: #f7f9fc; }
         <div class="progress-bar"><div class="progress-fill" id="kpiQtrBar" style="width:0;background:#fbbc04;"></div></div>
       </div>
     </div>
+    <div id="sec-trend"></div>
     <div id="trendRow" class="chart-row-full">
       <div class="chart-card"><h3>월별 매출 트렌드 (YoY) — 25년 1월~현재</h3><canvas id="trendChart" height="50"></canvas></div>
     </div>
@@ -127,11 +143,13 @@ tr:hover { background: #f7f9fc; }
       <div class="chart-card" style="display:flex;flex-direction:column;"><h3>월별 매출 트렌드 (YoY) — 25년 1월~현재</h3><canvas id="trendChart2" style="flex:1;min-height:0;"></canvas></div>
       <div class="chart-card" style="display:flex;flex-direction:column;"><h3 id="typeChartTitle2">온/오프라인 비중</h3><canvas id="typeChart2" style="flex:1;min-height:0;"></canvas></div>
     </div>
+    <div id="sec-charts"></div>
     <div class="chart-row-3" id="chartRow3">
       <div class="chart-card" id="typeChartCard"><h3 id="typeChartTitle">구분별 매출 비중</h3><canvas id="typeChart" height="200"></canvas></div>
       <div class="chart-card" id="categoryChartCard"><h3>카테고리별 매출 (클릭하여 필터)</h3><canvas id="categoryChart" height="200"></canvas></div>
       <div class="chart-card" id="categoryPieCard"><h3>카테고리별 매출 비중</h3><canvas id="categoryPieChart" height="200"></canvas></div>
     </div>
+    <div id="sec-supplier-chart"></div>
     <div class="chart-row-full" id="supplierChartRow">
       <div class="chart-card">
         <h3 style="display:flex;justify-content:space-between;align-items:center;">
@@ -141,12 +159,14 @@ tr:hover { background: #f7f9fc; }
         <canvas id="supplierChart" height="70"></canvas>
       </div>
     </div>
+    <div id="sec-monthly"></div>
     <div class="chart-row-full">
       <div class="table-card"><h3 id="monthlyTableTitle">공급처별 월별 매출</h3>
         <div style="overflow-x:auto;"><table id="monthlyTable"><thead><tr id="monthlyHead"></tr></thead><tbody id="monthlyBody"></tbody></table></div>
         <div id="monthlyToggle" onclick="toggleMonthlyTable()" style="display:none;text-align:center;padding:10px;color:#1a73e8;cursor:pointer;font-size:13px;font-weight:600;border-top:1px solid #f0f0f0;margin-top:4px;"></div>
       </div>
     </div>
+    <div id="sec-detail"></div>
     <div class="chart-row-full">
       <div class="table-card">
         <h3><span id="detailTableTitle">공급처별 매출 상세</span>
@@ -587,6 +607,20 @@ function clearDrill(){drillCategory=null;document.getElementById('drillFilter').
 const hashTab=decodeURIComponent(location.hash.slice(1));
 const validTabs=['의료기기','클래스'];
 if(validTabs.includes(hashTab)){currentTab=hashTab;document.querySelectorAll('.tab[data-tab]').forEach(t=>{t.classList.toggle('active',t.dataset.tab===hashTab)})}
+function scrollTo2(id){
+  const el=document.getElementById(id);
+  if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+  return false;
+}
+
+// Scroll spy
+window.addEventListener('scroll',()=>{
+  const secs=['sec-kpi','sec-trend','sec-charts','sec-supplier-chart','sec-monthly','sec-detail'];
+  let active='sec-kpi';
+  for(const id of secs){const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<=160)active=id}
+  document.querySelectorAll('.side-nav a').forEach(a=>{a.classList.toggle('active',a.getAttribute('href')==='#'+active)});
+});
+
 fetchData();
 </script>
 </body>
