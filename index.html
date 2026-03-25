@@ -51,7 +51,7 @@ body { font-family: 'Segoe UI', -apple-system, sans-serif; background: #f0f2f5; 
 table { width: 100%; border-collapse: collapse; font-size: 13px; }
 th { background: #f7f8fa; padding: 10px 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; cursor: pointer; white-space: nowrap; }
 th:hover { background: #eef0f4; }
-td { padding: 8px 12px; border-bottom: 1px solid #f0f0f0; }
+td { padding: 8px 12px; border-bottom: 1px solid #f0f0f0; white-space: nowrap; }
 tr:hover { background: #f7f9fc; }
 .text-right { text-align: right; }
 .loading { text-align: center; padding: 60px; color: #888; font-size: 16px; }
@@ -109,11 +109,15 @@ tr:hover { background: #f7f9fc; }
   <a href="#sec-trend" onclick="scrollTo2('sec-trend')">매출 트렌드</a>
   <a href="#sec-charts" onclick="scrollTo2('sec-charts')" id="navCharts">차트</a>
   <a href="#sec-supplier-chart" onclick="scrollTo2('sec-supplier-chart')" id="navSupplier">공급처별 매출</a>
-  <a href="#sec-monthly" onclick="scrollTo2('sec-monthly')">월별 매출</a>
-  <a href="#sec-detail" onclick="scrollTo2('sec-detail')">매출 상세</a>
+  <a href="#sec-monthly" onclick="scrollTo2('sec-monthly')" id="navMonthly">월별 매출</a>
+  <a href="#sec-detail" onclick="scrollTo2('sec-detail')" id="navDetail">매출 상세</a>
   <a href="#sec-pu" onclick="scrollTo2('sec-pu')" id="navPU" style="display:none;">PU 분석</a>
   <a href="#sec-rebuy" onclick="scrollTo2('sec-rebuy')" id="navRebuy" style="display:none;">재구매 분석</a>
-  <a href="#sec-pt10summary" onclick="scrollTo2('sec-pt10summary')" id="navPT10Summary" style="display:none;">수량/매출</a>
+  <a href="#sec-pt10summary" onclick="scrollTo2('sec-pt10summary')" id="navPT10Summary" style="display:none;">26년 수량/매출</a>
+  <a href="#sec-pt10cart" onclick="scrollTo2('pt10CartRow')" id="navPT10Cart" style="display:none;">26년 카트리지</a>
+  <a href="#sec-pt10y25" onclick="scrollTo2('pt10Summary2025Row')" id="navPT10Y25" style="display:none;">25년</a>
+  <a href="#sec-pt10y24" onclick="scrollTo2('pt10Summary2024Row')" id="navPT10Y24" style="display:none;">24년</a>
+  <a href="#sec-pt10y23" onclick="scrollTo2('pt10Summary2023Row')" id="navPT10Y23" style="display:none;">23년</a>
   <a href="#sec-profitMargin" onclick="scrollTo2('sec-profitMargin')" id="navProfitMargin" style="display:none;">매출총이익률</a>
 </nav>
 
@@ -497,7 +501,9 @@ function render(){
   document.getElementById('detailRow').style.display=(isTurnkey||isPT10)?'none':'';
   document.getElementById('monthlyRow').style.display=isPT10?'none':'';
   ['pt10SummaryRow','pt10CartRow','pt10Summary2025Row','pt10Cart2025Row','pt10Summary2024Row','pt10Cart2024Row','pt10Summary2023Row','pt10Cart2023Row'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
-  document.getElementById('navPT10Summary').style.display=isPT10?'':'none';
+  ['navPT10Summary','navPT10Cart','navPT10Y25','navPT10Y24','navPT10Y23'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
+  document.getElementById('navMonthly').style.display=isPT10?'none':'';
+  document.getElementById('navDetail').style.display=(isPT10||isTurnkey)?'none':'';
   if(isPT10){renderPT10Summary();renderPT10Cart()}
   document.getElementById('turnkeyKpiRow').style.display=isTurnkey?'grid':'none';
   document.getElementById('profitMarginRow').style.display=isTurnkey?'':'none';
