@@ -268,8 +268,8 @@ async function fetchData(){
       fetch(sheetUrl('PU온라인')),fetch(sheetUrl('PU오프라인')),fetch(sheetUrl('재구매분석'))
     ]);
     if(!salesR.ok)throw new Error('매출 데이터 로딩 실패');
-    allData=parseCSV(await salesR.text()).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['공급가']=parseNum(r['공급가']);r['수량']=parseNum(r['수량']);return r});
-    if(classR.ok){const ct=await classR.text();if(ct.trim()){classData=parseCSV(ct).map(r=>{r['매출금액']=parseNum(r['매출금액']);return r})}}
+    allData=parseCSV(await salesR.text()).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['공급가']=parseNum(r['공급가']);r['수량']=parseNum(r['수량']);if(r['연월']&&r['연월'].length>7)r['연월']=r['연월'].substring(0,7);if(r['주문일']&&r['주문일'].length>10)r['주문일']=r['주문일'].substring(0,10);return r});
+    if(classR.ok){const ct=await classR.text();if(ct.trim()){classData=parseCSV(ct).map(r=>{r['매출금액']=parseNum(r['매출금액']);if(r['연월']&&r['연월'].length>7)r['연월']=r['연월'].substring(0,7);if(r['주문일']&&r['주문일'].length>10)r['주문일']=r['주문일'].substring(0,10);return r})}}
     if(puOnR.ok){const t=await puOnR.text();if(t.trim())puOnData=parseCSV(t).map(r=>{r['PU']=parseNum(r['PU']);return r})}
     if(puOffR.ok){const t=await puOffR.text();if(t.trim())puOffData=parseCSV(t).map(r=>{r['PU']=parseNum(r['PU']);return r})}
     if(rebuyR.ok){const t=await rebuyR.text();if(t.trim())rebuyData=parseCSV(t).map(r=>{
@@ -500,7 +500,7 @@ function renderTrendChart(data){
         datalabels:{display:false}}
     ]},plugins:[ChartDataLabels],options:{responsive:true,interaction:{mode:'index',intersect:false},
       plugins:{legend:{position:'top'},datalabels:{},
-        tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+fmt(ctx.raw)}}},
+        tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+fmt(ctx.raw),afterBody:items=>{const i=items[0].dataIndex;const t=(onData[months[i]]||0)+(offData[months[i]]||0);const p=pY[months[i]]||0;if(!p)return'';const pct=((t-p)/p*100).toFixed(1);return'YoY: '+(pct>0?'+':'')+pct+'%'}}}},
       scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:v=>fmt(v)}}},
       onClick:(e,el)=>{if(el.length>0){const ym=months[el[0].index];document.getElementById('startMonth').value=ym;document.getElementById('endMonth').value=ym;render()}}}};
     if(trendChart2)trendChart2.destroy();trendChart2=new Chart(document.getElementById('trendChart2'),cfg);
