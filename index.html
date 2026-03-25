@@ -838,10 +838,16 @@ function renderPT10Cart(){
     if(qtyTotal>0)rows.push(qtyRow);
     if(salesTotal>0)rows.push(salesRow);
   });
-  document.getElementById('pt10CartHead').innerHTML='<th>항목</th>'+allMonths.map(m=>`<th class="text-right">${m}월</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
-  document.getElementById('pt10CartBody').innerHTML=rows.map(r=>
-    `<tr><td style="font-weight:600;">${r.label}</td>`+allMonths.map(m=>`<td class="text-right">${r[m]?Math.round(r[m]).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(r.total).toLocaleString()}</td></tr>`
-  ).join('');
+  document.getElementById('pt10CartHead').innerHTML='<th></th><th>항목</th>'+allMonths.map(m=>`<th class="text-right">${m}월</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
+  let html='';
+  details.forEach(det=>{
+    const detRows=rows.filter(r=>r.label.startsWith(det));
+    detRows.forEach((r,i)=>{
+      const subLabel=r.label.replace(det+' ','');
+      html+=`<tr>${i===0?`<td rowspan="${detRows.length}" style="font-weight:700;vertical-align:middle;background:#f7f8fa;border-right:2px solid #e0e0e0;">${det}</td>`:''}<td>${subLabel}</td>`+allMonths.map(m=>`<td class="text-right">${r[m]?Math.round(r[m]).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(r.total).toLocaleString()}</td></tr>`;
+    });
+  });
+  document.getElementById('pt10CartBody').innerHTML=html;
 }
 
 function renderProfitMargin(){
