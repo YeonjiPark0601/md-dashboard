@@ -389,22 +389,22 @@ function renderKPIs(){
   const prevQSales=data.filter(d=>fn(d)&&prevQMs.includes(d['연월'])).reduce((s,d)=>s+d['매출금액'],0);
   const qQoq=prevQSales?((qS2-prevQSales)/prevQSales*100):null;
 
-  const setKPI=(pre,sales,target,yoy,prev,dates,color)=>{
+  const setKPI=(pre,sales,target,yoy,yoyLabel,prev,prevLabel,dates,color)=>{
     const rate=target?(sales/target*100):0;
     document.getElementById(pre+'Sales').textContent=fmt(sales);
     document.getElementById(pre+'Rate').innerHTML=`<span class="${rate>=100?'up':'down'}">${rate.toFixed(0)}%</span>`;
     document.getElementById(pre+'Target').textContent=`목표: ${Math.round(target).toLocaleString()}원`;
     let subRight='';
-    if(yoy!==null)subRight+=`<span class="${yoy>=0?'up':'down'}">YoY ${yoy>0?'+':''}${yoy.toFixed(1)}%</span>`;
-    if(prev!==null)subRight+=(subRight?' | ':'')+`<span class="${prev>=0?'up':'down'}">전기비 ${prev>0?'+':''}${prev.toFixed(1)}%</span>`;
+    if(yoy!==null)subRight+=`<span class="${yoy>=0?'up':'down'}">${yoyLabel} ${yoy>0?'+':''}${yoy.toFixed(1)}%</span>`;
+    if(prev!==null)subRight+=(subRight?' | ':'')+`<span class="${prev>=0?'up':'down'}">${prevLabel} ${prev>0?'+':''}${prev.toFixed(1)}%</span>`;
     if(document.getElementById(pre+'Yoy'))document.getElementById(pre+'Yoy').innerHTML=subRight;
     if(document.getElementById(pre+'Dates'))document.getElementById(pre+'Dates').textContent=dates||'';
     document.getElementById(pre+'Bar').style.width=Math.min(rate,100)+'%';
     document.getElementById(pre+'Bar').style.background=rate>=100?'#0d9488':color;
   };
-  setKPI('kpiWeek',wS,wT,null,wWow,`${mondayStr.slice(5)} ~ ${sundayStr.slice(5)}`,'#4285f4');
-  setKPI('kpiMonth',mS,mT,mY,mMom,null,'#34a853');
-  setKPI('kpiQtr',qS2,qT,qY,qQoq,null,'#fbbc04');
+  setKPI('kpiWeek',wS,wT,null,null,wWow,'WoW',`${mondayStr.slice(5)} ~ ${sundayStr.slice(5)}`,'#4285f4');
+  setKPI('kpiMonth',mS,mT,mY,'YoY',mMom,'MoM',null,'#34a853');
+  setKPI('kpiQtr',qS2,qT,qY,'YoY',qQoq,'QoQ',null,'#fbbc04');
 }
 
 function renderTrendChart(data){
