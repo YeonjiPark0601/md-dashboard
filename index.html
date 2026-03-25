@@ -259,6 +259,12 @@ tr:hover { background: #f7f9fc; }
         <div style="overflow-x:auto;"><table id="pt10SummaryTable"><thead><tr id="pt10SummaryHead"></tr></thead><tbody id="pt10SummaryBody"></tbody></table></div>
       </div>
     </div>
+    <div class="chart-row-full" id="pt10CartRow" style="display:none;">
+      <div class="table-card">
+        <h3>26년 카트리지 상세 수량 / 매출</h3>
+        <div style="overflow-x:auto;"><table id="pt10CartTable"><thead><tr id="pt10CartHead"></tr></thead><tbody id="pt10CartBody"></tbody></table></div>
+      </div>
+    </div>
     <!-- 턴키 전용: 월별 매출총이익률 테이블 -->
     <div id="sec-profitMargin"></div>
     <div class="chart-row-full" id="profitMarginRow" style="display:none;">
@@ -462,7 +468,8 @@ function render(){
   document.getElementById('monthlyRow').style.display=isPT10?'none':'';
   document.getElementById('pt10SummaryRow').style.display=isPT10?'':'none';
   document.getElementById('navPT10Summary').style.display=isPT10?'':'none';
-  if(isPT10)renderPT10Summary();
+  document.getElementById('pt10CartRow').style.display=isPT10?'':'none';
+  if(isPT10){renderPT10Summary();renderPT10Cart()}
   document.getElementById('turnkeyKpiRow').style.display=isTurnkey?'grid':'none';
   document.getElementById('profitMarginRow').style.display=isTurnkey?'':'none';
   document.getElementById('navProfitMargin').style.display=isTurnkey?'':'none';
@@ -796,12 +803,45 @@ function renderPT10Summary(){
     {label:'기타 매출',fn:m=>sumByFilter(m,'기타','매출금액')}
   ];
   const metrics=allMetrics.filter(mt=>{const total=allMonths.reduce((s,m)=>s+mt.fn(m),0);return total>0});
-  document.getElementById('pt10SummaryHead').innerHTML='<th>항목</th>'+allMonths.map(m=>`<th class="text-right">${m}월</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
-  document.getElementById('pt10SummaryBody').innerHTML=metrics.map(mt=>{
-    const vals=allMonths.map(m=>mt.fn(m));
-    const total=vals.reduce((s,v)=>s+v,0);
-    return`<tr><td style="font-weight:600;">${mt.label}</td>`+vals.map(v=>`<td class="text-right">${v?v.toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${total.toLocaleString()}</td></tr>`;
-  }).join('');
+  document.getElementById('pt10SummaryHead').innerHTML='<th></th><th>항목</th>'+allMonths.map(m=>`<th class="text-right">${m}월</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
+  const groups=[
+    {group:'전체',rows:metrics.filter(m=>m.label==='전체 매출')},
+    {group:'본체',rows:metrics.filter(m=>m.label.startsWith('본체'))},
+    {group:'카트리지',rows:metrics.filter(m=>m.label.startsWith('카트리지'))},
+    {group:'기타',rows:metrics.filter(m=>!['전체 매출'].includes(m.label)&&!m.label.startsWith('본체')&&!m.label.startsWith('카트리지'))}
+  ].filter(g=>g.rows.length>0);
+  let html='';
+  groups.forEach(g=>{
+    g.rows.forEach((mt,i)=>{
+      const vals=allMonths.map(m=>mt.fn(m));const total=vals.reduce((s,v)=>s+v,0);
+      const subLabel=mt.label.replace(g.group+' ','').replace(g.group,'');
+      html+=`<tr>${i===0?`<td rowspan="${g.rows.length}" style="font-weight:700;vertical-align:middle;background:#f7f8fa;border-right:2px solid #e0e0e0;">${g.group}</td>`:''}<td>${subLabel||'매출'}</td>`+vals.map(v=>`<td class="text-right">${v?Math.round(v).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(total).toLocaleString()}</td></tr>`;
+    });
+  });
+  document.getElementById('pt10SummaryBody').innerHTML=html;
+}
+
+function renderPT10Cart(){
+  const allMonths=['01','02','03','04','05','06','07','08','09','10','11','12'];
+  const d26=pt10Data.filter(r=>r['연월']&&r['연월'].startsWith('2026')&&r['구분']==='카트리지');
+  const details=[...new Set(d26.map(r=>r['상세']).filter(Boolean))].sort();
+  const rows=[];
+  details.forEach(det=>{
+    const qtyRow={label:det+' 수량'};const salesRow={label:det+' 매출'};
+    let qtyTotal=0,salesTotal=0;
+    allMonths.forEach(m=>{
+      let q=0,s=0;
+      d26.forEach(r=>{if(r['연월']==='2026-'+m&&r['상세']===det){q+=r['수량']||0;s+=r['매출금액']||0}});
+      qtyRow[m]=q;salesRow[m]=s;qtyTotal+=q;salesTotal+=s;
+    });
+    qtyRow.total=qtyTotal;salesRow.total=salesTotal;
+    if(qtyTotal>0)rows.push(qtyRow);
+    if(salesTotal>0)rows.push(salesRow);
+  });
+  document.getElementById('pt10CartHead').innerHTML='<th>항목</th>'+allMonths.map(m=>`<th class="text-right">${m}월</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
+  document.getElementById('pt10CartBody').innerHTML=rows.map(r=>
+    `<tr><td style="font-weight:600;">${r.label}</td>`+allMonths.map(m=>`<td class="text-right">${r[m]?Math.round(r[m]).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(r.total).toLocaleString()}</td></tr>`
+  ).join('');
 }
 
 function renderProfitMargin(){
