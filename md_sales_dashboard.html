@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MD 매출 대시보드</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'Segoe UI', -apple-system, sans-serif; background: #f0f2f5; color: #333; }
@@ -169,7 +170,6 @@ tr:hover { background: #f7f9fc; }
         <h3 style="display:flex;justify-content:space-between;align-items:center;">
           공급처별 매출 (클릭하여 필터)
           <div style="display:flex;gap:8px;align-items:center;">
-            <span id="supplierChartLabel" style="font-size:12px;font-weight:400;color:#1a73e8;"></span>
             <button onclick="clearSupplierSelection()" style="font-size:11px;padding:3px 8px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;color:#888;">초기화</button>
           </div>
         </h3>
@@ -374,7 +374,6 @@ function toggleSupplierPicker() {
 function onSupplierCheck() {
   selectedSuppliers = [...document.querySelectorAll('.sup-cb:checked')].map(cb => cb.value);
   updateSupplierSummary();
-  updateSupplierChartLabel();
   renderTable(getFilteredData());
 }
 
@@ -382,16 +381,7 @@ function clearSupplierSelection() {
   document.querySelectorAll('.sup-cb').forEach(cb => cb.checked = false);
   selectedSuppliers = [];
   document.getElementById('supplierSummary').style.display = 'none';
-  document.getElementById('supplierChartLabel').textContent = '';
   renderTable(getFilteredData());
-}
-
-function updateSupplierChartLabel() {
-  const label = document.getElementById('supplierChartLabel');
-  if (selectedSuppliers.length === 0) { label.textContent = ''; return; }
-  const data = getFilteredData().filter(d => selectedSuppliers.includes(d['공급업체']));
-  const total = data.reduce((s, d) => s + d['매출금액'], 0);
-  label.textContent = `선택 ${selectedSuppliers.length}개 | 합계: ${total.toLocaleString()}원`;
 }
 
 function updateSupplierSummary() {
@@ -742,10 +732,22 @@ function renderSupplierChart(data) {
     data.filter(d => d['공급업체'] === sup).forEach(d => {
       monthData[d['연월']] = (monthData[d['연월']] || 0) + d['매출금액'];
     });
+    const isLast = i === suppliers.length - 1;
     return {
       label: sup,
       data: months.map(m => monthData[m] || 0),
       backgroundColor: SUPPLIER_COLORS[i % SUPPLIER_COLORS.length],
+      datalabels: {
+        display: isLast,
+        anchor: 'end',
+        align: 'end',
+        font: { size: 11, weight: 'bold' },
+        color: '#333',
+        formatter: (value, ctx) => {
+          const total = ctx.chart.data.datasets.reduce((s, ds) => s + (ds.data[ctx.dataIndex] || 0), 0);
+          return fmt(total);
+        }
+      }
     };
   });
 
@@ -753,11 +755,13 @@ function renderSupplierChart(data) {
   supplierChart = new Chart(document.getElementById('supplierChart'), {
     type: 'bar',
     data: { labels: months.map(m => m.substring(2)), datasets },
+    plugins: [ChartDataLabels],
     options: {
       responsive: true,
       plugins: {
         legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 12 } },
-        tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + fmt(ctx.raw) } }
+        tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + fmt(ctx.raw) } },
+        datalabels: {}
       },
       scales: {
         x: { stacked: true },
