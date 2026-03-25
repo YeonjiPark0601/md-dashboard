@@ -119,10 +119,9 @@ tr:hover { background: #f7f9fc; }
   <div id="dashboardContent" style="display:none;">
     <div id="sec-kpi" class="kpi-row">
       <div class="kpi-card">
-        <div class="label">이번 주 매출 (월~일)</div>
+        <div class="label" style="display:flex;justify-content:space-between;">이번 주 매출 (월~일)<span id="kpiWeekDates" style="font-weight:400;color:#aaa;"></span></div>
         <div class="main-row"><div class="value" id="kpiWeekSales">-</div><div class="rate" id="kpiWeekRate">-</div></div>
         <div class="sub-row"><span id="kpiWeekTarget">목표: -</span><span id="kpiWeekYoy"></span></div>
-        <div class="sub-row"><span id="kpiWeekDates" style="color:#aaa;"></span></div>
         <div class="progress-bar"><div class="progress-fill" id="kpiWeekBar" style="width:0;background:#4285f4;"></div></div>
       </div>
       <div class="kpi-card">
