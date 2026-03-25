@@ -221,10 +221,9 @@ tr:hover { background: #f7f9fc; }
               <th onclick="sortTable(0)" style="cursor:pointer;">공급업체</th>
               <th onclick="sortTable(1)" class="text-right">매출금액</th>
               <th onclick="sortTable(2)" class="text-right">공급가</th>
-              <th onclick="sortTable(3)" class="text-right">매출이익률</th>
-              <th onclick="sortTable(4)" class="text-right">건수</th>
-              <th onclick="sortTable(5)" class="text-right">수량</th>
-              <th onclick="sortTable(6)" class="text-right">마진율</th>
+              <th onclick="sortTable(3)" class="text-right">건수</th>
+              <th onclick="sortTable(4)" class="text-right">수량</th>
+              <th onclick="sortTable(5)" class="text-right">마진율</th>
             </tr>
           </thead>
           <tbody id="supplierBody"></tbody>
@@ -700,11 +699,10 @@ function renderTable(data) {
   let rows = Object.values(groups).sort((a, b) => b.매출금액 - a.매출금액);
 
   if (sortCol >= 0) {
-    const keys = ['공급업체', '매출금액', '공급가', 'profit', '건수', '수량', 'margin'];
+    const keys = ['공급업체', '매출금액', '공급가', '건수', '수량', 'margin'];
     rows.sort((a, b) => {
       let va, vb;
-      if (sortCol === 3) { va = a.매출금액 - a.공급가; vb = b.매출금액 - b.공급가; }
-      else if (sortCol === 6) { va = a.매출금액 ? (a.매출금액 - a.공급가) / a.매출금액 : 0; vb = b.매출금액 ? (b.매출금액 - b.공급가) / b.매출금액 : 0; }
+      if (sortCol === 5) { va = a.매출금액 ? (a.매출금액 - a.공급가) / a.매출금액 : 0; vb = b.매출금액 ? (b.매출금액 - b.공급가) / b.매출금액 : 0; }
       else { va = a[keys[sortCol]]; vb = b[keys[sortCol]]; }
       if (typeof va === 'string') return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
       return sortAsc ? va - vb : vb - va;
@@ -716,15 +714,11 @@ function renderTable(data) {
   }
 
   document.getElementById('supplierBody').innerHTML = rows.map(r => {
-    const profit = r.매출금액 - r.공급가;
-    const profitRate = r.매출금액 ? (profit / r.매출금액 * 100).toFixed(1) : '-';
-    const margin = r.매출금액 ? (profit / r.매출금액 * 100).toFixed(1) : '-';
-    const style = '';
-    return `<tr style="${style}">
+    const margin = r.매출금액 ? ((r.매출금액 - r.공급가) / r.매출금액 * 100).toFixed(1) : '-';
+    return `<tr>
       <td><a href="#" onclick="showDetail('${r.공급업체.replace(/'/g,"\\'")}');return false;" style="color:#1a73e8;text-decoration:underline;cursor:pointer;">${r.공급업체}</a></td>
       <td class="text-right">${r.매출금액.toLocaleString()}</td>
       <td class="text-right">${r.공급가.toLocaleString()}</td>
-      <td class="text-right">${profitRate}%</td>
       <td class="text-right">${r.건수.toLocaleString()}</td>
       <td class="text-right">${r.수량.toLocaleString()}</td>
       <td class="text-right">${margin}%</td>
