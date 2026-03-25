@@ -26,7 +26,7 @@ body { font-family: 'Segoe UI', -apple-system, sans-serif; background: #f0f2f5; 
 .active-filter.show { display: inline-flex; }
 .active-filter:hover { background: #d2e3fc; }
 .container { max-width: 1400px; margin: 0 auto; padding: 20px; padding-left: 170px; }
-.side-nav { position: fixed; left: 0; top: 140px; width: 150px; background: #fff; border-right: 1px solid #e0e0e0; padding: 12px 0; z-index: 90; box-shadow: 1px 0 3px rgba(0,0,0,0.05); border-radius: 0 8px 8px 0; }
+.side-nav { position: fixed; left: 0; top: 180px; width: 150px; background: #fff; border-right: 1px solid #e0e0e0; padding: 12px 0; z-index: 90; box-shadow: 1px 0 3px rgba(0,0,0,0.05); border-radius: 0 8px 8px 0; }
 .side-nav a { display: block; padding: 8px 16px; font-size: 12px; color: #555; text-decoration: none; border-left: 3px solid transparent; transition: all 0.15s; }
 .side-nav a:hover { background: #f0f2f5; color: #1a73e8; }
 .side-nav a.active { border-left-color: #1a73e8; color: #1a73e8; font-weight: 600; background: #eef3ff; }
@@ -106,10 +106,12 @@ tr:hover { background: #f7f9fc; }
 <nav class="side-nav" id="sideNav">
   <a href="#sec-kpi" onclick="scrollTo2('sec-kpi')">KPI</a>
   <a href="#sec-trend" onclick="scrollTo2('sec-trend')">매출 트렌드</a>
-  <a href="#sec-charts" onclick="scrollTo2('sec-charts')">차트</a>
-  <a href="#sec-supplier-chart" onclick="scrollTo2('sec-supplier-chart')">공급처별 매출</a>
+  <a href="#sec-charts" onclick="scrollTo2('sec-charts')" id="navCharts">차트</a>
+  <a href="#sec-supplier-chart" onclick="scrollTo2('sec-supplier-chart')" id="navSupplier">공급처별 매출</a>
   <a href="#sec-monthly" onclick="scrollTo2('sec-monthly')">월별 매출</a>
   <a href="#sec-detail" onclick="scrollTo2('sec-detail')">매출 상세</a>
+  <a href="#sec-pu" onclick="scrollTo2('sec-pu')" id="navPU" style="display:none;">PU 분석</a>
+  <a href="#sec-rebuy" onclick="scrollTo2('sec-rebuy')" id="navRebuy" style="display:none;">재구매 분석</a>
 </nav>
 
 <div class="container">
@@ -119,7 +121,8 @@ tr:hover { background: #f7f9fc; }
       <div class="kpi-card">
         <div class="label">이번 주 매출 (월~일)</div>
         <div class="main-row"><div class="value" id="kpiWeekSales">-</div><div class="rate" id="kpiWeekRate">-</div></div>
-        <div class="sub-row"><span id="kpiWeekTarget">목표: -</span><span id="kpiWeekDates"></span></div>
+        <div class="sub-row"><span id="kpiWeekTarget">목표: -</span><span id="kpiWeekYoy"></span></div>
+        <div class="sub-row"><span id="kpiWeekDates" style="color:#aaa;"></span></div>
         <div class="progress-bar"><div class="progress-fill" id="kpiWeekBar" style="width:0;background:#4285f4;"></div></div>
       </div>
       <div class="kpi-card">
@@ -156,7 +159,7 @@ tr:hover { background: #f7f9fc; }
           <span id="supplierChartTitle">공급처별 매출</span>
           <button onclick="clearSupplierSelection()" style="font-size:11px;padding:3px 8px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;color:#888;">초기화</button>
         </h3>
-        <canvas id="supplierChart" height="70"></canvas>
+        <canvas id="supplierChart" height="90"></canvas>
       </div>
     </div>
     <div id="sec-monthly"></div>
@@ -200,6 +203,27 @@ tr:hover { background: #f7f9fc; }
         </div>
       </div>
     </div>
+    <!-- 클래스 전용: PU + 재구매 -->
+    <div id="sec-pu"></div>
+    <div class="chart-row" id="puRow" style="display:none;">
+      <div class="table-card">
+        <h3>월별 PU (온라인) — 상품별</h3>
+        <div style="overflow-x:auto;"><table id="puOnTable"><thead><tr id="puOnHead"></tr></thead><tbody id="puOnBody"></tbody></table></div>
+        <div id="puOnToggle" onclick="puOnExpanded=!puOnExpanded;renderPU()" style="display:none;text-align:center;padding:10px;color:#1a73e8;cursor:pointer;font-size:13px;font-weight:600;border-top:1px solid #f0f0f0;margin-top:4px;"></div>
+      </div>
+      <div class="table-card">
+        <h3>월별 PU (오프라인) — 상품별</h3>
+        <div style="overflow-x:auto;"><table id="puOffTable"><thead><tr id="puOffHead"></tr></thead><tbody id="puOffBody"></tbody></table></div>
+        <div id="puOffToggle" onclick="puOffExpanded=!puOffExpanded;renderPU()" style="display:none;text-align:center;padding:10px;color:#1a73e8;cursor:pointer;font-size:13px;font-weight:600;border-top:1px solid #f0f0f0;margin-top:4px;"></div>
+      </div>
+    </div>
+    <div id="sec-rebuy"></div>
+    <div class="chart-row-full" id="rebuyRow" style="display:none;">
+      <div class="table-card">
+        <h3>클래스 월간 재구매 / 이탈 / 신규구매</h3>
+        <div style="overflow-x:auto;"><table id="rebuyTable"><thead><tr id="rebuyHead"></tr></thead><tbody id="rebuyBody"></tbody></table></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -209,8 +233,9 @@ const TARGET_SHEET_ID = '1Z8C_uiDHD6udIq7b9C79xlPxz4ERK5aC-vkoIbvTxic';
 const TARGET_URL = `https://docs.google.com/spreadsheets/d/${TARGET_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('26년 품목별 목표')}&_t=${Date.now()}`;
 
 let currentTab = '의료기기';
-let allData = [], classData = [], targetData = {};
+let allData = [], classData = [], puOnData = [], puOffData = [], rebuyData = [], targetData = {};
 let drillCategory = null, selectedSuppliers = [], sortCol = -1, sortAsc = true;
+let puOnExpanded = false, puOffExpanded = false;
 let trendChart, trendChart2, typeChart, typeChart2, categoryChart, categoryPieChart, supplierChart;
 
 const MD_CATEGORIES = ['비내시경','네오펙트','팀엘리시움','메디코아','DSE','PT10','옴니핏','그 외'];
@@ -238,10 +263,18 @@ function getData(){return currentTab==='클래스'?classData:allData}
 async function fetchData(){
   try{
     const sheetUrl=n=>`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(n)}&headers=1&_t=${Date.now()}`;
-    const [salesR,classR,targetR]=await Promise.all([fetch(sheetUrl('시트1')),fetch(sheetUrl('클래스')),fetch(TARGET_URL)]);
+    const [salesR,classR,targetR,puOnR,puOffR,rebuyR]=await Promise.all([
+      fetch(sheetUrl('시트1')),fetch(sheetUrl('클래스')),fetch(TARGET_URL),
+      fetch(sheetUrl('PU온라인')),fetch(sheetUrl('PU오프라인')),fetch(sheetUrl('재구매분석'))
+    ]);
     if(!salesR.ok)throw new Error('매출 데이터 로딩 실패');
     allData=parseCSV(await salesR.text()).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['공급가']=parseNum(r['공급가']);r['수량']=parseNum(r['수량']);return r});
     if(classR.ok){const ct=await classR.text();if(ct.trim()){classData=parseCSV(ct).map(r=>{r['매출금액']=parseNum(r['매출금액']);return r})}}
+    if(puOnR.ok){const t=await puOnR.text();if(t.trim())puOnData=parseCSV(t).map(r=>{r['PU']=parseNum(r['PU']);return r})}
+    if(puOffR.ok){const t=await puOffR.text();if(t.trim())puOffData=parseCSV(t).map(r=>{r['PU']=parseNum(r['PU']);return r})}
+    if(rebuyR.ok){const t=await rebuyR.text();if(t.trim())rebuyData=parseCSV(t).map(r=>{
+      ['총구매자수','이탈고객수','재구매자수','신규구매자수'].forEach(k=>{r[k]=parseNum(r[k])});
+      ['이탈율','재구매율','신규구매비율'].forEach(k=>{r[k]=parseFloat(r[k])||0});return r})}
     if(targetR.ok){const tr=parseCSV(await targetR.text());const mc=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];tr.forEach(r=>{const c=r['품목']||'';if(!c)return;targetData[c]={};mc.forEach((m,i)=>{targetData[c][i+1]=parseNum(r[m])})})}
     initFilters();render();
     document.getElementById('loadingMsg').style.display='none';
@@ -364,6 +397,14 @@ function render(){
   renderKPIs();renderTrendChart(data);renderTypeChart(data);
   if(!isClass){renderCategoryChart(data);renderCategoryPieChart(data);renderSupplierChart(data);}
   renderTable(data);renderMonthlyTable(data);
+  // 클래스 전용: PU + 재구매
+  document.getElementById('puRow').style.display=isClass?'':'none';
+  document.getElementById('rebuyRow').style.display=isClass?'':'none';
+  document.getElementById('navPU').style.display=isClass?'':'none';
+  document.getElementById('navRebuy').style.display=isClass?'':'none';
+  document.getElementById('navCharts').style.display=isClass?'none':'';
+  document.getElementById('navSupplier').style.display=isClass?'none':'';
+  if(isClass){renderPU();renderRebuy()}
 }
 
 function renderKPIs(){
@@ -607,6 +648,47 @@ function clearDrill(){drillCategory=null;document.getElementById('drillFilter').
 const hashTab=decodeURIComponent(location.hash.slice(1));
 const validTabs=['의료기기','클래스'];
 if(validTabs.includes(hashTab)){currentTab=hashTab;document.querySelectorAll('.tab[data-tab]').forEach(t=>{t.classList.toggle('active',t.dataset.tab===hashTab)})}
+function renderPU(){
+  const LIMIT=20;
+  // PU Online
+  const onMonths=[...new Set(puOnData.map(d=>d['연월']).filter(Boolean))].sort();
+  const onProds={};puOnData.forEach(d=>{const p=d['상품명'];if(!p)return;if(!onProds[p])onProds[p]={total:0};onProds[p][d['연월']]=(onProds[p][d['연월']]||0)+d['PU'];onProds[p].total+=d['PU']});
+  const onSorted=Object.entries(onProds).sort((a,b)=>b[1].total-a[1].total);
+  const onVisible=(!puOnExpanded&&onSorted.length>LIMIT)?onSorted.slice(0,LIMIT):onSorted;
+  // Monthly totals
+  const onTotals={};puOnData.forEach(d=>{onTotals[d['연월']]=(onTotals[d['연월']]||0)+d['PU']});
+  const onGrandTotal=Object.values(onTotals).reduce((s,v)=>s+v,0);
+
+  document.getElementById('puOnHead').innerHTML='<th>상품명</th>'+onMonths.map(m=>`<th class="text-right">${m.slice(2)}</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
+  document.getElementById('puOnBody').innerHTML=
+    onVisible.map(([p,v])=>`<tr><td>${p}</td>`+onMonths.map(m=>`<td class="text-right">${(v[m]||0)?v[m].toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${v.total.toLocaleString()}</td></tr>`).join('')+
+    `<tr style="font-weight:700;background:#f0f2f5;"><td>합계</td>`+onMonths.map(m=>`<td class="text-right">${(onTotals[m]||0).toLocaleString()}</td>`).join('')+`<td class="text-right">${onGrandTotal.toLocaleString()}</td></tr>`;
+  const onToggle=document.getElementById('puOnToggle');
+  if(onSorted.length>LIMIT){onToggle.style.display='block';onToggle.textContent=puOnExpanded?'접기 ▲':`더보기 (${onSorted.length-LIMIT}개) ▼`}else{onToggle.style.display='none'}
+
+  // PU Offline
+  const offMonths=[...new Set(puOffData.map(d=>d['연월']).filter(Boolean))].sort();
+  const offProds={};puOffData.forEach(d=>{const p=d['상품명'];if(!p)return;if(!offProds[p])offProds[p]={total:0};offProds[p][d['연월']]=(offProds[p][d['연월']]||0)+d['PU'];offProds[p].total+=d['PU']});
+  const offSorted=Object.entries(offProds).sort((a,b)=>b[1].total-a[1].total);
+  const offVisible=(!puOffExpanded&&offSorted.length>LIMIT)?offSorted.slice(0,LIMIT):offSorted;
+  const offTotals={};puOffData.forEach(d=>{offTotals[d['연월']]=(offTotals[d['연월']]||0)+d['PU']});
+  const offGrandTotal=Object.values(offTotals).reduce((s,v)=>s+v,0);
+
+  document.getElementById('puOffHead').innerHTML='<th>상품명</th>'+offMonths.map(m=>`<th class="text-right">${m.slice(2)}</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
+  document.getElementById('puOffBody').innerHTML=
+    offVisible.map(([p,v])=>`<tr><td>${p}</td>`+offMonths.map(m=>`<td class="text-right">${(v[m]||0)?v[m].toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${v.total.toLocaleString()}</td></tr>`).join('')+
+    `<tr style="font-weight:700;background:#f0f2f5;"><td>합계</td>`+offMonths.map(m=>`<td class="text-right">${(offTotals[m]||0).toLocaleString()}</td>`).join('')+`<td class="text-right">${offGrandTotal.toLocaleString()}</td></tr>`;
+  const offToggle=document.getElementById('puOffToggle');
+  if(offSorted.length>LIMIT){offToggle.style.display='block';offToggle.textContent=puOffExpanded?'접기 ▲':`더보기 (${offSorted.length-LIMIT}개) ▼`}else{offToggle.style.display='none'}
+}
+
+function renderRebuy(){
+  const sorted=[...rebuyData].sort((a,b)=>(a['연월']||'').localeCompare(b['연월']||''));
+  document.getElementById('rebuyHead').innerHTML='<th>연월</th><th class="text-right">총 구매자</th><th class="text-right">이탈 고객</th><th class="text-right">재구매</th><th class="text-right">신규 구매</th><th class="text-right">이탈율</th><th class="text-right">재구매율</th><th class="text-right">신규 구매 비율</th>';
+  document.getElementById('rebuyBody').innerHTML=sorted.map(r=>{
+    return`<tr><td>${r['연월']||''}</td><td class="text-right">${r['총구매자수'].toLocaleString()}</td><td class="text-right">${r['이탈고객수'].toLocaleString()}</td><td class="text-right">${r['재구매자수'].toLocaleString()}</td><td class="text-right">${r['신규구매자수'].toLocaleString()}</td><td class="text-right">${(r['이탈율']*100).toFixed(1)}%</td><td class="text-right">${(r['재구매율']*100).toFixed(1)}%</td><td class="text-right">${(r['신규구매비율']*100).toFixed(1)}%</td></tr>`}).join('');
+}
+
 function scrollTo2(id){
   const el=document.getElementById(id);
   if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
