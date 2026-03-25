@@ -797,10 +797,11 @@ function renderPT10Summary(){
     {label:'본체 매출',fn:m=>sumByFilter(m,'본체','매출금액')},
     {label:'카트리지 수량',fn:m=>sumByFilter(m,'카트리지','수량')},
     {label:'카트리지 매출',fn:m=>sumByFilter(m,'카트리지','매출금액')},
-    {label:'캐필러리 튜브 매출',fn:m=>sumByFilter(m,'캐필러리 튜브','매출금액')},
-    {label:'플런져 매출',fn:m=>sumByFilter(m,'플런져','매출금액')},
-    {label:'AS 매출',fn:m=>sumByFilter(m,'AS','매출금액')},
-    {label:'기타 매출',fn:m=>sumByFilter(m,'기타','매출금액')}
+    {label:'기타 카트리지+튜브 매출',fn:m=>sumByFilter(m,'카트리지','매출금액')+sumByFilter(m,'캐필러리 튜브','매출금액')},
+    {label:'기타 캐필러리 튜브 매출',fn:m=>sumByFilter(m,'캐필러리 튜브','매출금액')},
+    {label:'기타 플런져 매출',fn:m=>sumByFilter(m,'플런져','매출금액')},
+    {label:'기타 AS 매출',fn:m=>sumByFilter(m,'AS','매출금액')},
+    {label:'기타 기타 매출',fn:m=>sumByFilter(m,'기타','매출금액')}
   ];
   const metrics=allMetrics.filter(mt=>{const total=allMonths.reduce((s,m)=>s+mt.fn(m),0);return total>0});
   document.getElementById('pt10SummaryHead').innerHTML='<th></th><th>항목</th>'+allMonths.map(m=>`<th class="text-right">${m}월</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
