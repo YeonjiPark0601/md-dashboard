@@ -204,7 +204,7 @@ tr:hover { background: #f7f9fc; }
     </div>
     <!-- 클래스 전용: PU + 재구매 -->
     <div id="sec-pu"></div>
-    <div id="puRow" style="display:none;display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+    <div id="puRow" style="display:none;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
       <div class="table-card">
         <h3>월별 PU (온라인) — 상품별</h3>
         <div style="overflow-x:auto;"><table id="puOnTable"><thead><tr id="puOnHead"></tr></thead><tbody id="puOnBody"></tbody></table></div>
@@ -398,7 +398,7 @@ function render(){
   if(!isClass){renderCategoryChart(data);renderCategoryPieChart(data);renderSupplierChart(data);}
   renderTable(data);renderMonthlyTable(data);
   // 클래스 전용: PU + 재구매
-  document.getElementById('puRow').style.display=isClass?'':'none';
+  document.getElementById('puRow').style.display=isClass?'grid':'none';
   document.getElementById('rebuyRow').style.display=isClass?'':'none';
   document.getElementById('navPU').style.display=isClass?'':'none';
   document.getElementById('navRebuy').style.display=isClass?'':'none';
