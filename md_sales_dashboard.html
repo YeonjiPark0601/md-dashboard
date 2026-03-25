@@ -120,11 +120,15 @@ tr:hover { background: #f7f9fc; }
         <div class="progress-bar"><div class="progress-fill" id="kpiQtrBar" style="width:0;background:#fbbc04;"></div></div>
       </div>
     </div>
-    <div id="trendAndTypeRow" class="chart-row">
-      <div class="chart-card"><h3>월별 매출 트렌드 (YoY) — 25년 1월~현재</h3><canvas id="trendChart" height="80"></canvas></div>
-      <div class="chart-card" id="typeChartCard"><h3 id="typeChartTitle">구분별 매출 비중</h3><canvas id="typeChart" height="200"></canvas></div>
+    <div id="trendRow" class="chart-row-full">
+      <div class="chart-card"><h3>월별 매출 트렌드 (YoY) — 25년 1월~현재</h3><canvas id="trendChart" height="50"></canvas></div>
+    </div>
+    <div id="classTrendRow" class="chart-row" style="display:none;">
+      <div class="chart-card"><h3>월별 매출 트렌드 (YoY) — 25년 1월~현재</h3><canvas id="trendChart2" height="80"></canvas></div>
+      <div class="chart-card"><h3 id="typeChartTitle2">온/오프라인 비중</h3><canvas id="typeChart2" height="200"></canvas></div>
     </div>
     <div class="chart-row-3" id="chartRow3">
+      <div class="chart-card" id="typeChartCard"><h3 id="typeChartTitle">구분별 매출 비중</h3><canvas id="typeChart" height="200"></canvas></div>
       <div class="chart-card" id="categoryChartCard"><h3>카테고리별 매출 (클릭하여 필터)</h3><canvas id="categoryChart" height="200"></canvas></div>
       <div class="chart-card" id="categoryPieCard"><h3>카테고리별 매출 비중</h3><canvas id="categoryPieChart" height="200"></canvas></div>
     </div>
@@ -187,7 +191,7 @@ const TARGET_URL = `https://docs.google.com/spreadsheets/d/${TARGET_SHEET_ID}/gv
 let currentTab = '의료기기';
 let allData = [], classData = [], targetData = {};
 let drillCategory = null, selectedSuppliers = [], sortCol = -1, sortAsc = true;
-let trendChart, typeChart, categoryChart, categoryPieChart, supplierChart;
+let trendChart, trendChart2, typeChart, typeChart2, categoryChart, categoryPieChart, supplierChart;
 
 const MD_CATEGORIES = ['비내시경','네오펙트','팀엘리시움','메디코아','DSE','PT10','옴니핏','그 외'];
 const CLASS_CATEGORIES = ['강의-온라인','강의-오프라인'];
@@ -323,11 +327,16 @@ function updateSupplierSummary(){
 
 function render(){
   const data=getFilteredData();const isClass=currentTab==='클래스';
-  // 클래스: 카테고리별 바/도넛, 상품별 매출 차트 숨김, 3열→숨김
-  document.getElementById('categoryChartCard').style.display=isClass?'none':'';
-  document.getElementById('categoryPieCard').style.display=isClass?'none':'';
   document.getElementById('supplierChartRow').style.display=isClass?'none':'';
-  document.getElementById('chartRow3').style.display=isClass?'none':'grid';
+  if(isClass){
+    document.getElementById('trendRow').style.display='none';
+    document.getElementById('classTrendRow').style.display='';
+    document.getElementById('chartRow3').style.display='none';
+  }else{
+    document.getElementById('trendRow').style.display='';
+    document.getElementById('classTrendRow').style.display='none';
+    document.getElementById('chartRow3').style.display='grid';
+  }
   renderKPIs();renderTrendChart(data);renderTypeChart(data);
   if(!isClass){renderCategoryChart(data);renderCategoryPieChart(data);renderSupplierChart(data);}
   renderTable(data);renderMonthlyTable(data);
@@ -383,24 +392,32 @@ function renderTrendChart(data){
     const ym=d['연월'];if(!ym)return;if(months.includes(ym))tY[ym]=(tY[ym]||0)+d['매출금액'];
     const sh=yearShift(ym,1);if(months.includes(sh))pY[sh]=(pY[sh]||0)+d['매출금액']});
   const yL=months.map(m=>{const c=tY[m]||0,p=pY[m]||0;if(!p)return'';const pc=((c-p)/p*100).toFixed(0);return(pc>0?'+':'')+pc+'%'});
-  if(trendChart)trendChart.destroy();
-  trendChart=new Chart(document.getElementById('trendChart'),{type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets:[
+  const cfg={type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets:[
     {label:'올해',data:months.map(m=>tY[m]||0),backgroundColor:'#4285f4',borderRadius:4,order:1},
     {label:'전년',data:months.map(m=>pY[m]||0),backgroundColor:'#e0e0e0',borderRadius:4,order:2}
   ]},options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top'},
     tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+fmt(ctx.raw),afterBody:items=>{const i=items[0].dataIndex;return yL[i]?'YoY: '+yL[i]:''}}}},
-    scales:{y:{ticks:{callback:v=>fmt(v)}}},onClick:(e,el)=>{if(el.length>0){const ym=months[el[0].index];document.getElementById('startMonth').value=ym;document.getElementById('endMonth').value=ym;render()}}}});
+    scales:{y:{ticks:{callback:v=>fmt(v)}}},onClick:(e,el)=>{if(el.length>0){const ym=months[el[0].index];document.getElementById('startMonth').value=ym;document.getElementById('endMonth').value=ym;render()}}}};
+  const isClass=currentTab==='클래스';
+  if(isClass){if(trendChart2)trendChart2.destroy();trendChart2=new Chart(document.getElementById('trendChart2'),cfg)}
+  else{if(trendChart)trendChart.destroy();trendChart=new Chart(document.getElementById('trendChart'),cfg)}
 }
 
 function renderTypeChart(data){
-  const key=currentTab==='클래스'?'카테고리':'구분';
-  document.getElementById('typeChartTitle').textContent=currentTab==='클래스'?'온/오프라인 비중':'구분별 매출 비중';
+  const isClass=currentTab==='클래스';
+  const key=isClass?'카테고리':'구분';
   const types={};data.forEach(d=>{types[d[key]]=(types[d[key]]||0)+d['매출금액']});
   const labels=Object.keys(types),values=Object.values(types);
-  if(typeChart)typeChart.destroy();
-  typeChart=new Chart(document.getElementById('typeChart'),{type:'doughnut',data:{labels,datasets:[{data:values,backgroundColor:COLORS.slice(0,labels.length),borderWidth:0}]},
+  const cfg={type:'doughnut',data:{labels,datasets:[{data:values,backgroundColor:COLORS.slice(0,labels.length),borderWidth:0}]},
     options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:11}}},
-      tooltip:{callbacks:{label:ctx=>ctx.label+': '+fmt(ctx.raw)+' ('+(ctx.raw/values.reduce((a,b)=>a+b,0)*100).toFixed(1)+'%)'}}}}});
+      tooltip:{callbacks:{label:ctx=>ctx.label+': '+fmt(ctx.raw)+' ('+(ctx.raw/values.reduce((a,b)=>a+b,0)*100).toFixed(1)+'%)'}}}}};
+  if(isClass){
+    document.getElementById('typeChartTitle2').textContent='온/오프라인 비중';
+    if(typeChart2)typeChart2.destroy();typeChart2=new Chart(document.getElementById('typeChart2'),cfg);
+  }else{
+    document.getElementById('typeChartTitle').textContent='구분별 매출 비중';
+    if(typeChart)typeChart.destroy();typeChart=new Chart(document.getElementById('typeChart'),cfg);
+  }
 }
 
 function renderCategoryChart(data){
