@@ -308,7 +308,7 @@ async function fetchData(){
     allData=parseCSV(await salesR.text()).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['공급가']=parseNum(r['공급가']);r['수량']=parseNum(r['수량']);r['연월']=fixYm(r['연월']);if(r['주문일']&&r['주문일'].length>10)r['주문일']=r['주문일'].substring(0,10);return r});
     if(classR.ok){const ct=await classR.text();if(ct.trim()){classData=parseCSV(ct).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['연월']=fixYm(r['연월']);if(r['주문일']&&r['주문일'].length>10)r['주문일']=r['주문일'].substring(0,10);return r})}}
     if(turnkeyR.ok){const tt=await turnkeyR.text();if(tt.trim()){turnkeyData=parseCSV(tt).map(r=>{
-      r['매출금액']=parseNum(r['최종 결제액'])/1.1;r['공급가']=parseNum(r['총 공급가액'])/1.1;r['매출총이익']=parseNum(r['최종 매출총이익']);
+      r['매출금액']=parseNum(r['최종 결제액'])/1.1;r['공급가']=parseNum(r['총 공급가액'])/1.1;r['매출총이익']=parseNum(r['최종 매출총이익']);r['할인전금액']=parseNum(r['금액']);
       const dt=r['결제 일자']||'';r['주문일']=dt.substring(0,10);r['연월']=fixYm(dt.substring(0,7));
       r['카테고리']=r['카테고리']||'';return r})}}
     if(puOnR.ok){const t=await puOnR.text();if(t.trim())puOnData=parseCSV(t).map(r=>{r['PU']=parseNum(r['PU']);return r})}
@@ -743,12 +743,14 @@ function renderTurnkeyKPI(){
   document.getElementById('tkYearBar').style.background=yearAchieve>=100?'#0d9488':'#4285f4';
 
   // Full/Half: CID별 연누적 합계 → 3000만 이상 Full
-  const cidTotals={};
-  yearData.forEach(d=>{const cid=d['CID']||'';cidTotals[cid]=(cidTotals[cid]||0)+d['매출금액']});
+  // Full/Half: CID별 할인전 금액 합계 기준 분류, 매출은 최종결제액/1.1 기준
+  const cidClassify={},cidSales={};
+  yearData.forEach(d=>{const cid=d['CID']||'';cidClassify[cid]=(cidClassify[cid]||0)+(d['할인전금액']||0);cidSales[cid]=(cidSales[cid]||0)+d['매출금액']});
   let fullSales=0,fullCount=0,halfSales=0,halfCount=0;
-  Object.entries(cidTotals).forEach(([cid,total])=>{
-    if(total>=30000000){fullSales+=total;fullCount++}
-    else{halfSales+=total;halfCount++}
+  Object.entries(cidClassify).forEach(([cid,classifyAmt])=>{
+    const sales=cidSales[cid]||0;
+    if(classifyAmt>=30000000){fullSales+=sales;fullCount++}
+    else{halfSales+=sales;halfCount++}
   });
   const totalCount=fullCount+halfCount;
 
