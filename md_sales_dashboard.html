@@ -166,7 +166,13 @@ tr:hover { background: #f7f9fc; }
 
     <div class="chart-row-full">
       <div class="chart-card">
-        <h3>공급처별 매출 (클릭하여 필터)</h3>
+        <h3 style="display:flex;justify-content:space-between;align-items:center;">
+          공급처별 매출 (클릭하여 필터)
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span id="supplierChartLabel" style="font-size:12px;font-weight:400;color:#1a73e8;"></span>
+            <button onclick="clearSupplierSelection()" style="font-size:11px;padding:3px 8px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;color:#888;">초기화</button>
+          </div>
+        </h3>
         <canvas id="supplierChart" height="70"></canvas>
       </div>
     </div>
@@ -369,6 +375,7 @@ function toggleSupplierPicker() {
 function onSupplierCheck() {
   selectedSuppliers = [...document.querySelectorAll('.sup-cb:checked')].map(cb => cb.value);
   updateSupplierSummary();
+  updateSupplierChartLabel();
   renderTable(getFilteredData());
 }
 
@@ -376,7 +383,16 @@ function clearSupplierSelection() {
   document.querySelectorAll('.sup-cb').forEach(cb => cb.checked = false);
   selectedSuppliers = [];
   document.getElementById('supplierSummary').style.display = 'none';
+  document.getElementById('supplierChartLabel').textContent = '';
   renderTable(getFilteredData());
+}
+
+function updateSupplierChartLabel() {
+  const label = document.getElementById('supplierChartLabel');
+  if (selectedSuppliers.length === 0) { label.textContent = ''; return; }
+  const data = getFilteredData().filter(d => selectedSuppliers.includes(d['공급업체']));
+  const total = data.reduce((s, d) => s + d['매출금액'], 0);
+  label.textContent = `선택 ${selectedSuppliers.length}개 | 합계: ${total.toLocaleString()}원`;
 }
 
 function updateSupplierSummary() {
