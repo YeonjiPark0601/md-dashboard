@@ -123,40 +123,44 @@ tr:hover { background: #f7f9fc; }
         <div class="label" style="display:flex;justify-content:space-between;">이번 주 매출 (월~일)<span id="kpiWeekDates" style="font-weight:400;color:#aaa;"></span></div>
         <div class="main-row"><div class="value" id="kpiWeekSales">-</div><div class="rate" id="kpiWeekRate">-</div></div>
         <div class="sub-row"><span id="kpiWeekTarget">목표: -</span><span id="kpiWeekYoy"></span></div>
+        <div class="sub-row" id="kpiWeekCountRow" style="display:none;"><span id="kpiWeekCount"></span></div>
         <div class="progress-bar"><div class="progress-fill" id="kpiWeekBar" style="width:0;background:#4285f4;"></div></div>
       </div>
       <div class="kpi-card">
         <div class="label">이번 달 매출</div>
         <div class="main-row"><div class="value" id="kpiMonthSales">-</div><div class="rate" id="kpiMonthRate">-</div></div>
         <div class="sub-row"><span id="kpiMonthTarget">목표: -</span><span id="kpiMonthYoy"></span></div>
+        <div class="sub-row" id="kpiMonthCountRow" style="display:none;"><span id="kpiMonthCount"></span></div>
         <div class="progress-bar"><div class="progress-fill" id="kpiMonthBar" style="width:0;background:#34a853;"></div></div>
       </div>
       <div class="kpi-card">
         <div class="label">이번 분기 매출</div>
         <div class="main-row"><div class="value" id="kpiQtrSales">-</div><div class="rate" id="kpiQtrRate">-</div></div>
         <div class="sub-row"><span id="kpiQtrTarget">목표: -</span><span id="kpiQtrYoy"></span></div>
+        <div class="sub-row" id="kpiQtrCountRow" style="display:none;"><span id="kpiQtrCount"></span></div>
         <div class="progress-bar"><div class="progress-fill" id="kpiQtrBar" style="width:0;background:#fbbc04;"></div></div>
       </div>
     </div>
     <!-- 턴키 전용 KPI 2행: 건수 + Full/Half -->
-    <div id="turnkeyKpiRow" style="display:none;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;margin-bottom:20px;">
+    <div id="turnkeyKpiRow" style="display:none;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;">
       <div class="kpi-card">
-        <div class="label">이번 달 결제 건수</div>
-        <div class="main-row"><div class="value" id="tkCount">-</div></div>
-      </div>
-      <div class="kpi-card">
-        <div class="label">이번 분기 결제 건수</div>
-        <div class="main-row"><div class="value" id="tkQtrCount">-</div></div>
+        <div class="label">연누적 실적</div>
+        <div class="value" id="tkYearSales" style="font-size:22px;">-</div>
+        <div class="sub-row"><span id="tkYearCount">건수: -</span><span id="tkYearProfitRate">이익률: -</span></div>
+        <div class="sub-row"><span id="tkYearAchieve">달성률: -</span></div>
+        <div class="progress-bar"><div class="progress-fill" id="tkYearBar" style="width:0;background:#4285f4;"></div></div>
       </div>
       <div class="kpi-card">
         <div class="label">FULL (3천만↑)</div>
         <div class="value" id="tkFullSales" style="font-size:22px;">-</div>
-        <div class="sub-row"><span id="tkFullCount">건수: -</span><span id="tkFullAvg">객단가: -</span><span id="tkFullRate">비율: -</span></div>
+        <div class="sub-row"><span id="tkFullCount">건수: -</span><span id="tkFullAvg">객단가: -</span></div>
+        <div class="sub-row"><span id="tkFullRate">비율: -</span></div>
       </div>
       <div class="kpi-card">
         <div class="label">HALF (3천만↓)</div>
         <div class="value" id="tkHalfSales" style="font-size:22px;">-</div>
-        <div class="sub-row"><span id="tkHalfCount">건수: -</span><span id="tkHalfAvg">객단가: -</span><span id="tkHalfRate">비율: -</span></div>
+        <div class="sub-row"><span id="tkHalfCount">건수: -</span><span id="tkHalfAvg">객단가: -</span></div>
+        <div class="sub-row"><span id="tkHalfRate">비율: -</span></div>
       </div>
     </div>
     <div id="sec-trend"></div>
@@ -517,6 +521,18 @@ function renderKPIs(){
   setKPI('kpiWeek',wS,wT,null,null,wWow,'WoW',`${mondayStr.slice(5)} ~ ${sundayStr.slice(5)}`,'#4285f4');
   setKPI('kpiMonth',mS,mT,mY,'YoY',mMom,'MoM',null,'#34a853');
   setKPI('kpiQtr',qS2,qT,qY,'YoY',qQoq,'QoQ',null,'#fbbc04');
+
+  // 턴키: 1행에 건수 표시
+  const isTK=currentTab==='턴키';
+  ['Week','Month','Qtr'].forEach(p=>{document.getElementById('kpi'+p+'CountRow').style.display=isTK?'':'none'});
+  if(isTK){
+    const wCids=new Set(wD.map(d=>d['CID']).filter(Boolean));
+    const mCids=new Set(mD.map(d=>d['CID']).filter(Boolean));
+    const qCids=new Set(qD.map(d=>d['CID']).filter(Boolean));
+    document.getElementById('kpiWeekCount').textContent='건수: '+wCids.size.toLocaleString()+'건';
+    document.getElementById('kpiMonthCount').textContent='건수: '+mCids.size.toLocaleString()+'건';
+    document.getElementById('kpiQtrCount').textContent='건수: '+qCids.size.toLocaleString()+'건';
+  }
 }
 
 function renderTrendChart(data){
@@ -708,39 +724,41 @@ const hashTab=decodeURIComponent(location.hash.slice(1));
 const validTabs=['의료기기','클래스','턴키'];
 if(validTabs.includes(hashTab)){currentTab=hashTab;document.querySelectorAll('.tab[data-tab]').forEach(t=>{t.classList.toggle('active',t.dataset.tab===hashTab)})}
 function renderTurnkeyKPI(){
-  const today=new Date();const curMonth=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}`;
-  const curYear=today.getFullYear();const curMon=today.getMonth()+1;
-  const qS=Math.floor((curMon-1)/3)*3+1;
-  const qMs=[qS,qS+1,qS+2].map(m=>`${curYear}-${String(m).padStart(2,'0')}`);
+  const today=new Date();const curYear=today.getFullYear();
 
-  const mData=turnkeyData.filter(d=>d['연월']===curMonth);
-  const qData=turnkeyData.filter(d=>qMs.includes(d['연월']));
+  // 연누적 (올해 전체)
+  const yearData=turnkeyData.filter(d=>d['연월']&&d['연월'].startsWith(String(curYear)));
+  const yearSales=yearData.reduce((s,d)=>s+d['매출금액'],0);
+  const yearProfit=yearData.reduce((s,d)=>s+(d['매출총이익']||0),0);
+  const yearCids=new Set(yearData.map(d=>d['CID']).filter(Boolean));
+  const yearTarget=TURNKEY_ANNUAL;
+  const yearAchieve=yearTarget?(yearSales/yearTarget*100):0;
+  const yearProfitRate=yearSales?(yearProfit/yearSales*100):0;
 
-  // 이번달 결제 건수
-  const mCids=new Set(mData.map(d=>d['CID']).filter(Boolean));
-  document.getElementById('tkCount').textContent=mCids.size.toLocaleString()+'건';
+  document.getElementById('tkYearSales').textContent=fmt(yearSales);
+  document.getElementById('tkYearCount').textContent='건수: '+yearCids.size.toLocaleString()+'건';
+  document.getElementById('tkYearProfitRate').textContent='이익률: '+yearProfitRate.toFixed(1)+'%';
+  document.getElementById('tkYearAchieve').textContent='달성률: '+yearAchieve.toFixed(1)+'%';
+  document.getElementById('tkYearBar').style.width=Math.min(yearAchieve,100)+'%';
+  document.getElementById('tkYearBar').style.background=yearAchieve>=100?'#0d9488':'#4285f4';
 
-  // 이번분기 결제 건수
-  const qCids=new Set(qData.map(d=>d['CID']).filter(Boolean));
-  document.getElementById('tkQtrCount').textContent=qCids.size.toLocaleString()+'건';
-
-  // Full/Half: CID별 합계 → 3000만 이상 Full
+  // Full/Half: CID별 연누적 합계 → 3000만 이상 Full
   const cidTotals={};
-  mData.forEach(d=>{const cid=d['CID']||'';cidTotals[cid]=(cidTotals[cid]||0)+d['매출금액']});
+  yearData.forEach(d=>{const cid=d['CID']||'';cidTotals[cid]=(cidTotals[cid]||0)+d['매출금액']});
   let fullSales=0,fullCount=0,halfSales=0,halfCount=0;
   Object.entries(cidTotals).forEach(([cid,total])=>{
     if(total>=30000000){fullSales+=total;fullCount++}
     else{halfSales+=total;halfCount++}
   });
-  const totalSales=fullSales+halfSales;const totalCount=fullCount+halfCount;
+  const totalCount=fullCount+halfCount;
 
   document.getElementById('tkFullSales').textContent=fmt(fullSales);
-  document.getElementById('tkFullCount').textContent=fullCount.toLocaleString()+'건';
+  document.getElementById('tkFullCount').textContent='건수: '+fullCount.toLocaleString()+'건';
   document.getElementById('tkFullAvg').textContent='객단가: '+(fullCount?fmt(Math.round(fullSales/fullCount)):'-');
   document.getElementById('tkFullRate').textContent='비율: '+(totalCount?(fullCount/totalCount*100).toFixed(0)+'%':'-');
 
   document.getElementById('tkHalfSales').textContent=fmt(halfSales);
-  document.getElementById('tkHalfCount').textContent=halfCount.toLocaleString()+'건';
+  document.getElementById('tkHalfCount').textContent='건수: '+halfCount.toLocaleString()+'건';
   document.getElementById('tkHalfAvg').textContent='객단가: '+(halfCount?fmt(Math.round(halfSales/halfCount)):'-');
   document.getElementById('tkHalfRate').textContent='비율: '+(totalCount?(halfCount/totalCount*100).toFixed(0)+'%':'-');
 }
