@@ -140,22 +140,22 @@ tr:hover { background: #f7f9fc; }
     <!-- 턴키 전용 KPI 2행: 건수 + Full/Half -->
     <div id="turnkeyKpiRow" style="display:none;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;margin-bottom:20px;">
       <div class="kpi-card">
-        <div class="label">이번 달 건수 (CID 기준)</div>
+        <div class="label">이번 달 결제 건수</div>
         <div class="main-row"><div class="value" id="tkCount">-</div></div>
       </div>
       <div class="kpi-card">
-        <div class="label">이번 분기 건수 (CID 기준)</div>
+        <div class="label">이번 분기 결제 건수</div>
         <div class="main-row"><div class="value" id="tkQtrCount">-</div></div>
       </div>
       <div class="kpi-card">
         <div class="label">FULL (3천만↑)</div>
         <div class="value" id="tkFullSales" style="font-size:22px;">-</div>
-        <div class="sub-row"><span id="tkFullAvg">객단가: -</span><span id="tkFullRate">비율: -</span></div>
+        <div class="sub-row"><span id="tkFullCount">건수: -</span><span id="tkFullAvg">객단가: -</span><span id="tkFullRate">비율: -</span></div>
       </div>
       <div class="kpi-card">
         <div class="label">HALF (3천만↓)</div>
         <div class="value" id="tkHalfSales" style="font-size:22px;">-</div>
-        <div class="sub-row"><span id="tkHalfAvg">객단가: -</span><span id="tkHalfRate">비율: -</span></div>
+        <div class="sub-row"><span id="tkHalfCount">건수: -</span><span id="tkHalfAvg">객단가: -</span><span id="tkHalfRate">비율: -</span></div>
       </div>
     </div>
     <div id="sec-trend"></div>
@@ -705,11 +705,11 @@ function renderTurnkeyKPI(){
   const mData=turnkeyData.filter(d=>d['연월']===curMonth);
   const qData=turnkeyData.filter(d=>qMs.includes(d['연월']));
 
-  // 이번달 건수 (CID 중복제외)
+  // 이번달 결제 건수
   const mCids=new Set(mData.map(d=>d['CID']).filter(Boolean));
   document.getElementById('tkCount').textContent=mCids.size.toLocaleString()+'건';
 
-  // 이번분기 건수
+  // 이번분기 결제 건수
   const qCids=new Set(qData.map(d=>d['CID']).filter(Boolean));
   document.getElementById('tkQtrCount').textContent=qCids.size.toLocaleString()+'건';
 
@@ -724,10 +724,12 @@ function renderTurnkeyKPI(){
   const totalSales=fullSales+halfSales;const totalCount=fullCount+halfCount;
 
   document.getElementById('tkFullSales').textContent=fmt(fullSales);
+  document.getElementById('tkFullCount').textContent=fullCount.toLocaleString()+'건';
   document.getElementById('tkFullAvg').textContent='객단가: '+(fullCount?fmt(Math.round(fullSales/fullCount)):'-');
   document.getElementById('tkFullRate').textContent='비율: '+(totalCount?(fullCount/totalCount*100).toFixed(0)+'%':'-');
 
   document.getElementById('tkHalfSales').textContent=fmt(halfSales);
+  document.getElementById('tkHalfCount').textContent=halfCount.toLocaleString()+'건';
   document.getElementById('tkHalfAvg').textContent='객단가: '+(halfCount?fmt(Math.round(halfSales/halfCount)):'-');
   document.getElementById('tkHalfRate').textContent='비율: '+(totalCount?(halfCount/totalCount*100).toFixed(0)+'%':'-');
 }
