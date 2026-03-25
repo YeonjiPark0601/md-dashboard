@@ -57,9 +57,10 @@ tr:hover { background: #f7f9fc; }
 .loading { text-align: center; padding: 60px; color: #888; font-size: 16px; }
 #monthlyTable th:first-child, #monthlyTable td:first-child { position: sticky; left: 0; background: #fff; z-index: 1; min-width: 140px; }
 #monthlyTable th:first-child { background: #f7f8fa; }
-.pt10-sticky th:nth-child(1),.pt10-sticky td:nth-child(1){position:sticky;left:0;background:#f7f8fa;z-index:2;min-width:80px;}
-.pt10-sticky th:nth-child(2),.pt10-sticky td:nth-child(2){position:sticky;left:80px;background:#fff;z-index:1;min-width:60px;}
-.pt10-sticky th:nth-child(1),.pt10-sticky th:nth-child(2){background:#f7f8fa;}
+.pt10-sticky .sticky-col{position:sticky;left:0;background:#fff;z-index:2;min-width:80px;}
+.pt10-sticky th.sticky-col{background:#f7f8fa;}
+.pt10-sticky .sticky-col2{position:sticky;left:80px;background:#fff;z-index:1;min-width:60px;}
+.pt10-sticky th.sticky-col2{background:#f7f8fa;}
 @media (max-width: 900px) {
   .kpi-row { grid-template-columns: 1fr; }
   .chart-row { grid-template-columns: 1fr; }
@@ -881,7 +882,7 @@ function renderPT10SummaryYear(year,headId,bodyId){
     {label:'기타 기타 매출',fn:m=>sumByFilter(m,'기타','매출금액')}
   ];
   const metrics=allMetrics.filter(mt=>{const total=allMonths.reduce((s,m)=>s+mt.fn(m),0);return total>0});
-  document.getElementById(headId).innerHTML='<th></th><th>항목</th>'+allMonths.map(m=>`<th class="text-right">${m}월</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
+  document.getElementById(headId).innerHTML='<th class="sticky-col">구분</th><th class="sticky-col2">항목</th>'+allMonths.map(m=>`<th class="text-right">${m}월</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
   const groups=[
     {group:'전체',rows:metrics.filter(m=>m.label==='전체 매출')},
     {group:'본체',rows:metrics.filter(m=>m.label.startsWith('본체'))},
@@ -893,7 +894,7 @@ function renderPT10SummaryYear(year,headId,bodyId){
     g.rows.forEach((mt,i)=>{
       const vals=allMonths.map(m=>mt.fn(m));const total=vals.reduce((s,v)=>s+v,0);
       const subLabel=mt.label.replace(g.group+' ','').replace(g.group,'');
-      html+=`<tr>${i===0?`<td rowspan="${g.rows.length}" style="font-weight:700;vertical-align:middle;background:#f7f8fa;border-right:2px solid #e0e0e0;">${g.group}</td>`:''}<td>${subLabel||'매출'}</td>`+vals.map(v=>`<td class="text-right">${v?Math.round(v).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(total).toLocaleString()}</td></tr>`;
+      html+=`<tr><td class="sticky-col" style="font-weight:700;background:#f7f8fa;border-right:2px solid #e0e0e0;">${i===0?g.group:''}</td><td class="sticky-col2">${subLabel||'매출'}</td>`+vals.map(v=>`<td class="text-right">${v?Math.round(v).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(total).toLocaleString()}</td></tr>`;
     });
   });
   document.getElementById(bodyId).innerHTML=html;
@@ -917,13 +918,13 @@ function renderPT10CartYear(year,headId,bodyId){
     if(qtyTotal>0)rows.push(qtyRow);
     if(salesTotal>0)rows.push(salesRow);
   });
-  document.getElementById(headId).innerHTML='<th></th><th>항목</th>'+allMonths.map(m=>`<th class="text-right">${m}월</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
+  document.getElementById(headId).innerHTML='<th class="sticky-col">구분</th><th class="sticky-col2">항목</th>'+allMonths.map(m=>`<th class="text-right">${m}월</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
   let html='';
   details.forEach(det=>{
     const detRows=rows.filter(r=>r.label.startsWith(det));
     detRows.forEach((r,i)=>{
       const subLabel=r.label.replace(det+' ','');
-      html+=`<tr>${i===0?`<td rowspan="${detRows.length}" style="font-weight:700;vertical-align:middle;background:#f7f8fa;border-right:2px solid #e0e0e0;">${det}</td>`:''}<td>${subLabel}</td>`+allMonths.map(m=>`<td class="text-right">${r[m]?Math.round(r[m]).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(r.total).toLocaleString()}</td></tr>`;
+      html+=`<tr><td class="sticky-col" style="font-weight:700;background:#f7f8fa;border-right:2px solid #e0e0e0;">${i===0?det:''}</td><td class="sticky-col2">${subLabel}</td>`+allMonths.map(m=>`<td class="text-right">${r[m]?Math.round(r[m]).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(r.total).toLocaleString()}</td></tr>`;
     });
   });
   document.getElementById(bodyId).innerHTML=html;
