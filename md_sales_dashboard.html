@@ -160,7 +160,7 @@ tr:hover { background: #f7f9fc; }
     </div>
     <div id="sec-trend"></div>
     <div id="trendRow" class="chart-row-full">
-      <div class="chart-card"><h3>월별 매출 트렌드 (YoY) — 25년 1월~현재</h3><canvas id="trendChart" height="50"></canvas></div>
+      <div class="chart-card"><h3>월별 매출 트렌드 (YoY) — 25년 1월~현재</h3><canvas id="trendChart" height="80"></canvas></div>
     </div>
     <div id="classTrendRow" class="chart-row" style="display:none;">
       <div class="chart-card" style="display:flex;flex-direction:column;"><h3>월별 매출 트렌드 (YoY) — 25년 1월~현재</h3><canvas id="trendChart2" style="flex:1;min-height:0;"></canvas></div>
@@ -295,7 +295,7 @@ async function fetchData(){
     allData=parseCSV(await salesR.text()).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['공급가']=parseNum(r['공급가']);r['수량']=parseNum(r['수량']);r['연월']=fixYm(r['연월']);if(r['주문일']&&r['주문일'].length>10)r['주문일']=r['주문일'].substring(0,10);return r});
     if(classR.ok){const ct=await classR.text();if(ct.trim()){classData=parseCSV(ct).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['연월']=fixYm(r['연월']);if(r['주문일']&&r['주문일'].length>10)r['주문일']=r['주문일'].substring(0,10);return r})}}
     if(turnkeyR.ok){const tt=await turnkeyR.text();if(tt.trim()){turnkeyData=parseCSV(tt).map(r=>{
-      r['매출금액']=parseNum(r['최종 결제액']);r['공급가']=parseNum(r['총 공급가액']);
+      r['매출금액']=parseNum(r['최종 결제액']);r['공급가']=parseNum(r['총 공급가액']);r['매출총이익']=parseNum(r['최종 매출총이익']);
       const dt=r['결제 일자']||'';r['주문일']=dt.substring(0,10);r['연월']=fixYm(dt.substring(0,7));
       r['카테고리']=r['카테고리']||'';return r})}}
     if(puOnR.ok){const t=await puOnR.text();if(t.trim())puOnData=parseCSV(t).map(r=>{r['PU']=parseNum(r['PU']);return r})}
@@ -544,12 +544,21 @@ function renderTrendChart(data){
       onClick:(e,el)=>{if(el.length>0){const ym=months[el[0].index];document.getElementById('startMonth').value=ym;document.getElementById('endMonth').value=ym;render()}}}};
     if(trendChart2)trendChart2.destroy();trendChart2=new Chart(document.getElementById('trendChart2'),cfg);
   }else{
-    cfg={type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets:[
+    const datasets=[
       {label:'올해',data:months.map(m=>tY[m]||0),backgroundColor:'#4285f4',borderRadius:4,order:2},
       {label:'전년',data:months.map(m=>pY[m]||0),type:'line',borderColor:'#bbb',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,borderDash:[5,3],pointRadius:3,pointBackgroundColor:'#999',order:0,fill:false}
-    ]},options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top'},
-      tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+fmt(ctx.raw),afterBody:items=>{const i=items[0].dataIndex;return yL[i]?'YoY: '+yL[i]:''}}}},
-      scales:{y:{ticks:{callback:v=>fmt(v)}}},onClick:(e,el)=>{if(el.length>0){const ym=months[el[0].index];document.getElementById('startMonth').value=ym;document.getElementById('endMonth').value=ym;render()}}}};
+    ];
+    const scales={y:{ticks:{callback:v=>fmt(v)}}};
+    // 턴키: 매출총이익률 라인 추가 (우측 Y축)
+    if(currentTab==='턴키'){
+      const profitM={},salesM={};
+      ad.forEach(d=>{const ym=d['연월'];if(!ym||!months.includes(ym))return;profitM[ym]=(profitM[ym]||0)+(d['매출총이익']||0);salesM[ym]=(salesM[ym]||0)+d['매출금액']});
+      datasets.push({label:'매출총이익률',data:months.map(m=>salesM[m]?(profitM[m]/salesM[m]*100):null),type:'line',borderColor:'#0d9488',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,pointRadius:4,pointBackgroundColor:'#0d9488',order:0,fill:false,yAxisID:'y1'});
+      scales.y1={position:'right',grid:{drawOnChartArea:false},ticks:{callback:v=>v.toFixed(0)+'%'},min:0,max:50};
+    }
+    cfg={type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets},options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top'},
+      tooltip:{callbacks:{label:ctx=>{if(ctx.dataset.yAxisID==='y1')return ctx.dataset.label+': '+ctx.raw.toFixed(1)+'%';return ctx.dataset.label+': '+fmt(ctx.raw)},afterBody:items=>{const i=items[0].dataIndex;return yL[i]?'YoY: '+yL[i]:''}}}},
+      scales,onClick:(e,el)=>{if(el.length>0){const ym=months[el[0].index];document.getElementById('startMonth').value=ym;document.getElementById('endMonth').value=ym;render()}}}};
     if(trendChart)trendChart.destroy();trendChart=new Chart(document.getElementById('trendChart'),cfg);
   }
 }
