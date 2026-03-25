@@ -113,6 +113,7 @@ tr:hover { background: #f7f9fc; }
   <a href="#sec-detail" onclick="scrollTo2('sec-detail')">매출 상세</a>
   <a href="#sec-pu" onclick="scrollTo2('sec-pu')" id="navPU" style="display:none;">PU 분석</a>
   <a href="#sec-rebuy" onclick="scrollTo2('sec-rebuy')" id="navRebuy" style="display:none;">재구매 분석</a>
+  <a href="#sec-pt10summary" onclick="scrollTo2('sec-pt10summary')" id="navPT10Summary" style="display:none;">수량/매출</a>
   <a href="#sec-profitMargin" onclick="scrollTo2('sec-profitMargin')" id="navProfitMargin" style="display:none;">매출총이익률</a>
 </nav>
 
@@ -248,6 +249,14 @@ tr:hover { background: #f7f9fc; }
       <div class="table-card">
         <h3>클래스 월간 재구매 / 이탈 / 신규구매</h3>
         <div style="overflow-x:auto;"><table id="rebuyTable"><thead><tr id="rebuyHead"></tr></thead><tbody id="rebuyBody"></tbody></table></div>
+      </div>
+    </div>
+    <!-- PT10 전용: 26년 수량/매출 테이블 -->
+    <div id="sec-pt10summary"></div>
+    <div class="chart-row-full" id="pt10SummaryRow" style="display:none;">
+      <div class="table-card">
+        <h3>26년 월별 수량 / 매출</h3>
+        <div style="overflow-x:auto;"><table id="pt10SummaryTable"><thead><tr id="pt10SummaryHead"></tr></thead><tbody id="pt10SummaryBody"></tbody></table></div>
       </div>
     </div>
     <!-- 턴키 전용: 월별 매출총이익률 테이블 -->
@@ -451,6 +460,9 @@ function render(){
   // 클래스 전용: PU + 재구매
   document.getElementById('detailRow').style.display=(isTurnkey||isPT10)?'none':'';
   document.getElementById('monthlyRow').style.display=isPT10?'none':'';
+  document.getElementById('pt10SummaryRow').style.display=isPT10?'':'none';
+  document.getElementById('navPT10Summary').style.display=isPT10?'':'none';
+  if(isPT10)renderPT10Summary();
   document.getElementById('turnkeyKpiRow').style.display=isTurnkey?'grid':'none';
   document.getElementById('profitMarginRow').style.display=isTurnkey?'':'none';
   document.getElementById('navProfitMargin').style.display=isTurnkey?'':'none';
@@ -766,6 +778,30 @@ function renderTurnkeyKPI(){
   document.getElementById('tkHalfCount').textContent='건수: '+halfCount.toLocaleString()+'건';
   document.getElementById('tkHalfAvg').textContent='객단가: '+(halfCount?fmt(Math.round(halfSales/halfCount)):'-');
   document.getElementById('tkHalfRate').textContent='비율: '+(totalCount?(halfCount/totalCount*100).toFixed(0)+'%':'-');
+}
+
+function renderPT10Summary(){
+  const allMonths=['01','02','03','04','05','06','07','08','09','10','11','12'];
+  const d26=pt10Data.filter(r=>r['연월']&&r['연월'].startsWith('2026'));
+  const sumByFilter=(m,cat,field)=>{let t=0;d26.forEach(r=>{if(r['연월']==='2026-'+m&&(!cat||r['구분']===cat))t+=r[field]||0});return t};
+  const allMetrics=[
+    {label:'전체 매출',fn:m=>sumByFilter(m,null,'매출금액')},
+    {label:'본체 수량',fn:m=>sumByFilter(m,'본체','수량')},
+    {label:'본체 매출',fn:m=>sumByFilter(m,'본체','매출금액')},
+    {label:'카트리지 수량',fn:m=>sumByFilter(m,'카트리지','수량')},
+    {label:'카트리지 매출',fn:m=>sumByFilter(m,'카트리지','매출금액')},
+    {label:'캐필러리 튜브 매출',fn:m=>sumByFilter(m,'캐필러리 튜브','매출금액')},
+    {label:'플런져 매출',fn:m=>sumByFilter(m,'플런져','매출금액')},
+    {label:'AS 매출',fn:m=>sumByFilter(m,'AS','매출금액')},
+    {label:'기타 매출',fn:m=>sumByFilter(m,'기타','매출금액')}
+  ];
+  const metrics=allMetrics.filter(mt=>{const total=allMonths.reduce((s,m)=>s+mt.fn(m),0);return total>0});
+  document.getElementById('pt10SummaryHead').innerHTML='<th>항목</th>'+allMonths.map(m=>`<th class="text-right">${m}월</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
+  document.getElementById('pt10SummaryBody').innerHTML=metrics.map(mt=>{
+    const vals=allMonths.map(m=>mt.fn(m));
+    const total=vals.reduce((s,v)=>s+v,0);
+    return`<tr><td style="font-weight:600;">${mt.label}</td>`+vals.map(v=>`<td class="text-right">${v?v.toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${total.toLocaleString()}</td></tr>`;
+  }).join('');
 }
 
 function renderProfitMargin(){
