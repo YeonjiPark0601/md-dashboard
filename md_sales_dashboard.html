@@ -171,7 +171,20 @@ tr:hover { background: #f7f9fc; }
       </div>
     </div>
 
-    <!-- Table -->
+    <!-- 공급처별 월별 매출 (위로 이동) -->
+    <div class="chart-row-full">
+      <div class="table-card">
+        <h3>공급처별 월별 매출</h3>
+        <div style="overflow-x:auto;">
+          <table id="monthlyTable">
+            <thead><tr id="monthlyHead"></tr></thead>
+            <tbody id="monthlyBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 공급처별 매출 상세 (아래로 이동) -->
     <div class="chart-row-full">
       <div class="table-card">
         <h3>
@@ -199,7 +212,7 @@ tr:hover { background: #f7f9fc; }
         <table id="supplierTable">
           <thead>
             <tr>
-              <th onclick="sortTable(0)">공급업체</th>
+              <th onclick="sortTable(0)" style="cursor:pointer;">공급업체</th>
               <th onclick="sortTable(1)" class="text-right">매출금액</th>
               <th onclick="sortTable(2)" class="text-right">공급가</th>
               <th onclick="sortTable(3)" class="text-right">매출이익률</th>
@@ -210,16 +223,26 @@ tr:hover { background: #f7f9fc; }
           </thead>
           <tbody id="supplierBody"></tbody>
         </table>
-      </div>
-    </div>
-    <!-- 공급처별 월별 매출 -->
-    <div class="chart-row-full">
-      <div class="table-card">
-        <h3>공급처별 월별 매출</h3>
-        <div style="overflow-x:auto;">
-          <table id="monthlyTable">
-            <thead><tr id="monthlyHead"></tr></thead>
-            <tbody id="monthlyBody"></tbody>
+        <!-- 공급업체 클릭 시 매출 상세 리스트 -->
+        <div id="detailSection" style="display:none;margin-top:16px;border-top:2px solid #e0e0e0;padding-top:16px;">
+          <h3 style="font-size:14px;font-weight:600;color:#555;margin-bottom:8px;">
+            <span id="detailTitle">-</span>
+            <span onclick="closeDetail()" style="float:right;cursor:pointer;color:#888;font-size:12px;">닫기 ✕</span>
+          </h3>
+          <table>
+            <thead>
+              <tr>
+                <th>주문일</th>
+                <th>한의원명</th>
+                <th>품목명</th>
+                <th>옵션명</th>
+                <th class="text-right">매출금액</th>
+                <th class="text-right">공급가</th>
+                <th class="text-right">수량</th>
+                <th>구분</th>
+              </tr>
+            </thead>
+            <tbody id="detailBody"></tbody>
           </table>
         </div>
       </div>
@@ -682,7 +705,7 @@ function renderTable(data) {
     const margin = r.매출금액 ? (profit / r.매출금액 * 100).toFixed(1) : '-';
     const style = '';
     return `<tr style="${style}">
-      <td>${r.공급업체}</td>
+      <td><a href="#" onclick="showDetail('${r.공급업체.replace(/'/g,"\\'")}');return false;" style="color:#1a73e8;text-decoration:underline;cursor:pointer;">${r.공급업체}</a></td>
       <td class="text-right">${r.매출금액.toLocaleString()}</td>
       <td class="text-right">${r.공급가.toLocaleString()}</td>
       <td class="text-right">${profitRate}%</td>
@@ -763,6 +786,30 @@ function renderMonthlyTable(data) {
       months.map(m => `<td class="text-right">${(vals[m] || 0) ? (vals[m] || 0).toLocaleString() : '-'}</td>`).join('') +
       `<td class="text-right" style="font-weight:700;">${vals.total.toLocaleString()}</td></tr>`;
   }).join('');
+}
+
+function showDetail(supplier) {
+  const data = getFilteredData().filter(d => d['공급업체'] === supplier);
+  data.sort((a, b) => (b['주문일'] || '').localeCompare(a['주문일'] || ''));
+
+  document.getElementById('detailTitle').textContent = `${supplier} 매출 상세 (${data.length}건)`;
+  document.getElementById('detailBody').innerHTML = data.map(d => `<tr>
+    <td>${d['주문일'] || ''}</td>
+    <td>${d['한의원명'] || ''}</td>
+    <td>${d['품목명'] || ''}</td>
+    <td>${d['옵션명'] || ''}</td>
+    <td class="text-right">${d['매출금액'].toLocaleString()}</td>
+    <td class="text-right">${d['공급가'].toLocaleString()}</td>
+    <td class="text-right">${d['수량'].toLocaleString()}</td>
+    <td>${d['구분'] || ''}</td>
+  </tr>`).join('');
+
+  document.getElementById('detailSection').style.display = 'block';
+  document.getElementById('detailSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function closeDetail() {
+  document.getElementById('detailSection').style.display = 'none';
 }
 
 function sortTable(col) {
