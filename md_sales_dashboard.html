@@ -120,11 +120,11 @@ tr:hover { background: #f7f9fc; }
         <div class="progress-bar"><div class="progress-fill" id="kpiQtrBar" style="width:0;background:#fbbc04;"></div></div>
       </div>
     </div>
-    <div class="chart-row-full">
-      <div class="chart-card"><h3>월별 매출 트렌드 (YoY) — 25년 1월~현재</h3><canvas id="trendChart" height="50"></canvas></div>
+    <div id="trendAndTypeRow" class="chart-row">
+      <div class="chart-card"><h3>월별 매출 트렌드 (YoY) — 25년 1월~현재</h3><canvas id="trendChart" height="80"></canvas></div>
+      <div class="chart-card" id="typeChartCard"><h3 id="typeChartTitle">구분별 매출 비중</h3><canvas id="typeChart" height="200"></canvas></div>
     </div>
     <div class="chart-row-3" id="chartRow3">
-      <div class="chart-card"><h3 id="typeChartTitle">구분별 매출 비중</h3><canvas id="typeChart" height="200"></canvas></div>
       <div class="chart-card" id="categoryChartCard"><h3>카테고리별 매출 (클릭하여 필터)</h3><canvas id="categoryChart" height="200"></canvas></div>
       <div class="chart-card" id="categoryPieCard"><h3>카테고리별 매출 비중</h3><canvas id="categoryPieChart" height="200"></canvas></div>
     </div>
@@ -166,6 +166,7 @@ tr:hover { background: #f7f9fc; }
           </div>
         </div>
         <table id="supplierTable"><thead><tr id="supplierHead"></tr></thead><tbody id="supplierBody"></tbody></table>
+        <div id="detailTableToggle" onclick="toggleDetailTable()" style="display:none;text-align:center;padding:10px;color:#1a73e8;cursor:pointer;font-size:13px;font-weight:600;border-top:1px solid #f0f0f0;margin-top:4px;"></div>
         <div id="detailSection" style="display:none;margin-top:16px;border-top:2px solid #e0e0e0;padding-top:16px;">
           <h3 style="font-size:14px;font-weight:600;color:#555;margin-bottom:8px;">
             <span id="detailTitle">-</span>
@@ -229,7 +230,7 @@ function switchTab(tab){
   if(tab===currentTab)return;
   currentTab=tab;
   document.querySelectorAll('.tab[data-tab]').forEach(t=>{t.classList.toggle('active',t.dataset.tab===tab)});
-  drillCategory=null;selectedSuppliers=[];sortCol=-1;monthlyExpanded=false;
+  drillCategory=null;selectedSuppliers=[];sortCol=-1;monthlyExpanded=false;detailTableExpanded=false;
   document.getElementById('drillFilter').classList.remove('show');
   document.getElementById('supplierSummary').style.display='none';
   document.getElementById('detailSection').style.display='none';
@@ -322,11 +323,11 @@ function updateSupplierSummary(){
 
 function render(){
   const data=getFilteredData();const isClass=currentTab==='클래스';
-  // 클래스: 카테고리별 바/도넛, 상품별 매출 차트 숨김
+  // 클래스: 카테고리별 바/도넛, 상품별 매출 차트 숨김, 3열→숨김
   document.getElementById('categoryChartCard').style.display=isClass?'none':'';
   document.getElementById('categoryPieCard').style.display=isClass?'none':'';
   document.getElementById('supplierChartRow').style.display=isClass?'none':'';
-  document.getElementById('chartRow3').style.gridTemplateColumns=isClass?'1fr':'1fr 1fr 1fr';
+  document.getElementById('chartRow3').style.display=isClass?'none':'grid';
   renderKPIs();renderTrendChart(data);renderTypeChart(data);
   if(!isClass){renderCategoryChart(data);renderCategoryPieChart(data);renderSupplierChart(data);}
   renderTable(data);renderMonthlyTable(data);
@@ -455,15 +456,23 @@ function renderTable(data){
       else{va=a[k];vb=b[k]}
       if(typeof va==='string')return sortAsc?va.localeCompare(vb):vb.localeCompare(va);
       return sortAsc?va-vb:vb-va})}
+  const LIMIT=20;
+  const needToggle=rows.length>LIMIT;
+  const visible=(!needToggle||detailTableExpanded)?rows:rows.slice(0,LIMIT);
+
   const body=document.getElementById('supplierBody');
-  body.innerHTML=rows.map(r=>{
+  body.innerHTML=visible.map(r=>{
     const esc=r.name.replace(/'/g,"\\'");
     if(isClass)return`<tr><td><a href="#" onclick="showDetail('${esc}');return false;" style="color:#1a73e8;text-decoration:underline;cursor:pointer;">${r.name}</a></td><td class="text-right">${r.매출금액.toLocaleString()}</td><td class="text-right">${r.건수.toLocaleString()}</td></tr>`;
     const mg=r.매출금액?((r.매출금액-r.공급가)/r.매출금액*100).toFixed(1):'-';
     return`<tr><td><a href="#" onclick="showDetail('${esc}');return false;" style="color:#1a73e8;text-decoration:underline;cursor:pointer;">${r.name}</a></td><td class="text-right">${r.매출금액.toLocaleString()}</td><td class="text-right">${r.공급가.toLocaleString()}</td><td class="text-right">${r.건수.toLocaleString()}</td><td class="text-right">${r.수량.toLocaleString()}</td><td class="text-right">${mg}%</td></tr>`}).join('');
+
+  const toggleEl=document.getElementById('detailTableToggle');
+  if(needToggle){toggleEl.style.display='block';toggleEl.textContent=detailTableExpanded?'접기 ▲':`더보기 (${rows.length-LIMIT}개) ▼`}
+  else{toggleEl.style.display='none'}
 }
 
-let monthlyExpanded = false;
+let monthlyExpanded = false, detailTableExpanded = false;
 
 function renderMonthlyTable(data){
   const nk=currentTab==='클래스'?'상품명':'공급업체';
@@ -486,6 +495,7 @@ function renderMonthlyTable(data){
 }
 
 function toggleMonthlyTable(){monthlyExpanded=!monthlyExpanded;renderMonthlyTable(getFilteredData())}
+function toggleDetailTable(){detailTableExpanded=!detailTableExpanded;renderTable(getFilteredData())}
 
 function showDetail(name){
   const nk=currentTab==='클래스'?'상품명':'공급업체';const isClass=currentTab==='클래스';
