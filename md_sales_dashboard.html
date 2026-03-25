@@ -112,6 +112,7 @@ tr:hover { background: #f7f9fc; }
   <a href="#sec-detail" onclick="scrollTo2('sec-detail')">매출 상세</a>
   <a href="#sec-pu" onclick="scrollTo2('sec-pu')" id="navPU" style="display:none;">PU 분석</a>
   <a href="#sec-rebuy" onclick="scrollTo2('sec-rebuy')" id="navRebuy" style="display:none;">재구매 분석</a>
+  <a href="#sec-profitMargin" onclick="scrollTo2('sec-profitMargin')" id="navProfitMargin" style="display:none;">매출총이익률</a>
 </nav>
 
 <div class="container">
@@ -242,6 +243,14 @@ tr:hover { background: #f7f9fc; }
       <div class="table-card">
         <h3>클래스 월간 재구매 / 이탈 / 신규구매</h3>
         <div style="overflow-x:auto;"><table id="rebuyTable"><thead><tr id="rebuyHead"></tr></thead><tbody id="rebuyBody"></tbody></table></div>
+      </div>
+    </div>
+    <!-- 턴키 전용: 월별 매출총이익률 테이블 -->
+    <div id="sec-profitMargin"></div>
+    <div class="chart-row-full" id="profitMarginRow" style="display:none;">
+      <div class="table-card">
+        <h3>월별 매출총이익률</h3>
+        <div style="overflow-x:auto;"><table id="profitMarginTable"><thead><tr id="profitMarginHead"></tr></thead><tbody id="profitMarginBody"></tbody></table></div>
       </div>
     </div>
   </div>
@@ -436,7 +445,9 @@ function render(){
   // 클래스 전용: PU + 재구매
   document.getElementById('detailRow').style.display=isTurnkey?'none':'';
   document.getElementById('turnkeyKpiRow').style.display=isTurnkey?'grid':'none';
-  if(isTurnkey)renderTurnkeyKPI();
+  document.getElementById('profitMarginRow').style.display=isTurnkey?'':'none';
+  document.getElementById('navProfitMargin').style.display=isTurnkey?'':'none';
+  if(isTurnkey){renderTurnkeyKPI();renderProfitMargin()}
   const isClassOnly=currentTab==='클래스';
   document.getElementById('puRow').style.display=isClassOnly?'grid':'none';
   document.getElementById('rebuyRow').style.display=isClassOnly?'':'none';
@@ -732,6 +743,36 @@ function renderTurnkeyKPI(){
   document.getElementById('tkHalfCount').textContent=halfCount.toLocaleString()+'건';
   document.getElementById('tkHalfAvg').textContent='객단가: '+(halfCount?fmt(Math.round(halfSales/halfCount)):'-');
   document.getElementById('tkHalfRate').textContent='비율: '+(totalCount?(halfCount/totalCount*100).toFixed(0)+'%':'-');
+}
+
+function renderProfitMargin(){
+  const allMonths=['01','02','03','04','05','06','07','08','09','10','11','12'];
+  const years=['2025','2026'];
+  const rows=[];
+  years.forEach(y=>{
+    const profitByM={},salesByM={};
+    turnkeyData.forEach(d=>{
+      if(!d['연월']||!d['연월'].startsWith(y))return;
+      const m=d['연월'].split('-')[1];
+      profitByM[m]=(profitByM[m]||0)+(d['매출총이익']||0);
+      salesByM[m]=(salesByM[m]||0)+d['매출금액'];
+    });
+    // 월별
+    const cells=allMonths.map(m=>{
+      const s=salesByM[m]||0;const p=profitByM[m]||0;
+      return s?(p/s*100).toFixed(1)+'%':'-';
+    });
+    // 누적
+    const totalS=Object.values(salesByM).reduce((a,b)=>a+b,0);
+    const totalP=Object.values(profitByM).reduce((a,b)=>a+b,0);
+    const cumRate=totalS?(totalP/totalS*100).toFixed(1)+'%':'-';
+    rows.push({year:y,cells,cumRate});
+  });
+
+  document.getElementById('profitMarginHead').innerHTML='<th>연도</th>'+allMonths.map(m=>`<th class="text-right">${m}월</th>`).join('')+'<th class="text-right" style="font-weight:700;">누적</th>';
+  document.getElementById('profitMarginBody').innerHTML=rows.map(r=>
+    `<tr><td style="font-weight:700;">${r.year}</td>`+r.cells.map(c=>`<td class="text-right">${c}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${r.cumRate}</td></tr>`
+  ).join('');
 }
 
 function renderPU(){
