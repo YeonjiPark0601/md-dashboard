@@ -186,6 +186,18 @@ tr:hover { background: #f7f9fc; }
         </table>
       </div>
     </div>
+    <!-- 공급처별 월별 매출 -->
+    <div class="chart-row-full">
+      <div class="table-card">
+        <h3>공급처별 월별 매출</h3>
+        <div style="overflow-x:auto;">
+          <table id="monthlyTable">
+            <thead><tr id="monthlyHead"></tr></thead>
+            <tbody id="monthlyBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -354,6 +366,7 @@ function render() {
   renderCategoryChart(data);
   renderCategoryPieChart(data);
   renderTable(data);
+  renderMonthlyTable(data);
 }
 
 function renderKPIs() {
@@ -601,6 +614,30 @@ function renderTable(data) {
       <td class="text-right">${r.수량}</td>
       <td class="text-right">${margin}%</td>
     </tr>`;
+  }).join('');
+}
+
+function renderMonthlyTable(data) {
+  const months = [...new Set(data.map(d => d['연월']).filter(Boolean))].sort();
+  const suppliers = {};
+  data.forEach(d => {
+    const sup = d['공급업체'];
+    if (!sup) return;
+    if (!suppliers[sup]) suppliers[sup] = { total: 0 };
+    suppliers[sup][d['연월']] = (suppliers[sup][d['연월']] || 0) + d['매출금액'];
+    suppliers[sup].total += d['매출금액'];
+  });
+
+  const sorted = Object.entries(suppliers).sort((a, b) => b[1].total - a[1].total);
+
+  const head = document.getElementById('monthlyHead');
+  head.innerHTML = '<th>공급업체</th>' + months.map(m => `<th class="text-right">${m.slice(2)}</th>`).join('') + '<th class="text-right" style="font-weight:700;">합계</th>';
+
+  const body = document.getElementById('monthlyBody');
+  body.innerHTML = sorted.map(([sup, vals]) => {
+    return `<tr><td>${sup}</td>` +
+      months.map(m => `<td class="text-right">${(vals[m] || 0) ? (vals[m] || 0).toLocaleString() : '-'}</td>`).join('') +
+      `<td class="text-right" style="font-weight:700;">${vals.total.toLocaleString()}</td></tr>`;
   }).join('');
 }
 
