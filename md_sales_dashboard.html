@@ -289,8 +289,8 @@ function parseCSV(csv) {
   const cols=parseCSVRow(lines[0]);
   return lines.slice(1).map(l=>{const v=parseCSVRow(l);const o={};cols.forEach((c,i)=>{o[c]=v[i]||''});return o});
 }
-function parseNum(s){return Number(String(s).replace(/,/g,''))||0}
-function fixYm(ym){if(!ym)return'';const p=ym.substring(0,7).split('-');if(p.length===2)return p[0]+'-'+p[1].padStart(2,'0');return ym.substring(0,7)}
+function parseNum(s){if(s==null||s==='')return 0;return Number(String(s).replace(/,/g,''))||0}
+function fixYm(ym){if(!ym||typeof ym!=='string')return'';const s=ym.substring(0,7);const p=s.split('-');if(p.length===2)return p[0]+'-'+p[1].padStart(2,'0');return s}
 function fmt(n){if(Math.abs(n)>=1e8)return(n/1e8).toFixed(1)+'억';if(Math.abs(n)>=1e7)return(n/1e7).toFixed(1)+'천만';if(Math.abs(n)>=1e4)return Math.round(n/1e4)+'만';return n.toLocaleString()}
 function yearShift(ym,d){const[y,m]=ym.split('-').map(Number);return`${y+d}-${String(m).padStart(2,'0')}`}
 function getMonday(d){const dt=new Date(d);const day=dt.getDay();dt.setDate(dt.getDate()-day+(day===0?-6:1));return dt}
