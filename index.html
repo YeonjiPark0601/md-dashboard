@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MD 매출 대시보드</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', -apple-system, sans-serif; background: #f0f2f5; color: #333; }
+.sticky-top { position: sticky; top: 0; z-index: 100; }
+.header { background: linear-gradient(135deg, #1a1a2e, #16213e); color: #fff; padding: 16px 30px; display: flex; justify-content: space-between; align-items: center; }
+.header h1 { font-size: 20px; font-weight: 600; }
+.header .updated { font-size: 12px; color: #8899aa; }
+.tabs { background: #fff; display: flex; border-bottom: 2px solid #e0e0e0; padding: 0 30px; }
+.tab { padding: 12px 24px; font-size: 14px; font-weight: 600; color: #888; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+.tab:hover { color: #555; }
+.tab.active { color: #1a73e8; border-bottom-color: #1a73e8; }
+.tab.disabled { color: #ccc; cursor: default; }
+.filters { background: #fff; padding: 12px 30px; border-bottom: 1px solid #e0e0e0; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
+.filter-group { display: flex; align-items: center; gap: 6px; }
+.filter-group label { font-size: 13px; font-weight: 600; color: #555; }
+.filter-group select, .filter-group input { padding: 5px 10px; border: 1px solid #d0d0d0; border-radius: 6px; font-size: 13px; background: #fff; }
+.active-filter { background: #e8f0fe; border: 1px solid #4285f4; border-radius: 16px; padding: 4px 12px; font-size: 12px; color: #1967d2; display: none; align-items: center; gap: 6px; cursor: pointer; }
+.active-filter.show { display: inline-flex; }
+.active-filter:hover { background: #d2e3fc; }
+.container { max-width: 1400px; margin: 0 auto; padding: 20px; padding-left: 170px; }
+.side-nav { position: fixed; left: 0; top: 180px; width: 150px; background: #fff; border-right: 1px solid #e0e0e0; padding: 12px 0; z-index: 90; box-shadow: 1px 0 3px rgba(0,0,0,0.05); border-radius: 0 8px 8px 0; }
+.side-nav a { display: block; padding: 8px 16px; font-size: 12px; color: #555; text-decoration: none; border-left: 3px solid transparent; transition: all 0.15s; }
+.side-nav a:hover { background: #f0f2f5; color: #1a73e8; }
+.side-nav a.active { border-left-color: #1a73e8; color: #1a73e8; font-weight: 600; background: #eef3ff; }
+.kpi-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
+.kpi-card { background: #fff; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.kpi-card .label { font-size: 12px; color: #888; margin-bottom: 6px; font-weight: 600; }
+.kpi-card .main-row { display: flex; justify-content: space-between; align-items: baseline; }
+.kpi-card .value { font-size: 26px; font-weight: 700; color: #1a1a2e; }
+.kpi-card .rate { font-size: 22px; font-weight: 700; }
+.kpi-card .sub-row { display: flex; justify-content: space-between; font-size: 12px; color: #888; margin-top: 6px; }
+.kpi-card .progress-bar { height: 6px; background: #e8e8e8; border-radius: 3px; margin-top: 8px; overflow: hidden; }
+.kpi-card .progress-fill { height: 100%; border-radius: 3px; transition: width 0.5s; }
+.up { color: #0d9488; }
+.down { color: #e53e3e; }
+.chart-row { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 20px; }
+.chart-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.chart-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.chart-card h3 { font-size: 14px; font-weight: 600; color: #555; margin-bottom: 12px; }
+.chart-row-full { margin-bottom: 20px; }
+.table-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); overflow-x: auto; }
+.table-card h3 { font-size: 14px; font-weight: 600; color: #555; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { background: #f7f8fa; padding: 10px 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; cursor: pointer; white-space: nowrap; }
+th:hover { background: #eef0f4; }
+td { padding: 8px 12px; border-bottom: 1px solid #f0f0f0; }
+tr:hover { background: #f7f9fc; }
+.text-right { text-align: right; }
+.loading { text-align: center; padding: 60px; color: #888; font-size: 16px; }
+#monthlyTable th:first-child, #monthlyTable td:first-child { position: sticky; left: 0; background: #fff; z-index: 1; min-width: 140px; }
+#monthlyTable th:first-child { background: #f7f8fa; }
+@media (max-width: 900px) {
+  .kpi-row { grid-template-columns: 1fr; }
+  .chart-row { grid-template-columns: 1fr; }
+  .chart-row-3 { grid-template-columns: 1fr; }
+  .filters { flex-direction: column; align-items: flex-start; }
+  .tabs { overflow-x: auto; }
+  .side-nav { display: none; }
+  .container { padding-left: 20px; }
+}
+</style>
+</head>
+<body>
+
+<div class="sticky-top">
+<div class="header">
+  <h1>MD 매출 대시보드</h1>
+  <div class="updated" id="lastUpdated">데이터 로딩중...</div>
+</div>
+<div class="tabs" id="tabBar">
+  <div class="tab disabled">전체</div>
+  <div class="tab disabled">초음파</div>
+  <div class="tab active" data-tab="의료기기" onclick="switchTab('의료기기')">의료기기</div>
+  <div class="tab" data-tab="턴키" onclick="switchTab('턴키')">턴키</div>
+  <div class="tab" data-tab="클래스" onclick="switchTab('클래스')">클래스</div>
+</div>
+<div class="filters">
+  <div class="filter-group">
+    <label>기간</label>
+    <input type="month" id="startMonth">
+    <span>~</span>
+    <input type="month" id="endMonth">
+  </div>
+  <div class="filter-group">
+    <label>카테고리</label>
+    <select id="categoryFilter"><option value="">전체</option></select>
+  </div>
+  <div class="filter-group" id="typeFilterGroup">
+    <label>구분</label>
+    <select id="typeFilter"><option value="">전체</option></select>
+  </div>
+  <span class="active-filter" id="drillFilter" onclick="clearDrill()">
+    <span id="drillLabel"></span> ✕
+  </span>
+</div>
+</div>
+
+<nav class="side-nav" id="sideNav">
+  <a href="#sec-kpi" onclick="scrollTo2('sec-kpi')">KPI</a>
+  <a href="#sec-trend" onclick="scrollTo2('sec-trend')">매출 트렌드</a>
+  <a href="#sec-charts" onclick="scrollTo2('sec-charts')" id="navCharts">차트</a>
+  <a href="#sec-supplier-chart" onclick="scrollTo2('sec-supplier-chart')" id="navSupplier">공급처별 매출</a>
+  <a href="#sec-monthly" onclick="scrollTo2('sec-monthly')">월별 매출</a>
+  <a href="#sec-detail" onclick="scrollTo2('sec-detail')">매출 상세</a>
+  <a href="#sec-pu" onclick="scrollTo2('sec-pu')" id="navPU" style="display:none;">PU 분석</a>
+  <a href="#sec-rebuy" onclick="scrollTo2('sec-rebuy')" id="navRebuy" style="display:none;">재구매 분석</a>
+  <a href="#sec-profitMargin" onclick="scrollTo2('sec-profitMargin')" id="navProfitMargin" style="display:none;">매출총이익률</a>
+</nav>
+
+<div class="container">
+  <div class="loading" id="loadingMsg">Google Sheets에서 데이터를 불러오는 중...</div>
+  <div id="dashboardContent" style="display:none;">
+    <div id="sec-kpi" class="kpi-row">
+      <div class="kpi-card">
+        <div class="label" style="display:flex;justify-content:space-between;">이번 주 매출 (월~일)<span id="kpiWeekDates" style="font-weight:400;color:#aaa;"></span></div>
+        <div class="main-row"><div class="value" id="kpiWeekSales">-</div><div class="rate" id="kpiWeekRate">-</div></div>
+        <div class="sub-row"><span id="kpiWeekTarget">목표: -</span><span id="kpiWeekYoy"></span></div>
+        <div class="sub-row" id="kpiWeekCountRow" style="display:none;"><span id="kpiWeekCount"></span></div>
+        <div class="progress-bar"><div class="progress-fill" id="kpiWeekBar" style="width:0;background:#4285f4;"></div></div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">이번 달 매출</div>
+        <div class="main-row"><div class="value" id="kpiMonthSales">-</div><div class="rate" id="kpiMonthRate">-</div></div>
+        <div class="sub-row"><span id="kpiMonthTarget">목표: -</span><span id="kpiMonthYoy"></span></div>
+        <div class="sub-row" id="kpiMonthCountRow" style="display:none;"><span id="kpiMonthCount"></span></div>
+        <div class="progress-bar"><div class="progress-fill" id="kpiMonthBar" style="width:0;background:#34a853;"></div></div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">이번 분기 매출</div>
+        <div class="main-row"><div class="value" id="kpiQtrSales">-</div><div class="rate" id="kpiQtrRate">-</div></div>
+        <div class="sub-row"><span id="kpiQtrTarget">목표: -</span><span id="kpiQtrYoy"></span></div>
+        <div class="sub-row" id="kpiQtrCountRow" style="display:none;"><span id="kpiQtrCount"></span></div>
+        <div class="progress-bar"><div class="progress-fill" id="kpiQtrBar" style="width:0;background:#fbbc04;"></div></div>
+      </div>
+    </div>
+    <!-- 턴키 전용 KPI 2행: 건수 + Full/Half -->
+    <div id="turnkeyKpiRow" style="display:none;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;">
+      <div class="kpi-card">
+        <div class="label">연누적 실적</div>
+        <div class="value" id="tkYearSales" style="font-size:22px;">-</div>
+        <div class="sub-row"><span id="tkYearCount">건수: -</span><span id="tkYearProfitRate">이익률: -</span></div>
+        <div class="sub-row"><span id="tkYearAchieve">달성률: -</span></div>
+        <div class="progress-bar"><div class="progress-fill" id="tkYearBar" style="width:0;background:#4285f4;"></div></div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">FULL (3천만↑)</div>
+        <div class="value" id="tkFullSales" style="font-size:22px;">-</div>
+        <div class="sub-row"><span id="tkFullCount">건수: -</span><span id="tkFullAvg">객단가: -</span></div>
+        <div class="sub-row"><span id="tkFullRate">비율: -</span></div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">HALF (3천만↓)</div>
+        <div class="value" id="tkHalfSales" style="font-size:22px;">-</div>
+        <div class="sub-row"><span id="tkHalfCount">건수: -</span><span id="tkHalfAvg">객단가: -</span></div>
+        <div class="sub-row"><span id="tkHalfRate">비율: -</span></div>
+      </div>
+    </div>
+    <div id="sec-trend"></div>
+    <div id="trendRow" class="chart-row-full">
+      <div class="chart-card"><h3>월별 매출 트렌드 (YoY) — 25년 1월~현재</h3><canvas id="trendChart" height="80"></canvas></div>
+    </div>
+    <div id="classTrendRow" class="chart-row" style="display:none;">
+      <div class="chart-card" style="display:flex;flex-direction:column;"><h3>월별 매출 트렌드 (YoY) — 25년 1월~현재</h3><canvas id="trendChart2" style="flex:1;min-height:0;"></canvas></div>
+      <div class="chart-card" style="display:flex;flex-direction:column;"><h3 id="typeChartTitle2">온/오프라인 비중</h3><canvas id="typeChart2" style="flex:1;min-height:0;"></canvas></div>
+    </div>
+    <div id="sec-charts"></div>
+    <div class="chart-row-3" id="chartRow3">
+      <div class="chart-card" id="typeChartCard"><h3 id="typeChartTitle">구분별 매출 비중</h3><canvas id="typeChart" height="200"></canvas></div>
+      <div class="chart-card" id="categoryChartCard"><h3>카테고리별 매출 (클릭하여 필터)</h3><canvas id="categoryChart" height="200"></canvas></div>
+      <div class="chart-card" id="categoryPieCard"><h3>카테고리별 매출 비중</h3><canvas id="categoryPieChart" height="200"></canvas></div>
+    </div>
+    <div id="sec-supplier-chart"></div>
+    <div class="chart-row-full" id="supplierChartRow">
+      <div class="chart-card">
+        <h3 style="display:flex;justify-content:space-between;align-items:center;">
+          <span id="supplierChartTitle">공급처별 매출</span>
+          <button onclick="clearSupplierSelection()" style="font-size:11px;padding:3px 8px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;color:#888;">초기화</button>
+        </h3>
+        <canvas id="supplierChart" height="90"></canvas>
+      </div>
+    </div>
+    <div id="sec-monthly"></div>
+    <div class="chart-row-full">
+      <div class="table-card"><h3 id="monthlyTableTitle">공급처별 월별 매출</h3>
+        <div style="overflow-x:auto;"><table id="monthlyTable"><thead><tr id="monthlyHead"></tr></thead><tbody id="monthlyBody"></tbody></table></div>
+        <div id="monthlyToggle" onclick="toggleMonthlyTable()" style="display:none;text-align:center;padding:10px;color:#1a73e8;cursor:pointer;font-size:13px;font-weight:600;border-top:1px solid #f0f0f0;margin-top:4px;"></div>
+      </div>
+    </div>
+    <div id="sec-detail"></div>
+    <div class="chart-row-full" id="detailRow">
+      <div class="table-card">
+        <h3><span id="detailTableTitle">공급처별 매출 상세</span>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <button onclick="toggleSupplierPicker()" style="font-size:12px;padding:4px 12px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;" id="supplierPickerBtn">공급처 선택 ▾</button>
+            <button onclick="clearSupplierSelection()" style="font-size:11px;padding:3px 8px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;color:#888;">초기화</button>
+          </div>
+        </h3>
+        <div id="supplierPicker" style="display:none;background:#f7f8fa;border:1px solid #e0e0e0;border-radius:8px;padding:12px;margin-bottom:12px;max-height:200px;overflow-y:auto;">
+          <div style="display:flex;flex-wrap:wrap;gap:6px;" id="supplierCheckboxes"></div>
+        </div>
+        <div id="supplierSummary" style="display:none;background:#eef3ff;border-radius:8px;padding:12px 16px;margin-bottom:12px;font-size:13px;">
+          <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:center;">
+            <span><strong>선택 합계</strong></span>
+            <span>매출: <strong id="sumSales">-</strong></span>
+            <span id="sumCostWrap">공급가: <strong id="sumCost">-</strong></span>
+            <span id="sumProfitWrap">이익률: <strong id="sumProfitRate">-</strong></span>
+            <span>건수: <strong id="sumCount">-</strong></span>
+            <span id="sumQtyWrap">수량: <strong id="sumQty">-</strong></span>
+            <span id="sumMarginWrap">마진율: <strong id="sumMargin">-</strong></span>
+          </div>
+        </div>
+        <table id="supplierTable"><thead><tr id="supplierHead"></tr></thead><tbody id="supplierBody"></tbody></table>
+        <div id="detailTableToggle" onclick="toggleDetailTable()" style="display:none;text-align:center;padding:10px;color:#1a73e8;cursor:pointer;font-size:13px;font-weight:600;border-top:1px solid #f0f0f0;margin-top:4px;"></div>
+        <div id="detailSection" style="display:none;margin-top:16px;border-top:2px solid #e0e0e0;padding-top:16px;">
+          <h3 style="font-size:14px;font-weight:600;color:#555;margin-bottom:8px;">
+            <span id="detailTitle">-</span>
+            <span onclick="closeDetail()" style="float:right;cursor:pointer;color:#888;font-size:12px;">닫기 ✕</span>
+          </h3>
+          <table><thead><tr id="detailHead"></tr></thead><tbody id="detailBody"></tbody></table>
+        </div>
+      </div>
+    </div>
+    <!-- 클래스 전용: PU + 재구매 -->
+    <div id="sec-pu"></div>
+    <div id="puRow" style="display:none;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+      <div class="table-card">
+        <h3>월별 PU (온라인) — 상품별</h3>
+        <div style="overflow-x:auto;"><table id="puOnTable"><thead><tr id="puOnHead"></tr></thead><tbody id="puOnBody"></tbody></table></div>
+        <div id="puOnToggle" onclick="puOnExpanded=!puOnExpanded;renderPU()" style="display:none;text-align:center;padding:10px;color:#1a73e8;cursor:pointer;font-size:13px;font-weight:600;border-top:1px solid #f0f0f0;margin-top:4px;"></div>
+      </div>
+      <div class="table-card">
+        <h3>월별 PU (오프라인) — 상품별</h3>
+        <div style="overflow-x:auto;"><table id="puOffTable"><thead><tr id="puOffHead"></tr></thead><tbody id="puOffBody"></tbody></table></div>
+        <div id="puOffToggle" onclick="puOffExpanded=!puOffExpanded;renderPU()" style="display:none;text-align:center;padding:10px;color:#1a73e8;cursor:pointer;font-size:13px;font-weight:600;border-top:1px solid #f0f0f0;margin-top:4px;"></div>
+      </div>
+    </div>
+    <div id="sec-rebuy"></div>
+    <div class="chart-row-full" id="rebuyRow" style="display:none;">
+      <div class="table-card">
+        <h3>클래스 월간 재구매 / 이탈 / 신규구매</h3>
+        <div style="overflow-x:auto;"><table id="rebuyTable"><thead><tr id="rebuyHead"></tr></thead><tbody id="rebuyBody"></tbody></table></div>
+      </div>
+    </div>
+    <!-- 턴키 전용: 월별 매출총이익률 테이블 -->
+    <div id="sec-profitMargin"></div>
+    <div class="chart-row-full" id="profitMarginRow" style="display:none;">
+      <div class="table-card">
+        <h3>월별 매출총이익률</h3>
+        <div style="overflow-x:auto;"><table id="profitMarginTable"><thead><tr id="profitMarginHead"></tr></thead><tbody id="profitMarginBody"></tbody></table></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SHEET_ID = '1s34C5qB-K_A8vJEJQaOOyJ44YM3netORbfCVVfM3idw';
+const TARGET_SHEET_ID = '1Z8C_uiDHD6udIq7b9C79xlPxz4ERK5aC-vkoIbvTxic';
+const TARGET_URL = `https://docs.google.com/spreadsheets/d/${TARGET_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('26년 품목별 목표')}&_t=${Date.now()}`;
+
+let currentTab = '의료기기';
+let allData = [], classData = [], turnkeyData = [], puOnData = [], puOffData = [], rebuyData = [], targetData = {};
+let drillCategory = null, selectedSuppliers = [], sortCol = -1, sortAsc = true;
+let puOnExpanded = false, puOffExpanded = false;
+let trendChart, trendChart2, typeChart, typeChart2, categoryChart, categoryPieChart, supplierChart;
+
+const MD_CATEGORIES = ['비내시경','네오펙트','팀엘리시움','메디코아','DSE','PT10','옴니핏','그 외'];
+const CLASS_CATEGORIES = ['강의-온라인','강의-오프라인'];
+const TURNKEY_ANNUAL = 4625000000;
+const TURNKEY_DAILY = TURNKEY_ANNUAL / 365;
+function getTurnkeyTargetForMonth(month){const [y,m]=month.split('-').map(Number);return TURNKEY_DAILY * new Date(y,m,0).getDate()}
+const COLORS = ['#4285f4','#ea4335','#fbbc04','#34a853','#ff6d01','#46bdc6','#9334e6','#e8710a','#1a73e8','#e91e63','#00bcd4','#8bc34a','#ff9800','#795548','#607d8b','#3f51b5','#009688','#cddc39','#ff5722','#9e9e9e','#5c6bc0','#26a69a','#d4e157','#ef5350','#78909c','#7e57c2','#66bb6a','#ffa726','#8d6e63','#90a4ae'];
+
+function parseCSVRow(line) {
+  const r=[]; let c='',q=false;
+  for(let i=0;i<line.length;i++){const ch=line[i];if(ch==='"'){if(q&&line[i+1]==='"'){c+='"';i++}else q=!q}else if(ch===','&&!q){r.push(c);c=''}else c+=ch}
+  r.push(c); return r;
+}
+function parseCSV(csv) {
+  const lines=csv.replace(/\r/g,'').split('\n').filter(l=>l.trim());
+  const cols=parseCSVRow(lines[0]);
+  return lines.slice(1).map(l=>{const v=parseCSVRow(l);const o={};cols.forEach((c,i)=>{o[c]=v[i]||''});return o});
+}
+function parseNum(s){return Number(String(s).replace(/,/g,''))||0}
+function fixYm(ym){if(!ym)return'';const p=ym.substring(0,7).split('-');if(p.length===2)return p[0]+'-'+p[1].padStart(2,'0');return ym.substring(0,7)}
+function fmt(n){if(Math.abs(n)>=1e8)return(n/1e8).toFixed(1)+'억';if(Math.abs(n)>=1e7)return(n/1e7).toFixed(1)+'천만';if(Math.abs(n)>=1e4)return Math.round(n/1e4)+'만';return n.toLocaleString()}
+function yearShift(ym,d){const[y,m]=ym.split('-').map(Number);return`${y+d}-${String(m).padStart(2,'0')}`}
+function getMonday(d){const dt=new Date(d);const day=dt.getDay();dt.setDate(dt.getDate()-day+(day===0?-6:1));return dt}
+function dateStr(d){return d.toISOString().slice(0,10)}
+
+function getData(){if(currentTab==='클래스')return classData;if(currentTab==='턴키')return turnkeyData;return allData}
+
+async function fetchData(){
+  try{
+    const sheetUrl=n=>`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(n)}&headers=1&_t=${Date.now()}`;
+    const [salesR,classR,turnkeyR,targetR,puOnR,puOffR,rebuyR]=await Promise.all([
+      fetch(sheetUrl('시트1')),fetch(sheetUrl('클래스')),fetch(sheetUrl('턴키 결제내역')),fetch(TARGET_URL),
+      fetch(sheetUrl('PU온라인')),fetch(sheetUrl('PU오프라인')),fetch(sheetUrl('재구매분석'))
+    ]);
+    if(!salesR.ok)throw new Error('매출 데이터 로딩 실패');
+    allData=parseCSV(await salesR.text()).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['공급가']=parseNum(r['공급가']);r['수량']=parseNum(r['수량']);r['연월']=fixYm(r['연월']);if(r['주문일']&&r['주문일'].length>10)r['주문일']=r['주문일'].substring(0,10);return r});
+    if(classR.ok){const ct=await classR.text();if(ct.trim()){classData=parseCSV(ct).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['연월']=fixYm(r['연월']);if(r['주문일']&&r['주문일'].length>10)r['주문일']=r['주문일'].substring(0,10);return r})}}
+    if(turnkeyR.ok){const tt=await turnkeyR.text();if(tt.trim()){turnkeyData=parseCSV(tt).map(r=>{
+      r['매출금액']=parseNum(r['최종 결제액'])/1.1;r['공급가']=parseNum(r['총 공급가액'])/1.1;r['매출총이익']=parseNum(r['최종 매출총이익']);r['할인전금액']=parseNum(r['금액']);
+      const dt=r['결제 일자']||'';r['주문일']=dt.substring(0,10);r['연월']=fixYm(dt.substring(0,7));
+      r['카테고리']=r['카테고리']||'';return r})}}
+    if(puOnR.ok){const t=await puOnR.text();if(t.trim())puOnData=parseCSV(t).map(r=>{r['PU']=parseNum(r['PU']);return r})}
+    if(puOffR.ok){const t=await puOffR.text();if(t.trim())puOffData=parseCSV(t).map(r=>{r['PU']=parseNum(r['PU']);return r})}
+    if(rebuyR.ok){const t=await rebuyR.text();if(t.trim())rebuyData=parseCSV(t).map(r=>{
+      ['총구매자수','이탈고객수','재구매자수','신규구매자수'].forEach(k=>{r[k]=parseNum(r[k])});
+      ['이탈율','재구매율','신규구매비율'].forEach(k=>{r[k]=parseFloat(r[k])||0});return r})}
+    if(targetR.ok){const tr=parseCSV(await targetR.text());const mc=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];tr.forEach(r=>{const c=r['품목']||'';if(!c)return;targetData[c]={};mc.forEach((m,i)=>{targetData[c][i+1]=parseNum(r[m])})})}
+    initFilters();render();
+    document.getElementById('loadingMsg').style.display='none';
+    document.getElementById('dashboardContent').style.display='block';
+    document.getElementById('lastUpdated').textContent=`의료기기: ${allData.length}건 | 클래스: ${classData.length}건 | 턴키: ${turnkeyData.length}건 | ${new Date().toLocaleString('ko-KR')}`;
+  }catch(e){document.getElementById('loadingMsg').textContent='데이터 로딩 실패: '+e.message}
+}
+
+function switchTab(tab){
+  if(tab===currentTab)return;
+  currentTab=tab;
+  history.replaceState(null,null,'#'+encodeURIComponent(tab));
+  document.querySelectorAll('.tab[data-tab]').forEach(t=>{t.classList.toggle('active',t.dataset.tab===tab)});
+  drillCategory=null;selectedSuppliers=[];sortCol=-1;monthlyExpanded=false;detailTableExpanded=false;
+  document.getElementById('drillFilter').classList.remove('show');
+  document.getElementById('supplierSummary').style.display='none';
+  document.getElementById('detailSection').style.display='none';
+  document.getElementById('supplierPicker').style.display='none';
+  // Update filter visibility
+  document.getElementById('typeFilterGroup').style.display=(tab==='클래스'||tab==='턴키')?'none':'flex';
+  initFilters();render();
+}
+
+function initFilters(){
+  const data=getData();
+  const months=[...new Set(data.map(d=>d['연월']).filter(Boolean))].sort();
+  const catKey=currentTab==='클래스'?'카테고리':'카테고리';
+  const categories=[...new Set(data.map(d=>d[catKey]).filter(Boolean))].sort();
+  const nameKey=currentTab==='클래스'?'상품명':currentTab==='턴키'?'상품명':'공급업체';
+  const suppliers=[...new Set(data.map(d=>d[nameKey]).filter(Boolean))].sort();
+
+  if(months.length){document.getElementById('startMonth').value=months[0];document.getElementById('endMonth').value=months[months.length-1]}
+  const catSel=document.getElementById('categoryFilter');catSel.innerHTML='<option value="">전체</option>';
+  categories.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;catSel.appendChild(o)});
+  if(currentTab!=='클래스'){
+    const types=[...new Set(data.map(d=>d['구분']).filter(Boolean))].sort();
+    const typeSel=document.getElementById('typeFilter');typeSel.innerHTML='<option value="">전체</option>';
+    types.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;typeSel.appendChild(o)});
+  }
+  const cb=document.getElementById('supplierCheckboxes');
+  cb.innerHTML=suppliers.map(s=>`<label style="display:inline-flex;align-items:center;gap:3px;padding:3px 8px;background:#fff;border:1px solid #d0d0d0;border-radius:4px;font-size:12px;cursor:pointer;white-space:nowrap;"><input type="checkbox" class="sup-cb" value="${s}" onchange="onSupplierCheck()"> ${s}</label>`).join('');
+  ['startMonth','endMonth','categoryFilter','typeFilter'].forEach(id=>{
+    const el=document.getElementById(id);el.onchange=render;
+  });
+  // Update labels
+  const isMDTab=currentTab==='의료기기';
+  document.getElementById('supplierPickerBtn').textContent=isMDTab?'공급처 선택 ▾':'상품 선택 ▾';
+  document.getElementById('supplierChartTitle').textContent=isMDTab?'공급처별 매출':'상품별 매출';
+  document.getElementById('monthlyTableTitle').textContent=isMDTab?'공급처별 월별 매출':'상품별 월별 매출';
+  document.getElementById('detailTableTitle').textContent=isMDTab?'공급처별 매출 상세':'상품별 매출 상세';
+}
+
+function getFilteredData(){
+  const data=getData();
+  const start=document.getElementById('startMonth').value;
+  const end=document.getElementById('endMonth').value;
+  const cat=document.getElementById('categoryFilter').value;
+  const type=currentTab!=='클래스'?document.getElementById('typeFilter').value:'';
+  return data.filter(d=>{
+    if(start&&d['연월']<start)return false;if(end&&d['연월']>end)return false;
+    if(cat&&d['카테고리']!==cat)return false;
+    if(type&&d['구분']!==type)return false;
+    if(drillCategory&&d['카테고리']!==drillCategory)return false;
+    return true;
+  });
+}
+
+function getTargetForMonth(month){
+  if(currentTab==='턴키')return getTurnkeyTargetForMonth(month);
+  const m=parseInt(month.split('-')[1]);let total=0;
+  const cats=currentTab==='의료기기'?MD_CATEGORIES:currentTab==='클래스'?CLASS_CATEGORIES:[];
+  cats.forEach(c=>{if(targetData[c]&&targetData[c][m])total+=targetData[c][m]});
+  return total;
+}
+function getTargetForMonths(ms){return ms.reduce((s,m)=>s+getTargetForMonth(m),0)}
+
+function toggleSupplierPicker(){const el=document.getElementById('supplierPicker');el.style.display=el.style.display==='none'?'block':'none'}
+function onSupplierCheck(){selectedSuppliers=[...document.querySelectorAll('.sup-cb:checked')].map(cb=>cb.value);updateSupplierSummary();renderSupplierChart(getFilteredData());renderTable(getFilteredData())}
+function clearSupplierSelection(){document.querySelectorAll('.sup-cb').forEach(cb=>cb.checked=false);selectedSuppliers=[];document.getElementById('supplierSummary').style.display='none';renderSupplierChart(getFilteredData());renderTable(getFilteredData())}
+function updateSupplierSummary(){
+  const summary=document.getElementById('supplierSummary');
+  if(selectedSuppliers.length===0){summary.style.display='none';return}
+  summary.style.display='block';
+  const nk=currentTab==='의료기기'?'공급업체':'상품명';
+  const data=getFilteredData().filter(d=>selectedSuppliers.includes(d[nk]));
+  const ts=data.reduce((s,d)=>s+d['매출금액'],0);
+  const tc=data.reduce((s,d)=>s+(d['공급가']||0),0);
+  const cnt=data.length;const qty=data.reduce((s,d)=>s+(d['수량']||0),0);
+  const p=ts-tc;const pr=ts?(p/ts*100).toFixed(1):'-';
+  document.getElementById('sumSales').textContent=ts.toLocaleString()+'원';
+  document.getElementById('sumCount').textContent=cnt.toLocaleString()+'건';
+  if(currentTab==='클래스'){
+    document.getElementById('sumCostWrap').style.display='none';
+    document.getElementById('sumProfitWrap').style.display='none';
+    document.getElementById('sumQtyWrap').style.display='none';
+    document.getElementById('sumMarginWrap').style.display='none';
+  }else{
+    document.getElementById('sumCostWrap').style.display='';document.getElementById('sumProfitWrap').style.display='';
+    document.getElementById('sumQtyWrap').style.display='';document.getElementById('sumMarginWrap').style.display='';
+    document.getElementById('sumCost').textContent=tc.toLocaleString()+'원';
+    document.getElementById('sumProfitRate').textContent=pr+'%';
+    document.getElementById('sumQty').textContent=qty.toLocaleString()+'개';
+    document.getElementById('sumMargin').textContent=pr+'%';
+  }
+}
+
+function render(){
+  const data=getFilteredData();const isClass=currentTab!=='의료기기';const isTurnkey=currentTab==='턴키';const isMD=currentTab==='의료기기';
+  document.getElementById('supplierChartRow').style.display=isMD?'':'none';
+  if(isMD){
+    document.getElementById('trendRow').style.display='';
+    document.getElementById('classTrendRow').style.display='none';
+    document.getElementById('chartRow3').style.display='grid';
+    document.getElementById('typeChartCard').style.display='';
+    document.getElementById('categoryChartCard').style.display='';
+    document.getElementById('categoryPieCard').style.display='';
+  }else if(currentTab==='클래스'){
+    document.getElementById('trendRow').style.display='none';
+    document.getElementById('classTrendRow').style.display='';
+    document.getElementById('chartRow3').style.display='none';
+  }else{
+    // 턴키: 의료기기와 동일 트렌드, 차트 숨김
+    document.getElementById('trendRow').style.display='';
+    document.getElementById('classTrendRow').style.display='none';
+    document.getElementById('chartRow3').style.display='none';
+  }
+  renderKPIs();renderTrendChart(data);
+  if(currentTab==='클래스')renderTypeChart(data);
+  if(isMD){renderTypeChart(data);renderCategoryChart(data);renderCategoryPieChart(data);renderSupplierChart(data);}
+  renderTable(data);renderMonthlyTable(data);
+  // 클래스 전용: PU + 재구매
+  document.getElementById('detailRow').style.display=isTurnkey?'none':'';
+  document.getElementById('turnkeyKpiRow').style.display=isTurnkey?'grid':'none';
+  document.getElementById('profitMarginRow').style.display=isTurnkey?'':'none';
+  document.getElementById('navProfitMargin').style.display=isTurnkey?'':'none';
+  if(isTurnkey){renderTurnkeyKPI();renderProfitMargin()}
+  const isClassOnly=currentTab==='클래스';
+  document.getElementById('puRow').style.display=isClassOnly?'grid':'none';
+  document.getElementById('rebuyRow').style.display=isClassOnly?'':'none';
+  document.getElementById('navPU').style.display=isClassOnly?'':'none';
+  document.getElementById('navRebuy').style.display=isClassOnly?'':'none';
+  document.getElementById('navCharts').style.display=isMD?'':'none';
+  document.getElementById('navSupplier').style.display=isMD?'':'none';
+  if(isClassOnly){renderPU();renderRebuy()}
+}
+
+function renderKPIs(){
+  const today=new Date();const todayStr=dateStr(today);
+  const monday=getMonday(today);const sunday=new Date(monday);sunday.setDate(monday.getDate()+6);
+  const mondayStr=dateStr(monday);const sundayStr=dateStr(sunday);
+  const curMonth=todayStr.slice(0,7);const curYear=today.getFullYear();const curMon=today.getMonth()+1;
+  const qS=Math.floor((curMon-1)/3)*3+1;
+  const qMs=[qS,qS+1,qS+2].map(m=>`${curYear}-${String(m).padStart(2,'0')}`);
+  const data=getData();const cat=document.getElementById('categoryFilter').value;
+  const type=currentTab!=='클래스'?document.getElementById('typeFilter').value:'';
+  const dateKey=currentTab==='클래스'?'주문일':'주문일';
+  const fn=d=>{if(cat&&d['카테고리']!==cat)return false;if(type&&d['구분']!==type)return false;if(drillCategory&&d['카테고리']!==drillCategory)return false;return true};
+
+  // Week
+  const wD=data.filter(d=>fn(d)&&d[dateKey]>=mondayStr&&d[dateKey]<=sundayStr);
+  const wS=wD.reduce((s,d)=>s+d['매출금액'],0);
+  const dim=new Date(curYear,curMon,0).getDate();const wT=getTargetForMonth(curMonth)*(7/dim);
+  // 저번주
+  const prevMonday=new Date(monday);prevMonday.setDate(prevMonday.getDate()-7);
+  const prevSunday=new Date(prevMonday);prevSunday.setDate(prevMonday.getDate()+6);
+  const prevMondayStr=dateStr(prevMonday);const prevSundayStr=dateStr(prevSunday);
+  const pwS=data.filter(d=>fn(d)&&d[dateKey]>=prevMondayStr&&d[dateKey]<=prevSundayStr).reduce((s,d)=>s+d['매출금액'],0);
+  const wWow=pwS?((wS-pwS)/pwS*100):null;
+
+  // Month
+  const mD=data.filter(d=>fn(d)&&d['연월']===curMonth);
+  const mS=mD.reduce((s,d)=>s+d['매출금액'],0);const mT=getTargetForMonth(curMonth);
+  const pmYm=yearShift(curMonth,-1);const pmS=data.filter(d=>fn(d)&&d['연월']===pmYm).reduce((s,d)=>s+d['매출금액'],0);
+  const mY=pmS?((mS-pmS)/pmS*100):null;
+  // 저번달
+  const prevMonYm=`${curMon===1?curYear-1:curYear}-${String(curMon===1?12:curMon-1).padStart(2,'0')}`;
+  const prevMonS=data.filter(d=>fn(d)&&d['연월']===prevMonYm).reduce((s,d)=>s+d['매출금액'],0);
+  const mMom=prevMonS?((mS-prevMonS)/prevMonS*100):null;
+
+  // Quarter
+  const qD=data.filter(d=>fn(d)&&qMs.includes(d['연월']));const qS2=qD.reduce((s,d)=>s+d['매출금액'],0);const qT=getTargetForMonths(qMs);
+  const pqMs=qMs.map(m=>yearShift(m,-1));const pqS=data.filter(d=>fn(d)&&pqMs.includes(d['연월'])).reduce((s,d)=>s+d['매출금액'],0);
+  const qY=pqS?((qS2-pqS)/pqS*100):null;
+  // 직전분기
+  const prevQS=qS>3?qS-3:qS+9;const prevQY=qS>3?curYear:curYear-1;
+  const prevQMs=[prevQS,prevQS+1,prevQS+2].map(m=>`${prevQY}-${String(m).padStart(2,'0')}`);
+  const prevQSales=data.filter(d=>fn(d)&&prevQMs.includes(d['연월'])).reduce((s,d)=>s+d['매출금액'],0);
+  const qQoq=prevQSales?((qS2-prevQSales)/prevQSales*100):null;
+
+  const setKPI=(pre,sales,target,yoy,yoyLabel,prev,prevLabel,dates,color)=>{
+    const rate=target?(sales/target*100):0;
+    document.getElementById(pre+'Sales').textContent=fmt(sales);
+    document.getElementById(pre+'Rate').innerHTML=`<span class="${rate>=100?'up':'down'}">${rate.toFixed(0)}%</span>`;
+    document.getElementById(pre+'Target').textContent=`목표: ${Math.round(target).toLocaleString()}원`;
+    let subRight='';
+    if(yoy!==null)subRight+=`<span class="${yoy>=0?'up':'down'}">${yoyLabel} ${yoy>0?'+':''}${yoy.toFixed(1)}%</span>`;
+    if(prev!==null)subRight+=(subRight?' | ':'')+`<span class="${prev>=0?'up':'down'}">${prevLabel} ${prev>0?'+':''}${prev.toFixed(1)}%</span>`;
+    if(document.getElementById(pre+'Yoy'))document.getElementById(pre+'Yoy').innerHTML=subRight;
+    if(document.getElementById(pre+'Dates'))document.getElementById(pre+'Dates').textContent=dates||'';
+    document.getElementById(pre+'Bar').style.width=Math.min(rate,100)+'%';
+    document.getElementById(pre+'Bar').style.background=rate>=100?'#0d9488':color;
+  };
+  setKPI('kpiWeek',wS,wT,null,null,wWow,'WoW',`${mondayStr.slice(5)} ~ ${sundayStr.slice(5)}`,'#4285f4');
+  setKPI('kpiMonth',mS,mT,mY,'YoY',mMom,'MoM',null,'#34a853');
+  setKPI('kpiQtr',qS2,qT,qY,'YoY',qQoq,'QoQ',null,'#fbbc04');
+
+  // 턴키: 1행에 건수 표시
+  const isTK=currentTab==='턴키';
+  ['Week','Month','Qtr'].forEach(p=>{document.getElementById('kpi'+p+'CountRow').style.display=isTK?'':'none'});
+  if(isTK){
+    const wCids=new Set(wD.map(d=>d['CID']).filter(Boolean));
+    const mCids=new Set(mD.map(d=>d['CID']).filter(Boolean));
+    const qCids=new Set(qD.map(d=>d['CID']).filter(Boolean));
+    document.getElementById('kpiWeekCount').textContent='건수: '+wCids.size.toLocaleString()+'건';
+    document.getElementById('kpiMonthCount').textContent='건수: '+mCids.size.toLocaleString()+'건';
+    document.getElementById('kpiQtrCount').textContent='건수: '+qCids.size.toLocaleString()+'건';
+  }
+}
+
+function renderTrendChart(data){
+  const now=new Date();const curYm=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const months=[];for(let y=2025;;){for(let m=1;m<=12;m++){const ym=`${y}-${String(m).padStart(2,'0')}`;months.push(ym);if(ym===curYm)break}if(months[months.length-1]===curYm)break;y++}
+  const ad=getData();const cat=document.getElementById('categoryFilter').value;
+  const type=currentTab!=='클래스'?document.getElementById('typeFilter').value:'';
+  const tY={},pY={};
+  ad.forEach(d=>{if(cat&&d['카테고리']!==cat)return;if(type&&d['구분']!==type)return;if(drillCategory&&d['카테고리']!==drillCategory)return;
+    const ym=d['연월'];if(!ym)return;if(months.includes(ym))tY[ym]=(tY[ym]||0)+d['매출금액'];
+    const sh=yearShift(ym,1);if(months.includes(sh))pY[sh]=(pY[sh]||0)+d['매출금액']});
+  const yL=months.map(m=>{const c=tY[m]||0,p=pY[m]||0;if(!p)return'';const pc=((c-p)/p*100).toFixed(0);return(pc>0?'+':'')+pc+'%'});
+  let cfg;
+  if(currentTab==='클래스'){
+    // 클래스: 온라인/오프라인 스택 바 + 전년 바 나란히 + YoY 라벨
+    const onData={},offData={};
+    ad.forEach(d=>{if(cat&&d['카테고리']!==cat)return;if(drillCategory&&d['카테고리']!==drillCategory)return;
+      const ym=d['연월'];if(!ym||!months.includes(ym))return;
+      if(d['카테고리']==='온라인')onData[ym]=(onData[ym]||0)+d['매출금액'];
+      else if(d['카테고리']==='오프라인')offData[ym]=(offData[ym]||0)+d['매출금액'];
+    });
+    cfg={type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets:[
+      {label:'온라인',data:months.map(m=>onData[m]||0),backgroundColor:'#4285f4',borderRadius:0,stack:'thisYear',order:2,
+        datalabels:{display:false}},
+      {label:'오프라인',data:months.map(m=>offData[m]||0),backgroundColor:'#fbbc04',borderRadius:0,stack:'thisYear',order:2,
+        datalabels:{display:true,anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',
+          formatter:(v,ctx)=>{const i=ctx.dataIndex;const t=(onData[months[i]]||0)+(offData[months[i]]||0);const p=pY[months[i]]||0;
+            const yoy=p?((t-p)/p*100).toFixed(0):null;
+            return fmt(t)}}},
+      {label:'전년',data:months.map(m=>pY[m]||0),type:'line',borderColor:'#bbb',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,borderDash:[5,3],pointRadius:3,pointBackgroundColor:'#999',order:0,fill:false,
+        datalabels:{display:false}}
+    ]},plugins:[ChartDataLabels],options:{responsive:true,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{position:'top'},datalabels:{},
+        tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+fmt(ctx.raw),afterBody:items=>{const i=items[0].dataIndex;const t=(onData[months[i]]||0)+(offData[months[i]]||0);const p=pY[months[i]]||0;if(!p)return'';const pct=((t-p)/p*100).toFixed(1);return'YoY: '+(pct>0?'+':'')+pct+'%'}}}},
+      scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:v=>fmt(v)}}},
+      onClick:(e,el)=>{if(el.length>0){const ym=months[el[0].index];document.getElementById('startMonth').value=ym;document.getElementById('endMonth').value=ym;render()}}}};
+    if(trendChart2)trendChart2.destroy();trendChart2=new Chart(document.getElementById('trendChart2'),cfg);
+  }else{
+    const datasets=[
+      {label:'올해',data:months.map(m=>tY[m]||0),backgroundColor:'#4285f4',borderRadius:4,order:2},
+      {label:'전년',data:months.map(m=>pY[m]||0),type:'line',borderColor:'#bbb',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,borderDash:[5,3],pointRadius:3,pointBackgroundColor:'#999',order:0,fill:false}
+    ];
+    const scales={y:{ticks:{callback:v=>fmt(v)}}};
+    // 턴키: 매출총이익률 라인 추가 (우측 Y축)
+    if(currentTab==='턴키'){
+      const profitM={},salesM={};
+      ad.forEach(d=>{const ym=d['연월'];if(!ym||!months.includes(ym))return;profitM[ym]=(profitM[ym]||0)+(d['매출총이익']||0);salesM[ym]=(salesM[ym]||0)+d['매출금액']});
+      datasets.push({label:'매출총이익률',data:months.map(m=>salesM[m]?(profitM[m]/salesM[m]*100):null),type:'line',borderColor:'#0d9488',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,pointRadius:4,pointBackgroundColor:'#0d9488',order:0,fill:false,yAxisID:'y1'});
+      scales.y1={position:'right',grid:{drawOnChartArea:false},ticks:{callback:v=>v.toFixed(0)+'%'},min:0,max:50};
+    }
+    cfg={type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets},options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top'},
+      tooltip:{callbacks:{label:ctx=>{if(ctx.dataset.yAxisID==='y1')return ctx.dataset.label+': '+ctx.raw.toFixed(1)+'%';return ctx.dataset.label+': '+fmt(ctx.raw)},afterBody:items=>{const i=items[0].dataIndex;return yL[i]?'YoY: '+yL[i]:''}}}},
+      scales,onClick:(e,el)=>{if(el.length>0){const ym=months[el[0].index];document.getElementById('startMonth').value=ym;document.getElementById('endMonth').value=ym;render()}}}};
+    if(trendChart)trendChart.destroy();trendChart=new Chart(document.getElementById('trendChart'),cfg);
+  }
+}
+
+function renderTypeChart(data){
+  const isClass=currentTab!=='의료기기';
+  const key=isClass?'카테고리':'구분';
+  const types={};data.forEach(d=>{types[d[key]]=(types[d[key]]||0)+d['매출금액']});
+  const labels=Object.keys(types),values=Object.values(types);
+  const cfg={type:'doughnut',data:{labels,datasets:[{data:values,backgroundColor:COLORS.slice(0,labels.length),borderWidth:0}]},
+    options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:11}}},
+      tooltip:{callbacks:{label:ctx=>ctx.label+': '+fmt(ctx.raw)+' ('+(ctx.raw/values.reduce((a,b)=>a+b,0)*100).toFixed(1)+'%)'}}}}};
+  if(isClass){
+    document.getElementById('typeChartTitle2').textContent='온/오프라인 비중';
+    if(typeChart2)typeChart2.destroy();typeChart2=new Chart(document.getElementById('typeChart2'),cfg);
+  }else{
+    document.getElementById('typeChartTitle').textContent='구분별 매출 비중';
+    if(typeChart)typeChart.destroy();typeChart=new Chart(document.getElementById('typeChart'),cfg);
+  }
+}
+
+function renderCategoryChart(data){
+  const cats={};data.forEach(d=>{cats[d['카테고리']]=(cats[d['카테고리']]||0)+d['매출금액']});
+  const sorted=Object.entries(cats).sort((a,b)=>b[1]-a[1]);const labels=sorted.map(s=>s[0]),values=sorted.map(s=>s[1]);
+  const bg=labels.map((l,i)=>l===drillCategory?'#1a73e8':COLORS[i%COLORS.length]);
+  if(categoryChart)categoryChart.destroy();
+  categoryChart=new Chart(document.getElementById('categoryChart'),{type:'bar',data:{labels,datasets:[{data:values,backgroundColor:bg,borderRadius:4}]},
+    options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>fmt(ctx.raw)}}},scales:{x:{ticks:{callback:v=>fmt(v)}}},
+      onClick:(e,el)=>{if(el.length>0){const c=labels[el[0].index];if(drillCategory===c)clearDrill();else{drillCategory=c;document.getElementById('drillLabel').textContent=c;document.getElementById('drillFilter').classList.add('show');render()}}}}});
+}
+
+function renderCategoryPieChart(data){
+  const cats={};data.forEach(d=>{cats[d['카테고리']]=(cats[d['카테고리']]||0)+d['매출금액']});
+  const sorted=Object.entries(cats).sort((a,b)=>b[1]-a[1]);const labels=sorted.map(s=>s[0]),values=sorted.map(s=>s[1]);
+  if(categoryPieChart)categoryPieChart.destroy();
+  categoryPieChart=new Chart(document.getElementById('categoryPieChart'),{type:'doughnut',data:{labels,datasets:[{data:values,backgroundColor:COLORS.slice(0,labels.length),borderWidth:0}]},
+    options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:11}}},
+      tooltip:{callbacks:{label:ctx=>ctx.label+': '+fmt(ctx.raw)+' ('+(ctx.raw/values.reduce((a,b)=>a+b,0)*100).toFixed(1)+'%)'}}}}});
+}
+
+function renderSupplierChart(data){
+  const nk=currentTab==='의료기기'?'공급업체':'상품명';
+  const months=[...new Set(data.map(d=>d['연월']).filter(Boolean))].sort();
+  const cd=selectedSuppliers.length>0?data.filter(d=>selectedSuppliers.includes(d[nk])):data;
+  const st={};cd.forEach(d=>{if(d[nk])st[d[nk]]=(st[d[nk]]||0)+d['매출금액']});
+  const sups=Object.entries(st).sort((a,b)=>b[1]-a[1]).map(s=>s[0]);
+  const ds=sups.map((sup,i)=>{const md={};cd.filter(d=>d[nk]===sup).forEach(d=>{md[d['연월']]=(md[d['연월']]||0)+d['매출금액']});
+    return{label:sup,data:months.map(m=>md[m]||0),backgroundColor:COLORS[i%COLORS.length],
+      datalabels:{display:i===sups.length-1,anchor:'end',align:'end',font:{size:11,weight:'bold'},color:'#333',
+        formatter:(v,ctx)=>{const t=ctx.chart.data.datasets.reduce((s,ds)=>s+(ds.data[ctx.dataIndex]||0),0);return fmt(t)}}}});
+  if(supplierChart)supplierChart.destroy();
+  supplierChart=new Chart(document.getElementById('supplierChart'),{type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets:ds},plugins:[ChartDataLabels],
+    options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:12}},tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+fmt(ctx.raw)}},datalabels:{}},
+      scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:v=>fmt(v)}}},
+      onClick:(e,el)=>{if(el.length>0){const c=ds[el[0].datasetIndex].label;const cb=document.querySelector(`.sup-cb[value="${c}"]`);if(cb){cb.checked=!cb.checked;onSupplierCheck()}}}}});
+}
+
+function renderTable(data){
+  const nk=currentTab==='의료기기'?'공급업체':'상품명';
+  const isClass=currentTab!=='의료기기';
+  const head=document.getElementById('supplierHead');
+  if(isClass){head.innerHTML='<th onclick="sortTable(0)">상품명</th><th onclick="sortTable(1)" class="text-right">매출금액</th><th onclick="sortTable(2)" class="text-right">건수</th>'}
+  else{head.innerHTML='<th onclick="sortTable(0)">공급업체</th><th onclick="sortTable(1)" class="text-right">매출금액</th><th onclick="sortTable(2)" class="text-right">공급가</th><th onclick="sortTable(3)" class="text-right">건수</th><th onclick="sortTable(4)" class="text-right">수량</th><th onclick="sortTable(5)" class="text-right">마진율</th>'}
+  const groups={};data.forEach(d=>{const k=d[nk];if(!groups[k])groups[k]={name:d[nk],매출금액:0,공급가:0,건수:0,수량:0};
+    groups[k].매출금액+=d['매출금액'];groups[k].공급가+=(d['공급가']||0);groups[k].건수+=1;groups[k].수량+=(d['수량']||0)});
+  let rows=Object.values(groups).sort((a,b)=>b.매출금액-a.매출금액);
+  if(selectedSuppliers.length>0)rows=rows.filter(r=>selectedSuppliers.includes(r.name));
+  if(sortCol>=0){
+    const ks=isClass?['name','매출금액','건수']:['name','매출금액','공급가','건수','수량','margin'];
+    rows.sort((a,b)=>{let va,vb;const k=ks[sortCol];
+      if(k==='margin'){va=a.매출금액?(a.매출금액-a.공급가)/a.매출금액:0;vb=b.매출금액?(b.매출금액-b.공급가)/b.매출금액:0}
+      else{va=a[k];vb=b[k]}
+      if(typeof va==='string')return sortAsc?va.localeCompare(vb):vb.localeCompare(va);
+      return sortAsc?va-vb:vb-va})}
+  const LIMIT=20;
+  const needToggle=rows.length>LIMIT;
+  const visible=(!needToggle||detailTableExpanded)?rows:rows.slice(0,LIMIT);
+
+  const body=document.getElementById('supplierBody');
+  body.innerHTML=visible.map(r=>{
+    const esc=r.name.replace(/'/g,"\\'");
+    if(isClass)return`<tr><td><a href="#" onclick="showDetail('${esc}');return false;" style="color:#1a73e8;text-decoration:underline;cursor:pointer;">${r.name}</a></td><td class="text-right">${r.매출금액.toLocaleString()}</td><td class="text-right">${r.건수.toLocaleString()}</td></tr>`;
+    const mg=r.매출금액?((r.매출금액-r.공급가)/r.매출금액*100).toFixed(1):'-';
+    return`<tr><td><a href="#" onclick="showDetail('${esc}');return false;" style="color:#1a73e8;text-decoration:underline;cursor:pointer;">${r.name}</a></td><td class="text-right">${r.매출금액.toLocaleString()}</td><td class="text-right">${r.공급가.toLocaleString()}</td><td class="text-right">${r.건수.toLocaleString()}</td><td class="text-right">${r.수량.toLocaleString()}</td><td class="text-right">${mg}%</td></tr>`}).join('');
+
+  const toggleEl=document.getElementById('detailTableToggle');
+  if(needToggle){toggleEl.style.display='block';toggleEl.textContent=detailTableExpanded?'접기 ▲':`더보기 (${rows.length-LIMIT}개) ▼`}
+  else{toggleEl.style.display='none'}
+}
+
+let monthlyExpanded = false, detailTableExpanded = false;
+
+function renderMonthlyTable(data){
+  const nk=currentTab==='의료기기'?'공급업체':'상품명';
+  const months=[...new Set(data.map(d=>d['연월']).filter(Boolean))].sort();
+  const sups={};data.forEach(d=>{const s=d[nk];if(!s)return;if(!sups[s])sups[s]={total:0};sups[s][d['연월']]=(sups[s][d['연월']]||0)+d['매출금액'];sups[s].total+=d['매출금액']});
+  const sorted=Object.entries(sups).sort((a,b)=>b[1].total-a[1].total);
+  const label=currentTab==='의료기기'?'공급업체':'상품명';
+  const LIMIT=20;
+  const needToggle=sorted.length>LIMIT;
+  const visible=(!needToggle||monthlyExpanded)?sorted:sorted.slice(0,LIMIT);
+
+  document.getElementById('monthlyHead').innerHTML=`<th>${label}</th>`+months.map(m=>`<th class="text-right">${m.slice(2)}</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
+  document.getElementById('monthlyBody').innerHTML=visible.map(([s,v])=>`<tr><td>${s}</td>`+months.map(m=>`<td class="text-right">${(v[m]||0)?(v[m]||0).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${v.total.toLocaleString()}</td></tr>`).join('');
+
+  const toggleEl=document.getElementById('monthlyToggle');
+  if(needToggle){
+    toggleEl.style.display='block';
+    toggleEl.textContent=monthlyExpanded?`접기 ▲`:`더보기 (${sorted.length-LIMIT}개) ▼`;
+  }else{toggleEl.style.display='none'}
+}
+
+function toggleMonthlyTable(){monthlyExpanded=!monthlyExpanded;renderMonthlyTable(getFilteredData())}
+function toggleDetailTable(){detailTableExpanded=!detailTableExpanded;renderTable(getFilteredData())}
+
+function showDetail(name){
+  const nk=currentTab==='의료기기'?'공급업체':'상품명';const isClass=currentTab!=='의료기기';
+  const data=getFilteredData().filter(d=>d[nk]===name);
+  data.sort((a,b)=>(b['주문일']||'').localeCompare(a['주문일']||''));
+  document.getElementById('detailTitle').textContent=`${name} 매출 상세 (${data.length}건)`;
+  const dh=document.getElementById('detailHead');
+  if(isClass)dh.innerHTML='<th>주문일</th><th>소분류</th><th>카테고리</th><th class="text-right">매출금액</th>';
+  else dh.innerHTML='<th>주문일</th><th>한의원명</th><th>품목명</th><th>옵션명</th><th class="text-right">매출금액</th><th class="text-right">공급가</th><th class="text-right">수량</th><th>구분</th>';
+  document.getElementById('detailBody').innerHTML=data.map(d=>{
+    if(isClass)return`<tr><td>${d['주문일']||''}</td><td>${d['소분류']||''}</td><td>${d['카테고리']||''}</td><td class="text-right">${d['매출금액'].toLocaleString()}</td></tr>`;
+    return`<tr><td>${d['주문일']||''}</td><td>${d['한의원명']||''}</td><td>${d['품목명']||''}</td><td>${d['옵션명']||''}</td><td class="text-right">${d['매출금액'].toLocaleString()}</td><td class="text-right">${(d['공급가']||0).toLocaleString()}</td><td class="text-right">${(d['수량']||0).toLocaleString()}</td><td>${d['구분']||''}</td></tr>`}).join('');
+  document.getElementById('detailSection').style.display='block';
+  document.getElementById('detailSection').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function closeDetail(){document.getElementById('detailSection').style.display='none'}
+function sortTable(col){if(sortCol===col)sortAsc=!sortAsc;else{sortCol=col;sortAsc=col===0}render()}
+function clearDrill(){drillCategory=null;document.getElementById('drillFilter').classList.remove('show');render()}
+
+// URL 해시로 탭 초기화
+const hashTab=decodeURIComponent(location.hash.slice(1));
+const validTabs=['의료기기','클래스','턴키'];
+if(validTabs.includes(hashTab)){currentTab=hashTab;document.querySelectorAll('.tab[data-tab]').forEach(t=>{t.classList.toggle('active',t.dataset.tab===hashTab)})}
+function renderTurnkeyKPI(){
+  const today=new Date();const curYear=today.getFullYear();
+
+  // 연누적 (올해 전체)
+  const yearData=turnkeyData.filter(d=>d['연월']&&d['연월'].startsWith(String(curYear)));
+  const yearSales=yearData.reduce((s,d)=>s+d['매출금액'],0);
+  const yearProfit=yearData.reduce((s,d)=>s+(d['매출총이익']||0),0);
+  const yearCids=new Set(yearData.map(d=>d['CID']).filter(Boolean));
+  const yearTarget=TURNKEY_ANNUAL;
+  const yearAchieve=yearTarget?(yearSales/yearTarget*100):0;
+  const yearProfitRate=yearSales?(yearProfit/yearSales*100):0;
+
+  document.getElementById('tkYearSales').textContent=fmt(yearSales);
+  document.getElementById('tkYearCount').textContent='건수: '+yearCids.size.toLocaleString()+'건';
+  document.getElementById('tkYearProfitRate').textContent='이익률: '+yearProfitRate.toFixed(1)+'%';
+  document.getElementById('tkYearAchieve').textContent='달성률: '+yearAchieve.toFixed(1)+'%';
+  document.getElementById('tkYearBar').style.width=Math.min(yearAchieve,100)+'%';
+  document.getElementById('tkYearBar').style.background=yearAchieve>=100?'#0d9488':'#4285f4';
+
+  // Full/Half: CID별 연누적 합계 → 3000만 이상 Full
+  // Full/Half: CID별 할인전 금액 합계 기준 분류, 매출은 최종결제액/1.1 기준
+  const cidClassify={},cidSales={};
+  yearData.forEach(d=>{const cid=d['CID']||'';cidClassify[cid]=(cidClassify[cid]||0)+(d['할인전금액']||0);cidSales[cid]=(cidSales[cid]||0)+d['매출금액']});
+  let fullSales=0,fullCount=0,halfSales=0,halfCount=0;
+  Object.entries(cidClassify).forEach(([cid,classifyAmt])=>{
+    const sales=cidSales[cid]||0;
+    if(classifyAmt>=30000000){fullSales+=sales;fullCount++}
+    else{halfSales+=sales;halfCount++}
+  });
+  const totalCount=fullCount+halfCount;
+
+  document.getElementById('tkFullSales').textContent=fmt(fullSales);
+  document.getElementById('tkFullCount').textContent='건수: '+fullCount.toLocaleString()+'건';
+  document.getElementById('tkFullAvg').textContent='객단가: '+(fullCount?fmt(Math.round(fullSales/fullCount)):'-');
+  document.getElementById('tkFullRate').textContent='비율: '+(totalCount?(fullCount/totalCount*100).toFixed(0)+'%':'-');
+
+  document.getElementById('tkHalfSales').textContent=fmt(halfSales);
+  document.getElementById('tkHalfCount').textContent='건수: '+halfCount.toLocaleString()+'건';
+  document.getElementById('tkHalfAvg').textContent='객단가: '+(halfCount?fmt(Math.round(halfSales/halfCount)):'-');
+  document.getElementById('tkHalfRate').textContent='비율: '+(totalCount?(halfCount/totalCount*100).toFixed(0)+'%':'-');
+}
+
+function renderProfitMargin(){
+  const allMonths=['01','02','03','04','05','06','07','08','09','10','11','12'];
+  const years=['2025','2026'];
+  const rows=[];
+  years.forEach(y=>{
+    const profitByM={},salesByM={};
+    turnkeyData.forEach(d=>{
+      if(!d['연월']||!d['연월'].startsWith(y))return;
+      const m=d['연월'].split('-')[1];
+      profitByM[m]=(profitByM[m]||0)+(d['매출총이익']||0);
+      salesByM[m]=(salesByM[m]||0)+d['매출금액'];
+    });
+    // 월별
+    const cells=allMonths.map(m=>{
+      const s=salesByM[m]||0;const p=profitByM[m]||0;
+      return s?(p/s*100).toFixed(1)+'%':'-';
+    });
+    // 누적
+    const totalS=Object.values(salesByM).reduce((a,b)=>a+b,0);
+    const totalP=Object.values(profitByM).reduce((a,b)=>a+b,0);
+    const cumRate=totalS?(totalP/totalS*100).toFixed(1)+'%':'-';
+    rows.push({year:y,cells,cumRate});
+  });
+
+  document.getElementById('profitMarginHead').innerHTML='<th>연도</th>'+allMonths.map(m=>`<th class="text-right">${m}월</th>`).join('')+'<th class="text-right" style="font-weight:700;">누적</th>';
+  document.getElementById('profitMarginBody').innerHTML=rows.map(r=>
+    `<tr><td style="font-weight:700;">${r.year}</td>`+r.cells.map(c=>`<td class="text-right">${c}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${r.cumRate}</td></tr>`
+  ).join('');
+}
+
+function renderPU(){
+  const LIMIT=20;
+  // PU Online
+  const onMonths=[...new Set(puOnData.map(d=>d['연월']).filter(Boolean))].sort();
+  const onProds={};puOnData.forEach(d=>{const p=d['상품명'];if(!p)return;if(!onProds[p])onProds[p]={total:0};onProds[p][d['연월']]=(onProds[p][d['연월']]||0)+d['PU'];onProds[p].total+=d['PU']});
+  const onSorted=Object.entries(onProds).sort((a,b)=>b[1].total-a[1].total);
+  const onVisible=(!puOnExpanded&&onSorted.length>LIMIT)?onSorted.slice(0,LIMIT):onSorted;
+  // Monthly totals
+  const onTotals={};puOnData.forEach(d=>{onTotals[d['연월']]=(onTotals[d['연월']]||0)+d['PU']});
+  const onGrandTotal=Object.values(onTotals).reduce((s,v)=>s+v,0);
+
+  document.getElementById('puOnHead').innerHTML='<th>상품명</th>'+onMonths.map(m=>`<th class="text-right">${m.slice(2)}</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
+  document.getElementById('puOnBody').innerHTML=
+    onVisible.map(([p,v])=>`<tr><td>${p}</td>`+onMonths.map(m=>`<td class="text-right">${(v[m]||0)?v[m].toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${v.total.toLocaleString()}</td></tr>`).join('')+
+    `<tr style="font-weight:700;background:#f0f2f5;"><td>합계</td>`+onMonths.map(m=>`<td class="text-right">${(onTotals[m]||0).toLocaleString()}</td>`).join('')+`<td class="text-right">${onGrandTotal.toLocaleString()}</td></tr>`;
+  const onToggle=document.getElementById('puOnToggle');
+  if(onSorted.length>LIMIT){onToggle.style.display='block';onToggle.textContent=puOnExpanded?'접기 ▲':`더보기 (${onSorted.length-LIMIT}개) ▼`}else{onToggle.style.display='none'}
+
+  // PU Offline
+  const offMonths=[...new Set(puOffData.map(d=>d['연월']).filter(Boolean))].sort();
+  const offProds={};puOffData.forEach(d=>{const p=d['상품명'];if(!p)return;if(!offProds[p])offProds[p]={total:0};offProds[p][d['연월']]=(offProds[p][d['연월']]||0)+d['PU'];offProds[p].total+=d['PU']});
+  const offSorted=Object.entries(offProds).sort((a,b)=>b[1].total-a[1].total);
+  const offVisible=(!puOffExpanded&&offSorted.length>LIMIT)?offSorted.slice(0,LIMIT):offSorted;
+  const offTotals={};puOffData.forEach(d=>{offTotals[d['연월']]=(offTotals[d['연월']]||0)+d['PU']});
+  const offGrandTotal=Object.values(offTotals).reduce((s,v)=>s+v,0);
+
+  document.getElementById('puOffHead').innerHTML='<th>상품명</th>'+offMonths.map(m=>`<th class="text-right">${m.slice(2)}</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
+  document.getElementById('puOffBody').innerHTML=
+    offVisible.map(([p,v])=>`<tr><td>${p}</td>`+offMonths.map(m=>`<td class="text-right">${(v[m]||0)?v[m].toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${v.total.toLocaleString()}</td></tr>`).join('')+
+    `<tr style="font-weight:700;background:#f0f2f5;"><td>합계</td>`+offMonths.map(m=>`<td class="text-right">${(offTotals[m]||0).toLocaleString()}</td>`).join('')+`<td class="text-right">${offGrandTotal.toLocaleString()}</td></tr>`;
+  const offToggle=document.getElementById('puOffToggle');
+  if(offSorted.length>LIMIT){offToggle.style.display='block';offToggle.textContent=puOffExpanded?'접기 ▲':`더보기 (${offSorted.length-LIMIT}개) ▼`}else{offToggle.style.display='none'}
+}
+
+function renderRebuy(){
+  const sorted=[...rebuyData].sort((a,b)=>(a['연월']||'').localeCompare(b['연월']||''));
+  document.getElementById('rebuyHead').innerHTML='<th>연월</th><th class="text-right">총 구매자</th><th class="text-right">이탈 고객</th><th class="text-right">재구매</th><th class="text-right">신규 구매</th><th class="text-right">이탈율</th><th class="text-right">재구매율</th><th class="text-right">신규 구매 비율</th>';
+  document.getElementById('rebuyBody').innerHTML=sorted.map(r=>{
+    return`<tr><td>${r['연월']||''}</td><td class="text-right">${r['총구매자수'].toLocaleString()}</td><td class="text-right">${r['이탈고객수'].toLocaleString()}</td><td class="text-right">${r['재구매자수'].toLocaleString()}</td><td class="text-right">${r['신규구매자수'].toLocaleString()}</td><td class="text-right">${(r['이탈율']*100).toFixed(1)}%</td><td class="text-right">${(r['재구매율']*100).toFixed(1)}%</td><td class="text-right">${(r['신규구매비율']*100).toFixed(1)}%</td></tr>`}).join('');
+}
+
+function scrollTo2(id){
+  const el=document.getElementById(id);
+  if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+  return false;
+}
+
+// Scroll spy
+window.addEventListener('scroll',()=>{
+  const secs=['sec-kpi','sec-trend','sec-charts','sec-supplier-chart','sec-monthly','sec-detail'];
+  let active='sec-kpi';
+  for(const id of secs){const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<=160)active=id}
+  document.querySelectorAll('.side-nav a').forEach(a=>{a.classList.toggle('active',a.getAttribute('href')==='#'+active)});
+});
+
+fetchData();
+</script>
+</body>
+</html>
