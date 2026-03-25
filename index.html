@@ -267,7 +267,7 @@ const TARGET_SHEET_ID = '1Z8C_uiDHD6udIq7b9C79xlPxz4ERK5aC-vkoIbvTxic';
 const TARGET_URL = `https://docs.google.com/spreadsheets/d/${TARGET_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('26년 품목별 목표')}&_t=${Date.now()}`;
 
 let currentTab = '의료기기';
-let allData = [], classData = [], turnkeyData = [], puOnData = [], puOffData = [], rebuyData = [], targetData = {};
+let allData = [], classData = [], turnkeyData = [], pt10Data = [], puOnData = [], puOffData = [], rebuyData = [], targetData = {};
 let drillCategory = null, selectedSuppliers = [], sortCol = -1, sortAsc = true;
 let puOnExpanded = false, puOffExpanded = false;
 let trendChart, trendChart2, typeChart, typeChart2, categoryChart, categoryPieChart, supplierChart;
@@ -296,13 +296,13 @@ function yearShift(ym,d){const[y,m]=ym.split('-').map(Number);return`${y+d}-${St
 function getMonday(d){const dt=new Date(d);const day=dt.getDay();dt.setDate(dt.getDate()-day+(day===0?-6:1));return dt}
 function dateStr(d){return d.toISOString().slice(0,10)}
 
-function getData(){if(currentTab==='클래스')return classData;if(currentTab==='턴키')return turnkeyData;if(currentTab==='PT10')return allData.filter(d=>d['카테고리']==='PT10');return allData}
+function getData(){if(currentTab==='클래스')return classData;if(currentTab==='턴키')return turnkeyData;if(currentTab==='PT10')return pt10Data;return allData}
 
 async function fetchData(){
   try{
     const sheetUrl=n=>`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(n)}&headers=1&_t=${Date.now()}`;
-    const [salesR,classR,turnkeyR,targetR,puOnR,puOffR,rebuyR]=await Promise.all([
-      fetch(sheetUrl('일반기기')),fetch(sheetUrl('클래스')),fetch(sheetUrl('턴키 결제내역')),fetch(TARGET_URL),
+    const [salesR,classR,turnkeyR,pt10R,targetR,puOnR,puOffR,rebuyR]=await Promise.all([
+      fetch(sheetUrl('일반기기')),fetch(sheetUrl('클래스')),fetch(sheetUrl('턴키 결제내역')),fetch(sheetUrl('PT10')),fetch(TARGET_URL),
       fetch(sheetUrl('PU온라인')),fetch(sheetUrl('PU오프라인')),fetch(sheetUrl('재구매분석'))
     ]);
     if(!salesR.ok)throw new Error('매출 데이터 로딩 실패');
@@ -312,6 +312,7 @@ async function fetchData(){
       r['매출금액']=parseNum(r['최종 결제액'])/1.1;r['공급가']=parseNum(r['총 공급가액'])/1.1;r['매출총이익']=parseNum(r['최종 매출총이익']);r['할인전금액']=parseNum(r['금액']);
       const dt=String(r['결제 일자']||'');r['주문일']=dt.substring(0,10);r['연월']=fixYm(dt.substring(0,7));
       r['카테고리']=r['카테고리']||'';return r})}}}catch(e){console.warn('턴키 파싱 에러',e)}
+    try{if(pt10R.ok){const t=await pt10R.text();if(t.trim()){pt10Data=parseCSV(t).filter(r=>r['주문일']&&String(r['주문일']).trim()).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['수량']=parseNum(r['수량']);r['연월']=fixYm(r['연월']);if(r['주문일']&&r['주문일'].length>10)r['주문일']=r['주문일'].substring(0,10);return r})}}}catch(e){console.warn('PT10 에러',e)}
     try{if(puOnR.ok){const t=await puOnR.text();if(t.trim())puOnData=parseCSV(t).map(r=>{r['PU']=parseNum(r['PU']);return r})}}catch(e){console.warn('PU온라인 에러',e)}
     try{if(puOffR.ok){const t=await puOffR.text();if(t.trim())puOffData=parseCSV(t).map(r=>{r['PU']=parseNum(r['PU']);return r})}}catch(e){console.warn('PU오프라인 에러',e)}
     try{if(rebuyR.ok){const t=await rebuyR.text();if(t.trim())rebuyData=parseCSV(t).map(r=>{
@@ -321,7 +322,7 @@ async function fetchData(){
     initFilters();render();
     document.getElementById('loadingMsg').style.display='none';
     document.getElementById('dashboardContent').style.display='block';
-    document.getElementById('lastUpdated').textContent=`의료기기: ${allData.length}건 | 클래스: ${classData.length}건 | 턴키: ${turnkeyData.length}건 | ${new Date().toLocaleString('ko-KR')}`;
+    document.getElementById('lastUpdated').textContent=`의료기기: ${allData.length} | PT10: ${pt10Data.length} | 클래스: ${classData.length} | 턴키: ${turnkeyData.length} | ${new Date().toLocaleString('ko-KR')}`;
   }catch(e){document.getElementById('loadingMsg').textContent='데이터 로딩 실패: '+e.message}
 }
 
