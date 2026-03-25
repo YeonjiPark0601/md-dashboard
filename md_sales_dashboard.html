@@ -659,15 +659,15 @@ function renderTable(data) {
     });
   }
 
-  const isSelected = s => selectedSuppliers.length === 0 || selectedSuppliers.includes(s);
+  if (selectedSuppliers.length > 0) {
+    rows = rows.filter(r => selectedSuppliers.includes(r.공급업체));
+  }
 
   document.getElementById('supplierBody').innerHTML = rows.map(r => {
     const profit = r.매출금액 - r.공급가;
     const profitRate = r.매출금액 ? (profit / r.매출금액 * 100).toFixed(1) : '-';
     const margin = r.매출금액 ? (profit / r.매출금액 * 100).toFixed(1) : '-';
-    const highlighted = selectedSuppliers.length > 0 && isSelected(r.공급업체);
-    const dimmed = selectedSuppliers.length > 0 && !isSelected(r.공급업체);
-    const style = highlighted ? 'background:#eef3ff;' : dimmed ? 'opacity:0.4;' : '';
+    const style = '';
     return `<tr style="${style}">
       <td>${r.공급업체}</td>
       <td class="text-right">${r.매출금액.toLocaleString()}</td>
