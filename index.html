@@ -469,7 +469,7 @@ function updateSupplierSummary(){
   const tc=data.reduce((s,d)=>s+(d['공급가']||0),0);
   const cnt=data.length;const qty=data.reduce((s,d)=>s+(d['수량']||0),0);
   const p=ts-tc;const pr=ts?(p/ts*100).toFixed(1):'-';
-  document.getElementById('sumSales').textContent=ts.toLocaleString()+'원';
+  document.getElementById('sumSales').textContent=Math.round(ts).toLocaleString()+'원';
   document.getElementById('sumCount').textContent=cnt.toLocaleString()+'건';
   if(currentTab==='클래스'){
     document.getElementById('sumCostWrap').style.display='none';
@@ -479,7 +479,7 @@ function updateSupplierSummary(){
   }else{
     document.getElementById('sumCostWrap').style.display='';document.getElementById('sumProfitWrap').style.display='';
     document.getElementById('sumQtyWrap').style.display='';document.getElementById('sumMarginWrap').style.display='';
-    document.getElementById('sumCost').textContent=tc.toLocaleString()+'원';
+    document.getElementById('sumCost').textContent=Math.round(tc).toLocaleString()+'원';
     document.getElementById('sumProfitRate').textContent=pr+'%';
     document.getElementById('sumQty').textContent=qty.toLocaleString()+'개';
     document.getElementById('sumMargin').textContent=pr+'%';
@@ -737,9 +737,9 @@ function renderTable(data){
   const body=document.getElementById('supplierBody');
   body.innerHTML=visible.map(r=>{
     const esc=r.name.replace(/'/g,"\\'");
-    if(isClass)return`<tr><td><a href="#" onclick="showDetail('${esc}');return false;" style="color:#1a73e8;text-decoration:underline;cursor:pointer;">${r.name}</a></td><td class="text-right">${r.매출금액.toLocaleString()}</td><td class="text-right">${r.건수.toLocaleString()}</td></tr>`;
+    if(isClass)return`<tr><td><a href="#" onclick="showDetail('${esc}');return false;" style="color:#1a73e8;text-decoration:underline;cursor:pointer;">${r.name}</a></td><td class="text-right">${Math.round(r.매출금액).toLocaleString()}</td><td class="text-right">${r.건수.toLocaleString()}</td></tr>`;
     const mg=r.매출금액?((r.매출금액-r.공급가)/r.매출금액*100).toFixed(1):'-';
-    return`<tr><td><a href="#" onclick="showDetail('${esc}');return false;" style="color:#1a73e8;text-decoration:underline;cursor:pointer;">${r.name}</a></td><td class="text-right">${r.매출금액.toLocaleString()}</td><td class="text-right">${r.공급가.toLocaleString()}</td><td class="text-right">${r.건수.toLocaleString()}</td><td class="text-right">${r.수량.toLocaleString()}</td><td class="text-right">${mg}%</td></tr>`}).join('');
+    return`<tr><td><a href="#" onclick="showDetail('${esc}');return false;" style="color:#1a73e8;text-decoration:underline;cursor:pointer;">${r.name}</a></td><td class="text-right">${Math.round(r.매출금액).toLocaleString()}</td><td class="text-right">${Math.round(r.공급가).toLocaleString()}</td><td class="text-right">${r.건수.toLocaleString()}</td><td class="text-right">${r.수량.toLocaleString()}</td><td class="text-right">${mg}%</td></tr>`}).join('');
 
   const toggleEl=document.getElementById('detailTableToggle');
   if(needToggle){toggleEl.style.display='block';toggleEl.textContent=detailTableExpanded?'접기 ▲':`더보기 (${rows.length-LIMIT}개) ▼`}
@@ -759,7 +759,7 @@ function renderMonthlyTable(data){
   const visible=(!needToggle||monthlyExpanded)?sorted:sorted.slice(0,LIMIT);
 
   document.getElementById('monthlyHead').innerHTML=`<th>${label}</th>`+months.map(m=>`<th class="text-right">${m.slice(2)}</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
-  document.getElementById('monthlyBody').innerHTML=visible.map(([s,v])=>`<tr><td>${s}</td>`+months.map(m=>`<td class="text-right">${(v[m]||0)?(v[m]||0).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${v.total.toLocaleString()}</td></tr>`).join('');
+  document.getElementById('monthlyBody').innerHTML=visible.map(([s,v])=>`<tr><td>${s}</td>`+months.map(m=>`<td class="text-right">${(v[m]||0)?Math.round(v[m]||0).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(v.total).toLocaleString()}</td></tr>`).join('');
 
   const toggleEl=document.getElementById('monthlyToggle');
   if(needToggle){
@@ -780,8 +780,8 @@ function showDetail(name){
   if(isClass)dh.innerHTML='<th>주문일</th><th>소분류</th><th>카테고리</th><th class="text-right">매출금액</th>';
   else dh.innerHTML='<th>주문일</th><th>한의원명</th><th>품목명</th><th>옵션명</th><th class="text-right">매출금액</th><th class="text-right">공급가</th><th class="text-right">수량</th><th>구분</th>';
   document.getElementById('detailBody').innerHTML=data.map(d=>{
-    if(isClass)return`<tr><td>${d['주문일']||''}</td><td>${d['소분류']||''}</td><td>${d['카테고리']||''}</td><td class="text-right">${d['매출금액'].toLocaleString()}</td></tr>`;
-    return`<tr><td>${d['주문일']||''}</td><td>${d['한의원명']||''}</td><td>${d['품목명']||''}</td><td>${d['옵션명']||''}</td><td class="text-right">${d['매출금액'].toLocaleString()}</td><td class="text-right">${(d['공급가']||0).toLocaleString()}</td><td class="text-right">${(d['수량']||0).toLocaleString()}</td><td>${d['구분']||''}</td></tr>`}).join('');
+    if(isClass)return`<tr><td>${d['주문일']||''}</td><td>${d['소분류']||''}</td><td>${d['카테고리']||''}</td><td class="text-right">${Math.round(d['매출금액']).toLocaleString()}</td></tr>`;
+    return`<tr><td>${d['주문일']||''}</td><td>${d['한의원명']||''}</td><td>${d['품목명']||''}</td><td>${d['옵션명']||''}</td><td class="text-right">${Math.round(d['매출금액']).toLocaleString()}</td><td class="text-right">${Math.round(d['공급가']||0).toLocaleString()}</td><td class="text-right">${(d['수량']||0).toLocaleString()}</td><td>${d['구분']||''}</td></tr>`}).join('');
   document.getElementById('detailSection').style.display='block';
   document.getElementById('detailSection').scrollIntoView({behavior:'smooth',block:'start'});
 }
@@ -975,7 +975,7 @@ function renderPU(){
 
   document.getElementById('puOnHead').innerHTML='<th>상품명</th>'+onMonths.map(m=>`<th class="text-right">${m.slice(2)}</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
   document.getElementById('puOnBody').innerHTML=
-    onVisible.map(([p,v])=>`<tr><td>${p}</td>`+onMonths.map(m=>`<td class="text-right">${(v[m]||0)?v[m].toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${v.total.toLocaleString()}</td></tr>`).join('')+
+    onVisible.map(([p,v])=>`<tr><td>${p}</td>`+onMonths.map(m=>`<td class="text-right">${(v[m]||0)?Math.round(v[m]).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(v.total).toLocaleString()}</td></tr>`).join('')+
     `<tr style="font-weight:700;background:#f0f2f5;"><td>합계</td>`+onMonths.map(m=>`<td class="text-right">${(onTotals[m]||0).toLocaleString()}</td>`).join('')+`<td class="text-right">${onGrandTotal.toLocaleString()}</td></tr>`;
   const onToggle=document.getElementById('puOnToggle');
   if(onSorted.length>LIMIT){onToggle.style.display='block';onToggle.textContent=puOnExpanded?'접기 ▲':`더보기 (${onSorted.length-LIMIT}개) ▼`}else{onToggle.style.display='none'}
@@ -990,7 +990,7 @@ function renderPU(){
 
   document.getElementById('puOffHead').innerHTML='<th>상품명</th>'+offMonths.map(m=>`<th class="text-right">${m.slice(2)}</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
   document.getElementById('puOffBody').innerHTML=
-    offVisible.map(([p,v])=>`<tr><td>${p}</td>`+offMonths.map(m=>`<td class="text-right">${(v[m]||0)?v[m].toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${v.total.toLocaleString()}</td></tr>`).join('')+
+    offVisible.map(([p,v])=>`<tr><td>${p}</td>`+offMonths.map(m=>`<td class="text-right">${(v[m]||0)?Math.round(v[m]).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(v.total).toLocaleString()}</td></tr>`).join('')+
     `<tr style="font-weight:700;background:#f0f2f5;"><td>합계</td>`+offMonths.map(m=>`<td class="text-right">${(offTotals[m]||0).toLocaleString()}</td>`).join('')+`<td class="text-right">${offGrandTotal.toLocaleString()}</td></tr>`;
   const offToggle=document.getElementById('puOffToggle');
   if(offSorted.length>LIMIT){offToggle.style.display='block';offToggle.textContent=puOffExpanded?'접기 ▲':`더보기 (${offSorted.length-LIMIT}개) ▼`}else{offToggle.style.display='none'}
