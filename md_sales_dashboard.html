@@ -399,7 +399,7 @@ function renderTrendChart(data){
   const isClass=currentTab==='클래스';
   let cfg;
   if(isClass){
-    // 클래스: 온라인/오프라인 스택 바 + 전년 라인
+    // 클래스: 온라인/오프라인 스택 바 + 전년 바 나란히 + YoY 라벨
     const onData={},offData={};
     ad.forEach(d=>{if(cat&&d['카테고리']!==cat)return;if(drillCategory&&d['카테고리']!==drillCategory)return;
       const ym=d['연월'];if(!ym||!months.includes(ym))return;
@@ -407,11 +407,18 @@ function renderTrendChart(data){
       else if(d['카테고리']==='오프라인')offData[ym]=(offData[ym]||0)+d['매출금액'];
     });
     cfg={type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets:[
-      {label:'온라인',data:months.map(m=>onData[m]||0),backgroundColor:'#4285f4',borderRadius:0,stack:'a',order:2},
-      {label:'오프라인',data:months.map(m=>offData[m]||0),backgroundColor:'#fbbc04',borderRadius:0,stack:'a',order:2},
-      {label:'전년 합계',data:months.map(m=>pY[m]||0),type:'line',borderColor:'#e0e0e0',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,borderDash:[5,3],pointRadius:3,pointBackgroundColor:'#999',order:1,fill:false}
-    ]},options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top'},
-      tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+fmt(ctx.raw),afterBody:items=>{const i=items[0].dataIndex;return yL[i]?'YoY: '+yL[i]:''}}}},
+      {label:'온라인',data:months.map(m=>onData[m]||0),backgroundColor:'#4285f4',borderRadius:0,stack:'thisYear',
+        datalabels:{display:false}},
+      {label:'오프라인',data:months.map(m=>offData[m]||0),backgroundColor:'#fbbc04',borderRadius:0,stack:'thisYear',
+        datalabels:{display:true,anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',
+          formatter:(v,ctx)=>{const i=ctx.dataIndex;const t=(onData[months[i]]||0)+(offData[months[i]]||0);const p=pY[months[i]]||0;
+            const yoy=p?((t-p)/p*100).toFixed(0):null;
+            return fmt(t)+(yoy!==null?'\n'+(yoy>0?'+':'')+yoy+'%':'')}}},
+      {label:'전년',data:months.map(m=>pY[m]||0),backgroundColor:'#e0e0e0',borderRadius:4,stack:'prevYear',
+        datalabels:{display:false}}
+    ]},plugins:[ChartDataLabels],options:{responsive:true,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{position:'top'},datalabels:{},
+        tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+fmt(ctx.raw)}}},
       scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:v=>fmt(v)}}},
       onClick:(e,el)=>{if(el.length>0){const ym=months[el[0].index];document.getElementById('startMonth').value=ym;document.getElementById('endMonth').value=ym;render()}}}};
     if(trendChart2)trendChart2.destroy();trendChart2=new Chart(document.getElementById('trendChart2'),cfg);
