@@ -38,6 +38,7 @@ body { font-family: 'Segoe UI', -apple-system, sans-serif; background: #f0f2f5; 
 .up { color: #0d9488; }
 .down { color: #e53e3e; }
 .chart-row { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 20px; }
+.chart-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
 .chart-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
 .chart-card h3 { font-size: 14px; font-weight: 600; color: #555; margin-bottom: 12px; }
 .chart-row-full { margin-bottom: 20px; }
@@ -56,6 +57,7 @@ tr:hover { background: #f7f9fc; }
 @media (max-width: 900px) {
   .kpi-row { grid-template-columns: 1fr; }
   .chart-row { grid-template-columns: 1fr; }
+  .chart-row-3 { grid-template-columns: 1fr; }
   .filters { flex-direction: column; align-items: flex-start; }
   .tabs { overflow-x: auto; }
 }
@@ -143,25 +145,25 @@ tr:hover { background: #f7f9fc; }
     </div>
 
     <!-- Charts -->
-    <div class="chart-row">
+    <div class="chart-row-full">
       <div class="chart-card">
-        <h3>월별 매출 트렌드 (YoY)</h3>
-        <canvas id="trendChart" height="80"></canvas>
-      </div>
-      <div class="chart-card">
-        <h3>구분별 매출 비중</h3>
-        <canvas id="typeChart" height="160"></canvas>
+        <h3>월별 매출 트렌드 (YoY) — 25년 1월~현재</h3>
+        <canvas id="trendChart" height="50"></canvas>
       </div>
     </div>
 
-    <div class="chart-row">
+    <div class="chart-row-3">
+      <div class="chart-card">
+        <h3>구분별 매출 비중</h3>
+        <canvas id="typeChart" height="200"></canvas>
+      </div>
       <div class="chart-card">
         <h3>카테고리별 매출 (클릭하여 필터)</h3>
-        <canvas id="categoryChart" height="80"></canvas>
+        <canvas id="categoryChart" height="200"></canvas>
       </div>
       <div class="chart-card">
         <h3>카테고리별 매출 비중</h3>
-        <canvas id="categoryPieChart" height="160"></canvas>
+        <canvas id="categoryPieChart" height="200"></canvas>
       </div>
     </div>
 
@@ -543,19 +545,33 @@ function renderKPIs() {
 }
 
 function renderTrendChart(data) {
-  const months = [...new Set(data.map(d => d['연월']))].sort();
-  const thisYear = {}, prevYear = {};
+  // 25년 1월 ~ 현재 월 고정 (기간 필터 무관)
+  const now = new Date();
+  const curYm = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const months = [];
+  for (let y = 2025; ; ) {
+    for (let m = (y === 2025 ? 1 : 1); m <= 12; m++) {
+      const ym = `${y}-${String(m).padStart(2,'0')}`;
+      months.push(ym);
+      if (ym === curYm) break;
+    }
+    if (months[months.length-1] === curYm) break;
+    y++;
+  }
+
   const cat = document.getElementById('categoryFilter').value;
   const type = document.getElementById('typeFilter').value;
 
-  data.forEach(d => { thisYear[d['연월']] = (thisYear[d['연월']] || 0) + d['매출금액']; });
-
+  const thisYear = {}, prevYear = {};
   allData.forEach(d => {
     if (cat && d['카테고리'] !== cat) return;
     if (type && d['구분'] !== type) return;
     if (drillCategory && d['카테고리'] !== drillCategory) return;
     const ym = d['연월'];
     if (!ym) return;
+    if (months.includes(ym)) {
+      thisYear[ym] = (thisYear[ym] || 0) + d['매출금액'];
+    }
     const shifted = yearShift(ym, 1);
     if (months.includes(shifted)) {
       prevYear[shifted] = (prevYear[shifted] || 0) + d['매출금액'];
