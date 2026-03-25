@@ -845,17 +845,22 @@ function renderPT10CartTrend(){
     const monthSales={},monthQty={};
     cartData.filter(d=>d['상세']===det).forEach(d=>{if(months.includes(d['연월'])){monthSales[d['연월']]=(monthSales[d['연월']]||0)+d['매출금액'];monthQty[d['연월']]=(monthQty[d['연월']]||0)+d['수량']}});
     return[
-      {label:det+' 매출',data:months.map(m=>monthSales[m]||0),backgroundColor:COLORS[i%COLORS.length],stack:'sales',order:2,yAxisID:'y',
+      {label:det,data:months.map(m=>monthSales[m]||0),backgroundColor:COLORS[i%COLORS.length],stack:'sales',order:2,yAxisID:'y',_detIdx:i,
         datalabels:{display:i===details.length-1,anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',
           formatter:(v,ctx)=>{const t=ctx.chart.data.datasets.filter(ds=>ds.stack==='sales').reduce((s,ds)=>s+(ds.data[ctx.dataIndex]||0),0);return fmt(Math.round(t))}}},
-      {label:det+' 수량',data:months.map(m=>monthQty[m]||0),backgroundColor:COLORS[i%COLORS.length]+'88',stack:'qty',order:2,yAxisID:'y1',datalabels:{display:false}}
+      {label:det+' 수량',data:months.map(m=>monthQty[m]||0),backgroundColor:COLORS[i%COLORS.length]+'88',stack:'qty',order:2,yAxisID:'y1',_detIdx:i,_hidden:false,datalabels:{display:false}}
     ];
   }).flat();
 
   if(pt10CartTrendChart)pt10CartTrendChart.destroy();
   pt10CartTrendChart=new Chart(document.getElementById('pt10CartChart'),{type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets},plugins:[ChartDataLabels],
     options:{responsive:true,interaction:{mode:'index',intersect:false},
-      plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:12}},tooltip:{callbacks:{label:ctx=>{if(ctx.dataset.yAxisID==='y1')return ctx.dataset.label+': '+ctx.raw.toLocaleString()+'개';return ctx.dataset.label+': '+fmt(Math.round(ctx.raw))}}},datalabels:{}},
+      plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:12,filter:item=>!item.text.endsWith(' 수량')},
+        onClick:(e,item,legend)=>{const ci=item.datasetIndex;const chart=legend.chart;const ds=chart.data.datasets;
+          chart.setDatasetVisibility(ci,!chart.isDatasetVisible(ci));
+          const detIdx=ds[ci]._detIdx;ds.forEach((d,j)=>{if(j!==ci&&d._detIdx===detIdx)chart.setDatasetVisibility(j,chart.isDatasetVisible(ci))});
+          chart.update()}},
+        tooltip:{callbacks:{label:ctx=>{if(ctx.dataset.yAxisID==='y1')return ctx.dataset.label+': '+ctx.raw.toLocaleString()+'개';return ctx.dataset.label+': '+fmt(Math.round(ctx.raw))}}},datalabels:{}},
       scales:{x:{stacked:true},y:{stacked:true,position:'left',ticks:{callback:v=>fmt(v)}},y1:{stacked:true,position:'right',grid:{drawOnChartArea:false},ticks:{callback:v=>v.toLocaleString()+'개'}}}}});
 }
 
