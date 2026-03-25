@@ -404,8 +404,9 @@ function render(){
     document.getElementById('classTrendRow').style.display='none';
     document.getElementById('chartRow3').style.display='none';
   }
-  renderKPIs();renderTrendChart(data);renderTypeChart(data);
-  if(!isClass){renderCategoryChart(data);renderCategoryPieChart(data);renderSupplierChart(data);}
+  renderKPIs();renderTrendChart(data);
+  if(currentTab==='클래스')renderTypeChart(data);
+  if(isMD){renderTypeChart(data);renderCategoryChart(data);renderCategoryPieChart(data);renderSupplierChart(data);}
   renderTable(data);renderMonthlyTable(data);
   // 클래스 전용: PU + 재구매
   const isClassOnly=currentTab==='클래스';
