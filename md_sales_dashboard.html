@@ -337,6 +337,9 @@ function render(){
     document.getElementById('trendRow').style.display='';
     document.getElementById('classTrendRow').style.display='none';
     document.getElementById('chartRow3').style.display='grid';
+    document.getElementById('typeChartCard').style.display='';
+    document.getElementById('categoryChartCard').style.display='';
+    document.getElementById('categoryPieCard').style.display='';
   }
   renderKPIs();renderTrendChart(data);renderTypeChart(data);
   if(!isClass){renderCategoryChart(data);renderCategoryPieChart(data);renderSupplierChart(data);}
