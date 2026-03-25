@@ -239,6 +239,9 @@ let trendChart, trendChart2, typeChart, typeChart2, categoryChart, categoryPieCh
 
 const MD_CATEGORIES = ['비내시경','네오펙트','팀엘리시움','메디코아','DSE','PT10','옴니핏','그 외'];
 const CLASS_CATEGORIES = ['강의-온라인','강의-오프라인'];
+const TURNKEY_ANNUAL = 4625000000;
+const TURNKEY_DAILY = TURNKEY_ANNUAL / 365;
+function getTurnkeyTargetForMonth(month){const [y,m]=month.split('-').map(Number);return TURNKEY_DAILY * new Date(y,m,0).getDate()}
 const COLORS = ['#4285f4','#ea4335','#fbbc04','#34a853','#ff6d01','#46bdc6','#9334e6','#e8710a','#1a73e8','#e91e63','#00bcd4','#8bc34a','#ff9800','#795548','#607d8b','#3f51b5','#009688','#cddc39','#ff5722','#9e9e9e','#5c6bc0','#26a69a','#d4e157','#ef5350','#78909c','#7e57c2','#66bb6a','#ffa726','#8d6e63','#90a4ae'];
 
 function parseCSVRow(line) {
@@ -347,6 +350,7 @@ function getFilteredData(){
 }
 
 function getTargetForMonth(month){
+  if(currentTab==='턴키')return getTurnkeyTargetForMonth(month);
   const m=parseInt(month.split('-')[1]);let total=0;
   const cats=currentTab==='의료기기'?MD_CATEGORIES:currentTab==='클래스'?CLASS_CATEGORIES:[];
   cats.forEach(c=>{if(targetData[c]&&targetData[c][m])total+=targetData[c][m]});
