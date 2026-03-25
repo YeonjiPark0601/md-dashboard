@@ -57,6 +57,9 @@ tr:hover { background: #f7f9fc; }
 .loading { text-align: center; padding: 60px; color: #888; font-size: 16px; }
 #monthlyTable th:first-child, #monthlyTable td:first-child { position: sticky; left: 0; background: #fff; z-index: 1; min-width: 140px; }
 #monthlyTable th:first-child { background: #f7f8fa; }
+.pt10-sticky th:nth-child(1),.pt10-sticky td:nth-child(1){position:sticky;left:0;background:#f7f8fa;z-index:2;min-width:80px;}
+.pt10-sticky th:nth-child(2),.pt10-sticky td:nth-child(2){position:sticky;left:80px;background:#fff;z-index:1;min-width:60px;}
+.pt10-sticky th:nth-child(1),.pt10-sticky th:nth-child(2){background:#f7f8fa;}
 @media (max-width: 900px) {
   .kpi-row { grid-template-columns: 1fr; }
   .chart-row { grid-template-columns: 1fr; }
@@ -265,43 +268,43 @@ tr:hover { background: #f7f9fc; }
     <div class="chart-row-full" id="pt10SummaryRow" style="display:none;">
       <div class="table-card">
         <h3>26년 월별 수량 / 매출</h3>
-        <div style="overflow-x:auto;"><table id="pt10SummaryTable"><thead><tr id="pt10SummaryHead"></tr></thead><tbody id="pt10SummaryBody"></tbody></table></div>
+        <div style="overflow-x:auto;"><table id="pt10SummaryTable" class="pt10-sticky"><thead><tr id="pt10SummaryHead"></tr></thead><tbody id="pt10SummaryBody"></tbody></table></div>
       </div>
     </div>
     <div class="chart-row-full" id="pt10CartRow" style="display:none;">
       <div class="table-card">
         <h3>26년 카트리지 상세 수량 / 매출</h3>
-        <div style="overflow-x:auto;"><table id="pt10CartTable"><thead><tr id="pt10CartHead"></tr></thead><tbody id="pt10CartBody"></tbody></table></div>
+        <div style="overflow-x:auto;"><table id="pt10CartTable" class="pt10-sticky"><thead><tr id="pt10CartHead"></tr></thead><tbody id="pt10CartBody"></tbody></table></div>
       </div>
     </div>
     <div class="chart-row-full" id="pt10Summary2025Row" style="display:none;">
       <div class="table-card"><h3>25년 월별 수량 / 매출</h3>
-        <div style="overflow-x:auto;"><table><thead><tr id="pt10Summary2025Head"></tr></thead><tbody id="pt10Summary2025Body"></tbody></table></div>
+        <div style="overflow-x:auto;"><table class="pt10-sticky"><thead><tr id="pt10Summary2025Head"></tr></thead><tbody id="pt10Summary2025Body"></tbody></table></div>
       </div>
     </div>
     <div class="chart-row-full" id="pt10Cart2025Row" style="display:none;">
       <div class="table-card"><h3>25년 카트리지 상세 수량 / 매출</h3>
-        <div style="overflow-x:auto;"><table><thead><tr id="pt10Cart2025Head"></tr></thead><tbody id="pt10Cart2025Body"></tbody></table></div>
+        <div style="overflow-x:auto;"><table class="pt10-sticky"><thead><tr id="pt10Cart2025Head"></tr></thead><tbody id="pt10Cart2025Body"></tbody></table></div>
       </div>
     </div>
     <div class="chart-row-full" id="pt10Summary2024Row" style="display:none;">
       <div class="table-card"><h3>24년 월별 수량 / 매출</h3>
-        <div style="overflow-x:auto;"><table><thead><tr id="pt10Summary2024Head"></tr></thead><tbody id="pt10Summary2024Body"></tbody></table></div>
+        <div style="overflow-x:auto;"><table class="pt10-sticky"><thead><tr id="pt10Summary2024Head"></tr></thead><tbody id="pt10Summary2024Body"></tbody></table></div>
       </div>
     </div>
     <div class="chart-row-full" id="pt10Cart2024Row" style="display:none;">
       <div class="table-card"><h3>24년 카트리지 상세 수량 / 매출</h3>
-        <div style="overflow-x:auto;"><table><thead><tr id="pt10Cart2024Head"></tr></thead><tbody id="pt10Cart2024Body"></tbody></table></div>
+        <div style="overflow-x:auto;"><table class="pt10-sticky"><thead><tr id="pt10Cart2024Head"></tr></thead><tbody id="pt10Cart2024Body"></tbody></table></div>
       </div>
     </div>
     <div class="chart-row-full" id="pt10Summary2023Row" style="display:none;">
       <div class="table-card"><h3>23년 월별 수량 / 매출</h3>
-        <div style="overflow-x:auto;"><table><thead><tr id="pt10Summary2023Head"></tr></thead><tbody id="pt10Summary2023Body"></tbody></table></div>
+        <div style="overflow-x:auto;"><table class="pt10-sticky"><thead><tr id="pt10Summary2023Head"></tr></thead><tbody id="pt10Summary2023Body"></tbody></table></div>
       </div>
     </div>
     <div class="chart-row-full" id="pt10Cart2023Row" style="display:none;">
       <div class="table-card"><h3>23년 카트리지 상세 수량 / 매출</h3>
-        <div style="overflow-x:auto;"><table><thead><tr id="pt10Cart2023Head"></tr></thead><tbody id="pt10Cart2023Body"></tbody></table></div>
+        <div style="overflow-x:auto;"><table class="pt10-sticky"><thead><tr id="pt10Cart2023Head"></tr></thead><tbody id="pt10Cart2023Body"></tbody></table></div>
       </div>
     </div>
     <!-- 턴키 전용: 월별 매출총이익률 테이블 -->
@@ -839,21 +842,21 @@ function renderPT10CartTrend(){
 
   // Stacked bars for sales by 상세
   const datasets=details.map((det,i)=>{
-    const monthData={};cartData.filter(d=>d['상세']===det).forEach(d=>{if(months.includes(d['연월']))monthData[d['연월']]=(monthData[d['연월']]||0)+d['매출금액']});
-    return{label:det+' 매출',data:months.map(m=>monthData[m]||0),backgroundColor:COLORS[i%COLORS.length],stack:'sales',order:2,yAxisID:'y',
-      datalabels:{display:i===details.length-1,anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',
-        formatter:(v,ctx)=>{const t=ctx.chart.data.datasets.filter(ds=>ds.stack==='sales').reduce((s,ds)=>s+(ds.data[ctx.dataIndex]||0),0);return fmt(Math.round(t))}}};
-  });
-
-  // Line for total quantity
-  const qtyByMonth={};cartData.forEach(d=>{if(months.includes(d['연월']))qtyByMonth[d['연월']]=(qtyByMonth[d['연월']]||0)+d['수량']});
-  datasets.push({label:'총 수량',data:months.map(m=>qtyByMonth[m]||0),type:'line',borderColor:'#333',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,pointRadius:3,pointBackgroundColor:'#333',order:0,fill:false,yAxisID:'y1',datalabels:{display:false}});
+    const monthSales={},monthQty={};
+    cartData.filter(d=>d['상세']===det).forEach(d=>{if(months.includes(d['연월'])){monthSales[d['연월']]=(monthSales[d['연월']]||0)+d['매출금액'];monthQty[d['연월']]=(monthQty[d['연월']]||0)+d['수량']}});
+    return[
+      {label:det+' 매출',data:months.map(m=>monthSales[m]||0),backgroundColor:COLORS[i%COLORS.length],stack:'sales',order:2,yAxisID:'y',
+        datalabels:{display:i===details.length-1,anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',
+          formatter:(v,ctx)=>{const t=ctx.chart.data.datasets.filter(ds=>ds.stack==='sales').reduce((s,ds)=>s+(ds.data[ctx.dataIndex]||0),0);return fmt(Math.round(t))}}},
+      {label:det+' 수량',data:months.map(m=>monthQty[m]||0),backgroundColor:COLORS[i%COLORS.length]+'88',stack:'qty',order:2,yAxisID:'y1',datalabels:{display:false}}
+    ];
+  }).flat();
 
   if(pt10CartTrendChart)pt10CartTrendChart.destroy();
   pt10CartTrendChart=new Chart(document.getElementById('pt10CartChart'),{type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets},plugins:[ChartDataLabels],
     options:{responsive:true,interaction:{mode:'index',intersect:false},
       plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:12}},tooltip:{callbacks:{label:ctx=>{if(ctx.dataset.yAxisID==='y1')return ctx.dataset.label+': '+ctx.raw.toLocaleString()+'개';return ctx.dataset.label+': '+fmt(Math.round(ctx.raw))}}},datalabels:{}},
-      scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:v=>fmt(v)}},y1:{position:'right',grid:{drawOnChartArea:false},ticks:{callback:v=>v.toLocaleString()+'개'}}}}});
+      scales:{x:{stacked:true},y:{stacked:true,position:'left',ticks:{callback:v=>fmt(v)}},y1:{stacked:true,position:'right',grid:{drawOnChartArea:false},ticks:{callback:v=>v.toLocaleString()+'개'}}}}});
 }
 
 function renderPT10SummaryYear(year,headId,bodyId){
