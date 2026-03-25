@@ -164,6 +164,13 @@ tr:hover { background: #f7f9fc; }
       </div>
     </div>
 
+    <div class="chart-row-full">
+      <div class="chart-card">
+        <h3>공급처별 매출 (클릭하여 필터)</h3>
+        <canvas id="supplierChart" height="70"></canvas>
+      </div>
+    </div>
+
     <!-- Table -->
     <div class="chart-row-full">
       <div class="table-card">
@@ -430,6 +437,7 @@ function render() {
   renderTypeChart(data);
   renderCategoryChart(data);
   renderCategoryPieChart(data);
+  renderSupplierChart(data);
   renderTable(data);
   renderMonthlyTable(data);
 }
@@ -683,6 +691,37 @@ function renderTable(data) {
       <td class="text-right">${margin}%</td>
     </tr>`;
   }).join('');
+}
+
+let supplierChart;
+
+function renderSupplierChart(data) {
+  const sups = {};
+  data.forEach(d => { sups[d['공급업체']] = (sups[d['공급업체']] || 0) + d['매출금액']; });
+  const sorted = Object.entries(sups).filter(s => s[0]).sort((a, b) => b[1] - a[1]).slice(0, 15);
+  const labels = sorted.map(s => s[0]);
+  const values = sorted.map(s => s[1]);
+  const colors = ['#4285f4','#ea4335','#fbbc04','#34a853','#ff6d01','#46bdc6','#9334e6','#e8710a','#1a73e8','#e91e63','#00bcd4','#8bc34a','#ff9800','#795548','#607d8b'];
+  const bgColors = labels.map((l, i) => drillCategory && l !== drillCategory ? '#e0e0e0' : colors[i % colors.length]);
+
+  if (supplierChart) supplierChart.destroy();
+  supplierChart = new Chart(document.getElementById('supplierChart'), {
+    type: 'bar',
+    data: { labels, datasets: [{ data: values, backgroundColor: bgColors, borderRadius: 4 }] },
+    options: {
+      responsive: true, indexAxis: 'y',
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => fmt(ctx.raw) } } },
+      scales: { x: { ticks: { callback: v => fmt(v) } } },
+      onClick: (e, elements) => {
+        if (elements.length > 0) {
+          const clicked = labels[elements[0].index];
+          // 공급처 체크박스 토글
+          const cb = document.querySelector(`.sup-cb[value="${clicked}"]`);
+          if (cb) { cb.checked = !cb.checked; onSupplierCheck(); }
+        }
+      }
+    }
+  });
 }
 
 function renderMonthlyTable(data) {
