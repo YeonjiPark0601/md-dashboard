@@ -507,7 +507,7 @@ function renderTrendChart(data){
           formatter:(v,ctx)=>{const i=ctx.dataIndex;const t=(onData[months[i]]||0)+(offData[months[i]]||0);const p=pY[months[i]]||0;
             const yoy=p?((t-p)/p*100).toFixed(0):null;
             return fmt(t)+(yoy!==null?'\n'+(yoy>0?'+':'')+yoy+'%':'')}}},
-      {label:'전년',data:months.map(m=>pY[m]||0),backgroundColor:'#e0e0e0',borderRadius:4,stack:'prevYear',
+      {label:'전년',data:months.map(m=>pY[m]||0),type:'line',borderColor:'#bbb',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,borderDash:[5,3],pointRadius:3,pointBackgroundColor:'#999',order:1,fill:false,
         datalabels:{display:false}}
     ]},plugins:[ChartDataLabels],options:{responsive:true,interaction:{mode:'index',intersect:false},
       plugins:{legend:{position:'top'},datalabels:{},
