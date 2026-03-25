@@ -424,7 +424,6 @@ function renderTrendChart(data){
       scales:{y:{ticks:{callback:v=>fmt(v)}}},onClick:(e,el)=>{if(el.length>0){const ym=months[el[0].index];document.getElementById('startMonth').value=ym;document.getElementById('endMonth').value=ym;render()}}}};
     if(trendChart)trendChart.destroy();trendChart=new Chart(document.getElementById('trendChart'),cfg);
   }
-  else{if(trendChart)trendChart.destroy();trendChart=new Chart(document.getElementById('trendChart'),cfg)}
 }
 
 function renderTypeChart(data){
