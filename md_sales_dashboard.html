@@ -376,6 +376,7 @@ function toggleSupplierPicker() {
 function onSupplierCheck() {
   selectedSuppliers = [...document.querySelectorAll('.sup-cb:checked')].map(cb => cb.value);
   updateSupplierSummary();
+  renderSupplierChart(getFilteredData());
   renderTable(getFilteredData());
 }
 
@@ -383,6 +384,7 @@ function clearSupplierSelection() {
   document.querySelectorAll('.sup-cb').forEach(cb => cb.checked = false);
   selectedSuppliers = [];
   document.getElementById('supplierSummary').style.display = 'none';
+  renderSupplierChart(getFilteredData());
   renderTable(getFilteredData());
 }
 
@@ -737,15 +739,16 @@ const SUPPLIER_COLORS = ['#4285f4','#ea4335','#fbbc04','#34a853','#ff6d01','#46b
 
 function renderSupplierChart(data) {
   const months = [...new Set(data.map(d => d['연월']).filter(Boolean))].sort();
-  // Get all suppliers sorted by total sales
+  // 선택된 공급처가 있으면 해당 공급처만, 없으면 전체
+  const chartData = selectedSuppliers.length > 0 ? data.filter(d => selectedSuppliers.includes(d['공급업체'])) : data;
   const supTotals = {};
-  data.forEach(d => { if (d['공급업체']) supTotals[d['공급업체']] = (supTotals[d['공급업체']] || 0) + d['매출금액']; });
+  chartData.forEach(d => { if (d['공급업체']) supTotals[d['공급업체']] = (supTotals[d['공급업체']] || 0) + d['매출금액']; });
   const suppliers = Object.entries(supTotals).sort((a, b) => b[1] - a[1]).map(s => s[0]);
 
   // Build monthly data per supplier
   const datasets = suppliers.map((sup, i) => {
     const monthData = {};
-    data.filter(d => d['공급업체'] === sup).forEach(d => {
+    chartData.filter(d => d['공급업체'] === sup).forEach(d => {
       monthData[d['연월']] = (monthData[d['연월']] || 0) + d['매출금액'];
     });
     const isLast = i === suppliers.length - 1;
