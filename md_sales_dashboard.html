@@ -358,32 +358,53 @@ function renderKPIs(){
   const dateKey=currentTab==='클래스'?'주문일':'주문일';
   const fn=d=>{if(cat&&d['카테고리']!==cat)return false;if(type&&d['구분']!==type)return false;if(drillCategory&&d['카테고리']!==drillCategory)return false;return true};
 
+  // Week
   const wD=data.filter(d=>fn(d)&&d[dateKey]>=mondayStr&&d[dateKey]<=sundayStr);
   const wS=wD.reduce((s,d)=>s+d['매출금액'],0);
   const dim=new Date(curYear,curMon,0).getDate();const wT=getTargetForMonth(curMonth)*(7/dim);
+  // 저번주
+  const prevMonday=new Date(monday);prevMonday.setDate(prevMonday.getDate()-7);
+  const prevSunday=new Date(prevMonday);prevSunday.setDate(prevMonday.getDate()+6);
+  const prevMondayStr=dateStr(prevMonday);const prevSundayStr=dateStr(prevSunday);
+  const pwS=data.filter(d=>fn(d)&&d[dateKey]>=prevMondayStr&&d[dateKey]<=prevSundayStr).reduce((s,d)=>s+d['매출금액'],0);
+  const wWow=pwS?((wS-pwS)/pwS*100):null;
 
+  // Month
   const mD=data.filter(d=>fn(d)&&d['연월']===curMonth);
   const mS=mD.reduce((s,d)=>s+d['매출금액'],0);const mT=getTargetForMonth(curMonth);
   const pmYm=yearShift(curMonth,-1);const pmS=data.filter(d=>fn(d)&&d['연월']===pmYm).reduce((s,d)=>s+d['매출금액'],0);
   const mY=pmS?((mS-pmS)/pmS*100):null;
+  // 저번달
+  const prevMonYm=`${curMon===1?curYear-1:curYear}-${String(curMon===1?12:curMon-1).padStart(2,'0')}`;
+  const prevMonS=data.filter(d=>fn(d)&&d['연월']===prevMonYm).reduce((s,d)=>s+d['매출금액'],0);
+  const mMom=prevMonS?((mS-prevMonS)/prevMonS*100):null;
 
+  // Quarter
   const qD=data.filter(d=>fn(d)&&qMs.includes(d['연월']));const qS2=qD.reduce((s,d)=>s+d['매출금액'],0);const qT=getTargetForMonths(qMs);
   const pqMs=qMs.map(m=>yearShift(m,-1));const pqS=data.filter(d=>fn(d)&&pqMs.includes(d['연월'])).reduce((s,d)=>s+d['매출금액'],0);
   const qY=pqS?((qS2-pqS)/pqS*100):null;
+  // 직전분기
+  const prevQS=qS>3?qS-3:qS+9;const prevQY=qS>3?curYear:curYear-1;
+  const prevQMs=[prevQS,prevQS+1,prevQS+2].map(m=>`${prevQY}-${String(m).padStart(2,'0')}`);
+  const prevQSales=data.filter(d=>fn(d)&&prevQMs.includes(d['연월'])).reduce((s,d)=>s+d['매출금액'],0);
+  const qQoq=prevQSales?((qS2-prevQSales)/prevQSales*100):null;
 
-  const setKPI=(pre,sales,target,yoy,dates,color)=>{
+  const setKPI=(pre,sales,target,yoy,prev,dates,color)=>{
     const rate=target?(sales/target*100):0;
     document.getElementById(pre+'Sales').textContent=fmt(sales);
     document.getElementById(pre+'Rate').innerHTML=`<span class="${rate>=100?'up':'down'}">${rate.toFixed(0)}%</span>`;
     document.getElementById(pre+'Target').textContent=`목표: ${Math.round(target).toLocaleString()}원`;
-    if(document.getElementById(pre+'Yoy'))document.getElementById(pre+'Yoy').innerHTML=yoy!==null?`<span class="${yoy>=0?'up':'down'}">YoY ${yoy>0?'+':''}${yoy.toFixed(1)}%</span>`:'';
+    let subRight='';
+    if(yoy!==null)subRight+=`<span class="${yoy>=0?'up':'down'}">YoY ${yoy>0?'+':''}${yoy.toFixed(1)}%</span>`;
+    if(prev!==null)subRight+=(subRight?' | ':'')+`<span class="${prev>=0?'up':'down'}">전기비 ${prev>0?'+':''}${prev.toFixed(1)}%</span>`;
+    if(document.getElementById(pre+'Yoy'))document.getElementById(pre+'Yoy').innerHTML=subRight;
     if(document.getElementById(pre+'Dates'))document.getElementById(pre+'Dates').textContent=dates||'';
     document.getElementById(pre+'Bar').style.width=Math.min(rate,100)+'%';
     document.getElementById(pre+'Bar').style.background=rate>=100?'#0d9488':color;
   };
-  setKPI('kpiWeek',wS,wT,null,`${mondayStr.slice(5)} ~ ${sundayStr.slice(5)}`,'#4285f4');
-  setKPI('kpiMonth',mS,mT,mY,null,'#34a853');
-  setKPI('kpiQtr',qS2,qT,qY,null,'#fbbc04');
+  setKPI('kpiWeek',wS,wT,null,wWow,`${mondayStr.slice(5)} ~ ${sundayStr.slice(5)}`,'#4285f4');
+  setKPI('kpiMonth',mS,mT,mY,mMom,null,'#34a853');
+  setKPI('kpiQtr',qS2,qT,qY,qQoq,null,'#fbbc04');
 }
 
 function renderTrendChart(data){
