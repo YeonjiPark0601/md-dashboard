@@ -381,7 +381,8 @@ function renderKPIs() {
   // Week
   const weekData = allData.filter(d => filterFn(d) && d['주문일'] >= mondayStr && d['주문일'] <= sundayStr);
   const weekSales = weekData.reduce((s, d) => s + d['매출금액'], 0);
-  const weekTarget = getTargetForMonth(curMonth) / 4;
+  const daysInMonth = new Date(curYear, curMon, 0).getDate();
+  const weekTarget = getTargetForMonth(curMonth) * (7 / daysInMonth);
 
   // Month
   const monthData = allData.filter(d => filterFn(d) && d['연월'] === curMonth);
