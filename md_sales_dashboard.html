@@ -694,28 +694,45 @@ function renderTable(data) {
 }
 
 let supplierChart;
+const SUPPLIER_COLORS = ['#4285f4','#ea4335','#fbbc04','#34a853','#ff6d01','#46bdc6','#9334e6','#e8710a','#1a73e8','#e91e63','#00bcd4','#8bc34a','#ff9800','#795548','#607d8b','#3f51b5','#009688','#cddc39','#ff5722','#9e9e9e','#5c6bc0','#26a69a','#d4e157','#ef5350','#78909c','#7e57c2','#66bb6a','#ffa726','#8d6e63','#90a4ae'];
 
 function renderSupplierChart(data) {
-  const sups = {};
-  data.forEach(d => { sups[d['공급업체']] = (sups[d['공급업체']] || 0) + d['매출금액']; });
-  const sorted = Object.entries(sups).filter(s => s[0]).sort((a, b) => b[1] - a[1]).slice(0, 15);
-  const labels = sorted.map(s => s[0]);
-  const values = sorted.map(s => s[1]);
-  const colors = ['#4285f4','#ea4335','#fbbc04','#34a853','#ff6d01','#46bdc6','#9334e6','#e8710a','#1a73e8','#e91e63','#00bcd4','#8bc34a','#ff9800','#795548','#607d8b'];
-  const bgColors = labels.map((l, i) => drillCategory && l !== drillCategory ? '#e0e0e0' : colors[i % colors.length]);
+  const months = [...new Set(data.map(d => d['연월']).filter(Boolean))].sort();
+  // Get all suppliers sorted by total sales
+  const supTotals = {};
+  data.forEach(d => { if (d['공급업체']) supTotals[d['공급업체']] = (supTotals[d['공급업체']] || 0) + d['매출금액']; });
+  const suppliers = Object.entries(supTotals).sort((a, b) => b[1] - a[1]).map(s => s[0]);
+
+  // Build monthly data per supplier
+  const datasets = suppliers.map((sup, i) => {
+    const monthData = {};
+    data.filter(d => d['공급업체'] === sup).forEach(d => {
+      monthData[d['연월']] = (monthData[d['연월']] || 0) + d['매출금액'];
+    });
+    return {
+      label: sup,
+      data: months.map(m => monthData[m] || 0),
+      backgroundColor: SUPPLIER_COLORS[i % SUPPLIER_COLORS.length],
+    };
+  });
 
   if (supplierChart) supplierChart.destroy();
   supplierChart = new Chart(document.getElementById('supplierChart'), {
     type: 'bar',
-    data: { labels, datasets: [{ data: values, backgroundColor: bgColors, borderRadius: 4 }] },
+    data: { labels: months.map(m => m.substring(2)), datasets },
     options: {
       responsive: true,
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => fmt(ctx.raw) } } },
-      scales: { y: { ticks: { callback: v => fmt(v) } }, x: { ticks: { maxRotation: 45, minRotation: 0, font: { size: 11 } } } },
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 12 } },
+        tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + fmt(ctx.raw) } }
+      },
+      scales: {
+        x: { stacked: true },
+        y: { stacked: true, ticks: { callback: v => fmt(v) } }
+      },
       onClick: (e, elements) => {
         if (elements.length > 0) {
-          const clicked = labels[elements[0].index];
-          // 공급처 체크박스 토글
+          const clicked = datasets[elements[0].datasetIndex].label;
           const cb = document.querySelector(`.sup-cb[value="${clicked}"]`);
           if (cb) { cb.checked = !cb.checked; onSupplierCheck(); }
         }
