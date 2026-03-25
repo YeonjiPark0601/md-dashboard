@@ -169,7 +169,7 @@ tr:hover { background: #f7f9fc; }
       </div>
     </div>
     <div id="sec-detail"></div>
-    <div class="chart-row-full">
+    <div class="chart-row-full" id="detailRow">
       <div class="table-card">
         <h3><span id="detailTableTitle">공급처별 매출 상세</span>
           <div style="display:flex;gap:8px;align-items:center;">
@@ -413,6 +413,7 @@ function render(){
   if(isMD){renderTypeChart(data);renderCategoryChart(data);renderCategoryPieChart(data);renderSupplierChart(data);}
   renderTable(data);renderMonthlyTable(data);
   // 클래스 전용: PU + 재구매
+  document.getElementById('detailRow').style.display=isTurnkey?'none':'';
   const isClassOnly=currentTab==='클래스';
   document.getElementById('puRow').style.display=isClassOnly?'grid':'none';
   document.getElementById('rebuyRow').style.display=isClassOnly?'':'none';
