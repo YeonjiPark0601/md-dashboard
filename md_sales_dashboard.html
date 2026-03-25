@@ -138,10 +138,14 @@ tr:hover { background: #f7f9fc; }
       </div>
     </div>
     <!-- 턴키 전용 KPI 2행: 건수 + Full/Half -->
-    <div id="turnkeyKpiRow" style="display:none;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;margin-bottom:20px;">
+    <div id="turnkeyKpiRow" style="display:none;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;margin-bottom:20px;">
       <div class="kpi-card">
         <div class="label">이번 달 건수 (CID 기준)</div>
         <div class="main-row"><div class="value" id="tkCount">-</div></div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">이번 분기 건수 (CID 기준)</div>
+        <div class="main-row"><div class="value" id="tkQtrCount">-</div></div>
       </div>
       <div class="kpi-card">
         <div class="label">FULL (3천만↑)</div>
@@ -152,10 +156,6 @@ tr:hover { background: #f7f9fc; }
         <div class="label">HALF (3천만↓)</div>
         <div class="value" id="tkHalfSales" style="font-size:22px;">-</div>
         <div class="sub-row"><span id="tkHalfAvg">객단가: -</span><span id="tkHalfRate">비율: -</span></div>
-      </div>
-      <div class="kpi-card">
-        <div class="label">이번 분기 건수 (CID 기준)</div>
-        <div class="main-row"><div class="value" id="tkQtrCount">-</div></div>
       </div>
     </div>
     <div id="sec-trend"></div>
