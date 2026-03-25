@@ -79,8 +79,9 @@ tr:hover { background: #f7f9fc; }
   <div class="tab disabled">전체</div>
   <div class="tab disabled">초음파</div>
   <div class="tab active" data-tab="의료기기" onclick="switchTab('의료기기')">의료기기</div>
-  <div class="tab" data-tab="턴키" onclick="switchTab('턴키')">턴키</div>
+  <div class="tab" data-tab="PT10" onclick="switchTab('PT10')">PT10</div>
   <div class="tab" data-tab="클래스" onclick="switchTab('클래스')">클래스</div>
+  <div class="tab" data-tab="턴키" onclick="switchTab('턴키')">턴키</div>
 </div>
 <div class="filters">
   <div class="filter-group">
@@ -295,7 +296,7 @@ function yearShift(ym,d){const[y,m]=ym.split('-').map(Number);return`${y+d}-${St
 function getMonday(d){const dt=new Date(d);const day=dt.getDay();dt.setDate(dt.getDate()-day+(day===0?-6:1));return dt}
 function dateStr(d){return d.toISOString().slice(0,10)}
 
-function getData(){if(currentTab==='클래스')return classData;if(currentTab==='턴키')return turnkeyData;return allData}
+function getData(){if(currentTab==='클래스')return classData;if(currentTab==='턴키')return turnkeyData;if(currentTab==='PT10')return allData.filter(d=>d['카테고리']==='PT10');return allData}
 
 async function fetchData(){
   try{
@@ -335,7 +336,7 @@ function switchTab(tab){
   document.getElementById('detailSection').style.display='none';
   document.getElementById('supplierPicker').style.display='none';
   // Update filter visibility
-  document.getElementById('typeFilterGroup').style.display=(tab==='클래스'||tab==='턴키')?'none':'flex';
+  document.getElementById('typeFilterGroup').style.display=(tab==='의료기기'||tab==='PT10')?'flex':'none';
   initFilters();render();
 }
 
@@ -361,7 +362,7 @@ function initFilters(){
     const el=document.getElementById(id);el.onchange=render;
   });
   // Update labels
-  const isMDTab=currentTab==='의료기기';
+  const isMDTab=currentTab==='의료기기'||currentTab==='PT10';
   document.getElementById('supplierPickerBtn').textContent=isMDTab?'공급처 선택 ▾':'상품 선택 ▾';
   document.getElementById('supplierChartTitle').textContent=isMDTab?'공급처별 매출':'상품별 매출';
   document.getElementById('monthlyTableTitle').textContent=isMDTab?'공급처별 월별 매출':'상품별 월별 매출';
@@ -386,7 +387,7 @@ function getFilteredData(){
 function getTargetForMonth(month){
   if(currentTab==='턴키')return getTurnkeyTargetForMonth(month);
   const m=parseInt(month.split('-')[1]);let total=0;
-  const cats=currentTab==='의료기기'?MD_CATEGORIES:currentTab==='클래스'?CLASS_CATEGORIES:[];
+  const cats=currentTab==='PT10'?['PT10']:currentTab==='의료기기'?MD_CATEGORIES:currentTab==='클래스'?CLASS_CATEGORIES:[];
   cats.forEach(c=>{if(targetData[c]&&targetData[c][m])total+=targetData[c][m]});
   return total;
 }
@@ -423,7 +424,7 @@ function updateSupplierSummary(){
 }
 
 function render(){
-  const data=getFilteredData();const isClass=currentTab!=='의료기기';const isTurnkey=currentTab==='턴키';const isMD=currentTab==='의료기기';
+  const data=getFilteredData();const isTurnkey=currentTab==='턴키';const isMD=currentTab==='의료기기'||currentTab==='PT10';const isClass=!isMD&&!isTurnkey;
   document.getElementById('supplierChartRow').style.display=isMD?'':'none';
   if(isMD){
     document.getElementById('trendRow').style.display='';
@@ -721,7 +722,7 @@ function clearDrill(){drillCategory=null;document.getElementById('drillFilter').
 
 // URL 해시로 탭 초기화
 const hashTab=decodeURIComponent(location.hash.slice(1));
-const validTabs=['의료기기','클래스','턴키'];
+const validTabs=['의료기기','PT10','클래스','턴키'];
 if(validTabs.includes(hashTab)){currentTab=hashTab;document.querySelectorAll('.tab[data-tab]').forEach(t=>{t.classList.toggle('active',t.dataset.tab===hashTab)})}
 function renderTurnkeyKPI(){
   const today=new Date();const curYear=today.getFullYear();
