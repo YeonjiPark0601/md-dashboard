@@ -123,12 +123,12 @@ tr:hover { background: #f7f9fc; }
     <div class="chart-row-full">
       <div class="chart-card"><h3>월별 매출 트렌드 (YoY) — 25년 1월~현재</h3><canvas id="trendChart" height="50"></canvas></div>
     </div>
-    <div class="chart-row-3">
+    <div class="chart-row-3" id="chartRow3">
       <div class="chart-card"><h3 id="typeChartTitle">구분별 매출 비중</h3><canvas id="typeChart" height="200"></canvas></div>
-      <div class="chart-card"><h3>카테고리별 매출 (클릭하여 필터)</h3><canvas id="categoryChart" height="200"></canvas></div>
-      <div class="chart-card"><h3>카테고리별 매출 비중</h3><canvas id="categoryPieChart" height="200"></canvas></div>
+      <div class="chart-card" id="categoryChartCard"><h3>카테고리별 매출 (클릭하여 필터)</h3><canvas id="categoryChart" height="200"></canvas></div>
+      <div class="chart-card" id="categoryPieCard"><h3>카테고리별 매출 비중</h3><canvas id="categoryPieChart" height="200"></canvas></div>
     </div>
-    <div class="chart-row-full">
+    <div class="chart-row-full" id="supplierChartRow">
       <div class="chart-card">
         <h3 style="display:flex;justify-content:space-between;align-items:center;">
           <span id="supplierChartTitle">공급처별 매출</span>
@@ -320,9 +320,15 @@ function updateSupplierSummary(){
 }
 
 function render(){
-  const data=getFilteredData();
-  renderKPIs();renderTrendChart(data);renderTypeChart(data);renderCategoryChart(data);renderCategoryPieChart(data);
-  renderSupplierChart(data);renderTable(data);renderMonthlyTable(data);
+  const data=getFilteredData();const isClass=currentTab==='클래스';
+  // 클래스: 카테고리별 바/도넛, 상품별 매출 차트 숨김
+  document.getElementById('categoryChartCard').style.display=isClass?'none':'';
+  document.getElementById('categoryPieCard').style.display=isClass?'none':'';
+  document.getElementById('supplierChartRow').style.display=isClass?'none':'';
+  document.getElementById('chartRow3').style.gridTemplateColumns=isClass?'1fr':'1fr 1fr 1fr';
+  renderKPIs();renderTrendChart(data);renderTypeChart(data);
+  if(!isClass){renderCategoryChart(data);renderCategoryPieChart(data);renderSupplierChart(data);}
+  renderTable(data);renderMonthlyTable(data);
 }
 
 function renderKPIs(){
