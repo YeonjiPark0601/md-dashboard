@@ -57,10 +57,11 @@ tr:hover { background: #f7f9fc; }
 .loading { text-align: center; padding: 60px; color: #888; font-size: 16px; }
 #monthlyTable th:first-child, #monthlyTable td:first-child { position: sticky; left: 0; background: #fff; z-index: 1; min-width: 140px; }
 #monthlyTable th:first-child { background: #f7f8fa; }
-.pt10-sticky .sticky-col{position:sticky;left:0;background:#fff;z-index:2;min-width:80px;}
-.pt10-sticky th.sticky-col{background:#f7f8fa;}
-.pt10-sticky .sticky-col2{position:sticky;left:80px;background:#fff;z-index:1;min-width:60px;}
-.pt10-sticky th.sticky-col2{background:#f7f8fa;}
+.pt10-sticky .sticky-col{position:sticky;left:0;background:#f7f8fa !important;z-index:2;min-width:80px;font-weight:700;border-right:2px solid #e0e0e0;}
+.pt10-sticky .sticky-col2{position:sticky;left:80px;background:#fff !important;z-index:1;min-width:60px;box-shadow:4px 0 6px rgba(0,0,0,0.1);}
+.pt10-sticky th.sticky-col,.pt10-sticky th.sticky-col2{background:#f7f8fa !important;}
+.pt10-sticky tr:hover .sticky-col{background:#eef0f4 !important;}
+.pt10-sticky tr:hover .sticky-col2{background:#f7f9fc !important;}
 @media (max-width: 900px) {
   .kpi-row { grid-template-columns: 1fr; }
   .chart-row { grid-template-columns: 1fr; }
@@ -894,7 +895,7 @@ function renderPT10SummaryYear(year,headId,bodyId){
     g.rows.forEach((mt,i)=>{
       const vals=allMonths.map(m=>mt.fn(m));const total=vals.reduce((s,v)=>s+v,0);
       const subLabel=mt.label.replace(g.group+' ','').replace(g.group,'');
-      html+=`<tr><td class="sticky-col" style="font-weight:700;background:#f7f8fa;border-right:2px solid #e0e0e0;">${i===0?g.group:''}</td><td class="sticky-col2">${subLabel||'매출'}</td>`+vals.map(v=>`<td class="text-right">${v?Math.round(v).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(total).toLocaleString()}</td></tr>`;
+      html+=`<tr><td class="sticky-col">${i===0?g.group:''}</td><td class="sticky-col2">${subLabel||'매출'}</td>`+vals.map(v=>`<td class="text-right">${v?Math.round(v).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(total).toLocaleString()}</td></tr>`;
     });
   });
   document.getElementById(bodyId).innerHTML=html;
@@ -924,7 +925,7 @@ function renderPT10CartYear(year,headId,bodyId){
     const detRows=rows.filter(r=>r.label.startsWith(det));
     detRows.forEach((r,i)=>{
       const subLabel=r.label.replace(det+' ','');
-      html+=`<tr><td class="sticky-col" style="font-weight:700;background:#f7f8fa;border-right:2px solid #e0e0e0;">${i===0?det:''}</td><td class="sticky-col2">${subLabel}</td>`+allMonths.map(m=>`<td class="text-right">${r[m]?Math.round(r[m]).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(r.total).toLocaleString()}</td></tr>`;
+      html+=`<tr><td class="sticky-col">${i===0?det:''}</td><td class="sticky-col2">${subLabel}</td>`+allMonths.map(m=>`<td class="text-right">${r[m]?Math.round(r[m]).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(r.total).toLocaleString()}</td></tr>`;
     });
   });
   document.getElementById(bodyId).innerHTML=html;
