@@ -164,12 +164,26 @@ tr:hover { background: #f7f9fc; }
       <div class="table-card">
         <h3>
           공급처별 매출 상세
-          <div class="filter-group">
-            <select id="supplierFilter" style="font-size:12px;padding:4px 8px;">
-              <option value="">공급처 전체</option>
-            </select>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <button onclick="toggleSupplierPicker()" style="font-size:12px;padding:4px 12px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;">공급처 선택 ▾</button>
+            <button onclick="clearSupplierSelection()" style="font-size:11px;padding:3px 8px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;color:#888;">초기화</button>
           </div>
         </h3>
+        <div id="supplierPicker" style="display:none;background:#f7f8fa;border:1px solid #e0e0e0;border-radius:8px;padding:12px;margin-bottom:12px;max-height:200px;overflow-y:auto;">
+          <div style="display:flex;flex-wrap:wrap;gap:6px;" id="supplierCheckboxes"></div>
+        </div>
+        <!-- Summary row -->
+        <div id="supplierSummary" style="display:none;background:#eef3ff;border-radius:8px;padding:12px 16px;margin-bottom:12px;font-size:13px;">
+          <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:center;">
+            <span><strong>선택 합계</strong></span>
+            <span>매출: <strong id="sumSales">-</strong></span>
+            <span>공급가: <strong id="sumCost">-</strong></span>
+            <span>이익률: <strong id="sumProfitRate">-</strong></span>
+            <span>건수: <strong id="sumCount">-</strong></span>
+            <span>수량: <strong id="sumQty">-</strong></span>
+            <span>마진율: <strong id="sumMargin">-</strong></span>
+          </div>
+        </div>
         <table id="supplierTable">
           <thead>
             <tr>
@@ -298,12 +312,58 @@ function initFilters() {
   const typeSel = document.getElementById('typeFilter');
   types.forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; typeSel.appendChild(o); });
 
-  const supSel = document.getElementById('supplierFilter');
-  suppliers.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; supSel.appendChild(o); });
+  const checkboxDiv = document.getElementById('supplierCheckboxes');
+  checkboxDiv.innerHTML = suppliers.map(s =>
+    `<label style="display:inline-flex;align-items:center;gap:3px;padding:3px 8px;background:#fff;border:1px solid #d0d0d0;border-radius:4px;font-size:12px;cursor:pointer;white-space:nowrap;">
+      <input type="checkbox" class="sup-cb" value="${s}" onchange="onSupplierCheck()"> ${s}
+    </label>`
+  ).join('');
 
-  ['startMonth','endMonth','categoryFilter','typeFilter','supplierFilter'].forEach(id => {
+  ['startMonth','endMonth','categoryFilter','typeFilter'].forEach(id => {
     document.getElementById(id).addEventListener('change', render);
   });
+}
+
+let selectedSuppliers = [];
+
+function toggleSupplierPicker() {
+  const el = document.getElementById('supplierPicker');
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function onSupplierCheck() {
+  selectedSuppliers = [...document.querySelectorAll('.sup-cb:checked')].map(cb => cb.value);
+  updateSupplierSummary();
+  renderTable(getFilteredData());
+}
+
+function clearSupplierSelection() {
+  document.querySelectorAll('.sup-cb').forEach(cb => cb.checked = false);
+  selectedSuppliers = [];
+  document.getElementById('supplierSummary').style.display = 'none';
+  renderTable(getFilteredData());
+}
+
+function updateSupplierSummary() {
+  const summary = document.getElementById('supplierSummary');
+  if (selectedSuppliers.length === 0) { summary.style.display = 'none'; return; }
+  summary.style.display = 'block';
+
+  const data = getFilteredData().filter(d => selectedSuppliers.includes(d['공급업체']));
+  const totalSales = data.reduce((s, d) => s + d['매출금액'], 0);
+  const totalCost = data.reduce((s, d) => s + d['공급가'], 0);
+  const totalCount = data.length;
+  const totalQty = data.reduce((s, d) => s + d['수량'], 0);
+  const profit = totalSales - totalCost;
+  const profitRate = totalSales ? (profit / totalSales * 100).toFixed(1) : '-';
+  const margin = totalSales ? (profit / totalSales * 100).toFixed(1) : '-';
+
+  document.getElementById('sumSales').textContent = totalSales.toLocaleString() + '원';
+  document.getElementById('sumCost').textContent = totalCost.toLocaleString() + '원';
+  document.getElementById('sumProfitRate').textContent = profitRate + '%';
+  document.getElementById('sumCount').textContent = totalCount.toLocaleString() + '건';
+  document.getElementById('sumQty').textContent = totalQty.toLocaleString() + '개';
+  document.getElementById('sumMargin').textContent = margin + '%';
 }
 
 function getFilteredData() {
@@ -417,7 +477,7 @@ function renderKPIs() {
   const weekRate = weekTarget ? (weekSales / weekTarget * 100) : 0;
   document.getElementById('kpiWeekSales').textContent = fmt(weekSales);
   document.getElementById('kpiWeekRate').innerHTML = `<span class="${weekRate >= 100 ? 'up' : 'down'}">${weekRate.toFixed(0)}%</span>`;
-  document.getElementById('kpiWeekTarget').textContent = `목표: ${fmt(weekTarget)}`;
+  document.getElementById('kpiWeekTarget').textContent = `목표: ${Math.round(weekTarget).toLocaleString()}원`;
   document.getElementById('kpiWeekDates').textContent = `${mondayStr.slice(5)} ~ ${sundayStr.slice(5)}`;
   document.getElementById('kpiWeekBar').style.width = Math.min(weekRate, 100) + '%';
   document.getElementById('kpiWeekBar').style.background = weekRate >= 100 ? '#0d9488' : '#4285f4';
@@ -426,7 +486,7 @@ function renderKPIs() {
   const monthRate = monthTarget ? (monthSales / monthTarget * 100) : 0;
   document.getElementById('kpiMonthSales').textContent = fmt(monthSales);
   document.getElementById('kpiMonthRate').innerHTML = `<span class="${monthRate >= 100 ? 'up' : 'down'}">${monthRate.toFixed(0)}%</span>`;
-  document.getElementById('kpiMonthTarget').textContent = `목표: ${fmt(monthTarget)}`;
+  document.getElementById('kpiMonthTarget').textContent = `목표: ${monthTarget.toLocaleString()}원`;
   document.getElementById('kpiMonthYoy').innerHTML = monthYoy !== null ? `<span class="${monthYoy >= 0 ? 'up' : 'down'}">YoY ${monthYoy > 0 ? '+' : ''}${monthYoy.toFixed(1)}%</span>` : '';
   document.getElementById('kpiMonthBar').style.width = Math.min(monthRate, 100) + '%';
   document.getElementById('kpiMonthBar').style.background = monthRate >= 100 ? '#0d9488' : '#34a853';
@@ -435,7 +495,7 @@ function renderKPIs() {
   const qtrRate = qtrTarget ? (qtrSales / qtrTarget * 100) : 0;
   document.getElementById('kpiQtrSales').textContent = fmt(qtrSales);
   document.getElementById('kpiQtrRate').innerHTML = `<span class="${qtrRate >= 100 ? 'up' : 'down'}">${qtrRate.toFixed(0)}%</span>`;
-  document.getElementById('kpiQtrTarget').textContent = `목표: ${fmt(qtrTarget)}`;
+  document.getElementById('kpiQtrTarget').textContent = `목표: ${qtrTarget.toLocaleString()}원`;
   document.getElementById('kpiQtrYoy').innerHTML = qtrYoy !== null ? `<span class="${qtrYoy >= 0 ? 'up' : 'down'}">YoY ${qtrYoy > 0 ? '+' : ''}${qtrYoy.toFixed(1)}%</span>` : '';
   document.getElementById('kpiQtrBar').style.width = Math.min(qtrRate, 100) + '%';
   document.getElementById('kpiQtrBar').style.background = qtrRate >= 100 ? '#0d9488' : '#fbbc04';
@@ -575,10 +635,8 @@ function renderCategoryPieChart(data) {
 }
 
 function renderTable(data) {
-  const sup = document.getElementById('supplierFilter').value;
-  const filtered = sup ? data.filter(d => d['공급업체'] === sup) : data;
   const groups = {};
-  filtered.forEach(d => {
+  data.forEach(d => {
     const key = d['공급업체'];
     if (!groups[key]) groups[key] = { 공급업체: d['공급업체'], 매출금액: 0, 공급가: 0, 건수: 0, 수량: 0 };
     groups[key].매출금액 += d['매출금액'];
@@ -601,17 +659,22 @@ function renderTable(data) {
     });
   }
 
+  const isSelected = s => selectedSuppliers.length === 0 || selectedSuppliers.includes(s);
+
   document.getElementById('supplierBody').innerHTML = rows.map(r => {
     const profit = r.매출금액 - r.공급가;
     const profitRate = r.매출금액 ? (profit / r.매출금액 * 100).toFixed(1) : '-';
     const margin = r.매출금액 ? (profit / r.매출금액 * 100).toFixed(1) : '-';
-    return `<tr>
+    const highlighted = selectedSuppliers.length > 0 && isSelected(r.공급업체);
+    const dimmed = selectedSuppliers.length > 0 && !isSelected(r.공급업체);
+    const style = highlighted ? 'background:#eef3ff;' : dimmed ? 'opacity:0.4;' : '';
+    return `<tr style="${style}">
       <td>${r.공급업체}</td>
       <td class="text-right">${r.매출금액.toLocaleString()}</td>
       <td class="text-right">${r.공급가.toLocaleString()}</td>
       <td class="text-right">${profitRate}%</td>
-      <td class="text-right">${r.건수}</td>
-      <td class="text-right">${r.수량}</td>
+      <td class="text-right">${r.건수.toLocaleString()}</td>
+      <td class="text-right">${r.수량.toLocaleString()}</td>
       <td class="text-right">${margin}%</td>
     </tr>`;
   }).join('');
