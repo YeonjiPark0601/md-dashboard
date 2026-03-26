@@ -353,7 +353,7 @@ const TARGET_SHEET_ID = '1Z8C_uiDHD6udIq7b9C79xlPxz4ERK5aC-vkoIbvTxic';
 const TARGET_URL = `https://docs.google.com/spreadsheets/d/${TARGET_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('26년 품목별 목표')}&_t=${Date.now()}`;
 
 let currentTab = '의료기기';
-let allData = [], classData = [], turnkeyData = [], pt10Data = [], pt10Master = {}, sonoData = [], puOnData = [], puOffData = [], rebuyData = [], targetData = {};
+let allData = [], classData = [], turnkeyData = [], pt10Data = [], pt10Master = {}, sonoData = [], puOnData = [], puOffData = [], rebuyData = [], targetData = {}, pt10PuData = [];
 let drillCategory = null, selectedSuppliers = [], sortCol = -1, sortAsc = true;
 let puOnExpanded = false, puOffExpanded = false;
 let trendChart, trendChart2, typeChart, typeChart2, categoryChart, categoryPieChart, supplierChart, pt10CartTrendChart, sonoCountChart, sonoASChart, sonoQtyChart;
@@ -390,10 +390,10 @@ function getData(){if(currentTab==='클래스')return classData;if(currentTab===
 async function fetchData(){
   try{
     const sheetUrl=n=>`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(n)}&headers=1&_t=${Date.now()}`;
-    const [salesR,classR,turnkeyR,pt10R,pt10MasterR,sonoR,sonoMissR,targetR,puOnR,puOffR,rebuyR]=await Promise.all([
+    const [salesR,classR,turnkeyR,pt10R,pt10MasterR,sonoR,sonoMissR,targetR,puOnR,puOffR,rebuyR,pt10PuR]=await Promise.all([
       fetch(sheetUrl('일반기기')),fetch(sheetUrl('클래스')),fetch(sheetUrl('턴키 결제내역')),fetch(sheetUrl('PT10')),fetch(sheetUrl('PT10 마스터')),
       fetch(sheetUrl('초음파')+'&range=A7:AH'),fetch(sheetUrl('초음파누락')),fetch(TARGET_URL),
-      fetch(sheetUrl('PU온라인')),fetch(sheetUrl('PU오프라인')),fetch(sheetUrl('재구매분석'))
+      fetch(sheetUrl('PU온라인')),fetch(sheetUrl('PU오프라인')),fetch(sheetUrl('재구매분석')),fetch(sheetUrl('PT10PU'))
     ]);
     if(!salesR.ok)throw new Error('매출 데이터 로딩 실패');
     allData=parseCSV(await salesR.text()).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['공급가']=parseNum(r['공급가']);r['수량']=parseNum(r['수량']);r['연월']=fixYm(r['연월']);if(r['주문일']&&r['주문일'].length>10)r['주문일']=r['주문일'].substring(0,10);return r});
@@ -437,6 +437,7 @@ async function fetchData(){
     }catch(e){console.warn('초음파 에러',e)}
     try{if(puOnR.ok){const t=await puOnR.text();if(t.trim())puOnData=parseCSV(t).map(r=>{r['PU']=parseNum(r['PU']);return r})}}catch(e){console.warn('PU온라인 에러',e)}
     try{if(puOffR.ok){const t=await puOffR.text();if(t.trim())puOffData=parseCSV(t).map(r=>{r['PU']=parseNum(r['PU']);return r})}}catch(e){console.warn('PU오프라인 에러',e)}
+    try{if(pt10PuR.ok){const t=await pt10PuR.text();if(t.trim())pt10PuData=parseCSV(t).map(r=>{r['고객수']=parseNum(r['고객수']);r['연월']=fixYm(r['연월']);return r})}}catch(e){console.warn('PT10PU 에러',e)}
     try{if(rebuyR.ok){const t=await rebuyR.text();if(t.trim())rebuyData=parseCSV(t).map(r=>{
       ['총구매자수','이탈고객수','재구매자수','신규구매자수'].forEach(k=>{r[k]=parseNum(r[k])});
       ['이탈율','재구매율','신규구매비율'].forEach(k=>{r[k]=parseFloat(r[k])||0});return r})}}catch(e){console.warn('재구매 에러',e)}
@@ -719,7 +720,10 @@ function renderTrendChart(data){
         datalabels:{display:false}}
     ]},plugins:[ChartDataLabels],options:{responsive:true,interaction:{mode:'index',intersect:false},
       plugins:{legend:{position:'top'},datalabels:{},
-        tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+fmt(ctx.raw),afterBody:items=>{const i=items[0].dataIndex;const t=(onData[months[i]]||0)+(offData[months[i]]||0);const p=pY[months[i]]||0;if(!p)return'';const pct=((t-p)/p*100).toFixed(1);return'YoY: '+(pct>0?'+':'')+pct+'%'}}}},
+        tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+fmt(ctx.raw),afterBody:items=>{const i=items[0].dataIndex;const t=(onData[months[i]]||0)+(offData[months[i]]||0);const lines=[];
+            const target=getTargetForMonth(months[i]);if(target)lines.push('달성률: '+(t/target*100).toFixed(1)+'%  (목표: '+fmt(target)+')');
+            const p=pY[months[i]]||0;if(p){const pct=((t-p)/p*100).toFixed(1);lines.push('YoY: '+(pct>0?'+':'')+pct+'%')}
+            return lines.join('\n')}}}},
       scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:v=>fmt(v)}}},
       onClick:(e,el)=>{if(el.length>0){const ym=months[el[0].index];document.getElementById('startMonth').value=ym;document.getElementById('endMonth').value=ym;render()}}}};
     if(trendChart2)trendChart2.destroy();trendChart2=new Chart(document.getElementById('trendChart2'),cfg);
@@ -737,7 +741,10 @@ function renderTrendChart(data){
       scales.y1={position:'right',grid:{drawOnChartArea:false},ticks:{callback:v=>v.toFixed(0)+'%'},min:0,max:50};
     }
     cfg={type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets},options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top'},
-      tooltip:{callbacks:{label:ctx=>{if(ctx.dataset.yAxisID==='y1')return ctx.dataset.label+': '+ctx.raw.toFixed(1)+'%';return ctx.dataset.label+': '+fmt(ctx.raw)},afterBody:items=>{const i=items[0].dataIndex;return yL[i]?'YoY: '+yL[i]:''}}}},
+      tooltip:{callbacks:{label:ctx=>{if(ctx.dataset.yAxisID==='y1')return ctx.dataset.label+': '+ctx.raw.toFixed(1)+'%';return ctx.dataset.label+': '+fmt(ctx.raw)},afterBody:items=>{const i=items[0].dataIndex;const lines=[];
+            const actual=items.find(it=>it.dataset.label==='올해');const sales=actual?actual.raw:0;
+            const target=getTargetForMonth(months[i]);if(target&&sales)lines.push('달성률: '+(sales/target*100).toFixed(1)+'%  (목표: '+fmt(target)+')');
+            if(yL[i])lines.push('YoY: '+yL[i]);return lines.join('\n')}}}},
       scales,onClick:(e,el)=>{if(el.length>0){const ym=months[el[0].index];document.getElementById('startMonth').value=ym;document.getElementById('endMonth').value=ym;render()}}}};
     if(trendChart)trendChart.destroy();trendChart=new Chart(document.getElementById('trendChart'),cfg);
   }
@@ -1242,17 +1249,16 @@ function renderPT10SummaryYear(year,headId,bodyId){
   const allMonths=['01','02','03','04','05','06','07','08','09','10','11','12'];
   const dY=pt10Data.filter(r=>r['연월']&&r['연월'].startsWith(year));
   const sumByFilter=(m,cat,field)=>{let t=0;dY.forEach(r=>{if(r['연월']===year+'-'+m&&(!cat||r['구분']===cat))t+=r[field]||0});return t};
-  // PU 집계
-  const puOnByM={},puOffByM={};
-  puOnData.filter(d=>d['연월']&&d['연월'].startsWith(year)).forEach(d=>{const m=d['연월'].split('-')[1];puOnByM[m]=(puOnByM[m]||0)+d['PU']});
-  puOffData.filter(d=>d['연월']&&d['연월'].startsWith(year)).forEach(d=>{const m=d['연월'].split('-')[1];puOffByM[m]=(puOffByM[m]||0)+d['PU']});
+  // PT10 PU 집계
+  const pt10PuByM={};
+  pt10PuData.filter(d=>d['연월']&&d['연월'].startsWith(year)).forEach(d=>{const m=d['연월'].split('-')[1];pt10PuByM[m]=(pt10PuByM[m]||0)+d['고객수']});
   const allMetrics=[
     {label:'전체 매출',fn:m=>sumByFilter(m,null,'매출금액')},
     {label:'본체 수량',fn:m=>sumByFilter(m,'본체','수량')},
     {label:'본체 매출',fn:m=>sumByFilter(m,'본체','매출금액')},
     {label:'카트리지 수량',fn:m=>sumByFilter(m,'카트리지','수량')},
     {label:'카트리지 매출',fn:m=>sumByFilter(m,'카트리지','매출금액')},
-    {label:'PU PU',fn:m=>(puOnByM[m]||0)+(puOffByM[m]||0)},
+    {label:'PU PU',fn:m=>pt10PuByM[m]||0},
     {label:'기타 카트리지+튜브 매출',fn:m=>sumByFilter(m,'카트리지','매출금액')+sumByFilter(m,'캐필러리 튜브','매출금액')},
     {label:'기타 캐필러리 튜브 매출',fn:m=>sumByFilter(m,'캐필러리 튜브','매출금액')},
     {label:'기타 플런져 매출',fn:m=>sumByFilter(m,'플런져','매출금액')},
