@@ -831,18 +831,23 @@ function renderSonoQtyChart(data){
   const sups=Object.entries(st).sort((a,b)=>a[0].localeCompare(b[0],'ko')).map(s=>s[0]);
   const ds=sups.map((sup,i)=>{const mq=qtyMap[sup]||{};
     return{label:sup,data:months.map(m=>mq[m]||0),backgroundColor:COLORS[i%COLORS.length],
-      datalabels:{anchor:'end',align:'end',font:{size:11,weight:'bold'},color:'#333',
-        display:function(ctx){
-          const chart=ctx.chart;const di=ctx.dataIndex;
-          let lastVisible=-1,t=0;
-          for(let j=0;j<chart.data.datasets.length;j++){if(!chart.getDatasetMeta(j).hidden&&chart.data.datasets[j].data[di]){lastVisible=j;t+=chart.data.datasets[j].data[di]}}
-          return ctx.datasetIndex===lastVisible&&t>0;
-        },
-        formatter:function(v,ctx){
-          const chart=ctx.chart;const di=ctx.dataIndex;let t=0;
-          for(let j=0;j<chart.data.datasets.length;j++){if(!chart.getDatasetMeta(j).hidden)t+=(chart.data.datasets[j].data[di]||0)}
-          return t+'대';
-        }}}});
+      datalabels:{labels:{
+        each:{anchor:'center',align:'center',font:{size:10,weight:'bold'},color:'#fff',
+          display:function(ctx){return !ctx.chart.getDatasetMeta(ctx.datasetIndex).hidden&&ctx.dataset.data[ctx.dataIndex]>0},
+          formatter:function(v){return v+'대'}},
+        total:{anchor:'end',align:'end',font:{size:11,weight:'bold'},color:'#333',
+          display:function(ctx){
+            const chart=ctx.chart;const di=ctx.dataIndex;
+            let lastVisible=-1,t=0;
+            for(let j=0;j<chart.data.datasets.length;j++){if(!chart.getDatasetMeta(j).hidden&&chart.data.datasets[j].data[di]){lastVisible=j;t+=chart.data.datasets[j].data[di]}}
+            return ctx.datasetIndex===lastVisible&&t>0;
+          },
+          formatter:function(v,ctx){
+            const chart=ctx.chart;const di=ctx.dataIndex;let t=0;
+            for(let j=0;j<chart.data.datasets.length;j++){if(!chart.getDatasetMeta(j).hidden)t+=(chart.data.datasets[j].data[di]||0)}
+            return t+'대';
+          }}
+      }}}});
   if(sonoQtyChart)sonoQtyChart.destroy();
   sonoQtyChart=new Chart(document.getElementById('sonoQtyChart'),{type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets:ds},plugins:[ChartDataLabels],
     options:{responsive:true,layout:{padding:{top:20}},plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:12}},
