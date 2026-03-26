@@ -545,7 +545,7 @@ function render(){
   if(isSono){renderSupplierChart(data);}
   renderTable(data);renderMonthlyTable(data);
   // 클래스 전용: PU + 재구매
-  document.getElementById('detailRow').style.display=(isTurnkey||isPT10)?'none':'';
+  document.getElementById('detailRow').style.display=(isTurnkey||isPT10||isSono)?'none':'';
   document.getElementById('monthlyRow').style.display=isPT10?'none':'';
   ['pt10SummaryRow','pt10CartRow','pt10Summary2025Row','pt10Cart2025Row','pt10Summary2024Row','pt10Cart2024Row','pt10Summary2023Row','pt10Cart2023Row','pt10CartChartRow'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
   ['navPT10Summary','navPT10CartTrend','navPT10Cart','navPT10Y25','navPT10Y24','navPT10Y23'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
