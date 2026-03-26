@@ -1006,7 +1006,7 @@ function clearDrill(){drillCategory=null;document.getElementById('drillFilter').
 
 // URL 해시로 탭 초기화
 const hashTab=decodeURIComponent(location.hash.slice(1));
-const validTabs=['의료기기','초음파','PT10','클래스','턴키'];
+const validTabs=['전체','의료기기','초음파','PT10','클래스','턴키'];
 if(validTabs.includes(hashTab)){currentTab=hashTab;document.querySelectorAll('.tab[data-tab]').forEach(t=>{t.classList.toggle('active',t.dataset.tab===hashTab)})}
 function renderTurnkeyKPI(){
   const today=new Date();const curYear=today.getFullYear();
