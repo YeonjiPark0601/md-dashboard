@@ -362,7 +362,7 @@ async function fetchData(){
     const sheetUrl=n=>`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(n)}&headers=1&_t=${Date.now()}`;
     const [salesR,classR,turnkeyR,pt10R,pt10MasterR,sonoR,sonoMissR,targetR,puOnR,puOffR,rebuyR]=await Promise.all([
       fetch(sheetUrl('일반기기')),fetch(sheetUrl('클래스')),fetch(sheetUrl('턴키 결제내역')),fetch(sheetUrl('PT10')),fetch(sheetUrl('PT10 마스터')),
-      fetch(sheetUrl('초음파')),fetch(sheetUrl('초음파누락')),fetch(TARGET_URL),
+      fetch(sheetUrl('초음파')+'&range=A6:AH'),fetch(sheetUrl('초음파누락')),fetch(TARGET_URL),
       fetch(sheetUrl('PU온라인')),fetch(sheetUrl('PU오프라인')),fetch(sheetUrl('재구매분석'))
     ]);
     if(!salesR.ok)throw new Error('매출 데이터 로딩 실패');
@@ -379,8 +379,16 @@ async function fetchData(){
     // 초음파: 2개 시트 합산
     try{
       const sonoArr=[];
-      if(sonoR.ok){const t=await sonoR.text();if(t.trim()){const rows=parseCSV(t);rows.filter(r=>{const ym=r['계약월']||'';return ym&&ym.match(/^\d{4}/)}).forEach(r=>{
-        sonoArr.push({주문일:r['계약월']||'',연월:fixYm(r['계약월']||''),한의원명:r['병원명']||'',품목명:r['장비명']||'',카테고리:r['재고기준 \n(상품/견본)']||r[Object.keys(r).find(k=>k.includes('상품/견본'))]||'',매출금액:parseNum(r['계약금액 \n(VAT 별도)']||r[Object.keys(r).find(k=>k.includes('VAT 별도'))]||r[Object.keys(r).find(k=>k.includes('VAT별도'))]||0),_isAS:false})})}}
+      if(sonoR.ok){const t=await sonoR.text();if(t.trim()){const rows=parseCSV(t);
+        // 컬럼명에 개행 포함될 수 있으므로 유연하게 매칭
+        const findCol=(r,keyword)=>{const k=Object.keys(r).find(k=>k.replace(/\s/g,'').includes(keyword));return k?r[k]:''};
+        rows.forEach(r=>{
+          const dt=findCol(r,'입금일자');if(!dt||!String(dt).trim())return;
+          const amt=parseNum(findCol(r,'vat제외')||findCol(r,'VAT제외'));if(!amt)return;
+          const ym=String(dt).substring(0,7);
+          sonoArr.push({주문일:String(dt).substring(0,10),연월:fixYm(ym),한의원명:r['병원명']||findCol(r,'병원명')||'',
+            품목명:r['장비명']||findCol(r,'장비명')||'',공급업체:r['장비명']||findCol(r,'장비명')||'',
+            카테고리:findCol(r,'상품/견본')||'',매출금액:amt,_isAS:false})})}}
       if(sonoMissR.ok){const t=await sonoMissR.text();if(t.trim()){parseCSV(t).filter(r=>r['결제일']&&String(r['결제일']).trim()).forEach(r=>{
         const isAS=(r['상품ID']||'')==='01JAQ0MPK16ETZTFPZXZKQYRSD';
         sonoArr.push({주문일:(r['결제일']||'').substring(0,10),연월:fixYm(r['연월']||''),한의원명:r['주문자']||'',품목명:r['상품명']||'',카테고리:isAS?'AS':'누락',매출금액:parseNum(r['매출액(real_rev)']),공급가:parseNum(r['공급가(VAT제외)']),_isAS:isAS})})}}
@@ -436,11 +444,12 @@ function initFilters(){
     const el=document.getElementById(id);el.onchange=render;
   });
   // Update labels
-  const isMDTab=currentTab==='의료기기'||currentTab==='초음파';
-  document.getElementById('supplierPickerBtn').textContent=isMDTab?'공급처 선택 ▾':'상품 선택 ▾';
-  document.getElementById('supplierChartTitle').textContent=isMDTab?'공급처별 매출':'상품별 매출';
-  document.getElementById('monthlyTableTitle').textContent=isMDTab?'공급처별 월별 매출':'상품별 월별 매출';
-  document.getElementById('detailTableTitle').textContent=isMDTab?'공급처별 매출 상세':'상품별 매출 상세';
+  const isMDTab=currentTab==='의료기기';
+  const sonoTab=currentTab==='초음파';
+  document.getElementById('supplierPickerBtn').textContent=isMDTab?'공급처 선택 ▾':sonoTab?'모델 선택 ▾':'상품 선택 ▾';
+  document.getElementById('supplierChartTitle').textContent=isMDTab?'공급처별 매출':sonoTab?'모델별 매출':'상품별 매출';
+  document.getElementById('monthlyTableTitle').textContent=isMDTab?'공급처별 월별 매출':sonoTab?'모델별 월별 매출':'상품별 월별 매출';
+  document.getElementById('detailTableTitle').textContent=isMDTab?'공급처별 매출 상세':sonoTab?'모델별 매출 상세':'상품별 매출 상세';
 }
 
 function getFilteredData(){
@@ -474,7 +483,7 @@ function updateSupplierSummary(){
   const summary=document.getElementById('supplierSummary');
   if(selectedSuppliers.length===0){summary.style.display='none';return}
   summary.style.display='block';
-  const nk=currentTab==='의료기기'?'공급업체':'상품명';
+  const nk=currentTab==='의료기기'?'공급업체':currentTab==='초음파'?'품목명':'상품명';
   const data=getFilteredData().filter(d=>selectedSuppliers.includes(d[nk]));
   const ts=data.reduce((s,d)=>s+d['매출금액'],0);
   const tc=data.reduce((s,d)=>s+(d['공급가']||0),0);
@@ -498,8 +507,8 @@ function updateSupplierSummary(){
 }
 
 function render(){
-  const data=getFilteredData();const isTurnkey=currentTab==='턴키';const isPT10=currentTab==='PT10';const isSono=currentTab==='초음파';const isMD=currentTab==='의료기기'||isSono;const isClass=currentTab==='클래스';
-  document.getElementById('supplierChartRow').style.display=isMD?'':'none';
+  const data=getFilteredData();const isTurnkey=currentTab==='턴키';const isPT10=currentTab==='PT10';const isSono=currentTab==='초음파';const isMD=currentTab==='의료기기';const isClass=currentTab==='클래스';
+  document.getElementById('supplierChartRow').style.display=(isMD||isSono)?'':'none';
   if(isMD){
     document.getElementById('trendRow').style.display='';
     document.getElementById('classTrendRow').style.display='none';
@@ -507,6 +516,10 @@ function render(){
     document.getElementById('typeChartCard').style.display='';
     document.getElementById('categoryChartCard').style.display='';
     document.getElementById('categoryPieCard').style.display='';
+  }else if(isSono){
+    document.getElementById('trendRow').style.display='';
+    document.getElementById('classTrendRow').style.display='none';
+    document.getElementById('chartRow3').style.display='none';
   }else if(currentTab==='클래스'){
     document.getElementById('trendRow').style.display='none';
     document.getElementById('classTrendRow').style.display='';
@@ -520,6 +533,7 @@ function render(){
   renderKPIs();renderTrendChart(data);
   if(currentTab==='클래스')renderTypeChart(data);
   if(isMD){renderTypeChart(data);renderCategoryChart(data);renderCategoryPieChart(data);renderSupplierChart(data);}
+  if(isSono){renderSupplierChart(data);}
   renderTable(data);renderMonthlyTable(data);
   // 클래스 전용: PU + 재구매
   document.getElementById('detailRow').style.display=(isTurnkey||isPT10)?'none':'';
@@ -539,7 +553,7 @@ function render(){
   document.getElementById('navPU').style.display=isClassOnly?'':'none';
   document.getElementById('navRebuy').style.display=isClassOnly?'':'none';
   document.getElementById('navCharts').style.display=isMD?'':'none';
-  document.getElementById('navSupplier').style.display=isMD?'':'none';
+  document.getElementById('navSupplier').style.display=(isMD||isSono)?'':'none';
   if(isClassOnly){renderPU();renderRebuy()}
 }
 
@@ -708,7 +722,7 @@ function renderCategoryPieChart(data){
 }
 
 function renderSupplierChart(data){
-  const nk=currentTab==='의료기기'?'공급업체':'상품명';
+  const nk=currentTab==='의료기기'?'공급업체':currentTab==='초음파'?'품목명':'상품명';
   const months=[...new Set(data.map(d=>d['연월']).filter(Boolean))].sort();
   const cd=selectedSuppliers.length>0?data.filter(d=>selectedSuppliers.includes(d[nk])):data;
   const st={};cd.forEach(d=>{if(d[nk])st[d[nk]]=(st[d[nk]]||0)+d['매출금액']});
@@ -725,7 +739,7 @@ function renderSupplierChart(data){
 }
 
 function renderTable(data){
-  const nk=currentTab==='의료기기'?'공급업체':'상품명';
+  const nk=currentTab==='의료기기'?'공급업체':currentTab==='초음파'?'품목명':'상품명';
   const isClass=currentTab!=='의료기기';
   const head=document.getElementById('supplierHead');
   if(isClass){head.innerHTML='<th onclick="sortTable(0)">상품명</th><th onclick="sortTable(1)" class="text-right">매출금액</th><th onclick="sortTable(2)" class="text-right">건수</th>'}
@@ -760,11 +774,11 @@ function renderTable(data){
 let monthlyExpanded = false, detailTableExpanded = false;
 
 function renderMonthlyTable(data){
-  const nk=currentTab==='의료기기'?'공급업체':'상품명';
+  const nk=currentTab==='의료기기'?'공급업체':currentTab==='초음파'?'품목명':'상품명';
   const months=[...new Set(data.map(d=>d['연월']).filter(Boolean))].sort();
   const sups={};data.forEach(d=>{const s=d[nk];if(!s)return;if(!sups[s])sups[s]={total:0};sups[s][d['연월']]=(sups[s][d['연월']]||0)+d['매출금액'];sups[s].total+=d['매출금액']});
   const sorted=Object.entries(sups).sort((a,b)=>b[1].total-a[1].total);
-  const label=currentTab==='의료기기'?'공급업체':'상품명';
+  const label=currentTab==='의료기기'?'공급업체':currentTab==='초음파'?'장비명':'상품명';
   const LIMIT=20;
   const needToggle=sorted.length>LIMIT;
   const visible=(!needToggle||monthlyExpanded)?sorted:sorted.slice(0,LIMIT);
@@ -783,7 +797,7 @@ function toggleMonthlyTable(){monthlyExpanded=!monthlyExpanded;renderMonthlyTabl
 function toggleDetailTable(){detailTableExpanded=!detailTableExpanded;renderTable(getFilteredData())}
 
 function showDetail(name){
-  const nk=currentTab==='의료기기'?'공급업체':'상품명';const isClass=currentTab!=='의료기기';
+  const nk=currentTab==='의료기기'?'공급업체':currentTab==='초음파'?'품목명':'상품명';const isClass=currentTab!=='의료기기';
   const data=getFilteredData().filter(d=>d[nk]===name);
   data.sort((a,b)=>(b['주문일']||'').localeCompare(a['주문일']||''));
   document.getElementById('detailTitle').textContent=`${name} 매출 상세 (${data.length}건)`;
