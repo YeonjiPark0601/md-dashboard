@@ -82,7 +82,7 @@ tr:hover { background: #f7f9fc; }
 </div>
 <div class="tabs" id="tabBar">
   <div class="tab disabled">전체</div>
-  <div class="tab disabled">초음파</div>
+  <div class="tab" data-tab="초음파" onclick="switchTab('초음파')">초음파</div>
   <div class="tab active" data-tab="의료기기" onclick="switchTab('의료기기')">의료기기</div>
   <div class="tab" data-tab="클래스" onclick="switchTab('클래스')">클래스</div>
   <div class="tab" data-tab="턴키" onclick="switchTab('턴키')">턴키</div>
@@ -326,7 +326,7 @@ const TARGET_SHEET_ID = '1Z8C_uiDHD6udIq7b9C79xlPxz4ERK5aC-vkoIbvTxic';
 const TARGET_URL = `https://docs.google.com/spreadsheets/d/${TARGET_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('26년 품목별 목표')}&_t=${Date.now()}`;
 
 let currentTab = '의료기기';
-let allData = [], classData = [], turnkeyData = [], pt10Data = [], pt10Master = {}, puOnData = [], puOffData = [], rebuyData = [], targetData = {};
+let allData = [], classData = [], turnkeyData = [], pt10Data = [], pt10Master = {}, sonoData = [], puOnData = [], puOffData = [], rebuyData = [], targetData = {};
 let drillCategory = null, selectedSuppliers = [], sortCol = -1, sortAsc = true;
 let puOnExpanded = false, puOffExpanded = false;
 let trendChart, trendChart2, typeChart, typeChart2, categoryChart, categoryPieChart, supplierChart, pt10CartTrendChart;
@@ -355,13 +355,14 @@ function yearShift(ym,d){const[y,m]=ym.split('-').map(Number);return`${y+d}-${St
 function getMonday(d){const dt=new Date(d);const day=dt.getDay();dt.setDate(dt.getDate()-day+(day===0?-6:1));return dt}
 function dateStr(d){return d.toISOString().slice(0,10)}
 
-function getData(){if(currentTab==='클래스')return classData;if(currentTab==='턴키')return turnkeyData;if(currentTab==='PT10')return pt10Data;return allData}
+function getData(){if(currentTab==='클래스')return classData;if(currentTab==='턴키')return turnkeyData;if(currentTab==='PT10')return pt10Data;if(currentTab==='초음파')return sonoData.filter(d=>!d._isAS);return allData}
 
 async function fetchData(){
   try{
     const sheetUrl=n=>`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(n)}&headers=1&_t=${Date.now()}`;
-    const [salesR,classR,turnkeyR,pt10R,pt10MasterR,targetR,puOnR,puOffR,rebuyR]=await Promise.all([
-      fetch(sheetUrl('일반기기')),fetch(sheetUrl('클래스')),fetch(sheetUrl('턴키 결제내역')),fetch(sheetUrl('PT10')),fetch(sheetUrl('PT10 마스터')),fetch(TARGET_URL),
+    const [salesR,classR,turnkeyR,pt10R,pt10MasterR,sonoR,sonoMissR,targetR,puOnR,puOffR,rebuyR]=await Promise.all([
+      fetch(sheetUrl('일반기기')),fetch(sheetUrl('클래스')),fetch(sheetUrl('턴키 결제내역')),fetch(sheetUrl('PT10')),fetch(sheetUrl('PT10 마스터')),
+      fetch(sheetUrl('초음파')),fetch(sheetUrl('초음파누락')),fetch(TARGET_URL),
       fetch(sheetUrl('PU온라인')),fetch(sheetUrl('PU오프라인')),fetch(sheetUrl('재구매분석'))
     ]);
     if(!salesR.ok)throw new Error('매출 데이터 로딩 실패');
@@ -375,6 +376,16 @@ async function fetchData(){
     try{if(pt10R.ok){const t=await pt10R.text();if(t.trim()){pt10Data=parseCSV(t).filter(r=>r['주문일']&&String(r['주문일']).trim()).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['수량']=parseNum(r['수량']);r['연월']=fixYm(r['연월']);if(r['주문일']&&r['주문일'].length>10)r['주문일']=r['주문일'].substring(0,10);
       const m=pt10Master[r['품목코드']||''];if(m){r['구분']=m.구분;r['상세']=m.상세}else if(!r['구분']){r['구분']='';r['상세']=''}
       return r})}}}catch(e){console.warn('PT10 에러',e)}
+    // 초음파: 2개 시트 합산
+    try{
+      const sonoArr=[];
+      if(sonoR.ok){const t=await sonoR.text();if(t.trim()){const rows=parseCSV(t);rows.filter(r=>{const ym=r['계약월']||'';return ym&&ym.match(/^\d{4}/)}).forEach(r=>{
+        sonoArr.push({주문일:r['계약월']||'',연월:fixYm(r['계약월']||''),한의원명:r['병원명']||'',품목명:r['장비명']||'',카테고리:r['재고기준 \n(상품/견본)']||r[Object.keys(r).find(k=>k.includes('상품/견본'))]||'',매출금액:parseNum(r['계약금액 \n(VAT 별도)']||r[Object.keys(r).find(k=>k.includes('VAT 별도'))]||r[Object.keys(r).find(k=>k.includes('VAT별도'))]||0),_isAS:false})})}}
+      if(sonoMissR.ok){const t=await sonoMissR.text();if(t.trim()){parseCSV(t).filter(r=>r['결제일']&&String(r['결제일']).trim()).forEach(r=>{
+        const isAS=(r['상품ID']||'')==='01JAQ0MPK16ETZTFPZXZKQYRSD';
+        sonoArr.push({주문일:(r['결제일']||'').substring(0,10),연월:fixYm(r['연월']||''),한의원명:r['주문자']||'',품목명:r['상품명']||'',카테고리:isAS?'AS':'누락',매출금액:parseNum(r['매출액(real_rev)']),공급가:parseNum(r['공급가(VAT제외)']),_isAS:isAS})})}}
+      sonoData=sonoArr;
+    }catch(e){console.warn('초음파 에러',e)}
     try{if(puOnR.ok){const t=await puOnR.text();if(t.trim())puOnData=parseCSV(t).map(r=>{r['PU']=parseNum(r['PU']);return r})}}catch(e){console.warn('PU온라인 에러',e)}
     try{if(puOffR.ok){const t=await puOffR.text();if(t.trim())puOffData=parseCSV(t).map(r=>{r['PU']=parseNum(r['PU']);return r})}}catch(e){console.warn('PU오프라인 에러',e)}
     try{if(rebuyR.ok){const t=await rebuyR.text();if(t.trim())rebuyData=parseCSV(t).map(r=>{
@@ -384,7 +395,7 @@ async function fetchData(){
     initFilters();render();
     document.getElementById('loadingMsg').style.display='none';
     document.getElementById('dashboardContent').style.display='block';
-    document.getElementById('lastUpdated').textContent=`의료기기: ${allData.length} | PT10: ${pt10Data.length} | 클래스: ${classData.length} | 턴키: ${turnkeyData.length} | ${new Date().toLocaleString('ko-KR')}`;
+    document.getElementById('lastUpdated').textContent=`의료기기: ${allData.length} | 초음파: ${sonoData.length} | PT10: ${pt10Data.length} | 클래스: ${classData.length} | 턴키: ${turnkeyData.length} | ${new Date().toLocaleString('ko-KR')}`;
   }catch(e){document.getElementById('loadingMsg').textContent='데이터 로딩 실패: '+e.message}
 }
 
@@ -399,7 +410,7 @@ function switchTab(tab){
   document.getElementById('detailSection').style.display='none';
   document.getElementById('supplierPicker').style.display='none';
   // Update filter visibility
-  document.getElementById('typeFilterGroup').style.display=(tab==='의료기기'||tab==='PT10')?'flex':'none';
+  document.getElementById('typeFilterGroup').style.display=(tab==='의료기기'||tab==='PT10'||tab==='초음파')?'flex':'none';
   initFilters();render();
 }
 
@@ -425,7 +436,7 @@ function initFilters(){
     const el=document.getElementById(id);el.onchange=render;
   });
   // Update labels
-  const isMDTab=currentTab==='의료기기';
+  const isMDTab=currentTab==='의료기기'||currentTab==='초음파';
   document.getElementById('supplierPickerBtn').textContent=isMDTab?'공급처 선택 ▾':'상품 선택 ▾';
   document.getElementById('supplierChartTitle').textContent=isMDTab?'공급처별 매출':'상품별 매출';
   document.getElementById('monthlyTableTitle').textContent=isMDTab?'공급처별 월별 매출':'상품별 월별 매출';
@@ -450,7 +461,7 @@ function getFilteredData(){
 function getTargetForMonth(month){
   if(currentTab==='턴키')return getTurnkeyTargetForMonth(month);
   const m=parseInt(month.split('-')[1]);let total=0;
-  const cats=currentTab==='PT10'?['PT10']:currentTab==='의료기기'?MD_CATEGORIES:currentTab==='클래스'?CLASS_CATEGORIES:[];
+  const cats=currentTab==='초음파'?['초음파']:currentTab==='PT10'?['PT10']:currentTab==='의료기기'?MD_CATEGORIES:currentTab==='클래스'?CLASS_CATEGORIES:[];
   cats.forEach(c=>{if(targetData[c]&&targetData[c][m])total+=targetData[c][m]});
   return total;
 }
@@ -487,7 +498,7 @@ function updateSupplierSummary(){
 }
 
 function render(){
-  const data=getFilteredData();const isTurnkey=currentTab==='턴키';const isPT10=currentTab==='PT10';const isMD=currentTab==='의료기기';const isClass=currentTab==='클래스';
+  const data=getFilteredData();const isTurnkey=currentTab==='턴키';const isPT10=currentTab==='PT10';const isSono=currentTab==='초음파';const isMD=currentTab==='의료기기'||isSono;const isClass=currentTab==='클래스';
   document.getElementById('supplierChartRow').style.display=isMD?'':'none';
   if(isMD){
     document.getElementById('trendRow').style.display='';
@@ -791,7 +802,7 @@ function clearDrill(){drillCategory=null;document.getElementById('drillFilter').
 
 // URL 해시로 탭 초기화
 const hashTab=decodeURIComponent(location.hash.slice(1));
-const validTabs=['의료기기','PT10','클래스','턴키'];
+const validTabs=['의료기기','초음파','PT10','클래스','턴키'];
 if(validTabs.includes(hashTab)){currentTab=hashTab;document.querySelectorAll('.tab[data-tab]').forEach(t=>{t.classList.toggle('active',t.dataset.tab===hashTab)})}
 function renderTurnkeyKPI(){
   const today=new Date();const curYear=today.getFullYear();
