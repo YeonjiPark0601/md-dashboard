@@ -372,7 +372,7 @@ async function fetchData(){
     const sheetUrl=n=>`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(n)}&headers=1&_t=${Date.now()}`;
     const [salesR,classR,turnkeyR,pt10R,pt10MasterR,sonoR,sonoMissR,targetR,puOnR,puOffR,rebuyR]=await Promise.all([
       fetch(sheetUrl('일반기기')),fetch(sheetUrl('클래스')),fetch(sheetUrl('턴키 결제내역')),fetch(sheetUrl('PT10')),fetch(sheetUrl('PT10 마스터')),
-      fetch(sheetUrl('초음파')+'&range=A6:AH'),fetch(sheetUrl('초음파누락')),fetch(TARGET_URL),
+      fetch(sheetUrl('초음파')+'&range=A7:AH'),fetch(sheetUrl('초음파누락')),fetch(TARGET_URL),
       fetch(sheetUrl('PU온라인')),fetch(sheetUrl('PU오프라인')),fetch(sheetUrl('재구매분석'))
     ]);
     if(!salesR.ok)throw new Error('매출 데이터 로딩 실패');
@@ -392,8 +392,8 @@ async function fetchData(){
       if(sonoR.ok){const t=await sonoR.text();if(t.trim()){
         // 헤더에 개행 있어서 parseCSV 대신 인덱스로 직접 파싱
         const lines=t.replace(/\r/g,'').split('\n').filter(l=>l.trim());
-        // 첫 행은 헤더 — 스킵하고 데이터만
-        for(let li=1;li<lines.length;li++){
+        // A7부터 읽으므로 헤더 없음 — 전부 데이터
+        for(let li=0;li<lines.length;li++){
           const cols=parseCSVRow(lines[li]);
           const dt=cols[13]||'';if(!dt||!dt.match(/^\d{4}/))continue; // N열(13)=계약금입금일자
           const amt=parseNum(cols[30]); // AE열(30)=계약금액(vat제외)
@@ -404,6 +404,7 @@ async function fetchData(){
             품목명:model,공급업체:model, // G열=장비명 (괄호 제거)
             지역:cols[5]||'', // F열=지역
             카테고리:cols[1]||'', // B열=재고기준(상품/견본)
+            _src:'sono', // 초음파 시트 원본
             매출금액:amt,_isAS:false})}}}
       if(sonoMissR.ok){const t=await sonoMissR.text();if(t.trim()){parseCSV(t).filter(r=>r['결제일']&&String(r['결제일']).trim()).forEach(r=>{
         const isAS=(r['상품ID']||'')==='01JAQ0MPK16ETZTFPZXZKQYRSD';
@@ -888,7 +889,7 @@ function renderTurnkeyKPI(){
 function renderSonoCountChart(){
   const now=new Date();const curYm=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
   const months=[];for(let y=2025;;){for(let m=1;m<=12;m++){const ym=`${y}-${String(m).padStart(2,'0')}`;months.push(ym);if(ym===curYm)break}if(months[months.length-1]===curYm)break;y++}
-  const sd=sonoData.filter(d=>!d._isAS);
+  const sd=sonoData.filter(d=>!d._isAS&&d._src==='sono');
   const tY={},pY={};
   sd.forEach(d=>{const ym=d['연월'];if(!ym)return;if(months.includes(ym))tY[ym]=(tY[ym]||0)+1;
     const sh=yearShift(ym,1);if(months.includes(sh))pY[sh]=(pY[sh]||0)+1});
@@ -913,27 +914,29 @@ function renderSonoMap(){
   const maxSales=Math.max(...Object.values(regionSales),1);
   const container=document.getElementById('sonoMapContainer');
 
-  let html='<svg viewBox="124 32 8 7" style="width:100%;height:100%;" xmlns="http://www.w3.org/2000/svg">';
-  // Background
-  html+='<rect x="124" y="32" width="8" height="7" fill="#f8f9fa"/>';
-  // Draw all regions as circles
-  Object.entries(regionPos).forEach(([name,pos])=>{
+  // 간단한 시도 위치 (SVG 좌표계: x=0~100, y=0~120)
+  const rPos={서울:[45,28],경기:[45,35],인천:[35,30],강원:[65,25],충북:[55,45],충남:[35,50],대전:[48,52],세종:[43,47],전북:[38,65],전남:[35,80],광주:[33,75],경북:[72,45],경남:[65,70],대구:[68,55],부산:[73,75],울산:[78,65],제주:[35,105]};
+  const maxSales=Math.max(...Object.values(regionSales),1);
+  const container=document.getElementById('sonoMapContainer');
+  let html='<svg viewBox="0 0 100 120" style="width:100%;height:100%;" xmlns="http://www.w3.org/2000/svg">';
+  html+='<rect x="0" y="0" width="100" height="120" fill="#f8f9fa" rx="8"/>';
+  Object.entries(rPos).forEach(([name,pos])=>{
     const sales=regionSales[name]||0;
-    const count=regionCount[name]||0;
-    const r=sales?Math.max(0.08,Math.sqrt(sales/maxSales)*0.5):0.04;
+    const r=sales?Math.max(4,Math.sqrt(sales/maxSales)*20):2;
     const opacity=sales?0.7:0.15;
     const color=sales?'#4285f4':'#ddd';
-    html+=`<circle cx="${pos[0]}" cy="${39-pos[1]}" r="${r}" fill="${color}" opacity="${opacity}" stroke="#fff" stroke-width="0.02"/>`;
-    html+=`<text x="${pos[0]}" y="${39-pos[1]+0.02}" text-anchor="middle" font-size="0.18" fill="#333" font-weight="${sales?'bold':'normal'}">${name}</text>`;
-    if(sales)html+=`<text x="${pos[0]}" y="${39-pos[1]+0.22}" text-anchor="middle" font-size="0.14" fill="#666">${fmt(Math.round(sales))}</text>`;
+    html+=`<circle cx="${pos[0]}" cy="${pos[1]}" r="${r}" fill="${color}" opacity="${opacity}" stroke="#fff" stroke-width="1"/>`;
+    html+=`<text x="${pos[0]}" y="${pos[1]+1}" text-anchor="middle" font-size="5" fill="#333" font-weight="${sales?'bold':'normal'}">${name}</text>`;
+    if(sales)html+=`<text x="${pos[0]}" y="${pos[1]+7}" text-anchor="middle" font-size="4" fill="#666">${fmt(Math.round(sales))}</text>`;
   });
   html+='</svg>';
   container.innerHTML=html;
 
   // Region table
+  const totalCount=Object.values(regionCount).reduce((s,v)=>s+v,0);
   document.getElementById('sonoRegionBody').innerHTML=sorted.map(([r,s])=>
     `<tr><td>${r}</td><td class="text-right">${Math.round(s).toLocaleString()}</td><td class="text-right">${regionCount[r]}</td><td class="text-right">${total?(s/total*100).toFixed(1)+'%':'-'}</td></tr>`
-  ).join('');
+  ).join('')+`<tr style="font-weight:700;background:#f0f2f5;"><td>합계</td><td class="text-right">${Math.round(total).toLocaleString()}</td><td class="text-right">${totalCount}</td><td class="text-right">100%</td></tr>`;
 }
 
 function renderPT10CartTrend(){
