@@ -583,7 +583,7 @@ function render(){
   if(isSono){renderSupplierChart(data);renderSonoQtyChart(data);renderSonoCountChart();renderSonoAS();
     // 지도는 D3 로드 후 렌더
     if(typeof d3!=='undefined')renderSonoMap();else document.querySelector('script[src*="d3@7"]').addEventListener('load',()=>renderSonoMap())}
-  renderTable(data);renderMonthlyTable(data);
+  if(!isAll){renderTable(data);renderMonthlyTable(data)}
   // 클래스 전용: PU + 재구매
   document.getElementById('detailRow').style.display=(isTurnkey||isPT10||isSono||isAll)?'none':'';
   document.getElementById('monthlyRow').style.display=(isPT10||isAll)?'none':'';
