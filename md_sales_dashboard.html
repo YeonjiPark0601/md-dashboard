@@ -744,9 +744,9 @@ function renderTrendChart(data){
       {label:'전년',data:months.map(m=>pY[m]||0),type:'line',borderColor:'#bbb',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,borderDash:[5,3],pointRadius:3,pointBackgroundColor:'#999',order:0,fill:false}
     ]},options:{responsive:true,interaction:{mode:'index',intersect:false},
       plugins:{legend:{position:'top'},
-        tooltip:{callbacks:{label:function(ctx){return ctx.dataset.label+': '+fmt(ctx.raw)},
-          afterBody:function(items){if(!items||!items.length)return'';var i=items[0].dataIndex;var t=(sonoM[months[i]]||0)+(mdM[months[i]]||0)+(classM[months[i]]||0);var lines=[];
-            var target=getTargetForMonth(months[i]);if(target)lines.push('합계: '+fmt(t)+' | 달성률: '+(t/target*100).toFixed(1)+'%');
+        tooltip:{callbacks:{label:function(ctx){var v=ctx.raw;var i=ctx.dataIndex;var t=(sonoM[months[i]]||0)+(mdM[months[i]]||0)+(classM[months[i]]||0);var pct=t?(v/t*100).toFixed(1):'0';if(ctx.dataset.label==='전년')return ctx.dataset.label+': '+fmt(v);return ctx.dataset.label+': '+fmt(v)+' ('+pct+'%)'},
+          afterBody:function(items){if(!items||!items.length)return'';var i=items[0].dataIndex;var t=(sonoM[months[i]]||0)+(mdM[months[i]]||0)+(classM[months[i]]||0);var lines=['합계: '+fmt(t)];
+            var target=getTargetForMonth(months[i]);if(target)lines.push('달성률: '+(t/target*100).toFixed(1)+'%  (목표: '+fmt(target)+')');
             var p=pY[months[i]]||0;if(p){var pct=((t-p)/p*100).toFixed(1);lines.push('YoY: '+(pct>0?'+':'')+pct+'%')}
             return lines}}}},
       scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:function(v){return fmt(v)}}}},
