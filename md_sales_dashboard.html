@@ -829,7 +829,7 @@ function renderSonoQtyChart(data){
   const ds=sups.map((sup,i)=>{const mq=qtyMap[sup]||{};
     return{label:sup,data:months.map(m=>mq[m]||0),backgroundColor:COLORS[i%COLORS.length],
       datalabels:{anchor:'center',align:'center',font:{size:10,weight:'bold'},color:'#fff',
-        display:function(ctx){return !ctx.chart.getDatasetMeta(ctx.datasetIndex).hidden && ctx.raw > 0},
+        display:function(ctx){const v=ctx.dataset.data[ctx.dataIndex];return !ctx.chart.getDatasetMeta(ctx.datasetIndex).hidden && v > 0},
         formatter:function(v){return v+'대'}
       }}});
   if(sonoQtyChart)sonoQtyChart.destroy();
