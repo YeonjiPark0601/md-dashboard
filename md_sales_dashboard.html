@@ -119,6 +119,8 @@ tr:hover { background: #f7f9fc; }
   <a href="#sec-pu" onclick="scrollTo2('sec-pu')" id="navPU" style="display:none;">PU 분석</a>
   <a href="#sec-rebuy" onclick="scrollTo2('sec-rebuy')" id="navRebuy" style="display:none;">재구매 분석</a>
   <a href="#sec-pt10summary" onclick="scrollTo2('sec-pt10summary')" id="navPT10Summary" style="display:none;">26년 수량/매출</a>
+  <a href="#sonoCountChartRow" onclick="scrollTo2('sonoCountChartRow')" id="navSonoCount" style="display:none;">계약건수</a>
+  <a href="#sonoMapRow" onclick="scrollTo2('sonoMapRow')" id="navSonoMap" style="display:none;">지역별 매출</a>
   <a href="#pt10CartChartRow" onclick="scrollTo2('pt10CartChartRow')" id="navPT10CartTrend" style="display:none;">카트리지 트렌드</a>
   <a href="#sec-pt10cart" onclick="scrollTo2('pt10CartRow')" id="navPT10Cart" style="display:none;">26년 카트리지</a>
   <a href="#sec-pt10y25" onclick="scrollTo2('pt10Summary2025Row')" id="navPT10Y25" style="display:none;">25년</a>
@@ -183,6 +185,14 @@ tr:hover { background: #f7f9fc; }
       <div class="chart-card" style="display:flex;flex-direction:column;"><h3>월별 매출 트렌드 (YoY) — 25년 1월~현재</h3><canvas id="trendChart2" style="flex:1;min-height:0;"></canvas></div>
       <div class="chart-card" style="display:flex;flex-direction:column;"><h3 id="typeChartTitle2">온/오프라인 비중</h3><canvas id="typeChart2" style="flex:1;min-height:0;"></canvas></div>
     </div>
+    <!-- 초음파 전용: 월별 계약건수 + 지역별 매출 -->
+    <div class="chart-row-full" id="sonoCountChartRow" style="display:none;">
+      <div class="chart-card"><h3>월별 계약건수 트렌드 — 25년 1월~현재</h3><canvas id="sonoCountChart" height="80"></canvas></div>
+    </div>
+    <div class="chart-row" id="sonoMapRow" style="display:none;">
+      <div class="chart-card" style="min-height:400px;"><h3>26년 지역별 매출</h3><div id="sonoMapContainer" style="position:relative;width:100%;height:360px;"></div></div>
+      <div class="chart-card"><h3>26년 지역별 매출 상세</h3><table id="sonoRegionTable"><thead><tr><th>지역</th><th class="text-right">매출금액</th><th class="text-right">건수</th><th class="text-right">비중</th></tr></thead><tbody id="sonoRegionBody"></tbody></table></div>
+    </div>
     <!-- PT10 전용: 카트리지 트렌드 -->
     <div class="chart-row-full" id="pt10CartChartRow" style="display:none;">
       <div class="chart-card"><h3>카트리지 월별 트렌드 (매출 + 수량)</h3><canvas id="pt10CartChart" height="80"></canvas></div>
@@ -200,7 +210,7 @@ tr:hover { background: #f7f9fc; }
           <span id="supplierChartTitle">공급처별 매출</span>
           <button onclick="clearSupplierSelection()" style="font-size:11px;padding:3px 8px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;color:#888;">초기화</button>
         </h3>
-        <canvas id="supplierChart" height="90"></canvas>
+        <canvas id="supplierChart" height="110"></canvas>
       </div>
     </div>
     <div id="sec-monthly"></div>
@@ -329,7 +339,7 @@ let currentTab = '의료기기';
 let allData = [], classData = [], turnkeyData = [], pt10Data = [], pt10Master = {}, sonoData = [], puOnData = [], puOffData = [], rebuyData = [], targetData = {};
 let drillCategory = null, selectedSuppliers = [], sortCol = -1, sortAsc = true;
 let puOnExpanded = false, puOffExpanded = false;
-let trendChart, trendChart2, typeChart, typeChart2, categoryChart, categoryPieChart, supplierChart, pt10CartTrendChart;
+let trendChart, trendChart2, typeChart, typeChart2, categoryChart, categoryPieChart, supplierChart, pt10CartTrendChart, sonoCountChart;
 
 const MD_CATEGORIES = ['비내시경','네오펙트','팀엘리시움','메디코아','DSE','PT10','옴니핏','그 외'];
 const CLASS_CATEGORIES = ['강의-온라인','강의-오프라인'];
@@ -392,6 +402,7 @@ async function fetchData(){
           const model=(cols[6]||'').replace(/\s*\(.*?\)/g,'').trim(); // 장비명에서 괄호 제거
           sonoArr.push({주문일:dt.substring(0,10),연월:ym,한의원명:cols[3]||'', // D열=병원명
             품목명:model,공급업체:model, // G열=장비명 (괄호 제거)
+            지역:cols[5]||'', // F열=지역
             카테고리:cols[1]||'', // B열=재고기준(상품/견본)
             매출금액:amt,_isAS:false})}}}
       if(sonoMissR.ok){const t=await sonoMissR.text();if(t.trim()){parseCSV(t).filter(r=>r['결제일']&&String(r['결제일']).trim()).forEach(r=>{
@@ -542,12 +553,16 @@ function render(){
   renderKPIs();renderTrendChart(data);
   if(currentTab==='클래스')renderTypeChart(data);
   if(isMD){renderTypeChart(data);renderCategoryChart(data);renderCategoryPieChart(data);renderSupplierChart(data);}
-  if(isSono){renderSupplierChart(data);}
+  if(isSono){renderSupplierChart(data);renderSonoCountChart();renderSonoMap()}
   renderTable(data);renderMonthlyTable(data);
   // 클래스 전용: PU + 재구매
   document.getElementById('detailRow').style.display=(isTurnkey||isPT10||isSono)?'none':'';
   document.getElementById('monthlyRow').style.display=isPT10?'none':'';
   ['pt10SummaryRow','pt10CartRow','pt10Summary2025Row','pt10Cart2025Row','pt10Summary2024Row','pt10Cart2024Row','pt10Summary2023Row','pt10Cart2023Row','pt10CartChartRow'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
+  document.getElementById('sonoCountChartRow').style.display=isSono?'':'none';
+  document.getElementById('sonoMapRow').style.display=isSono?'':'none';
+  document.getElementById('navSonoCount').style.display=isSono?'':'none';
+  document.getElementById('navSonoMap').style.display=isSono?'':'none';
   ['navPT10Summary','navPT10CartTrend','navPT10Cart','navPT10Y25','navPT10Y24','navPT10Y23'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
   document.getElementById('navMonthly').style.display=isPT10?'none':'';
   document.getElementById('navDetail').style.display=(isPT10||isTurnkey)?'none':'';
@@ -868,6 +883,57 @@ function renderTurnkeyKPI(){
   document.getElementById('tkHalfCount').textContent='건수: '+halfCount.toLocaleString()+'건';
   document.getElementById('tkHalfAvg').textContent='객단가: '+(halfCount?fmt(Math.round(halfSales/halfCount)):'-');
   document.getElementById('tkHalfRate').textContent='비율: '+(totalCount?(halfCount/totalCount*100).toFixed(0)+'%':'-');
+}
+
+function renderSonoCountChart(){
+  const now=new Date();const curYm=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const months=[];for(let y=2025;;){for(let m=1;m<=12;m++){const ym=`${y}-${String(m).padStart(2,'0')}`;months.push(ym);if(ym===curYm)break}if(months[months.length-1]===curYm)break;y++}
+  const sd=sonoData.filter(d=>!d._isAS);
+  const tY={},pY={};
+  sd.forEach(d=>{const ym=d['연월'];if(!ym)return;if(months.includes(ym))tY[ym]=(tY[ym]||0)+1;
+    const sh=yearShift(ym,1);if(months.includes(sh))pY[sh]=(pY[sh]||0)+1});
+  if(sonoCountChart)sonoCountChart.destroy();
+  sonoCountChart=new Chart(document.getElementById('sonoCountChart'),{type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets:[
+    {label:'올해',data:months.map(m=>tY[m]||0),backgroundColor:'#4285f4',borderRadius:4,order:2},
+    {label:'전년',data:months.map(m=>pY[m]||0),type:'line',borderColor:'#bbb',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,borderDash:[5,3],pointRadius:3,pointBackgroundColor:'#999',order:0,fill:false}
+  ]},options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top'},
+    tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.raw+'건'}}},
+    scales:{y:{ticks:{callback:v=>v+'건'}}}}});
+}
+
+function renderSonoMap(){
+  const sd26=sonoData.filter(d=>!d._isAS&&d['연월']&&d['연월'].startsWith('2026')&&d['지역']);
+  const regionSales={},regionCount={};
+  sd26.forEach(d=>{const r=d['지역'];regionSales[r]=(regionSales[r]||0)+d['매출금액'];regionCount[r]=(regionCount[r]||0)+1});
+  const total=Object.values(regionSales).reduce((s,v)=>s+v,0);
+  const sorted=Object.entries(regionSales).sort((a,b)=>b[1]-a[1]);
+
+  // 지도: SVG 기반 한국 시도 간단 표현 (위치 기반 버블맵)
+  const regionPos={서울:[126.98,37.57],경기:[127.0,37.27],인천:[126.71,37.46],강원:[128.2,37.75],충북:[127.49,36.64],충남:[126.8,36.5],대전:[127.38,36.35],세종:[127.0,36.48],전북:[127.1,35.82],전남:[126.9,34.87],광주:[126.85,35.16],경북:[128.7,36.4],경남:[128.5,35.44],대구:[128.6,35.87],부산:[129.08,35.18],울산:[129.31,35.54],제주:[126.57,33.49]};
+  const maxSales=Math.max(...Object.values(regionSales),1);
+  const container=document.getElementById('sonoMapContainer');
+
+  let html='<svg viewBox="124 32 8 7" style="width:100%;height:100%;" xmlns="http://www.w3.org/2000/svg">';
+  // Background
+  html+='<rect x="124" y="32" width="8" height="7" fill="#f8f9fa"/>';
+  // Draw all regions as circles
+  Object.entries(regionPos).forEach(([name,pos])=>{
+    const sales=regionSales[name]||0;
+    const count=regionCount[name]||0;
+    const r=sales?Math.max(0.08,Math.sqrt(sales/maxSales)*0.5):0.04;
+    const opacity=sales?0.7:0.15;
+    const color=sales?'#4285f4':'#ddd';
+    html+=`<circle cx="${pos[0]}" cy="${39-pos[1]}" r="${r}" fill="${color}" opacity="${opacity}" stroke="#fff" stroke-width="0.02"/>`;
+    html+=`<text x="${pos[0]}" y="${39-pos[1]+0.02}" text-anchor="middle" font-size="0.18" fill="#333" font-weight="${sales?'bold':'normal'}">${name}</text>`;
+    if(sales)html+=`<text x="${pos[0]}" y="${39-pos[1]+0.22}" text-anchor="middle" font-size="0.14" fill="#666">${fmt(Math.round(sales))}</text>`;
+  });
+  html+='</svg>';
+  container.innerHTML=html;
+
+  // Region table
+  document.getElementById('sonoRegionBody').innerHTML=sorted.map(([r,s])=>
+    `<tr><td>${r}</td><td class="text-right">${Math.round(s).toLocaleString()}</td><td class="text-right">${regionCount[r]}</td><td class="text-right">${total?(s/total*100).toFixed(1)+'%':'-'}</td></tr>`
+  ).join('');
 }
 
 function renderPT10CartTrend(){
