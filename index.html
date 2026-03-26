@@ -5,9 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MD 매출 대시보드</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/d3-array@3/dist/d3-array.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/d3-geo@3/dist/d3-geo.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/d3-selection@3/dist/d3-selection.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -575,9 +573,9 @@ function render(){
   renderKPIs();renderTrendChart(data);
   if(currentTab==='클래스')renderTypeChart(data);
   if(isMD){renderTypeChart(data);renderCategoryChart(data);renderCategoryPieChart(data);renderSupplierChart(data);}
-  if(isSono){renderSupplierChart(data);renderSonoQtyChart(data);renderSonoCountChart();
-    // 지도와 AS는 프레임 분산 (UI 블로킹 방지)
-    requestAnimationFrame(()=>{renderSonoMap();requestAnimationFrame(()=>{renderSonoAS()})})}
+  if(isSono){renderSupplierChart(data);renderSonoQtyChart(data);renderSonoCountChart();renderSonoAS();
+    // 지도는 D3 로드 후 렌더
+    if(typeof d3!=='undefined')renderSonoMap();else document.querySelector('script[src*="d3@7"]').addEventListener('load',()=>renderSonoMap())}
   renderTable(data);renderMonthlyTable(data);
   // 클래스 전용: PU + 재구매
   document.getElementById('detailRow').style.display=(isTurnkey||isPT10||isSono)?'none':'';
