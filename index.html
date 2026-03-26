@@ -692,10 +692,17 @@ function renderTrendChart(data){
       {label:'온라인',data:months.map(m=>onData[m]||0),backgroundColor:'#4285f4',borderRadius:0,stack:'thisYear',order:2,
         datalabels:{display:false}},
       {label:'오프라인',data:months.map(m=>offData[m]||0),backgroundColor:'#fbbc04',borderRadius:0,stack:'thisYear',order:2,
-        datalabels:{display:true,anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',
-          formatter:(v,ctx)=>{const i=ctx.dataIndex;const t=(onData[months[i]]||0)+(offData[months[i]]||0);const p=pY[months[i]]||0;
-            const yoy=p?((t-p)/p*100).toFixed(0):null;
-            return fmt(t)}}},
+        datalabels:{anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',
+          display:function(ctx){
+            const chart=ctx.chart;const di=ctx.dataIndex;let lastVisible=-1;
+            for(let j=0;j<chart.data.datasets.length;j++){if(chart.data.datasets[j].stack==='thisYear'&&!chart.getDatasetMeta(j).hidden&&chart.data.datasets[j].data[di])lastVisible=j}
+            return ctx.datasetIndex===lastVisible;
+          },
+          formatter:function(v,ctx){
+            const chart=ctx.chart;const di=ctx.dataIndex;let t=0;
+            for(let j=0;j<chart.data.datasets.length;j++){if(chart.data.datasets[j].stack==='thisYear'&&!chart.getDatasetMeta(j).hidden)t+=(chart.data.datasets[j].data[di]||0)}
+            return fmt(t);
+          }}},
       {label:'전년',data:months.map(m=>pY[m]||0),type:'line',borderColor:'#bbb',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,borderDash:[5,3],pointRadius:3,pointBackgroundColor:'#999',order:0,fill:false,
         datalabels:{display:false}}
     ]},plugins:[ChartDataLabels],options:{responsive:true,interaction:{mode:'index',intersect:false},
@@ -1147,8 +1154,17 @@ function renderPT10CartTrend(){
     cartData.filter(d=>d['상세']===det).forEach(d=>{if(months.includes(d['연월'])){monthSales[d['연월']]=(monthSales[d['연월']]||0)+d['매출금액'];monthQty[d['연월']]=(monthQty[d['연월']]||0)+d['수량']}});
     return[
       {label:det,data:months.map(m=>monthSales[m]||0),backgroundColor:COLORS[i%COLORS.length],stack:'sales',order:2,yAxisID:'y',_detIdx:i,
-        datalabels:{display:i===details.length-1,anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',
-          formatter:(v,ctx)=>{const t=ctx.chart.data.datasets.filter(ds=>ds.stack==='sales').reduce((s,ds)=>s+(ds.data[ctx.dataIndex]||0),0);return fmt(Math.round(t))}}},
+        datalabels:{anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',
+          display:function(ctx){
+            const chart=ctx.chart;const di=ctx.dataIndex;let lastVisible=-1;
+            for(let j=0;j<chart.data.datasets.length;j++){if(chart.data.datasets[j].stack==='sales'&&!chart.getDatasetMeta(j).hidden&&chart.data.datasets[j].data[di])lastVisible=j}
+            return ctx.datasetIndex===lastVisible;
+          },
+          formatter:function(v,ctx){
+            const chart=ctx.chart;const di=ctx.dataIndex;let t=0;
+            for(let j=0;j<chart.data.datasets.length;j++){if(chart.data.datasets[j].stack==='sales'&&!chart.getDatasetMeta(j).hidden)t+=(chart.data.datasets[j].data[di]||0)}
+            return fmt(Math.round(t));
+          }}},
       {label:det+' 수량',data:months.map(m=>monthQty[m]||0),backgroundColor:COLORS[i%COLORS.length]+'88',stack:'qty',order:2,yAxisID:'y1',_detIdx:i,_hidden:false,datalabels:{display:false}}
     ];
   }).flat();
