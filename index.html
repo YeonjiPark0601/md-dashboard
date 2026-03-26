@@ -836,9 +836,10 @@ function renderSonoQtyChart(data){
           formatter:function(v){return v+'대'}},
         {anchor:'end',align:'end',font:{size:11,weight:'bold'},color:'#333',
           display:function(ctx){
-            const chart=ctx.chart;const di=ctx.dataIndex;let lastVisible=-1;
-            for(let j=0;j<chart.data.datasets.length;j++){if(!chart.getDatasetMeta(j).hidden&&chart.data.datasets[j].data[di])lastVisible=j}
-            return ctx.datasetIndex===lastVisible;
+            const chart=ctx.chart;const di=ctx.dataIndex;
+            let lastVisible=-1,t=0;
+            for(let j=0;j<chart.data.datasets.length;j++){if(!chart.getDatasetMeta(j).hidden&&chart.data.datasets[j].data[di]){lastVisible=j;t+=chart.data.datasets[j].data[di]}}
+            return ctx.datasetIndex===lastVisible&&t>0;
           },
           formatter:function(v,ctx){
             const chart=ctx.chart;const di=ctx.dataIndex;let t=0;
