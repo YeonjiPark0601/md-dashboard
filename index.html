@@ -481,7 +481,7 @@ function initFilters(){
   const sonoTab=currentTab==='초음파';
   document.getElementById('supplierPickerBtn').textContent=isMDTab?'공급처 선택 ▾':sonoTab?'모델 선택 ▾':'상품 선택 ▾';
   document.getElementById('supplierChartTitle').textContent=isMDTab?'공급처별 매출':sonoTab?'모델별 매출':'상품별 매출';
-  document.getElementById('monthlyTableTitle').textContent=isMDTab?'공급처별 월별 매출':sonoTab?'모델별 월별 매출':'상품별 월별 매출';
+  document.getElementById('monthlyTableTitle').textContent=isMDTab?'공급처별 월별 매출':sonoTab?'모델별 월별 매출·수량':'상품별 월별 매출';
   document.getElementById('detailTableTitle').textContent=isMDTab?'공급처별 매출 상세':sonoTab?'모델별 매출 상세':'상품별 매출 상세';
 }
 
@@ -828,10 +828,45 @@ let monthlyExpanded = false, detailTableExpanded = false;
 
 function renderMonthlyTable(data){
   const nk=currentTab==='의료기기'?'공급업체':currentTab==='초음파'?'품목명':'상품명';
+  const isSonoTab=currentTab==='초음파';
   const months=[...new Set(data.map(d=>d['연월']).filter(Boolean))].sort();
+
+  if(isSonoTab){
+    // 초음파: PT10 스타일 — 장비별 수량+매출 그룹
+    const models={};
+    data.forEach(d=>{const m=d[nk];if(!m)return;if(!models[m])models[m]={salesByM:{},qtyByM:{},totalSales:0,totalQty:0};
+      const ym=d['연월'];models[m].salesByM[ym]=(models[m].salesByM[ym]||0)+d['매출금액'];models[m].qtyByM[ym]=(models[m].qtyByM[ym]||0)+1;
+      models[m].totalSales+=d['매출금액'];models[m].totalQty+=1});
+    const sorted=Object.entries(models).sort((a,b)=>b[1].totalSales-a[1].totalSales);
+    const LIMIT=20;const needToggle=sorted.length>LIMIT;
+    const visible=(!needToggle||monthlyExpanded)?sorted:sorted.slice(0,LIMIT);
+
+    document.getElementById('monthlyHead').innerHTML='<th class="sticky-col">장비명</th><th class="sticky-col2">항목</th>'+months.map(m=>`<th class="text-right">${m.slice(2)}</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
+    let html='';
+    // 전체 합계 행
+    const allSalesM={},allQtyM={};let allSalesT=0,allQtyT=0;
+    data.forEach(d=>{const ym=d['연월'];if(!ym)return;allSalesM[ym]=(allSalesM[ym]||0)+d['매출금액'];allQtyM[ym]=(allQtyM[ym]||0)+1;allSalesT+=d['매출금액'];allQtyT+=1});
+    html+=`<tr style="font-weight:700;background:#eef3ff;"><td class="sticky-col">전체</td><td class="sticky-col2">매출</td>`+months.map(m=>`<td class="text-right">${allSalesM[m]?Math.round(allSalesM[m]).toLocaleString():'-'}</td>`).join('')+`<td class="text-right">${Math.round(allSalesT).toLocaleString()}</td></tr>`;
+    html+=`<tr style="font-weight:700;background:#eef3ff;"><td class="sticky-col"></td><td class="sticky-col2">수량</td>`+months.map(m=>`<td class="text-right">${allQtyM[m]||'-'}</td>`).join('')+`<td class="text-right">${allQtyT}</td></tr>`;
+    // 장비별
+    visible.forEach(([name,v])=>{
+      html+=`<tr><td class="sticky-col">${name}</td><td class="sticky-col2">매출</td>`+months.map(m=>`<td class="text-right">${v.salesByM[m]?Math.round(v.salesByM[m]).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(v.totalSales).toLocaleString()}</td></tr>`;
+      html+=`<tr style="border-bottom:2px solid #e8e8e8;"><td class="sticky-col"></td><td class="sticky-col2">수량</td>`+months.map(m=>`<td class="text-right">${v.qtyByM[m]||'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${v.totalQty}</td></tr>`;
+    });
+    document.getElementById('monthlyBody').innerHTML=html;
+    // sticky col 스타일 적용
+    document.getElementById('monthlyTable').classList.add('pt10-sticky');
+
+    const toggleEl=document.getElementById('monthlyToggle');
+    if(needToggle){toggleEl.style.display='block';toggleEl.textContent=monthlyExpanded?'접기 ▲':`더보기 (${sorted.length-LIMIT}개) ▼`}else{toggleEl.style.display='none'}
+    return;
+  }
+
+  // 기존: 의료기기/클래스/턴키 등
+  document.getElementById('monthlyTable').classList.remove('pt10-sticky');
   const sups={};data.forEach(d=>{const s=d[nk];if(!s)return;if(!sups[s])sups[s]={total:0};sups[s][d['연월']]=(sups[s][d['연월']]||0)+d['매출금액'];sups[s].total+=d['매출금액']});
   const sorted=Object.entries(sups).sort((a,b)=>b[1].total-a[1].total);
-  const label=currentTab==='의료기기'?'공급업체':currentTab==='초음파'?'장비명':'상품명';
+  const label=currentTab==='의료기기'?'공급업체':'상품명';
   const LIMIT=20;
   const needToggle=sorted.length>LIMIT;
   const visible=(!needToggle||monthlyExpanded)?sorted:sorted.slice(0,LIMIT);
