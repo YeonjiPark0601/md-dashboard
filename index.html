@@ -698,7 +698,8 @@ function renderTypeChart(data){
   const isClass=currentTab!=='의료기기';
   const key=isClass?'카테고리':'구분';
   const types={};data.forEach(d=>{types[d[key]]=(types[d[key]]||0)+d['매출금액']});
-  const labels=Object.keys(types),values=Object.values(types);
+  const sortedTypes=Object.entries(types).sort((a,b)=>a[0].localeCompare(b[0],'ko'));
+  const labels=sortedTypes.map(s=>s[0]),values=sortedTypes.map(s=>s[1]);
   const cfg={type:'doughnut',data:{labels,datasets:[{data:values,backgroundColor:COLORS.slice(0,labels.length),borderWidth:0}]},
     options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:11}}},
       tooltip:{callbacks:{label:ctx=>ctx.label+': '+fmt(ctx.raw)+' ('+(ctx.raw/values.reduce((a,b)=>a+b,0)*100).toFixed(1)+'%)'}}}}};
@@ -713,7 +714,7 @@ function renderTypeChart(data){
 
 function renderCategoryChart(data){
   const cats={};data.forEach(d=>{cats[d['카테고리']]=(cats[d['카테고리']]||0)+d['매출금액']});
-  const sorted=Object.entries(cats).sort((a,b)=>b[1]-a[1]);const labels=sorted.map(s=>s[0]),values=sorted.map(s=>s[1]);
+  const sorted=Object.entries(cats).sort((a,b)=>a[0].localeCompare(b[0],"ko"));const labels=sorted.map(s=>s[0]),values=sorted.map(s=>s[1]);
   const bg=labels.map((l,i)=>l===drillCategory?'#1a73e8':COLORS[i%COLORS.length]);
   if(categoryChart)categoryChart.destroy();
   categoryChart=new Chart(document.getElementById('categoryChart'),{type:'bar',data:{labels,datasets:[{data:values,backgroundColor:bg,borderRadius:4}]},
@@ -723,7 +724,7 @@ function renderCategoryChart(data){
 
 function renderCategoryPieChart(data){
   const cats={};data.forEach(d=>{cats[d['카테고리']]=(cats[d['카테고리']]||0)+d['매출금액']});
-  const sorted=Object.entries(cats).sort((a,b)=>b[1]-a[1]);const labels=sorted.map(s=>s[0]),values=sorted.map(s=>s[1]);
+  const sorted=Object.entries(cats).sort((a,b)=>a[0].localeCompare(b[0],"ko"));const labels=sorted.map(s=>s[0]),values=sorted.map(s=>s[1]);
   if(categoryPieChart)categoryPieChart.destroy();
   categoryPieChart=new Chart(document.getElementById('categoryPieChart'),{type:'doughnut',data:{labels,datasets:[{data:values,backgroundColor:COLORS.slice(0,labels.length),borderWidth:0}]},
     options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:11}}},
@@ -735,7 +736,7 @@ function renderSupplierChart(data){
   const months=[...new Set(data.map(d=>d['연월']).filter(Boolean))].sort();
   const cd=selectedSuppliers.length>0?data.filter(d=>selectedSuppliers.includes(d[nk])):data;
   const st={};cd.forEach(d=>{if(d[nk])st[d[nk]]=(st[d[nk]]||0)+d['매출금액']});
-  const sups=Object.entries(st).sort((a,b)=>b[1]-a[1]).map(s=>s[0]);
+  const sups=Object.entries(st).sort((a,b)=>a[0].localeCompare(b[0],'ko')).map(s=>s[0]);
   const ds=sups.map((sup,i)=>{const md={};cd.filter(d=>d[nk]===sup).forEach(d=>{md[d['연월']]=(md[d['연월']]||0)+d['매출금액']});
     return{label:sup,data:months.map(m=>md[m]||0),backgroundColor:COLORS[i%COLORS.length],
       datalabels:{display:i===sups.length-1,anchor:'end',align:'end',font:{size:11,weight:'bold'},color:'#333',
