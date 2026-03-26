@@ -851,8 +851,8 @@ function renderSonoQtyChart(data){
   if(sonoQtyChart)sonoQtyChart.destroy();
   sonoQtyChart=new Chart(document.getElementById('sonoQtyChart'),{type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets:ds},plugins:[ChartDataLabels],
     options:{responsive:true,layout:{padding:{top:20}},plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:12}},
-      tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.raw+'대'}},datalabels:{}},
-      scales:{x:{stacked:true},y:{stacked:true,grace:'10%',ticks:{callback:v=>v+'대'}}}}});
+      tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.raw+'대'}}},
+      scales:{x:{stacked:true},y:{stacked:true,grace:'15%',ticks:{callback:v=>v+'대'}}}}});
 }
 
 function renderTable(data){
