@@ -810,13 +810,6 @@ function renderSupplierChart(data){
           const sup=ctx.dataset.label;const ym=months[ctx.dataIndex];
           const qty=(qtyBySup[sup]&&qtyBySup[sup][ym])||0;
           return currentTab==='초음파'?sup+': '+fmt(ctx.raw)+' ('+qty+'대)':sup+': '+fmt(ctx.raw);
-        },
-        afterBody:items=>{
-          if(currentTab!=='초음파')return'';
-          const di=items[0].dataIndex;const ym=months[di];
-          let totalQty=0;
-          items.forEach(it=>{const sup=it.dataset.label;totalQty+=(qtyBySup[sup]&&qtyBySup[sup][ym])||0});
-          return'합계: '+totalQty+'대';
         }}},datalabels:{}},
       scales:{x:{stacked:true},y:{stacked:true,grace:'15%',ticks:{callback:v=>fmt(v)}}},
       onClick:(e,el)=>{if(el.length>0){const c=ds[el[0].datasetIndex].label;const cb=document.querySelector(`.sup-cb[value="${c}"]`);if(cb){cb.checked=!cb.checked;onSupplierCheck()}}}}});
@@ -831,23 +824,15 @@ function renderSonoQtyChart(data){
   const sups=Object.entries(st).sort((a,b)=>a[0].localeCompare(b[0],'ko')).map(s=>s[0]);
   const ds=sups.map((sup,i)=>{const mq={};cd.filter(d=>d[nk]===sup).forEach(d=>{mq[d['연월']]=(mq[d['연월']]||0)+1});
     return{label:sup,data:months.map(m=>mq[m]||0),backgroundColor:COLORS[i%COLORS.length],
-      datalabels:{anchor:'end',align:'end',font:{size:11,weight:'bold'},color:'#333',
-        display:function(ctx){
-          const chart=ctx.chart;const di=ctx.dataIndex;let lastVisible=-1;
-          for(let j=0;j<chart.data.datasets.length;j++){if(!chart.getDatasetMeta(j).hidden&&chart.data.datasets[j].data[di])lastVisible=j}
-          return ctx.datasetIndex===lastVisible;
-        },
-        formatter:function(v,ctx){
-          const chart=ctx.chart;const di=ctx.dataIndex;let t=0;
-          for(let j=0;j<chart.data.datasets.length;j++){if(!chart.getDatasetMeta(j).hidden)t+=(chart.data.datasets[j].data[di]||0)}
-          return t+'대';
-        }}}});
+      datalabels:{anchor:'center',align:'center',font:{size:10,weight:'bold'},color:'#fff',
+        display:function(ctx){return !ctx.chart.getDatasetMeta(ctx.datasetIndex).hidden && ctx.raw > 0},
+        formatter:function(v){return v+'대'}
+      }}});
   if(sonoQtyChart)sonoQtyChart.destroy();
   sonoQtyChart=new Chart(document.getElementById('sonoQtyChart'),{type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets:ds},plugins:[ChartDataLabels],
-    options:{responsive:true,layout:{padding:{top:30}},plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:12}},
-      tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.raw+'대',
-        afterBody:items=>{let t=0;items.forEach(it=>t+=it.raw);return'합계: '+t+'대'}}},datalabels:{}},
-      scales:{x:{stacked:true},y:{stacked:true,grace:'15%',ticks:{callback:v=>v+'대'}}}}});
+    options:{responsive:true,layout:{padding:{top:20}},plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:12}},
+      tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.raw+'대'}},datalabels:{}},
+      scales:{x:{stacked:true},y:{stacked:true,grace:'10%',ticks:{callback:v=>v+'대'}}}}});
 }
 
 function renderTable(data){
