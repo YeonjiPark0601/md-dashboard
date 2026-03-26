@@ -1242,12 +1242,19 @@ function renderPT10SummaryYear(year,headId,bodyId){
   const allMonths=['01','02','03','04','05','06','07','08','09','10','11','12'];
   const dY=pt10Data.filter(r=>r['연월']&&r['연월'].startsWith(year));
   const sumByFilter=(m,cat,field)=>{let t=0;dY.forEach(r=>{if(r['연월']===year+'-'+m&&(!cat||r['구분']===cat))t+=r[field]||0});return t};
+  // PU 집계
+  const puOnByM={},puOffByM={};
+  puOnData.filter(d=>d['연월']&&d['연월'].startsWith(year)).forEach(d=>{const m=d['연월'].split('-')[1];puOnByM[m]=(puOnByM[m]||0)+d['PU']});
+  puOffData.filter(d=>d['연월']&&d['연월'].startsWith(year)).forEach(d=>{const m=d['연월'].split('-')[1];puOffByM[m]=(puOffByM[m]||0)+d['PU']});
   const allMetrics=[
     {label:'전체 매출',fn:m=>sumByFilter(m,null,'매출금액')},
     {label:'본체 수량',fn:m=>sumByFilter(m,'본체','수량')},
     {label:'본체 매출',fn:m=>sumByFilter(m,'본체','매출금액')},
     {label:'카트리지 수량',fn:m=>sumByFilter(m,'카트리지','수량')},
     {label:'카트리지 매출',fn:m=>sumByFilter(m,'카트리지','매출금액')},
+    {label:'PU PU 온라인',fn:m=>puOnByM[m]||0},
+    {label:'PU PU 오프라인',fn:m=>puOffByM[m]||0},
+    {label:'PU PU 합계',fn:m=>(puOnByM[m]||0)+(puOffByM[m]||0)},
     {label:'기타 카트리지+튜브 매출',fn:m=>sumByFilter(m,'카트리지','매출금액')+sumByFilter(m,'캐필러리 튜브','매출금액')},
     {label:'기타 캐필러리 튜브 매출',fn:m=>sumByFilter(m,'캐필러리 튜브','매출금액')},
     {label:'기타 플런져 매출',fn:m=>sumByFilter(m,'플런져','매출금액')},
@@ -1260,7 +1267,8 @@ function renderPT10SummaryYear(year,headId,bodyId){
     {group:'전체',rows:metrics.filter(m=>m.label==='전체 매출')},
     {group:'본체',rows:metrics.filter(m=>m.label.startsWith('본체'))},
     {group:'카트리지',rows:metrics.filter(m=>m.label.startsWith('카트리지'))},
-    {group:'기타',rows:metrics.filter(m=>!['전체 매출'].includes(m.label)&&!m.label.startsWith('본체')&&!m.label.startsWith('카트리지'))}
+    {group:'PU',rows:metrics.filter(m=>m.label.startsWith('PU'))},
+    {group:'기타',rows:metrics.filter(m=>!['전체 매출'].includes(m.label)&&!m.label.startsWith('본체')&&!m.label.startsWith('카트리지')&&!m.label.startsWith('PU'))}
   ].filter(g=>g.rows.length>0);
   let html='';
   groups.forEach(g=>{
