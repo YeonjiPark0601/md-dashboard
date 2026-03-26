@@ -348,7 +348,7 @@ function parseCSV(csv) {
   const cols=parseCSVRow(lines[0]);
   return lines.slice(1).map(l=>{const v=parseCSVRow(l);const o={};cols.forEach((c,i)=>{o[c]=v[i]||''});return o});
 }
-function parseNum(s){if(s==null||s==='')return 0;return Number(String(s).replace(/,/g,''))||0}
+function parseNum(s){if(s==null||s==='')return 0;return Number(String(s).replace(/[,₩\\s]/g,''))||0}
 function fixYm(ym){if(!ym||typeof ym!=='string')return'';const s=ym.substring(0,7);const p=s.split('-');if(p.length===2)return p[0]+'-'+p[1].padStart(2,'0');return s}
 function fmt(n){if(Math.abs(n)>=1e8)return(n/1e8).toFixed(1)+'억';if(Math.abs(n)>=1e7)return(n/1e7).toFixed(1)+'천만';if(Math.abs(n)>=1e4)return Math.round(n/1e4)+'만';return n.toLocaleString()}
 function yearShift(ym,d){const[y,m]=ym.split('-').map(Number);return`${y+d}-${String(m).padStart(2,'0')}`}
@@ -379,16 +379,20 @@ async function fetchData(){
     // 초음파: 2개 시트 합산
     try{
       const sonoArr=[];
-      if(sonoR.ok){const t=await sonoR.text();if(t.trim()){const rows=parseCSV(t);
-        // 컬럼명에 개행 포함될 수 있으므로 유연하게 매칭
-        const findCol=(r,keyword)=>{const k=Object.keys(r).find(k=>k.replace(/\s/g,'').includes(keyword));return k?r[k]:''};
-        rows.forEach(r=>{
-          const dt=findCol(r,'입금일자');if(!dt||!String(dt).trim())return;
-          const amt=parseNum(findCol(r,'vat제외')||findCol(r,'VAT제외'));if(!amt)return;
-          const ym=String(dt).substring(0,7);
-          sonoArr.push({주문일:String(dt).substring(0,10),연월:fixYm(ym),한의원명:r['병원명']||findCol(r,'병원명')||'',
-            품목명:r['장비명']||findCol(r,'장비명')||'',공급업체:r['장비명']||findCol(r,'장비명')||'',
-            카테고리:findCol(r,'상품/견본')||'',매출금액:amt,_isAS:false})})}}
+      if(sonoR.ok){const t=await sonoR.text();if(t.trim()){
+        // 헤더에 개행 있어서 parseCSV 대신 인덱스로 직접 파싱
+        const lines=t.replace(/\r/g,'').split('\n').filter(l=>l.trim());
+        // 첫 행은 헤더 — 스킵하고 데이터만
+        for(let li=1;li<lines.length;li++){
+          const cols=parseCSVRow(lines[li]);
+          const dt=cols[13]||'';if(!dt||!dt.match(/^\d{4}/))continue; // N열(13)=계약금입금일자
+          const amt=parseNum(cols[30]); // AE열(30)=계약금액(vat제외)
+          if(!amt)continue;
+          const ym=fixYm(dt.substring(0,7));
+          sonoArr.push({주문일:dt.substring(0,10),연월:ym,한의원명:cols[3]||'', // D열=병원명
+            품목명:cols[6]||'',공급업체:cols[6]||'', // G열=장비명
+            카테고리:cols[1]||'', // B열=재고기준(상품/견본)
+            매출금액:amt,_isAS:false})}}}
       if(sonoMissR.ok){const t=await sonoMissR.text();if(t.trim()){parseCSV(t).filter(r=>r['결제일']&&String(r['결제일']).trim()).forEach(r=>{
         const isAS=(r['상품ID']||'')==='01JAQ0MPK16ETZTFPZXZKQYRSD';
         sonoArr.push({주문일:(r['결제일']||'').substring(0,10),연월:fixYm(r['연월']||''),한의원명:r['주문자']||'',품목명:r['상품명']||'',카테고리:isAS?'AS':'누락',매출금액:parseNum(r['매출액(real_rev)']),공급가:parseNum(r['공급가(VAT제외)']),_isAS:isAS})})}}
