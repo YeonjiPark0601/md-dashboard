@@ -909,11 +909,6 @@ function renderSonoMap(){
   const total=Object.values(regionSales).reduce((s,v)=>s+v,0);
   const sorted=Object.entries(regionSales).sort((a,b)=>b[1]-a[1]);
 
-  // 지도: SVG 기반 한국 시도 간단 표현 (위치 기반 버블맵)
-  const regionPos={서울:[126.98,37.57],경기:[127.0,37.27],인천:[126.71,37.46],강원:[128.2,37.75],충북:[127.49,36.64],충남:[126.8,36.5],대전:[127.38,36.35],세종:[127.0,36.48],전북:[127.1,35.82],전남:[126.9,34.87],광주:[126.85,35.16],경북:[128.7,36.4],경남:[128.5,35.44],대구:[128.6,35.87],부산:[129.08,35.18],울산:[129.31,35.54],제주:[126.57,33.49]};
-  const maxSales=Math.max(...Object.values(regionSales),1);
-  const container=document.getElementById('sonoMapContainer');
-
   // 간단한 시도 위치 (SVG 좌표계: x=0~100, y=0~120)
   const rPos={서울:[45,28],경기:[45,35],인천:[35,30],강원:[65,25],충북:[55,45],충남:[35,50],대전:[48,52],세종:[43,47],전북:[38,65],전남:[35,80],광주:[33,75],경북:[72,45],경남:[65,70],대구:[68,55],부산:[73,75],울산:[78,65],제주:[35,105]};
   const maxSales=Math.max(...Object.values(regionSales),1);
