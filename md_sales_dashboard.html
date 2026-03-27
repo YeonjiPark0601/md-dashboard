@@ -315,12 +315,12 @@ tr:hover { background: #f7f9fc; }
       </div>
     </div>
     <div class="chart-row-full" id="pt10BuyerMonthlyRow" style="display:none;">
-      <div class="table-card"><h3>카트리지 월별 구매자 리스트 <button onclick="downloadBuyerExcel('monthly')" style="font-size:11px;padding:3px 10px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;color:#1a73e8;">엑셀 다운로드</button></h3>
+      <div class="table-card"><h3>카트리지 월별 구매자 리스트 <button onclick="downloadBuyerExcel()" style="font-size:11px;padding:3px 10px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;color:#1a73e8;">엑셀 다운로드</button></h3>
         <div style="overflow-x:auto;"><table class="pt10-sticky"><thead><tr id="pt10BuyerMonthlyHead"></tr></thead><tbody id="pt10BuyerMonthlyBody"></tbody></table></div>
       </div>
     </div>
     <div class="chart-row-full" id="pt10BuyerQuarterlyRow" style="display:none;">
-      <div class="table-card"><h3>카트리지 분기별 구매자 리스트 <button onclick="downloadBuyerExcel('quarterly')" style="font-size:11px;padding:3px 10px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;color:#1a73e8;">엑셀 다운로드</button></h3>
+      <div class="table-card"><h3>카트리지 분기별 구매자 리스트</h3>
         <div style="overflow-x:auto;"><table class="pt10-sticky"><thead><tr id="pt10BuyerQuarterlyHead"></tr></thead><tbody id="pt10BuyerQuarterlyBody"></tbody></table></div>
       </div>
     </div>
@@ -612,7 +612,7 @@ function render(){
   // 클래스 전용: PU + 재구매
   document.getElementById('detailRow').style.display=(isTurnkey||isPT10||isSono||isAll)?'none':'';
   document.getElementById('monthlyRow').style.display=(isPT10||isAll)?'none':'';
-  ['pt10SummaryRow','pt10CartRow','pt10DioRow','pt10BuyerMonthlyRow','pt10BuyerQuarterlyRow','pt10Summary2025Row','pt10Cart2025Row','pt10Summary2024Row','pt10Cart2024Row','pt10Summary2023Row','pt10Cart2023Row','pt10CartChartRow'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
+  ['pt10SummaryRow','pt10CartRow','pt10DioRow','pt10BuyerMonthlyRow','pt10BuyerQuarterlyRow','pt10InsightRow','pt10Summary2025Row','pt10Cart2025Row','pt10Summary2024Row','pt10Cart2024Row','pt10Summary2023Row','pt10Cart2023Row','pt10CartChartRow'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
   document.getElementById('sonoCountChartRow').style.display=isSono?'':'none';
   document.getElementById('sonoMapRow').style.display=isSono?'':'none';
   document.getElementById('navSonoCount').style.display=isSono?'':'none';
@@ -624,7 +624,7 @@ function render(){
   ['navPT10Summary','navPT10CartTrend','navPT10Cart','navPT10Y25','navPT10Y24','navPT10Y23'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
   document.getElementById('navMonthly').style.display=(isPT10||isAll)?'none':'';
   document.getElementById('navDetail').style.display=(isPT10||isTurnkey||isAll)?'none':'';
-  if(isPT10){renderPT10Summary();renderPT10Cart();renderPT10CartTrend();renderPT10DIO();renderPT10Buyers()}
+  if(isPT10){renderPT10Summary();renderPT10Cart();renderPT10CartTrend();renderPT10DIO();renderPT10Buyers();renderPT10Insight()}
   document.getElementById('turnkeyKpiRow').style.display=isTurnkey?'grid':'none';
   document.getElementById('profitMarginRow').style.display=isTurnkey?'':'none';
   document.getElementById('navProfitMargin').style.display=isTurnkey?'':'none';
@@ -1579,7 +1579,7 @@ function renderPT10Buyers(){
   if(sorted.length>LIMIT){qBodyEl.parentElement.insertAdjacentHTML('afterend',`<div style="padding:6px 0;"><a href="#" id="toggleQ" onclick="toggleBuyerRows('buyerQ',this);return false" style="color:#4285f4;font-size:13px;">더보기 (${sorted.length-LIMIT}곳)</a></div>`);}
 }
 
-function downloadBuyerExcel(mode){
+function downloadBuyerExcel(){
   const start=document.getElementById('startMonth').value;
   const end=document.getElementById('endMonth').value;
   const cartData=pt10Data.filter(d=>{
@@ -1589,101 +1589,123 @@ function downloadBuyerExcel(mode){
     return true;
   });
   if(!cartData.length){alert('데이터가 없습니다.');return;}
-
-  const ymSet=new Set(cartData.map(d=>d['연월']));
-  const activeYMs=[...ymSet].sort();
-
-  // 한의원별 집계 + CID 수집
-  const buyers={};
-  const cidMap={};
-  cartData.forEach(r=>{
-    const name=r['한의원명']||'(미상)';const ym=r['연월'];
-    if(!buyers[name])buyers[name]={};
-    if(!buyers[name][ym])buyers[name][ym]={qty:0,sales:0};
-    buyers[name][ym].qty+=(r['수량']||0);
-    buyers[name][ym].sales+=(r['매출금액']||0);
-    if(!cidMap[name]&&r['CID'])cidMap[name]=r['CID'];
+  const rows=[['주문일','CID','한의원명','품목코드','품목명','수량','매출금액','주문번호']];
+  cartData.sort((a,b)=>(a['주문일']||'').localeCompare(b['주문일']||'')).forEach(r=>{
+    rows.push([r['주문일']||'',r['CID']||'',r['한의원명']||'',r['품목코드']||'',r['품목명']||'',r['수량']||0,Math.round(r['매출금액']||0),r['주문번호']||'']);
   });
-  const sorted=Object.keys(buyers).sort((a,b)=>{
-    const ta=activeYMs.reduce((s,ym)=>s+(buyers[a][ym]?.sales||0),0);
-    const tb=activeYMs.reduce((s,ym)=>s+(buyers[b][ym]?.sales||0),0);
-    return tb-ta;
-  });
-
-  const rows=[];
-  let totalRow;
-
-  if(mode==='monthly'){
-    // 헤더
-    const header=['CID','한의원명'];
-    activeYMs.forEach(ym=>{const label=ym.substring(2);header.push(label+' 수량',label+' 매출');});
-    header.push('합계 수량','합계 매출');
-    rows.push(header);
-
-    const monthTotals={};activeYMs.forEach(ym=>{monthTotals[ym]={qty:0,sales:0}});
-    let tq=0,ts=0;
-    sorted.forEach(name=>{
-      const row=[cidMap[name]||'',name];
-      let rq=0,rs=0;
-      activeYMs.forEach(ym=>{
-        const d=buyers[name][ym];const q=d?.qty||0,s=d?.sales||0;
-        row.push(q,Math.round(s));
-        rq+=q;rs+=s;monthTotals[ym].qty+=q;monthTotals[ym].sales+=s;
-      });
-      tq+=rq;ts+=rs;
-      row.push(rq,Math.round(rs));
-      rows.push(row);
-    });
-    totalRow=['','합계'];
-    activeYMs.forEach(ym=>{totalRow.push(monthTotals[ym].qty,Math.round(monthTotals[ym].sales));});
-    totalRow.push(tq,Math.round(ts));
-    rows.push(totalRow);
-  } else {
-    // 분기별
-    const qMap={};
-    activeYMs.forEach(ym=>{
-      const y=ym.substring(0,4);const m=parseInt(ym.substring(5));
-      const q=m<=3?'Q1':m<=6?'Q2':m<=9?'Q3':'Q4';
-      const key=y.substring(2)+'-'+q;
-      sorted.forEach(name=>{
-        const d=buyers[name][ym];if(!d)return;
-        if(!qMap[name])qMap[name]={};
-        if(!qMap[name][key])qMap[name][key]={qty:0,sales:0};
-        qMap[name][key].qty+=d.qty;qMap[name][key].sales+=d.sales;
-      });
-    });
-    const allQKeys=[...new Set(activeYMs.map(ym=>{const y=ym.substring(2,4);const m=parseInt(ym.substring(5));return y+'-'+(m<=3?'Q1':m<=6?'Q2':m<=9?'Q3':'Q4')}))];
-
-    const header=['CID','한의원명'];
-    allQKeys.forEach(k=>{header.push(k+' 수량',k+' 매출');});
-    header.push('합계 수량','합계 매출');
-    rows.push(header);
-
-    const qTotals={};allQKeys.forEach(k=>{qTotals[k]={qty:0,sales:0}});
-    let tq=0,ts=0;
-    sorted.forEach(name=>{
-      const row=[cidMap[name]||'',name];
-      let rq=0,rs=0;
-      allQKeys.forEach(k=>{
-        const d=qMap[name]?.[k];const q=d?.qty||0,s=d?.sales||0;
-        row.push(q,Math.round(s));
-        rq+=q;rs+=s;qTotals[k].qty+=q;qTotals[k].sales+=s;
-      });
-      tq+=rq;ts+=rs;
-      row.push(rq,Math.round(rs));
-      rows.push(row);
-    });
-    totalRow=['','합계'];
-    allQKeys.forEach(k=>{totalRow.push(qTotals[k].qty,Math.round(qTotals[k].sales));});
-    totalRow.push(tq,Math.round(ts));
-    rows.push(totalRow);
-  }
-
   const ws=XLSX.utils.aoa_to_sheet(rows);
   const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,ws,mode==='monthly'?'월별':'분기별');
-  const fileName=`카트리지_구매자_${mode==='monthly'?'월별':'분기별'}_${start||'all'}~${end||'all'}.xlsx`;
-  XLSX.writeFile(wb,fileName);
+  XLSX.utils.book_append_sheet(wb,ws,'카트리지 주문');
+  XLSX.writeFile(wb,`카트리지_주문_${start||'all'}~${end||'all'}.xlsx`);
+}
+
+// PT10 카트리지 구매자 인사이트 자동 생성
+function renderPT10Insight(){
+  const start=document.getElementById('startMonth').value;
+  const end=document.getElementById('endMonth').value;
+  const cartData=pt10Data.filter(d=>{
+    if(d['구분']!=='카트리지')return false;
+    const ym=d['연월'];if(!ym)return false;
+    if(start&&ym<start)return false;if(end&&ym>end)return false;
+    return true;
+  });
+  if(!cartData.length){document.getElementById('pt10InsightContent').innerHTML='<p style="color:#999">데이터 없음</p>';return;}
+
+  // 한의원별 집계
+  const buyers={};
+  cartData.forEach(r=>{
+    const name=r['한의원명']||'(미상)';const ym=r['연월'];
+    if(!buyers[name])buyers[name]={qty:0,sales:0,months:new Set()};
+    buyers[name].qty+=(r['수량']||0);
+    buyers[name].sales+=(r['매출금액']||0);
+    buyers[name].months.add(ym);
+  });
+  const sorted=Object.entries(buyers).sort((a,b)=>b[1].sales-a[1].sales);
+  const total=sorted.length;
+  const totalSales=sorted.reduce((s,[,v])=>s+v.sales,0);
+  const totalQty=sorted.reduce((s,[,v])=>s+v.qty,0);
+
+  // 티어 분류
+  const top20n=Math.max(1,Math.floor(total*0.2));
+  const mid40n=Math.max(1,Math.floor(total*0.4));
+  const top20=sorted.slice(0,top20n);
+  const mid40=sorted.slice(top20n,top20n+mid40n);
+  const bottom=sorted.slice(top20n+mid40n);
+  const tierData=[
+    {label:'상위 20%',data:top20},
+    {label:'중위 40%',data:mid40},
+    {label:'하위 40%',data:bottom}
+  ];
+
+  // 구매 빈도 분석
+  const freqDist={};
+  sorted.forEach(([,v])=>{const m=v.months.size;freqDist[m]=(freqDist[m]||0)+1;});
+  const oneTimers=freqDist[1]||0;
+  const lowFreq=Object.entries(freqDist).filter(([m])=>parseInt(m)<=3).reduce((s,[,c])=>s+c,0);
+
+  // 전년 비교 (필터 기간의 전년도)
+  let churnInfo='';
+  if(start&&end){
+    const sy=parseInt(start.substring(0,4)),sm=parseInt(start.substring(5));
+    const ey=parseInt(end.substring(0,4)),em=parseInt(end.substring(5));
+    const prevStart=`${sy-1}-${String(sm).padStart(2,'0')}`;
+    const prevEnd=`${ey-1}-${String(em).padStart(2,'0')}`;
+    const prevBuyers=new Set();
+    pt10Data.forEach(d=>{
+      if(d['구분']!=='카트리지')return;
+      const ym=d['연월'];if(!ym)return;
+      if(ym>=prevStart&&ym<=prevEnd)prevBuyers.add(d['한의원명']||'');
+    });
+    const curBuyers=new Set(sorted.map(([n])=>n));
+    const churned=[...prevBuyers].filter(n=>!curBuyers.has(n));
+    const newBuyers=[...curBuyers].filter(n=>!prevBuyers.has(n));
+    if(prevBuyers.size>0){
+      churnInfo=`<tr><td style="color:#e53935;font-weight:600">전년 동기 대비 이탈</td><td><strong>${churned.length}곳</strong> (전년 ${prevBuyers.size}곳 중 ${prevBuyers.size>0?(churned.length/prevBuyers.size*100).toFixed(1):0}%)</td></tr>
+      <tr><td style="color:#43a047;font-weight:600">신규 유입</td><td><strong>${newBuyers.length}곳</strong></td></tr>`;
+    }
+  }
+
+  // 평균 구매량 by 티어
+  const fmtSales=v=>{if(v>=100000000)return(v/100000000).toFixed(2)+'억';if(v>=10000)return Math.round(v/10000).toLocaleString()+'만';return Math.round(v).toLocaleString()+'원';};
+
+  let html=`
+  <table style="width:100%;border-collapse:collapse;margin-bottom:16px;">
+    <thead><tr style="background:#f7f8fa;"><th style="text-align:left;padding:6px 10px;">구분</th><th style="text-align:right;padding:6px 10px;">한의원수</th><th style="text-align:right;padding:6px 10px;">매출</th><th style="text-align:right;padding:6px 10px;">비중</th><th style="text-align:right;padding:6px 10px;">원당 평균 수량</th></tr></thead>
+    <tbody>`;
+  tierData.forEach(t=>{
+    const cnt=t.data.length;
+    const sales=t.data.reduce((s,[,v])=>s+v.sales,0);
+    const qty=t.data.reduce((s,[,v])=>s+v.qty,0);
+    const avgQty=cnt>0?(qty/cnt).toFixed(1):'-';
+    const pct=totalSales>0?(sales/totalSales*100).toFixed(1):'0';
+    html+=`<tr><td style="padding:4px 10px;font-weight:600">${t.label}</td><td style="text-align:right;padding:4px 10px">${cnt}곳</td><td style="text-align:right;padding:4px 10px">${fmtSales(sales)}</td><td style="text-align:right;padding:4px 10px">${pct}%</td><td style="text-align:right;padding:4px 10px">${avgQty}개</td></tr>`;
+  });
+  html+=`<tr style="font-weight:700;border-top:2px solid #333;"><td style="padding:4px 10px">합계</td><td style="text-align:right;padding:4px 10px">${total}곳</td><td style="text-align:right;padding:4px 10px">${fmtSales(totalSales)}</td><td style="text-align:right;padding:4px 10px">100%</td><td style="text-align:right;padding:4px 10px">${(totalQty/total).toFixed(1)}개</td></tr>`;
+  html+=`</tbody></table>`;
+
+  // 핵심 인사이트
+  html+=`<table style="width:100%;border-collapse:collapse;margin-bottom:16px;">
+    <thead><tr style="background:#f7f8fa;"><th style="text-align:left;padding:6px 10px;" colspan="2">핵심 인사이트</th></tr></thead>
+    <tbody>
+      <tr><td style="padding:4px 10px;width:200px;font-weight:600">1회 구매 후 이탈</td><td>${oneTimers}곳 (${(oneTimers/total*100).toFixed(1)}%)</td></tr>
+      <tr><td style="padding:4px 10px;font-weight:600">3개월 이하 구매</td><td>${lowFreq}곳 (${(lowFreq/total*100).toFixed(1)}%) — 정기 구매 전환 핵심 타겟</td></tr>
+      ${churnInfo}
+    </tbody></table>`;
+
+  // 전략 추천
+  const topAvg=top20.length>0?top20.reduce((s,[,v])=>s+v.qty,0)/top20.length:0;
+  const midAvg=mid40.length>0?mid40.reduce((s,[,v])=>s+v.qty,0)/mid40.length:0;
+  const targetMidQty=Math.round(topAvg*0.5);
+
+  html+=`<table style="width:100%;border-collapse:collapse;">
+    <thead><tr style="background:#f7f8fa;"><th style="text-align:left;padding:6px 10px;">전략</th><th style="text-align:left;padding:6px 10px;">대상</th><th style="text-align:left;padding:6px 10px;">액션</th></tr></thead>
+    <tbody>
+      <tr><td style="padding:6px 10px;font-weight:600;color:#1a73e8">상위권 활용</td><td>TOP ${top20n}곳</td><td>사용 사례 인터뷰 / 강의·세미나 소싱 / 레퍼런스 콘텐츠 제작</td></tr>
+      <tr><td style="padding:6px 10px;font-weight:600;color:#fb8c00">중위권 확대</td><td>${mid40.length}곳 (원당 ${midAvg.toFixed(1)}개)</td><td>교차 판매 (Test9→Prime9/Hepatic9 추가 제안) / 벤치마크 공유 (상위 원당 ${topAvg.toFixed(0)}개) / 목표: ${targetMidQty}개</td></tr>
+      <tr><td style="padding:6px 10px;font-weight:600;color:#e53935">하위권 전환</td><td>${bottom.length}곳 (${oneTimers}곳 1회성)</td><td>온보딩 자동화 (첫 구매 후 활용 가이드) / 재구매 인센티브 (2회차 할인) / 3개월 미구매 시 윈백 캠페인</td></tr>
+    </tbody></table>`;
+
+  document.getElementById('pt10InsightContent').innerHTML=html;
 }
 
 function renderProfitMargin(){
