@@ -1457,6 +1457,7 @@ function toggleBuyerRows(tblId,el){
 
 // PT10 카트리지 구매자 리스트 (월별 + 분기별, 기간 필터 연동)
 function renderPT10Buyers(){
+  document.querySelectorAll('#toggleM,#toggleQ').forEach(e=>e.parentElement.remove());
   const start=document.getElementById('startMonth').value;
   const end=document.getElementById('endMonth').value;
   const cartData=pt10Data.filter(d=>{
@@ -1514,8 +1515,8 @@ function renderPT10Buyers(){
   bodyHtml+=`<tr style="font-weight:700;background:#eef3ff;"><td class="sticky-col">합계</td>`;
   activeYMs.forEach(ym=>{bodyHtml+=`<td class="text-right">${monthTotals[ym].qty}</td><td class="text-right">${Math.round(monthTotals[ym].sales).toLocaleString()}</td>`;});
   bodyHtml+=`<td class="text-right">${totalQty}</td><td class="text-right">${Math.round(totalSales).toLocaleString()}</td></tr>`;
-  if(sorted.length>LIMIT){bodyHtml+=`<tr><td colspan="${activeYMs.length*2+3}" style="text-align:center;padding:8px;"><a href="#" onclick="toggleBuyerRows('buyerM',this);return false" style="color:#4285f4;font-size:13px;">더보기 (${sorted.length-LIMIT}곳)</a></td></tr>`;}
   bodyEl.innerHTML=bodyHtml;
+  if(sorted.length>LIMIT){bodyEl.parentElement.insertAdjacentHTML('afterend',`<div style="padding:6px 0;"><a href="#" id="toggleM" onclick="toggleBuyerRows('buyerM',this);return false" style="color:#4285f4;font-size:13px;">더보기 (${sorted.length-LIMIT}곳)</a></div>`);}
 
   // === 분기별 테이블 ===
   // 분기 라벨 생성 (연도-Q 형태)
@@ -1558,8 +1559,8 @@ function renderPT10Buyers(){
   qHtml+=`<tr style="font-weight:700;background:#eef3ff;"><td class="sticky-col">합계</td>`;
   allQKeys.forEach(k=>{qHtml+=`<td class="text-right">${qTotals[k].qty}</td><td class="text-right">${Math.round(qTotals[k].sales).toLocaleString()}</td>`;});
   qHtml+=`<td class="text-right">${qtQty}</td><td class="text-right">${Math.round(qtSales).toLocaleString()}</td></tr>`;
-  if(sorted.length>LIMIT){qHtml+=`<tr><td colspan="${allQKeys.length*2+3}" style="text-align:center;padding:8px;"><a href="#" onclick="toggleBuyerRows('buyerQ',this);return false" style="color:#4285f4;font-size:13px;">더보기 (${sorted.length-LIMIT}곳)</a></td></tr>`;}
   qBodyEl.innerHTML=qHtml;
+  if(sorted.length>LIMIT){qBodyEl.parentElement.insertAdjacentHTML('afterend',`<div style="padding:6px 0;"><a href="#" id="toggleQ" onclick="toggleBuyerRows('buyerQ',this);return false" style="color:#4285f4;font-size:13px;">더보기 (${sorted.length-LIMIT}곳)</a></div>`);}
 }
 
 function renderProfitMargin(){
