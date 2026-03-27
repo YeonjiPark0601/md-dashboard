@@ -276,12 +276,12 @@ tr:hover { background: #f7f9fc; }
     <div id="puRow" style="display:none;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
       <div class="table-card">
         <h3>월별 PU (온라인) — 상품별</h3>
-        <div style="overflow-x:auto;"><table id="puOnTable"><thead><tr id="puOnHead"></tr></thead><tbody id="puOnBody"></tbody></table></div>
+        <div style="overflow-x:auto;"><table id="puOnTable" class="pt10-sticky"><thead><tr id="puOnHead"></tr></thead><tbody id="puOnBody"></tbody></table></div>
         <div id="puOnToggle" onclick="puOnExpanded=!puOnExpanded;renderPU()" style="display:none;text-align:center;padding:10px;color:#1a73e8;cursor:pointer;font-size:13px;font-weight:600;border-top:1px solid #f0f0f0;margin-top:4px;"></div>
       </div>
       <div class="table-card">
         <h3>월별 PU (오프라인) — 상품별</h3>
-        <div style="overflow-x:auto;"><table id="puOffTable"><thead><tr id="puOffHead"></tr></thead><tbody id="puOffBody"></tbody></table></div>
+        <div style="overflow-x:auto;"><table id="puOffTable" class="pt10-sticky"><thead><tr id="puOffHead"></tr></thead><tbody id="puOffBody"></tbody></table></div>
         <div id="puOffToggle" onclick="puOffExpanded=!puOffExpanded;renderPU()" style="display:none;text-align:center;padding:10px;color:#1a73e8;cursor:pointer;font-size:13px;font-weight:600;border-top:1px solid #f0f0f0;margin-top:4px;"></div>
       </div>
     </div>
@@ -1395,10 +1395,10 @@ function renderPU(){
   const onTotals={};puOnData.forEach(d=>{onTotals[d['연월']]=(onTotals[d['연월']]||0)+d['PU']});
   const onGrandTotal=Object.values(onTotals).reduce((s,v)=>s+v,0);
 
-  document.getElementById('puOnHead').innerHTML='<th>상품명</th>'+onMonths.map(m=>`<th class="text-right">${m.slice(2)}</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
+  document.getElementById('puOnHead').innerHTML='<th class="sticky-col">상품명</th>'+onMonths.map(m=>`<th class="text-right">${m.slice(2)}</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
   document.getElementById('puOnBody').innerHTML=
-    onVisible.map(([p,v])=>`<tr><td>${p}</td>`+onMonths.map(m=>`<td class="text-right">${(v[m]||0)?Math.round(v[m]).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(v.total).toLocaleString()}</td></tr>`).join('')+
-    `<tr style="font-weight:700;background:#f0f2f5;"><td>합계</td>`+onMonths.map(m=>`<td class="text-right">${(onTotals[m]||0).toLocaleString()}</td>`).join('')+`<td class="text-right">${onGrandTotal.toLocaleString()}</td></tr>`;
+    onVisible.map(([p,v])=>`<tr><td class="sticky-col">${p}</td>`+onMonths.map(m=>`<td class="text-right">${(v[m]||0)?Math.round(v[m]).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(v.total).toLocaleString()}</td></tr>`).join('')+
+    `<tr style="font-weight:700;background:#f0f2f5;"><td class="sticky-col">합계</td>`+onMonths.map(m=>`<td class="text-right">${(onTotals[m]||0).toLocaleString()}</td>`).join('')+`<td class="text-right">${onGrandTotal.toLocaleString()}</td></tr>`;
   const onToggle=document.getElementById('puOnToggle');
   if(onSorted.length>LIMIT){onToggle.style.display='block';onToggle.textContent=puOnExpanded?'접기 ▲':`더보기 (${onSorted.length-LIMIT}개) ▼`}else{onToggle.style.display='none'}
 
@@ -1410,10 +1410,10 @@ function renderPU(){
   const offTotals={};puOffData.forEach(d=>{offTotals[d['연월']]=(offTotals[d['연월']]||0)+d['PU']});
   const offGrandTotal=Object.values(offTotals).reduce((s,v)=>s+v,0);
 
-  document.getElementById('puOffHead').innerHTML='<th>상품명</th>'+offMonths.map(m=>`<th class="text-right">${m.slice(2)}</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
+  document.getElementById('puOffHead').innerHTML='<th class="sticky-col">상품명</th>'+offMonths.map(m=>`<th class="text-right">${m.slice(2)}</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
   document.getElementById('puOffBody').innerHTML=
-    offVisible.map(([p,v])=>`<tr><td>${p}</td>`+offMonths.map(m=>`<td class="text-right">${(v[m]||0)?Math.round(v[m]).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(v.total).toLocaleString()}</td></tr>`).join('')+
-    `<tr style="font-weight:700;background:#f0f2f5;"><td>합계</td>`+offMonths.map(m=>`<td class="text-right">${(offTotals[m]||0).toLocaleString()}</td>`).join('')+`<td class="text-right">${offGrandTotal.toLocaleString()}</td></tr>`;
+    offVisible.map(([p,v])=>`<tr><td class="sticky-col">${p}</td>`+offMonths.map(m=>`<td class="text-right">${(v[m]||0)?Math.round(v[m]).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(v.total).toLocaleString()}</td></tr>`).join('')+
+    `<tr style="font-weight:700;background:#f0f2f5;"><td class="sticky-col">합계</td>`+offMonths.map(m=>`<td class="text-right">${(offTotals[m]||0).toLocaleString()}</td>`).join('')+`<td class="text-right">${offGrandTotal.toLocaleString()}</td></tr>`;
   const offToggle=document.getElementById('puOffToggle');
   if(offSorted.length>LIMIT){offToggle.style.display='block';offToggle.textContent=puOffExpanded?'접기 ▲':`더보기 (${offSorted.length-LIMIT}개) ▼`}else{offToggle.style.display='none'}
 }
