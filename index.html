@@ -657,7 +657,7 @@ function render(){
   document.getElementById('profitMarginRow').style.display=isTurnkey?'':'none';
   document.getElementById('navProfitMargin').style.display=isTurnkey?'':'none';
   document.getElementById('turnkeySurveyMonthRow').style.display=isTurnkey?'':'none';
-  document.getElementById('turnkeySurveyDetailRow').style.display=isTurnkey?'':'none';
+  document.getElementById('turnkeySurveyDetailRow').style.display=isTurnkey?'grid':'none';
   if(isTurnkey){renderTurnkeyKPI();renderProfitMargin();try{renderTurnkeySurvey()}catch(e){console.warn('설문 렌더 에러',e)}}
   const isClassOnly=currentTab==='클래스';
   document.getElementById('puRow').style.display=isClassOnly?'grid':'none';
@@ -1925,10 +1925,10 @@ function renderTurnkeySurvey(){
 
   // === 2. 주별 차트 (최근 12주) ===
   const weekMap={};
-  function getMonday(d){const dt=new Date(d);const day=dt.getDay();dt.setDate(dt.getDate()-day+(day===0?-6:1));return dt.toISOString().substring(0,10)}
+  function getMon(d){const dt=new Date(d);const day=dt.getDay();dt.setDate(dt.getDate()-day+(day===0?-6:1));return dt.toISOString().substring(0,10)}
   turnkeySurveyData.forEach(d=>{
     const dt=d['_date'];if(!dt||dt<'2025-01-01')return;
-    const mon=getMonday(dt);weekMap[mon]=(weekMap[mon]||0)+1;
+    const mon=getMon(dt);weekMap[mon]=(weekMap[mon]||0)+1;
   });
   const allWeeks=Object.keys(weekMap).sort();
   const recentWeeks=allWeeks.slice(-12);
