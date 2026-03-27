@@ -319,11 +319,13 @@ tr:hover { background: #f7f9fc; }
     <div class="chart-row-full" id="pt10BuyerMonthlyRow" style="display:none;">
       <div class="table-card"><h3>카트리지 월별 구매자 리스트 <button onclick="downloadBuyerExcel()" style="font-size:11px;padding:3px 10px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;color:#1a73e8;">엑셀 다운로드</button></h3>
         <div style="overflow-x:auto;"><table class="pt10-sticky"><thead><tr id="pt10BuyerMonthlyHead"></tr></thead><tbody id="pt10BuyerMonthlyBody"></tbody></table></div>
+        <div id="buyerMToggle" onclick="toggleBuyerM()" style="display:none;text-align:center;padding:10px;color:#1a73e8;cursor:pointer;font-size:13px;font-weight:600;border-top:1px solid #f0f0f0;margin-top:4px;"></div>
       </div>
     </div>
     <div class="chart-row-full" id="pt10BuyerQuarterlyRow" style="display:none;">
       <div class="table-card"><h3>카트리지 분기별 구매자 리스트</h3>
         <div style="overflow-x:auto;"><table class="pt10-sticky"><thead><tr id="pt10BuyerQuarterlyHead"></tr></thead><tbody id="pt10BuyerQuarterlyBody"></tbody></table></div>
+        <div id="buyerQToggle" onclick="toggleBuyerQ()" style="display:none;text-align:center;padding:10px;color:#1a73e8;cursor:pointer;font-size:13px;font-weight:600;border-top:1px solid #f0f0f0;margin-top:4px;"></div>
       </div>
     </div>
     <div class="chart-row-full" id="pt10InsightRow" style="display:none;">
@@ -1481,16 +1483,12 @@ async function renderPT10DIO(){
   }catch(e){console.warn('DIO 로딩 실패',e);document.getElementById('pt10DioBody').innerHTML='<tr><td colspan="8" style="color:#999">DIO 데이터를 불러오지 못했습니다.</td></tr>';}
 }
 
-function toggleBuyerRows(tblId,el){
-  const rows=document.querySelectorAll(`tr[data-tbl="${tblId}"]`);
-  const showing=rows[0]&&rows[0].style.display==='none';
-  rows.forEach(r=>{r.style.display=showing?'':'none'});
-  el.textContent=showing?'숨기기':`더보기 (${rows.length}곳)`;
-}
+let buyerMExpanded=false,buyerQExpanded=false;
+function toggleBuyerM(){buyerMExpanded=!buyerMExpanded;renderPT10Buyers()}
+function toggleBuyerQ(){buyerQExpanded=!buyerQExpanded;renderPT10Buyers()}
 
 // PT10 카트리지 구매자 리스트 (월별 + 분기별, 기간 필터 연동)
 function renderPT10Buyers(){
-  document.querySelectorAll('#toggleM,#toggleQ').forEach(e=>e.parentElement.remove());
   const start=document.getElementById('startMonth').value;
   const end=document.getElementById('endMonth').value;
   const cartData=pt10Data.filter(d=>{
@@ -1521,6 +1519,8 @@ function renderPT10Buyers(){
   });
 
   const LIMIT=20;
+  const needMToggle=sorted.length>LIMIT;
+  const mVisible=(!needMToggle||buyerMExpanded)?sorted:sorted.slice(0,LIMIT);
 
   // === 월별 테이블 ===
   const headEl=document.getElementById('pt10BuyerMonthlyHead');
@@ -1532,16 +1532,16 @@ function renderPT10Buyers(){
   let bodyHtml=subHead;
   let totalQty=0,totalSales=0;
   const monthTotals={};activeYMs.forEach(ym=>{monthTotals[ym]={qty:0,sales:0}});
-  sorted.forEach((name,idx)=>{
+  // 합계는 전체로 계산
+  sorted.forEach(name=>{activeYMs.forEach(ym=>{const d=buyers[name][ym];if(d){monthTotals[ym].qty+=d.qty;monthTotals[ym].sales+=d.sales;totalQty+=d.qty;totalSales+=d.sales}})});
+  mVisible.forEach(name=>{
     let rq=0,rs=0;
-    const hidden=idx>=LIMIT?' class="buyer-hidden" data-tbl="buyerM" style="display:none"':'';
-    let row=`<tr${hidden}><td class="sticky-col">${name}</td>`;
+    let row=`<tr><td class="sticky-col">${name}</td>`;
     activeYMs.forEach(ym=>{
       const d=buyers[name][ym];const q=d?.qty||0,s=d?.sales||0;
       row+=`<td class="text-right">${q||'-'}</td><td class="text-right">${s?Math.round(s).toLocaleString():'-'}</td>`;
-      rq+=q;rs+=s;monthTotals[ym].qty+=q;monthTotals[ym].sales+=s;
+      rq+=q;rs+=s;
     });
-    totalQty+=rq;totalSales+=rs;
     row+=`<td class="text-right" style="font-weight:700">${rq}</td><td class="text-right" style="font-weight:700">${Math.round(rs).toLocaleString()}</td></tr>`;
     bodyHtml+=row;
   });
@@ -1549,11 +1549,12 @@ function renderPT10Buyers(){
   activeYMs.forEach(ym=>{bodyHtml+=`<td class="text-right">${monthTotals[ym].qty}</td><td class="text-right">${Math.round(monthTotals[ym].sales).toLocaleString()}</td>`;});
   bodyHtml+=`<td class="text-right">${totalQty}</td><td class="text-right">${Math.round(totalSales).toLocaleString()}</td></tr>`;
   bodyEl.innerHTML=bodyHtml;
-  if(sorted.length>LIMIT){bodyEl.parentElement.insertAdjacentHTML('afterend',`<div style="padding:6px 0;"><a href="#" id="toggleM" onclick="toggleBuyerRows('buyerM',this);return false" style="color:#4285f4;font-size:13px;">더보기 (${sorted.length-LIMIT}곳)</a></div>`);}
+  const mToggleEl=document.getElementById('buyerMToggle');
+  if(needMToggle){mToggleEl.style.display='block';mToggleEl.textContent=buyerMExpanded?'접기 ▲':`더보기 (${sorted.length-LIMIT}곳) ▼`}
+  else{mToggleEl.style.display='none'}
 
   // === 분기별 테이블 ===
-  // 분기 라벨 생성 (연도-Q 형태)
-  const qMap={};// {'26-Q1': {qty,sales}} per buyer
+  const qMap={};
   activeYMs.forEach(ym=>{
     const y=ym.substring(0,4);const m=parseInt(ym.substring(5));
     const q=m<=3?'Q1':m<=6?'Q2':m<=9?'Q3':'Q4';
@@ -1566,6 +1567,8 @@ function renderPT10Buyers(){
     });
   });
   const allQKeys=[...new Set(activeYMs.map(ym=>{const y=ym.substring(2,4);const m=parseInt(ym.substring(5));return y+'-'+(m<=3?'Q1':m<=6?'Q2':m<=9?'Q3':'Q4')}))];
+  const needQToggle=sorted.length>LIMIT;
+  const qVisible=(!needQToggle||buyerQExpanded)?sorted:sorted.slice(0,LIMIT);
 
   const qHeadEl=document.getElementById('pt10BuyerQuarterlyHead');
   const qBodyEl=document.getElementById('pt10BuyerQuarterlyBody');
@@ -1576,16 +1579,15 @@ function renderPT10Buyers(){
   let qHtml=qSub;
   const qTotals={};allQKeys.forEach(k=>{qTotals[k]={qty:0,sales:0}});
   let qtQty=0,qtSales=0;
-  sorted.forEach((name,idx)=>{
+  sorted.forEach(name=>{allQKeys.forEach(k=>{const d=qMap[name]?.[k];if(d){qTotals[k].qty+=d.qty;qTotals[k].sales+=d.sales;qtQty+=d.qty;qtSales+=d.sales}})});
+  qVisible.forEach(name=>{
     let rq=0,rs=0;
-    const hidden=idx>=LIMIT?' class="buyer-hidden" data-tbl="buyerQ" style="display:none"':'';
-    let row=`<tr${hidden}><td class="sticky-col">${name}</td>`;
+    let row=`<tr><td class="sticky-col">${name}</td>`;
     allQKeys.forEach(k=>{
       const d=qMap[name]?.[k];const q=d?.qty||0,s=d?.sales||0;
       row+=`<td class="text-right">${q||'-'}</td><td class="text-right">${s?Math.round(s).toLocaleString():'-'}</td>`;
-      rq+=q;rs+=s;qTotals[k].qty+=q;qTotals[k].sales+=s;
+      rq+=q;rs+=s;
     });
-    qtQty+=rq;qtSales+=rs;
     row+=`<td class="text-right" style="font-weight:700">${rq}</td><td class="text-right" style="font-weight:700">${Math.round(rs).toLocaleString()}</td></tr>`;
     qHtml+=row;
   });
@@ -1593,7 +1595,9 @@ function renderPT10Buyers(){
   allQKeys.forEach(k=>{qHtml+=`<td class="text-right">${qTotals[k].qty}</td><td class="text-right">${Math.round(qTotals[k].sales).toLocaleString()}</td>`;});
   qHtml+=`<td class="text-right">${qtQty}</td><td class="text-right">${Math.round(qtSales).toLocaleString()}</td></tr>`;
   qBodyEl.innerHTML=qHtml;
-  if(sorted.length>LIMIT){qBodyEl.parentElement.insertAdjacentHTML('afterend',`<div style="padding:6px 0;"><a href="#" id="toggleQ" onclick="toggleBuyerRows('buyerQ',this);return false" style="color:#4285f4;font-size:13px;">더보기 (${sorted.length-LIMIT}곳)</a></div>`);}
+  const qToggleEl=document.getElementById('buyerQToggle');
+  if(needQToggle){qToggleEl.style.display='block';qToggleEl.textContent=buyerQExpanded?'접기 ▲':`더보기 (${sorted.length-LIMIT}곳) ▼`}
+  else{qToggleEl.style.display='none'}
 }
 
 function downloadBuyerExcel(){
