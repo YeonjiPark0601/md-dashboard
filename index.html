@@ -379,7 +379,7 @@ function parseCSV(csv) {
   return lines.slice(1).map(l=>{const v=parseCSVRow(l);const o={};cols.forEach((c,i)=>{o[c]=v[i]||''});return o});
 }
 function parseNum(s){if(s==null||s==='')return 0;return Number(String(s).replace(/[,₩\\s]/g,''))||0}
-function fixYm(ym){if(!ym||typeof ym!=='string')return'';const s=ym.substring(0,7);const p=s.split('-');if(p.length===2)return p[0]+'-'+p[1].padStart(2,'0');return s}
+function fixYm(ym){if(!ym||typeof ym!=='string')return'';const s=ym.trim().substring(0,7);const p=s.split('-');if(p.length===2){let y=p[0];if(y.length===2)y='20'+y;return y+'-'+p[1].padStart(2,'0')}return s}
 function fmt(n){return Math.round(n).toLocaleString('ko-KR')+'원'}
 function yearShift(ym,d){const[y,m]=ym.split('-').map(Number);return`${y+d}-${String(m).padStart(2,'0')}`}
 function getMonday(d){const dt=new Date(d);const day=dt.getDay();dt.setDate(dt.getDate()-day+(day===0?-6:1));return dt}
@@ -435,12 +435,12 @@ async function fetchData(){
         sonoArr.push({주문일:(r['결제일']||'').substring(0,10),연월:fixYm(r['연월']||''),한의원명:r['주문자']||'',품목명:cat,공급업체:cat,카테고리:cat,매출금액:parseNum(r['매출액(real_rev)']),공급가:parseNum(r['공급가(VAT제외)']),_isAS:isAS})})}}
       sonoData=sonoArr;
     }catch(e){console.warn('초음파 에러',e)}
-    try{if(puOnR.ok){const t=await puOnR.text();if(t.trim())puOnData=parseCSV(t).map(r=>{r['PU']=parseNum(r['PU']);return r})}}catch(e){console.warn('PU온라인 에러',e)}
-    try{if(puOffR.ok){const t=await puOffR.text();if(t.trim())puOffData=parseCSV(t).map(r=>{r['PU']=parseNum(r['PU']);return r})}}catch(e){console.warn('PU오프라인 에러',e)}
+    try{if(puOnR.ok){const t=await puOnR.text();if(t.trim())puOnData=parseCSV(t).map(r=>{r['PU']=parseNum(r['PU']);r['연월']=fixYm(r['연월']);return r})}}catch(e){console.warn('PU온라인 에러',e)}
+    try{if(puOffR.ok){const t=await puOffR.text();if(t.trim())puOffData=parseCSV(t).map(r=>{r['PU']=parseNum(r['PU']);r['연월']=fixYm(r['연월']);return r})}}catch(e){console.warn('PU오프라인 에러',e)}
     try{if(pt10PuR.ok){const t=await pt10PuR.text();if(t.trim())pt10PuData=parseCSV(t).map(r=>{r['고객수']=parseNum(r['고객수']);r['연월']=fixYm(r['연월']);return r})}}catch(e){console.warn('PT10PU 에러',e)}
     try{if(rebuyR.ok){const t=await rebuyR.text();if(t.trim())rebuyData=parseCSV(t).map(r=>{
       ['총구매자수','이탈고객수','재구매자수','신규구매자수'].forEach(k=>{r[k]=parseNum(r[k])});
-      ['이탈율','재구매율','신규구매비율'].forEach(k=>{r[k]=parseFloat(r[k])||0});return r})}}catch(e){console.warn('재구매 에러',e)}
+      ['이탈율','재구매율','신규구매비율'].forEach(k=>{r[k]=parseFloat(r[k])||0});r['연월']=fixYm(r['연월']);return r})}}catch(e){console.warn('재구매 에러',e)}
     try{if(targetR.ok){const tr=parseCSV(await targetR.text());const mc=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];tr.forEach(r=>{const c=r['품목']||'';if(!c)return;targetData[c]={};mc.forEach((m,i)=>{targetData[c][i+1]=parseNum(r[m])})})}}catch(e){console.warn('목표 에러',e)}
     initFilters();render();
     document.getElementById('loadingMsg').style.display='none';
