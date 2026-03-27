@@ -180,7 +180,6 @@ tr:hover { background: #f7f9fc; }
         <div class="sub-row"><span id="tkHalfRate">비율: -</span></div>
       </div>
     </div>
-    <div id="turnkeySourceLinks" style="display:none;text-align:right;font-size:12px;color:#888;margin-bottom:8px;">데이터 출처: <a href="https://docs.google.com/spreadsheets/d/1rviBz7qa6xxWrKVu-4zJ70dCakQj_GUjVE6hL42DZ0E/edit?gid=665745561#gid=665745561" target="_blank" style="color:#1a73e8;">상담관리</a> | <a href="https://docs.google.com/spreadsheets/d/1rviBz7qa6xxWrKVu-4zJ70dCakQj_GUjVE6hL42DZ0E/edit?gid=148070959#gid=148070959" target="_blank" style="color:#1a73e8;">결제내역</a></div>
     <div id="sec-trend"></div>
     <div id="trendRow" class="chart-row-full">
       <div class="chart-card"><h3>월별 매출 트렌드 (YoY) — 25년 1월~현재</h3><canvas id="trendChart" height="80"></canvas></div>
@@ -311,12 +310,7 @@ tr:hover { background: #f7f9fc; }
       <div class="table-card">
         <h3>PT10 재고 DIO 종합 현황 <span id="dioUpdated" style="font-size:12px;color:#888;font-weight:normal;"></span></h3>
         <div style="overflow-x:auto;"><table class="pt10-sticky"><thead><tr id="pt10DioHead"></tr></thead><tbody id="pt10DioBody"></tbody></table></div>
-      </div>
-    </div>
-    <div class="chart-row-full" id="pt10DioAlertRow" style="display:none;">
-      <div class="table-card">
-        <h3>발주 알림</h3>
-        <div style="overflow-x:auto;"><table class="pt10-sticky"><thead><tr id="pt10DioAlertHead"></tr></thead><tbody id="pt10DioAlertBody"></tbody></table></div>
+        <div id="dioLegend" style="margin-top:8px;font-size:12px;color:#888;"></div>
       </div>
     </div>
     <div class="chart-row-full" id="pt10Summary2025Row" style="display:none;">
@@ -394,7 +388,6 @@ function parseCSV(csv) {
 function parseNum(s){if(s==null||s==='')return 0;return Number(String(s).replace(/[,₩\\s]/g,''))||0}
 function fixYm(ym){if(!ym||typeof ym!=='string')return'';const s=ym.substring(0,7);const p=s.split('-');if(p.length===2)return p[0]+'-'+p[1].padStart(2,'0');return s}
 function fmt(n){if(Math.abs(n)>=1e8)return(n/1e8).toFixed(1)+'억';if(Math.abs(n)>=1e7)return(n/1e7).toFixed(1)+'천만';if(Math.abs(n)>=1e4)return Math.round(n/1e4)+'만';return n.toLocaleString()}
-function fmtLabel(n){if(!n)return'';return(n/1e8).toFixed(2)+'억'}
 function yearShift(ym,d){const[y,m]=ym.split('-').map(Number);return`${y+d}-${String(m).padStart(2,'0')}`}
 function getMonday(d){const dt=new Date(d);const day=dt.getDay();dt.setDate(dt.getDate()-day+(day===0?-6:1));return dt}
 function dateStr(d){return d.toISOString().slice(0,10)}
@@ -601,7 +594,7 @@ function render(){
   // 클래스 전용: PU + 재구매
   document.getElementById('detailRow').style.display=(isTurnkey||isPT10||isSono||isAll)?'none':'';
   document.getElementById('monthlyRow').style.display=(isPT10||isAll)?'none':'';
-  ['pt10SummaryRow','pt10CartRow','pt10DioRow','pt10DioAlertRow','pt10Summary2025Row','pt10Cart2025Row','pt10Summary2024Row','pt10Cart2024Row','pt10Summary2023Row','pt10Cart2023Row','pt10CartChartRow'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
+  ['pt10SummaryRow','pt10CartRow','pt10DioRow','pt10Summary2025Row','pt10Cart2025Row','pt10Summary2024Row','pt10Cart2024Row','pt10Summary2023Row','pt10Cart2023Row','pt10CartChartRow'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
   document.getElementById('sonoCountChartRow').style.display=isSono?'':'none';
   document.getElementById('sonoMapRow').style.display=isSono?'':'none';
   document.getElementById('navSonoCount').style.display=isSono?'':'none';
@@ -615,7 +608,6 @@ function render(){
   document.getElementById('navDetail').style.display=(isPT10||isTurnkey||isAll)?'none':'';
   if(isPT10){renderPT10Summary();renderPT10Cart();renderPT10CartTrend();renderPT10DIO()}
   document.getElementById('turnkeyKpiRow').style.display=isTurnkey?'grid':'none';
-  document.getElementById('turnkeySourceLinks').style.display=isTurnkey?'block':'none';
   document.getElementById('profitMarginRow').style.display=isTurnkey?'':'none';
   document.getElementById('navProfitMargin').style.display=isTurnkey?'':'none';
   if(isTurnkey){renderTurnkeyKPI();renderProfitMargin()}
@@ -1413,7 +1405,6 @@ async function renderPT10DIO(){
     // 종합 현황 테이블
     let headHtml='<th>제품명</th><th class="text-right">현재고</th><th class="text-right">3M일평균</th><th class="text-right">DIO(일)</th><th class="text-right">ROP</th><th>발주필요일</th><th class="text-right">MOQ</th><th>상태</th>';
     let bodyHtml='';
-    const alerts=[];
 
     DIO_PRODUCTS.forEach(p=>{
       const stock=invMap[p.id]||0;
@@ -1438,29 +1429,12 @@ async function renderPT10DIO(){
       const bold=dio<60?'font-weight:bold':'';
       bodyHtml+=`<tr style="${bold}"><td>${shortName}</td><td class="text-right">${stock.toLocaleString()}</td><td class="text-right">${dailyAvg.toFixed(1)}</td><td class="text-right">${dio===Infinity?'∞':dio.toFixed(1)}</td><td class="text-right">${rop.toLocaleString()}</td><td>${orderDate==='즉시'?'<span style="color:#e53935;font-weight:bold">즉시</span>':orderDate}</td><td class="text-right">${p.moqLabel}</td><td style="${statusCls}">${status}</td></tr>`;
 
-      if(dailyAvg>0&&stock<=rop){
-        let recOrder=Math.ceil(rop*2)-stock;
-        if(p.moq>1)recOrder=Math.ceil(recOrder/p.moq)*p.moq;
-        recOrder=Math.max(recOrder,0);
-        const depletionDate=dio===Infinity?'-':new Date(today.getTime()+dio*86400000).toISOString().substring(0,10);
-        alerts.push({name:shortName,stock,rop,shortage:rop-stock,depletion:depletionDate,recOrder});
-      }
     });
 
     document.getElementById('pt10DioHead').innerHTML=headHtml;
     document.getElementById('pt10DioBody').innerHTML=bodyHtml;
     document.getElementById('dioUpdated').textContent=`기준일: ${todayStr} | 분석 기간: ${periodLabel}`;
-
-    // 발주 알림 테이블
-    if(alerts.length>0){
-      document.getElementById('pt10DioAlertHead').innerHTML='<th>제품명</th><th class="text-right">현재고</th><th class="text-right">ROP</th><th class="text-right">부족수량</th><th>예상소진일</th><th class="text-right">권장발주량</th>';
-      document.getElementById('pt10DioAlertBody').innerHTML=alerts.map(a=>`<tr style="font-weight:bold;color:#e53935"><td>${a.name}</td><td class="text-right">${a.stock.toLocaleString()}</td><td class="text-right">${a.rop.toLocaleString()}</td><td class="text-right">${a.shortage.toLocaleString()}</td><td>${a.depletion}</td><td class="text-right">${a.recOrder.toLocaleString()}</td></tr>`).join('');
-      document.getElementById('pt10DioAlertRow').style.display='';
-    }else{
-      document.getElementById('pt10DioAlertBody').innerHTML='<tr><td colspan="6" style="text-align:center;color:#43a047;">모든 제품 재고 적정</td></tr>';
-      document.getElementById('pt10DioAlertHead').innerHTML='<th>발주 알림</th>';
-      document.getElementById('pt10DioAlertRow').style.display='';
-    }
+    document.getElementById('dioLegend').textContent='상태 기준: 부족 = DIO 60일 미만 | 적정 = DIO 60~119일 | 과잉 = DIO 120일 이상';
   }catch(e){console.warn('DIO 로딩 실패',e);document.getElementById('pt10DioBody').innerHTML='<tr><td colspan="8" style="color:#999">DIO 데이터를 불러오지 못했습니다.</td></tr>';}
 }
 
