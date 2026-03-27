@@ -794,7 +794,9 @@ function renderTrendChart(data){
   }else{
     const datasets=[
       {label:'올해',data:months.map(m=>tY[m]||0),backgroundColor:'#4285f4',borderRadius:4,order:2,
-        datalabels:{anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',display:ctx=>ctx.raw>0,formatter:v=>fmtLabel(v)}},
+        datalabels:{anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',
+          display:function(ctx){return ctx.raw>0},
+          formatter:function(v){return fmtLabel(v)}}},
       {label:'전년',data:months.map(m=>pY[m]||0),type:'line',borderColor:'#bbb',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,borderDash:[5,3],pointRadius:3,pointBackgroundColor:'#999',order:0,fill:false,datalabels:{display:false}}
     ];
     const scales={y:{ticks:{callback:v=>fmt(v)}}};
@@ -805,7 +807,7 @@ function renderTrendChart(data){
       datasets.push({label:'매출총이익률',data:months.map(m=>salesM[m]?(profitM[m]/salesM[m]*100):null),type:'line',borderColor:'#0d9488',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,pointRadius:4,pointBackgroundColor:'#0d9488',order:0,fill:false,yAxisID:'y1',datalabels:{display:false}});
       scales.y1={position:'right',grid:{drawOnChartArea:false},ticks:{callback:v=>v.toFixed(0)+'%'},min:0,max:50};
     }
-    cfg={type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets},plugins:[ChartDataLabels],options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:20}},plugins:{legend:{position:'top'},
+    cfg={type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets},plugins:[ChartDataLabels],options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:20}},plugins:{legend:{position:'top'},datalabels:{},
       tooltip:{callbacks:{label:ctx=>{if(ctx.dataset.yAxisID==='y1')return ctx.dataset.label+': '+ctx.raw.toFixed(1)+'%';return ctx.dataset.label+': '+fmt(ctx.raw)},afterBody:items=>{const i=items[0].dataIndex;const lines=[];
             const actual=items.find(it=>it.dataset.label==='올해');const sales=actual?actual.raw:0;
             const target=getTargetForMonth(months[i]);if(target&&sales)lines.push('달성률: '+(sales/target*100).toFixed(1)+'%  (목표: '+fmt(target)+')');
