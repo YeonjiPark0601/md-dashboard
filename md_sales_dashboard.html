@@ -306,6 +306,18 @@ tr:hover { background: #f7f9fc; }
         <div style="overflow-x:auto;"><table id="pt10CartTable" class="pt10-sticky"><thead><tr id="pt10CartHead"></tr></thead><tbody id="pt10CartBody"></tbody></table></div>
       </div>
     </div>
+    <div class="chart-row-full" id="pt10DioRow" style="display:none;">
+      <div class="table-card">
+        <h3>PT10 재고 DIO 종합 현황 <span id="dioUpdated" style="font-size:12px;color:#888;font-weight:normal;"></span></h3>
+        <div style="overflow-x:auto;"><table class="pt10-sticky"><thead><tr id="pt10DioHead"></tr></thead><tbody id="pt10DioBody"></tbody></table></div>
+      </div>
+    </div>
+    <div class="chart-row-full" id="pt10DioAlertRow" style="display:none;">
+      <div class="table-card">
+        <h3>발주 알림</h3>
+        <div style="overflow-x:auto;"><table class="pt10-sticky"><thead><tr id="pt10DioAlertHead"></tr></thead><tbody id="pt10DioAlertBody"></tbody></table></div>
+      </div>
+    </div>
     <div class="chart-row-full" id="pt10Summary2025Row" style="display:none;">
       <div class="table-card"><h3>25년 월별 수량 / 매출</h3>
         <div style="overflow-x:auto;"><table class="pt10-sticky"><thead><tr id="pt10Summary2025Head"></tr></thead><tbody id="pt10Summary2025Body"></tbody></table></div>
@@ -587,7 +599,7 @@ function render(){
   // 클래스 전용: PU + 재구매
   document.getElementById('detailRow').style.display=(isTurnkey||isPT10||isSono||isAll)?'none':'';
   document.getElementById('monthlyRow').style.display=(isPT10||isAll)?'none':'';
-  ['pt10SummaryRow','pt10CartRow','pt10Summary2025Row','pt10Cart2025Row','pt10Summary2024Row','pt10Cart2024Row','pt10Summary2023Row','pt10Cart2023Row','pt10CartChartRow'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
+  ['pt10SummaryRow','pt10CartRow','pt10DioRow','pt10DioAlertRow','pt10Summary2025Row','pt10Cart2025Row','pt10Summary2024Row','pt10Cart2024Row','pt10Summary2023Row','pt10Cart2023Row','pt10CartChartRow'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
   document.getElementById('sonoCountChartRow').style.display=isSono?'':'none';
   document.getElementById('sonoMapRow').style.display=isSono?'':'none';
   document.getElementById('navSonoCount').style.display=isSono?'':'none';
@@ -599,7 +611,7 @@ function render(){
   ['navPT10Summary','navPT10CartTrend','navPT10Cart','navPT10Y25','navPT10Y24','navPT10Y23'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
   document.getElementById('navMonthly').style.display=(isPT10||isAll)?'none':'';
   document.getElementById('navDetail').style.display=(isPT10||isTurnkey||isAll)?'none':'';
-  if(isPT10){renderPT10Summary();renderPT10Cart();renderPT10CartTrend()}
+  if(isPT10){renderPT10Summary();renderPT10Cart();renderPT10CartTrend();renderPT10DIO()}
   document.getElementById('turnkeyKpiRow').style.display=isTurnkey?'grid':'none';
   document.getElementById('profitMarginRow').style.display=isTurnkey?'':'none';
   document.getElementById('navProfitMargin').style.display=isTurnkey?'':'none';
@@ -1351,6 +1363,103 @@ function renderPT10CartYear(year,headId,bodyId){
   document.getElementById(bodyId).innerHTML=html;
 }
 function renderPT10Cart(){['2026','2025','2024','2023'].forEach(y=>{const sfx=y==='2026'?'':y;renderPT10CartYear(y,'pt10Cart'+sfx+'Head','pt10Cart'+sfx+'Body')})}
+
+// PT10 DIO 종합 분석
+const DIO_API_KEY='Dy3CDd0DJNgnHSwaIJrpgJZYNwYuo8NvG91jvTS3';
+const DIO_PRODUCTS=[
+  {id:'MEDDPEURIS490004B001',name:'Biochemistry Test 9',moq:12,moqLabel:'12'},
+  {id:'MEDDPEURIS5A0005B001',name:'Biochemistry Test Prime 9',moq:12,moqLabel:'12'},
+  {id:'MEDDPEURIS9B0002B001',name:'Hepatic Test 9',moq:12,moqLabel:'12'},
+  {id:'MEDDPEURISF80006B001',name:'HbA1c Test',moq:12,moqLabel:'12'},
+  {id:'MEDDPEURIS190001B001',name:'PT10 본체',moq:1,moqLabel:'1'},
+  {id:'MEETPEURIS2B0010B001',name:'플런져(압축패드)',moq:1,moqLabel:'1'},
+  {id:'GEETPEURIS780007B001',name:'캐필러리 튜브 25개입',moq:800,moqLabel:'800set',fixedRop:500},
+  {id:'MEDOMEDISED80035B001',name:'HbA1c 캐필러리튜브 100pcs',moq:0,moqLabel:'-'}
+];
+
+async function renderPT10DIO(){
+  try{
+    const [invR,salesR]=await Promise.all([
+      fetch(`https://redash.datastream.co.kr/api/queries/3951/results.json?api_key=${DIO_API_KEY}`),
+      fetch(`https://redash.datastream.co.kr/api/queries/3952/results.json?api_key=${DIO_API_KEY}`)
+    ]);
+    const invData=(await invR.json()).query_result.data.rows;
+    const salesData=(await salesR.json()).query_result.data.rows;
+
+    const invMap={};invData.forEach(r=>{invMap[r.item_id]=r.current_quantity||0});
+    // 판매 데이터: item_id별 월별 수량 + 최신 이름
+    const salesMap={};// {item_id: {ym: qty}}
+    const nameMap={};// {item_id: {ym: name}}
+    salesData.forEach(r=>{
+      const id=r.item_id,ym=r.paidat.substring(0,7),qty=r['sum(item_quantity)']||0;
+      if(!salesMap[id])salesMap[id]={};
+      salesMap[id][ym]=(salesMap[id][ym]||0)+qty;
+      if(!nameMap[id])nameMap[id]={};
+      nameMap[id][ym]=r.item_name;
+    });
+
+    const today=new Date();
+    const todayStr=today.toISOString().substring(0,10);
+    // 최근 3개 완료월
+    const cm=new Date(today.getFullYear(),today.getMonth(),1);
+    const m3=[];
+    for(let i=1;i<=3;i++){const d=new Date(cm);d.setMonth(d.getMonth()-i);m3.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`);}
+    const totalDays3M=m3.reduce((s,ym)=>{const[y,m]=ym.split('-').map(Number);return s+new Date(y,m,0).getDate()},0);
+    const periodLabel=`${m3[2]} ~ ${m3[0]}`;
+
+    // 종합 현황 테이블
+    let headHtml='<th>제품명</th><th class="text-right">현재고</th><th class="text-right">3M일평균</th><th class="text-right">DIO(일)</th><th class="text-right">ROP</th><th>발주필요일</th><th class="text-right">MOQ</th><th>상태</th>';
+    let bodyHtml='';
+    const alerts=[];
+
+    DIO_PRODUCTS.forEach(p=>{
+      const stock=invMap[p.id]||0;
+      const sales3m=m3.reduce((s,ym)=>s+((salesMap[p.id]||{})[ym]||0),0);
+      const dailyAvg=totalDays3M>0?sales3m/totalDays3M:0;
+      const dio=dailyAvg>0?stock/dailyAvg:Infinity;
+      const rop=p.fixedRop!==undefined?p.fixedRop:Math.ceil(dailyAvg*30);
+      let orderDate='-';
+      if(dailyAvg>0){
+        if(stock<=rop)orderDate='즉시';
+        else{const days=Math.floor((stock-rop)/dailyAvg);const d=new Date(today);d.setDate(d.getDate()+days);orderDate=d.toISOString().substring(0,10);}
+      }
+      let status,statusCls;
+      if(dio<60){status='부족';statusCls='color:#e53935;font-weight:bold';}
+      else if(dio<120){status='적정';statusCls='color:#43a047';}
+      else{status='과잉';statusCls='color:#fb8c00';}
+      // 최신 제품명
+      const names=nameMap[p.id]||{};const latestYm=Object.keys(names).sort().pop();
+      const displayName=latestYm?names[latestYm]:p.name;
+      const shortName=displayName.replace(/^\(냉\)\[프리시젼바이오\]\s*/,'').replace(/^Exdia PT10 카트리지\s*/,'').replace(/\s*1박스$/,'').replace(/\s*1팩$/,'');
+
+      const bold=dio<60?'font-weight:bold':'';
+      bodyHtml+=`<tr style="${bold}"><td>${shortName}</td><td class="text-right">${stock.toLocaleString()}</td><td class="text-right">${dailyAvg.toFixed(1)}</td><td class="text-right">${dio===Infinity?'∞':dio.toFixed(1)}</td><td class="text-right">${rop.toLocaleString()}</td><td>${orderDate==='즉시'?'<span style="color:#e53935;font-weight:bold">즉시</span>':orderDate}</td><td class="text-right">${p.moqLabel}</td><td style="${statusCls}">${status}</td></tr>`;
+
+      if(dailyAvg>0&&stock<=rop){
+        let recOrder=Math.ceil(rop*2)-stock;
+        if(p.moq>1)recOrder=Math.ceil(recOrder/p.moq)*p.moq;
+        recOrder=Math.max(recOrder,0);
+        const depletionDate=dio===Infinity?'-':new Date(today.getTime()+dio*86400000).toISOString().substring(0,10);
+        alerts.push({name:shortName,stock,rop,shortage:rop-stock,depletion:depletionDate,recOrder});
+      }
+    });
+
+    document.getElementById('pt10DioHead').innerHTML=headHtml;
+    document.getElementById('pt10DioBody').innerHTML=bodyHtml;
+    document.getElementById('dioUpdated').textContent=`기준일: ${todayStr} | 분석 기간: ${periodLabel}`;
+
+    // 발주 알림 테이블
+    if(alerts.length>0){
+      document.getElementById('pt10DioAlertHead').innerHTML='<th>제품명</th><th class="text-right">현재고</th><th class="text-right">ROP</th><th class="text-right">부족수량</th><th>예상소진일</th><th class="text-right">권장발주량</th>';
+      document.getElementById('pt10DioAlertBody').innerHTML=alerts.map(a=>`<tr style="font-weight:bold;color:#e53935"><td>${a.name}</td><td class="text-right">${a.stock.toLocaleString()}</td><td class="text-right">${a.rop.toLocaleString()}</td><td class="text-right">${a.shortage.toLocaleString()}</td><td>${a.depletion}</td><td class="text-right">${a.recOrder.toLocaleString()}</td></tr>`).join('');
+      document.getElementById('pt10DioAlertRow').style.display='';
+    }else{
+      document.getElementById('pt10DioAlertBody').innerHTML='<tr><td colspan="6" style="text-align:center;color:#43a047;">모든 제품 재고 적정</td></tr>';
+      document.getElementById('pt10DioAlertHead').innerHTML='<th>발주 알림</th>';
+      document.getElementById('pt10DioAlertRow').style.display='';
+    }
+  }catch(e){console.warn('DIO 로딩 실패',e);document.getElementById('pt10DioBody').innerHTML='<tr><td colspan="8" style="color:#999">DIO 데이터를 불러오지 못했습니다.</td></tr>';}
+}
 
 function renderProfitMargin(){
   const allMonths=['01','02','03','04','05','06','07','08','09','10','11','12'];
