@@ -185,7 +185,7 @@ tr:hover { background: #f7f9fc; }
     <div id="sonoSourceLinks" style="display:none;text-align:right;font-size:12px;color:#888;margin-bottom:8px;">데이터 출처: <a href="https://docs.google.com/spreadsheets/d/1hwFUlXDkDt7PFfQCjgu2E4O7Ou4qxqzv8sSA9r54Tu8/edit?gid=1613844215#gid=1613844215" target="_blank" style="color:#1a73e8;">삼성 계약현황</a></div>
     <div id="sec-trend"></div>
     <div id="trendRow" class="chart-row-full">
-      <div class="chart-card"><h3>월별 매출 트렌드 (YoY) — 25년 1월~현재</h3><canvas id="trendChart" height="80"></canvas></div>
+      <div class="chart-card"><h3>월별 매출 트렌드 (YoY) — 25년 1월~현재</h3><canvas id="trendChart"></canvas></div>
     </div>
     <div id="classTrendRow" class="chart-row" style="display:none;">
       <div class="chart-card" style="display:flex;flex-direction:column;"><h3>월별 매출 트렌드 (YoY) — 25년 1월~현재</h3><canvas id="trendChart2" style="flex:1;min-height:0;"></canvas></div>
@@ -795,19 +795,23 @@ function renderTrendChart(data){
     if(trendChart)trendChart.destroy();trendChart=new Chart(document.getElementById('trendChart'),cfg);
   }else{
     const datasets=[
-      {label:'올해',data:months.map(m=>tY[m]||0),backgroundColor:'#4285f4',borderRadius:4,order:2},
-      {label:'전년',data:months.map(m=>pY[m]||0),type:'line',borderColor:'#bbb',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,borderDash:[5,3],pointRadius:3,pointBackgroundColor:'#999',order:0,fill:false}
+      {label:'올해',data:months.map(m=>tY[m]||0),backgroundColor:'#4285f4',borderRadius:4,order:2,
+        datalabels:{anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',
+          display:function(ctx){return ctx.raw>0},
+          formatter:function(v){return fmtLabel(v)}}},
+      {label:'전년',data:months.map(m=>pY[m]||0),type:'line',borderColor:'#bbb',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,borderDash:[5,3],pointRadius:3,pointBackgroundColor:'#999',order:0,fill:false,
+        datalabels:{display:false}}
     ];
     const scales={y:{ticks:{callback:v=>fmt(v)}}};
     // 턴키: 매출총이익률 라인 추가 (우측 Y축)
     if(currentTab==='턴키'){
       const profitM={},salesM={};
       ad.forEach(d=>{const ym=d['연월'];if(!ym||!months.includes(ym))return;profitM[ym]=(profitM[ym]||0)+(d['매출총이익']||0);salesM[ym]=(salesM[ym]||0)+d['매출금액']});
-      datasets.push({label:'매출총이익률',data:months.map(m=>salesM[m]?(profitM[m]/salesM[m]*100):null),type:'line',borderColor:'#0d9488',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,pointRadius:4,pointBackgroundColor:'#0d9488',order:0,fill:false,yAxisID:'y1',datalabels:{display:false}});
+      datasets.push({label:'매출총이익률',data:months.map(m=>salesM[m]?(profitM[m]/salesM[m]*100):null),type:'line',borderColor:'#0d9488',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,pointRadius:4,pointBackgroundColor:'#0d9488',order:0,fill:false,yAxisID:'y1',
+        datalabels:{display:false}});
       scales.y1={position:'right',grid:{drawOnChartArea:false},ticks:{callback:v=>v.toFixed(0)+'%'},min:0,max:50};
     }
     cfg={type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets},plugins:[ChartDataLabels],options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:30}},plugins:{legend:{position:'top'},
-      datalabels:{display:function(ctx){return ctx.datasetIndex===0&&ctx.raw>0},anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',formatter:function(v){return fmtLabel(v)}},
       tooltip:{callbacks:{label:ctx=>{if(ctx.dataset.yAxisID==='y1')return ctx.dataset.label+': '+ctx.raw.toFixed(1)+'%';return ctx.dataset.label+': '+fmt(ctx.raw)},afterBody:items=>{const i=items[0].dataIndex;const lines=[];
             const actual=items.find(it=>it.dataset.label==='올해');const sales=actual?actual.raw:0;
             const target=getTargetForMonth(months[i]);if(target&&sales)lines.push('달성률: '+(sales/target*100).toFixed(1)+'%  (목표: '+fmt(target)+')');
