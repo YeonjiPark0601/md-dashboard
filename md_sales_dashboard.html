@@ -624,7 +624,7 @@ function render(){
   ['navPT10Summary','navPT10CartTrend','navPT10Cart','navPT10Y25','navPT10Y24','navPT10Y23'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
   document.getElementById('navMonthly').style.display=(isPT10||isAll)?'none':'';
   document.getElementById('navDetail').style.display=(isPT10||isTurnkey||isAll)?'none':'';
-  if(isPT10){renderPT10Summary();renderPT10Cart();renderPT10CartTrend();renderPT10DIO();renderPT10Buyers();renderPT10Insight()}
+  if(isPT10){renderPT10Summary();renderPT10Cart();renderPT10CartTrend();renderPT10DIO();try{renderPT10Buyers()}catch(e){console.warn('Buyers err',e)}try{renderPT10Insight()}catch(e){console.warn('Insight err',e)}}
   document.getElementById('turnkeyKpiRow').style.display=isTurnkey?'grid':'none';
   document.getElementById('profitMarginRow').style.display=isTurnkey?'':'none';
   document.getElementById('navProfitMargin').style.display=isTurnkey?'':'none';
@@ -879,7 +879,7 @@ function renderSupplierChart(data){
           const chart=ctx.chart;const di=ctx.dataIndex;
           let t=0;
           for(let j=0;j<chart.data.datasets.length;j++){if(!chart.getDatasetMeta(j).hidden)t+=(chart.data.datasets[j].data[di]||0)}
-          return fmt(t);
+          return fmtLabel(t);
         }}}});
   if(supplierChart)supplierChart.destroy();
   supplierChart=new Chart(document.getElementById('supplierChart'),{type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets:ds},plugins:[ChartDataLabels],
