@@ -1458,6 +1458,13 @@ async function renderPT10DIO(){
   }catch(e){console.warn('DIO 로딩 실패',e);document.getElementById('pt10DioBody').innerHTML='<tr><td colspan="8" style="color:#999">DIO 데이터를 불러오지 못했습니다.</td></tr>';}
 }
 
+function toggleBuyerRows(tblId,el){
+  const rows=document.querySelectorAll(`tr[data-tbl="${tblId}"]`);
+  const showing=rows[0]&&rows[0].style.display==='none';
+  rows.forEach(r=>{r.style.display=showing?'':'none'});
+  el.textContent=showing?'숨기기':`더보기 (${rows.length}곳)`;
+}
+
 // PT10 카트리지 구매자 리스트 (월별 + 분기별)
 function renderPT10Buyers(){
   const cartData=pt10Data.filter(d=>d['구분']==='카트리지');
@@ -1496,9 +1503,11 @@ function renderPT10Buyers(){
     // 전체 합계 행
     let totalQty=0,totalSales=0;
     const monthTotals={};activeMonths.forEach(m=>{monthTotals[m]={qty:0,sales:0}});
-    sorted.forEach(name=>{
+    const LIMIT=20;const mTblId='buyerM'+sfx;
+    sorted.forEach((name,idx)=>{
       let rowQty=0,rowSales=0;
-      let row=`<tr><td class="sticky-col">${name}</td>`;
+      const hidden=idx>=LIMIT?` class="buyer-hidden" data-tbl="${mTblId}" style="display:none"`:'';
+      let row=`<tr${hidden}><td class="sticky-col">${name}</td>`;
       activeMonths.forEach(m=>{
         const d=buyers[name][m];
         const q=d?.qty||0,s=d?.sales||0;
@@ -1514,6 +1523,10 @@ function renderPT10Buyers(){
     bodyHtml+=`<tr style="font-weight:700;background:#eef3ff;"><td class="sticky-col">합계</td>`;
     activeMonths.forEach(m=>{bodyHtml+=`<td class="text-right">${monthTotals[m].qty}</td><td class="text-right">${Math.round(monthTotals[m].sales).toLocaleString()}</td>`;});
     bodyHtml+=`<td class="text-right">${totalQty}</td><td class="text-right">${Math.round(totalSales).toLocaleString()}</td></tr>`;
+    if(sorted.length>LIMIT){
+      const cols=activeMonths.length*2+3;
+      bodyHtml+=`<tr><td colspan="${cols}" style="text-align:center;padding:8px;"><a href="#" onclick="toggleBuyerRows('${mTblId}',this);return false" style="color:#4285f4;font-size:13px;">더보기 (${sorted.length-LIMIT}곳)</a></td></tr>`;
+    }
     bodyEl.innerHTML=bodyHtml;
 
     // 분기별 테이블
@@ -1527,10 +1540,11 @@ function renderPT10Buyers(){
     qSubHead+='<td class="text-right">수량</td><td class="text-right">매출</td></tr>';
     let qBodyHtml=qSubHead;
     const qTotals={};activeQ.forEach(q=>{qTotals[q.label]={qty:0,sales:0}});
-    let qTotalQty=0,qTotalSales=0;
-    sorted.forEach(name=>{
+    let qTotalQty=0,qTotalSales=0;const qTblId='buyerQ'+sfx;
+    sorted.forEach((name,idx)=>{
       let rq=0,rs=0;
-      let row=`<tr><td class="sticky-col">${name}</td>`;
+      const hidden=idx>=LIMIT?` class="buyer-hidden" data-tbl="${qTblId}" style="display:none"`:'';
+      let row=`<tr${hidden}><td class="sticky-col">${name}</td>`;
       activeQ.forEach(q=>{
         let qq=0,qs=0;
         q.months.forEach(m=>{const d=buyers[name][m];qq+=(d?.qty||0);qs+=(d?.sales||0);});
@@ -1544,6 +1558,10 @@ function renderPT10Buyers(){
     qBodyHtml+=`<tr style="font-weight:700;background:#eef3ff;"><td class="sticky-col">합계</td>`;
     activeQ.forEach(q=>{qBodyHtml+=`<td class="text-right">${qTotals[q.label].qty}</td><td class="text-right">${Math.round(qTotals[q.label].sales).toLocaleString()}</td>`;});
     qBodyHtml+=`<td class="text-right">${qTotalQty}</td><td class="text-right">${Math.round(qTotalSales).toLocaleString()}</td></tr>`;
+    if(sorted.length>LIMIT){
+      const qCols=activeQ.length*2+3;
+      qBodyHtml+=`<tr><td colspan="${qCols}" style="text-align:center;padding:8px;"><a href="#" onclick="toggleBuyerRows('${qTblId}',this);return false" style="color:#4285f4;font-size:13px;">더보기 (${sorted.length-LIMIT}곳)</a></td></tr>`;
+    }
     qBodyEl.innerHTML=qBodyHtml;
   });
 }
