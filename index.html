@@ -222,7 +222,7 @@ tr:hover { background: #f7f9fc; }
       <div class="chart-card">
         <h3 style="display:flex;justify-content:space-between;align-items:center;">
           <span id="supplierChartTitle">공급처별 매출</span>
-          <button onclick="clearSupplierSelection()" style="font-size:11px;padding:3px 8px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;color:#888;">초기화</button>
+          <span><button onclick="hideAllSupplierLegend()" style="font-size:11px;padding:3px 8px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;color:#888;margin-right:4px;">전체 선택 해제</button><button onclick="clearSupplierSelection()" style="font-size:11px;padding:3px 8px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;color:#888;">초기화</button></span>
         </h3>
         <canvas id="supplierChart" height="150"></canvas>
       </div>
@@ -553,6 +553,12 @@ function getTargetForMonths(ms){return ms.reduce((s,m)=>s+getTargetForMonth(m),0
 
 function toggleSupplierPicker(){const el=document.getElementById('supplierPicker');el.style.display=el.style.display==='none'?'block':'none'}
 function onSupplierCheck(){selectedSuppliers=[...document.querySelectorAll('.sup-cb:checked')].map(cb=>cb.value);updateSupplierSummary();renderSupplierChart(getFilteredData());renderTable(getFilteredData())}
+function hideAllSupplierLegend(){
+  if(!supplierChart)return;
+  const ds=supplierChart.data.datasets;
+  ds.forEach(function(d,i){supplierChart.setDatasetVisibility(i,false)});
+  supplierChart.update();
+}
 function clearSupplierSelection(){document.querySelectorAll('.sup-cb').forEach(cb=>cb.checked=false);selectedSuppliers=[];document.getElementById('supplierSummary').style.display='none';renderSupplierChart(getFilteredData());renderTable(getFilteredData())}
 function updateSupplierSummary(){
   const summary=document.getElementById('supplierSummary');
