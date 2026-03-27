@@ -181,6 +181,8 @@ tr:hover { background: #f7f9fc; }
         <div class="sub-row"><span id="tkHalfRate">비율: -</span></div>
       </div>
     </div>
+    <div id="turnkeySourceLinks" style="display:none;text-align:right;font-size:12px;color:#888;margin-bottom:8px;">데이터 출처: <a href="https://docs.google.com/spreadsheets/d/1rviBz7qa6xxWrKVu-4zJ70dCakQj_GUjVE6hL42DZ0E/edit?gid=665745561#gid=665745561" target="_blank" style="color:#1a73e8;">상담관리</a> | <a href="https://docs.google.com/spreadsheets/d/1rviBz7qa6xxWrKVu-4zJ70dCakQj_GUjVE6hL42DZ0E/edit?gid=148070959#gid=148070959" target="_blank" style="color:#1a73e8;">결제내역</a></div>
+    <div id="sonoSourceLinks" style="display:none;text-align:right;font-size:12px;color:#888;margin-bottom:8px;">데이터 출처: <a href="https://docs.google.com/spreadsheets/d/1hwFUlXDkDt7PFfQCjgu2E4O7Ou4qxqzv8sSA9r54Tu8/edit?gid=1613844215#gid=1613844215" target="_blank" style="color:#1a73e8;">삼성 계약현황</a></div>
     <div id="sec-trend"></div>
     <div id="trendRow" class="chart-row-full">
       <div class="chart-card"><h3>월별 매출 트렌드 (YoY) — 25년 1월~현재</h3><canvas id="trendChart" height="80"></canvas></div>
@@ -375,6 +377,9 @@ tr:hover { background: #f7f9fc; }
 const SHEET_ID = '1s34C5qB-K_A8vJEJQaOOyJ44YM3netORbfCVVfM3idw';
 const TARGET_SHEET_ID = '1Z8C_uiDHD6udIq7b9C79xlPxz4ERK5aC-vkoIbvTxic';
 const TARGET_URL = `https://docs.google.com/spreadsheets/d/${TARGET_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('26년 품목별 목표')}&_t=${Date.now()}`;
+
+// ChartDataLabels 전역 등록 (기본 비활성, 차트별 설정으로 활성화)
+if(typeof ChartDataLabels!=='undefined'){Chart.register(ChartDataLabels);Chart.defaults.plugins.datalabels={display:false}}
 
 let currentTab = '의료기기';
 let allData = [], classData = [], turnkeyData = [], pt10Data = [], pt10Master = {}, sonoData = [], puOnData = [], puOffData = [], rebuyData = [], targetData = {}, pt10PuData = [];
@@ -626,6 +631,8 @@ function render(){
   document.getElementById('navDetail').style.display=(isPT10||isTurnkey||isAll)?'none':'';
   if(isPT10){renderPT10Summary();renderPT10Cart();renderPT10CartTrend();renderPT10DIO();try{renderPT10Buyers()}catch(e){console.warn('Buyers err',e)}try{renderPT10Insight()}catch(e){console.warn('Insight err',e)}}
   document.getElementById('turnkeyKpiRow').style.display=isTurnkey?'grid':'none';
+  document.getElementById('turnkeySourceLinks').style.display=isTurnkey?'block':'none';
+  document.getElementById('sonoSourceLinks').style.display=isSono?'block':'none';
   document.getElementById('profitMarginRow').style.display=isTurnkey?'':'none';
   document.getElementById('navProfitMargin').style.display=isTurnkey?'':'none';
   if(isTurnkey){renderTurnkeyKPI();renderProfitMargin()}
