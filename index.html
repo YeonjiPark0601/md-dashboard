@@ -814,9 +814,13 @@ function renderTypeChart(data){
   const types={};data.forEach(d=>{types[d[key]]=(types[d[key]]||0)+d['매출금액']});
   const sortedTypes=Object.entries(types).sort((a,b)=>a[0].localeCompare(b[0],'ko'));
   const labels=sortedTypes.map(s=>s[0]),values=sortedTypes.map(s=>s[1]);
+  const total=values.reduce((a,b)=>a+b,0);
   const cfg={type:'doughnut',data:{labels,datasets:[{data:values,backgroundColor:COLORS.slice(0,labels.length),borderWidth:0}]},
-    options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:11}}},
-      tooltip:{callbacks:{label:ctx=>ctx.label+': '+fmt(ctx.raw)+' ('+(ctx.raw/values.reduce((a,b)=>a+b,0)*100).toFixed(1)+'%)'}}}}};
+    plugins:[ChartDataLabels],options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:11}}},
+      datalabels:{font:{size:11,weight:'bold'},color:'#333',
+        formatter:function(v){return fmtLabel(v)+' ('+(v/total*100).toFixed(1)+'%)'},
+        display:function(ctx){return ctx.dataset.data[ctx.dataIndex]/total>0.05}},
+      tooltip:{callbacks:{label:ctx=>ctx.label+': '+fmt(ctx.raw)+' ('+(ctx.raw/total*100).toFixed(1)+'%)'}}}}};
   if(isClass){
     document.getElementById('typeChartTitle2').textContent='온/오프라인 비중';
     if(typeChart2)typeChart2.destroy();typeChart2=new Chart(document.getElementById('typeChart2'),cfg);
@@ -840,9 +844,13 @@ function renderCategoryPieChart(data){
   const cats={};data.forEach(d=>{cats[d['카테고리']]=(cats[d['카테고리']]||0)+d['매출금액']});
   const sorted=Object.entries(cats).sort((a,b)=>a[0].localeCompare(b[0],"ko"));const labels=sorted.map(s=>s[0]),values=sorted.map(s=>s[1]);
   if(categoryPieChart)categoryPieChart.destroy();
+  const pieTotal=values.reduce((a,b)=>a+b,0);
   categoryPieChart=new Chart(document.getElementById('categoryPieChart'),{type:'doughnut',data:{labels,datasets:[{data:values,backgroundColor:COLORS.slice(0,labels.length),borderWidth:0}]},
-    options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:11}}},
-      tooltip:{callbacks:{label:ctx=>ctx.label+': '+fmt(ctx.raw)+' ('+(ctx.raw/values.reduce((a,b)=>a+b,0)*100).toFixed(1)+'%)'}}}}});
+    plugins:[ChartDataLabels],options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:11}}},
+      datalabels:{font:{size:11,weight:'bold'},color:'#333',
+        formatter:function(v){return fmtLabel(v)+' ('+(v/pieTotal*100).toFixed(1)+'%)'},
+        display:function(ctx){return ctx.dataset.data[ctx.dataIndex]/pieTotal>0.05}},
+      tooltip:{callbacks:{label:ctx=>ctx.label+': '+fmt(ctx.raw)+' ('+(ctx.raw/pieTotal*100).toFixed(1)+'%)'}}}}});
 }
 
 function renderSupplierChart(data){
