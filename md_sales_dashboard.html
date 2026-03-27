@@ -195,8 +195,8 @@ tr:hover { background: #f7f9fc; }
     <div class="chart-row-full" id="sonoCountChartRow" style="display:none;">
       <div class="chart-card"><h3>월별 계약건수 트렌드 — 25년 1월~현재</h3><canvas id="sonoCountChart" height="80"></canvas></div>
     </div>
-    <div class="chart-row" id="sonoMapRow" style="display:none;">
-      <div class="chart-card" style="min-height:550px;"><h3>26년 지역별 매출</h3><div id="sonoMapContainer" style="position:relative;width:100%;height:500px;"></div></div>
+    <div class="chart-row" id="sonoMapRow" style="display:none;grid-template-columns:1fr 1fr;">
+      <div class="chart-card" style="min-height:500px;"><h3>26년 지역별 매출</h3><div id="sonoMapContainer" style="position:relative;width:100%;height:450px;"></div></div>
       <div class="chart-card"><h3>26년 지역별 매출 상세</h3><table id="sonoRegionTable"><thead><tr><th>권역</th><th>지역</th><th class="text-right">매출금액</th><th class="text-right">건수</th><th class="text-right">비중</th></tr></thead><tbody id="sonoRegionBody"></tbody></table></div>
     </div>
     <!-- 초음파 전용: AS 매출 + 건수 -->
@@ -1245,10 +1245,11 @@ function renderSonoMap(){
     if(!groupRegions.length)return;
     const groupSales=groupRegions.reduce((s,r)=>s+(regionSales[r]||0),0);
     const groupCount=groupRegions.reduce((s,r)=>s+(regionCount[r]||0),0);
+    const needSubtotal=g.regions.length>1;
     groupRegions.forEach((r,i)=>{
       regionHtml+=`<tr><td style="font-weight:${i===0?'700':'400'};color:${i===0?'#333':'#999'}">${i===0?g.group:''}</td><td>${r}</td><td class="text-right">${Math.round(regionSales[r]).toLocaleString()}</td><td class="text-right">${regionCount[r]}</td><td class="text-right">${total?(regionSales[r]/total*100).toFixed(1)+'%':'-'}</td></tr>`;
     });
-    regionHtml+=`<tr style="font-weight:600;background:#f7f8fa;"><td>${g.group} 소계</td><td></td><td class="text-right">${Math.round(groupSales).toLocaleString()}</td><td class="text-right">${groupCount}</td><td class="text-right">${total?(groupSales/total*100).toFixed(1)+'%':'-'}</td></tr>`;
+    if(needSubtotal)regionHtml+=`<tr style="font-weight:600;background:#f7f8fa;"><td>${g.group} 소계</td><td></td><td class="text-right">${Math.round(groupSales).toLocaleString()}</td><td class="text-right">${groupCount}</td><td class="text-right">${total?(groupSales/total*100).toFixed(1)+'%':'-'}</td></tr>`;
   });
   regionHtml+=`<tr style="font-weight:700;background:#f0f2f5;"><td>합계</td><td></td><td class="text-right">${Math.round(total).toLocaleString()}</td><td class="text-right">${totalCount}</td><td class="text-right">100%</td></tr>`;
   document.getElementById('sonoRegionBody').innerHTML=regionHtml;
