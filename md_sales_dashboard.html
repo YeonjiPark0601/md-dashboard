@@ -380,8 +380,8 @@ const SHEET_ID = '1s34C5qB-K_A8vJEJQaOOyJ44YM3netORbfCVVfM3idw';
 const TARGET_SHEET_ID = '1Z8C_uiDHD6udIq7b9C79xlPxz4ERK5aC-vkoIbvTxic';
 const TARGET_URL = `https://docs.google.com/spreadsheets/d/${TARGET_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('26년 품목별 목표')}&_t=${Date.now()}`;
 
-// ChartDataLabels 전역 등록 (기본 비활성, 차트별 설정으로 활성화)
-if(typeof ChartDataLabels!=='undefined'){Chart.register(ChartDataLabels);Chart.defaults.plugins.datalabels={display:false}}
+// ChartDataLabels 전역 등록
+if(typeof ChartDataLabels!=='undefined'){Chart.register(ChartDataLabels)}
 
 let currentTab = '의료기기';
 let allData = [], classData = [], turnkeyData = [], pt10Data = [], pt10Master = {}, sonoData = [], puOnData = [], puOffData = [], rebuyData = [], targetData = {}, pt10PuData = [];
@@ -845,7 +845,7 @@ function renderCategoryChart(data){
   const bg=labels.map((l,i)=>l===drillCategory?'#1a73e8':COLORS[i%COLORS.length]);
   if(categoryChart)categoryChart.destroy();
   categoryChart=new Chart(document.getElementById('categoryChart'),{type:'bar',data:{labels,datasets:[{data:values,backgroundColor:bg,borderRadius:4}]},
-    options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>fmt(ctx.raw)}}},scales:{x:{ticks:{callback:v=>fmt(v)}}},
+    options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false},datalabels:{display:false},tooltip:{callbacks:{label:ctx=>fmt(ctx.raw)}}},scales:{x:{ticks:{callback:v=>fmt(v)}}},
       onClick:(e,el)=>{if(el.length>0){const c=labels[el[0].index];if(drillCategory===c)clearDrill();else{drillCategory=c;document.getElementById('drillLabel').textContent=c;document.getElementById('drillFilter').classList.add('show');render()}}}}});
 }
 
@@ -1107,7 +1107,7 @@ function renderSonoCountChart(){
   sonoCountChart=new Chart(document.getElementById('sonoCountChart'),{type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets:[
     {label:'올해',data:months.map(m=>tY[m]||0),backgroundColor:'#4285f4',borderRadius:4,order:2},
     {label:'전년',data:months.map(m=>pY[m]||0),type:'line',borderColor:'#bbb',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,borderDash:[5,3],pointRadius:3,pointBackgroundColor:'#999',order:0,fill:false}
-  ]},options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top'},
+  ]},options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top'},datalabels:{display:false},
     tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.raw+'건'}}},
     scales:{y:{ticks:{callback:v=>v+'건'}}}}});
 }
