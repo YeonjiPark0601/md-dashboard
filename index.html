@@ -381,6 +381,7 @@ function parseCSV(csv) {
 function parseNum(s){if(s==null||s==='')return 0;return Number(String(s).replace(/[,₩\\s]/g,''))||0}
 function fixYm(ym){if(!ym||typeof ym!=='string')return'';const s=ym.trim().substring(0,7);const p=s.split('-');if(p.length===2){let y=p[0];if(y.length===2)y='20'+y;return y+'-'+p[1].padStart(2,'0')}return s}
 function fmt(n){return Math.round(n).toLocaleString('ko-KR')+'원'}
+function fmtLabel(n){if(!n)return'';return(n/1e8).toFixed(2)+'억'}
 function yearShift(ym,d){const[y,m]=ym.split('-').map(Number);return`${y+d}-${String(m).padStart(2,'0')}`}
 function getMonday(d){const dt=new Date(d);const day=dt.getDay();dt.setDate(dt.getDate()-day+(day===0?-6:1));return dt}
 function dateStr(d){return d.toISOString().slice(0,10)}
@@ -719,7 +720,7 @@ function renderTrendChart(data){
           formatter:function(v,ctx){
             const chart=ctx.chart;const di=ctx.dataIndex;let t=0;
             for(let j=0;j<chart.data.datasets.length;j++){if(chart.data.datasets[j].stack==='thisYear'&&!chart.getDatasetMeta(j).hidden)t+=(chart.data.datasets[j].data[di]||0)}
-            return fmt(t);
+            return fmtLabel(t);
           }}},
       {label:'전년',data:months.map(m=>pY[m]||0),type:'line',borderColor:'#bbb',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,borderDash:[5,3],pointRadius:3,pointBackgroundColor:'#999',order:0,fill:false,
         datalabels:{display:false}}
@@ -738,12 +739,19 @@ function renderTrendChart(data){
     sonoData.filter(d=>!d._isAS).forEach(d=>{const ym=d['연월'];if(!ym||!months.includes(ym))return;sonoM[ym]=(sonoM[ym]||0)+d['매출금액']});
     classData.forEach(d=>{const ym=d['연월'];if(!ym||!months.includes(ym))return;classM[ym]=(classM[ym]||0)+d['매출금액']});
     cfg={type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets:[
-      {label:'초음파',data:months.map(m=>sonoM[m]||0),backgroundColor:'#4285f4',borderRadius:0,stack:'thisYear',order:2},
-      {label:'의료기기',data:months.map(m=>mdM[m]||0),backgroundColor:'#34a853',borderRadius:0,stack:'thisYear',order:2},
-      {label:'클래스',data:months.map(m=>classM[m]||0),backgroundColor:'#fbbc04',borderRadius:0,stack:'thisYear',order:2},
-      {label:'전년',data:months.map(m=>pY[m]||0),type:'line',borderColor:'#bbb',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,borderDash:[5,3],pointRadius:3,pointBackgroundColor:'#999',order:0,fill:false}
-    ]},options:{responsive:true,interaction:{mode:'index',intersect:false},
-      plugins:{legend:{position:'top'},
+      {label:'초음파',data:months.map(m=>sonoM[m]||0),backgroundColor:'#4285f4',borderRadius:0,stack:'thisYear',order:2,datalabels:{display:false}},
+      {label:'의료기기',data:months.map(m=>mdM[m]||0),backgroundColor:'#34a853',borderRadius:0,stack:'thisYear',order:2,datalabels:{display:false}},
+      {label:'클래스',data:months.map(m=>classM[m]||0),backgroundColor:'#fbbc04',borderRadius:0,stack:'thisYear',order:2,
+        datalabels:{anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',
+          display:function(ctx){const chart=ctx.chart;const di=ctx.dataIndex;let lastVisible=-1;
+            for(let j=0;j<chart.data.datasets.length;j++){if(chart.data.datasets[j].stack==='thisYear'&&!chart.getDatasetMeta(j).hidden&&chart.data.datasets[j].data[di])lastVisible=j}
+            return ctx.datasetIndex===lastVisible;},
+          formatter:function(v,ctx){const chart=ctx.chart;const di=ctx.dataIndex;let t=0;
+            for(let j=0;j<chart.data.datasets.length;j++){if(chart.data.datasets[j].stack==='thisYear'&&!chart.getDatasetMeta(j).hidden)t+=(chart.data.datasets[j].data[di]||0)}
+            return fmtLabel(t);}}},
+      {label:'전년',data:months.map(m=>pY[m]||0),type:'line',borderColor:'#bbb',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,borderDash:[5,3],pointRadius:3,pointBackgroundColor:'#999',order:0,fill:false,datalabels:{display:false}}
+    ]},plugins:[ChartDataLabels],options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:20}},
+      plugins:{legend:{position:'top'},datalabels:{},
         tooltip:{callbacks:{label:function(ctx){var v=ctx.raw;var i=ctx.dataIndex;var t=(sonoM[months[i]]||0)+(mdM[months[i]]||0)+(classM[months[i]]||0);var pct=t?(v/t*100).toFixed(1):'0';if(ctx.dataset.label==='전년')return ctx.dataset.label+': '+fmt(v);return ctx.dataset.label+': '+fmt(v)+' ('+pct+'%)'},
           afterBody:function(items){if(!items||!items.length)return'';var i=items[0].dataIndex;var t=(sonoM[months[i]]||0)+(mdM[months[i]]||0)+(classM[months[i]]||0);var lines=['합계: '+fmt(t)];
             var target=getTargetForMonth(months[i]);if(target)lines.push('달성률: '+(t/target*100).toFixed(1)+'%  (목표: '+fmt(target)+')');
@@ -754,18 +762,19 @@ function renderTrendChart(data){
     if(trendChart)trendChart.destroy();trendChart=new Chart(document.getElementById('trendChart'),cfg);
   }else{
     const datasets=[
-      {label:'올해',data:months.map(m=>tY[m]||0),backgroundColor:'#4285f4',borderRadius:4,order:2},
-      {label:'전년',data:months.map(m=>pY[m]||0),type:'line',borderColor:'#bbb',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,borderDash:[5,3],pointRadius:3,pointBackgroundColor:'#999',order:0,fill:false}
+      {label:'올해',data:months.map(m=>tY[m]||0),backgroundColor:'#4285f4',borderRadius:4,order:2,
+        datalabels:{anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',display:ctx=>ctx.raw>0,formatter:v=>fmtLabel(v)}},
+      {label:'전년',data:months.map(m=>pY[m]||0),type:'line',borderColor:'#bbb',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,borderDash:[5,3],pointRadius:3,pointBackgroundColor:'#999',order:0,fill:false,datalabels:{display:false}}
     ];
     const scales={y:{ticks:{callback:v=>fmt(v)}}};
     // 턴키: 매출총이익률 라인 추가 (우측 Y축)
     if(currentTab==='턴키'){
       const profitM={},salesM={};
       ad.forEach(d=>{const ym=d['연월'];if(!ym||!months.includes(ym))return;profitM[ym]=(profitM[ym]||0)+(d['매출총이익']||0);salesM[ym]=(salesM[ym]||0)+d['매출금액']});
-      datasets.push({label:'매출총이익률',data:months.map(m=>salesM[m]?(profitM[m]/salesM[m]*100):null),type:'line',borderColor:'#0d9488',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,pointRadius:4,pointBackgroundColor:'#0d9488',order:0,fill:false,yAxisID:'y1'});
+      datasets.push({label:'매출총이익률',data:months.map(m=>salesM[m]?(profitM[m]/salesM[m]*100):null),type:'line',borderColor:'#0d9488',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,pointRadius:4,pointBackgroundColor:'#0d9488',order:0,fill:false,yAxisID:'y1',datalabels:{display:false}});
       scales.y1={position:'right',grid:{drawOnChartArea:false},ticks:{callback:v=>v.toFixed(0)+'%'},min:0,max:50};
     }
-    cfg={type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets},options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top'},
+    cfg={type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets},plugins:[ChartDataLabels],options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:20}},plugins:{legend:{position:'top'},datalabels:{},
       tooltip:{callbacks:{label:ctx=>{if(ctx.dataset.yAxisID==='y1')return ctx.dataset.label+': '+ctx.raw.toFixed(1)+'%';return ctx.dataset.label+': '+fmt(ctx.raw)},afterBody:items=>{const i=items[0].dataIndex;const lines=[];
             const actual=items.find(it=>it.dataset.label==='올해');const sales=actual?actual.raw:0;
             const target=getTargetForMonth(months[i]);if(target&&sales)lines.push('달성률: '+(sales/target*100).toFixed(1)+'%  (목표: '+fmt(target)+')');
@@ -798,8 +807,9 @@ function renderCategoryChart(data){
   const sorted=Object.entries(cats).sort((a,b)=>a[0].localeCompare(b[0],"ko"));const labels=sorted.map(s=>s[0]),values=sorted.map(s=>s[1]);
   const bg=labels.map((l,i)=>l===drillCategory?'#1a73e8':COLORS[i%COLORS.length]);
   if(categoryChart)categoryChart.destroy();
-  categoryChart=new Chart(document.getElementById('categoryChart'),{type:'bar',data:{labels,datasets:[{data:values,backgroundColor:bg,borderRadius:4}]},
-    options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>fmt(ctx.raw)}}},scales:{x:{ticks:{callback:v=>fmt(v)}}},
+  categoryChart=new Chart(document.getElementById('categoryChart'),{type:'bar',data:{labels,datasets:[{data:values,backgroundColor:bg,borderRadius:4,
+    datalabels:{anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',display:ctx=>ctx.raw>0,formatter:v=>fmtLabel(v)}}]},
+    plugins:[ChartDataLabels],options:{responsive:true,indexAxis:'y',layout:{padding:{right:60}},plugins:{legend:{display:false},datalabels:{},tooltip:{callbacks:{label:ctx=>fmt(ctx.raw)}}},scales:{x:{ticks:{callback:v=>fmt(v)}}},
       onClick:(e,el)=>{if(el.length>0){const c=labels[el[0].index];if(drillCategory===c)clearDrill();else{drillCategory=c;document.getElementById('drillLabel').textContent=c;document.getElementById('drillFilter').classList.add('show');render()}}}}});
 }
 
@@ -838,7 +848,7 @@ function renderSupplierChart(data){
           const chart=ctx.chart;const di=ctx.dataIndex;
           let t=0;
           for(let j=0;j<chart.data.datasets.length;j++){if(!chart.getDatasetMeta(j).hidden)t+=(chart.data.datasets[j].data[di]||0)}
-          return fmt(t);
+          return fmtLabel(t);
         }}}});
   if(supplierChart)supplierChart.destroy();
   supplierChart=new Chart(document.getElementById('supplierChart'),{type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets:ds},plugins:[ChartDataLabels],
@@ -1227,7 +1237,7 @@ function renderSonoAS(){
     {label:'건수',data:months.map(m=>countByM[m]||0),type:'line',borderColor:'#ff9800',backgroundColor:'rgba(255,152,0,0.1)',borderWidth:2.5,pointRadius:4,pointBackgroundColor:'#ff9800',order:0,fill:true,yAxisID:'y1'}
   ]},plugins:[ChartDataLabels],options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top'},
     datalabels:{display:ctx=>ctx.datasetIndex===0&&ctx.raw>0,anchor:'end',align:'top',font:{size:10,weight:'bold'},color:'#e8453c',
-      formatter:v=>v>=1e8?(v/1e8).toFixed(1)+'억':v>=1e4?Math.round(v/1e4)+'만':''},
+      formatter:v=>fmtLabel(v)},
     tooltip:{callbacks:{label:ctx=>ctx.datasetIndex===0?'매출: '+Math.round(ctx.raw).toLocaleString():'건수: '+ctx.raw+'건'}}},
     scales:{y:{position:'left',ticks:{callback:v=>v>=1e8?(v/1e8).toFixed(1)+'억':v>=1e4?Math.round(v/1e4)+'만':v}},
       y1:{position:'right',grid:{drawOnChartArea:false},ticks:{callback:v=>v+'건'}}}}});
@@ -1255,7 +1265,7 @@ function renderPT10CartTrend(){
           formatter:function(v,ctx){
             const chart=ctx.chart;const di=ctx.dataIndex;let t=0;
             for(let j=0;j<chart.data.datasets.length;j++){if(chart.data.datasets[j].stack==='sales'&&!chart.getDatasetMeta(j).hidden)t+=(chart.data.datasets[j].data[di]||0)}
-            return fmt(Math.round(t));
+            return fmtLabel(t);
           }}},
       {label:det+' 수량',data:months.map(m=>monthQty[m]||0),backgroundColor:COLORS[i%COLORS.length]+'88',stack:'qty',order:2,yAxisID:'y1',_detIdx:i,_hidden:false,datalabels:{display:false}}
     ];
