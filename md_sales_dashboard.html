@@ -1237,7 +1237,7 @@ function renderPT10CartTrend(){
   const cartData=pt10Data.filter(d=>d['구분']==='카트리지');
   const details=[...new Set(cartData.map(d=>d['상세']).filter(Boolean))].sort();
 
-  // Stacked bars for sales by 상세
+  // Stacked bars for sales by 상세, stacked bars for qty by 상세
   const datasets=details.map((det,i)=>{
     const monthSales={},monthQty={};
     cartData.filter(d=>d['상세']===det).forEach(d=>{if(months.includes(d['연월'])){monthSales[d['연월']]=(monthSales[d['연월']]||0)+d['매출금액'];monthQty[d['연월']]=(monthQty[d['연월']]||0)+d['수량']}});
@@ -1254,7 +1254,18 @@ function renderPT10CartTrend(){
             for(let j=0;j<chart.data.datasets.length;j++){if(chart.data.datasets[j].stack==='sales'&&!chart.getDatasetMeta(j).hidden)t+=(chart.data.datasets[j].data[di]||0)}
             return fmt(Math.round(t));
           }}},
-      {label:det+' 수량',data:months.map(m=>monthQty[m]||0),backgroundColor:COLORS[i%COLORS.length]+'88',stack:'qty',order:2,yAxisID:'y1',_detIdx:i,_hidden:false,datalabels:{display:false}}
+      {label:det+' 수량',data:months.map(m=>monthQty[m]||0),backgroundColor:COLORS[i%COLORS.length]+'88',stack:'qty',order:2,yAxisID:'y1',_detIdx:i,_hidden:false,
+        datalabels:{anchor:'end',align:'end',font:{size:9,weight:'bold'},color:'#555',
+          display:function(ctx){
+            const chart=ctx.chart;const di=ctx.dataIndex;let lastVisible=-1;
+            for(let j=0;j<chart.data.datasets.length;j++){if(chart.data.datasets[j].stack==='qty'&&!chart.getDatasetMeta(j).hidden&&chart.data.datasets[j].data[di])lastVisible=j}
+            return ctx.datasetIndex===lastVisible;
+          },
+          formatter:function(v,ctx){
+            const chart=ctx.chart;const di=ctx.dataIndex;let t=0;
+            for(let j=0;j<chart.data.datasets.length;j++){if(chart.data.datasets[j].stack==='qty'&&!chart.getDatasetMeta(j).hidden)t+=(chart.data.datasets[j].data[di]||0)}
+            return t?t.toLocaleString()+'개':'';
+          }}}
     ];
   }).flat();
 
@@ -1267,7 +1278,7 @@ function renderPT10CartTrend(){
           const detIdx=ds[ci]._detIdx;ds.forEach((d,j)=>{if(j!==ci&&d._detIdx===detIdx)chart.setDatasetVisibility(j,chart.isDatasetVisible(ci))});
           chart.update()}},
         tooltip:{callbacks:{label:ctx=>{if(ctx.dataset.yAxisID==='y1')return ctx.dataset.label+': '+ctx.raw.toLocaleString()+'개';return ctx.dataset.label+': '+fmt(Math.round(ctx.raw))}}},datalabels:{}},
-      scales:{x:{stacked:true},y:{stacked:true,position:'left',ticks:{callback:v=>fmt(v)}},y1:{stacked:true,position:'right',grid:{drawOnChartArea:false},ticks:{callback:v=>v.toLocaleString()+'개'}}}}});
+      scales:{x:{stacked:true},y:{stacked:true,position:'left',min:0,ticks:{callback:v=>fmt(v)}},y1:{stacked:true,position:'right',min:0,grid:{drawOnChartArea:false},ticks:{callback:v=>v.toLocaleString()+'개'}}}}});
 }
 
 function renderPT10SummaryYear(year,headId,bodyId){
