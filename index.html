@@ -725,7 +725,7 @@ function renderTrendChart(data){
         datalabels:{display:false}}
     ]},plugins:[ChartDataLabels],options:{responsive:true,interaction:{mode:'index',intersect:false},
       plugins:{legend:{position:'top'},datalabels:{},
-        tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+fmt(ctx.raw),afterBody:items=>{const i=items[0].dataIndex;const t=(onData[months[i]]||0)+(offData[months[i]]||0);const lines=[];
+        tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+fmt(ctx.raw),afterBody:items=>{const i=items[0].dataIndex;const t=(onData[months[i]]||0)+(offData[months[i]]||0);const lines=['합계: '+fmt(t)];
             const target=getTargetForMonth(months[i]);if(target)lines.push('달성률: '+(t/target*100).toFixed(1)+'%  (목표: '+fmt(target)+')');
             const p=pY[months[i]]||0;if(p){const pct=((t-p)/p*100).toFixed(1);lines.push('YoY: '+(pct>0?'+':'')+pct+'%')}
             return lines.join('\n')}}}},
