@@ -792,7 +792,9 @@ function renderTrendChart(data){
             return lines}}}},
       scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:function(v){return fmt(v)}}}},
       onClick:function(e,el){if(el.length>0){var ym=months[el[0].index];document.getElementById('startMonth').value=ym;document.getElementById('endMonth').value=ym;render()}}}};
-    if(trendChart)trendChart.destroy();trendChart=new Chart(document.getElementById('trendChart'),cfg);
+    if(trendChart)trendChart.destroy();
+    var _old=document.getElementById('trendChart');var _new=document.createElement('canvas');_new.id='trendChart';_new.height=80;_old.parentNode.replaceChild(_new,_old);
+    trendChart=new Chart(_new,cfg);
   }else{
     const datasets=[
       {label:'올해',data:months.map(m=>tY[m]||0),backgroundColor:'#4285f4',borderRadius:4,order:2,clip:false,
@@ -817,7 +819,9 @@ function renderTrendChart(data){
             const target=getTargetForMonth(months[i]);if(target&&sales)lines.push('달성률: '+(sales/target*100).toFixed(1)+'%  (목표: '+fmt(target)+')');
             if(yL[i])lines.push('YoY: '+yL[i]);return lines.join('\n')}}}},
       scales,onClick:(e,el)=>{if(el.length>0){const ym=months[el[0].index];document.getElementById('startMonth').value=ym;document.getElementById('endMonth').value=ym;render()}}}};
-    if(trendChart)trendChart.destroy();trendChart=new Chart(document.getElementById('trendChart'),cfg);
+    if(trendChart)trendChart.destroy();
+    var _old=document.getElementById('trendChart');var _new=document.createElement('canvas');_new.id='trendChart';_new.height=80;_old.parentNode.replaceChild(_new,_old);
+    trendChart=new Chart(_new,cfg);
   }
 }
 
