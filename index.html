@@ -183,6 +183,12 @@ tr:hover { background: #f7f9fc; }
     </div>
     <div id="turnkeySourceLinks" style="display:none;text-align:right;font-size:12px;color:#888;margin-bottom:8px;">데이터 출처: <a href="https://docs.google.com/spreadsheets/d/1rviBz7qa6xxWrKVu-4zJ70dCakQj_GUjVE6hL42DZ0E/edit?gid=665745561#gid=665745561" target="_blank" style="color:#1a73e8;">상담관리</a> | <a href="https://docs.google.com/spreadsheets/d/1rviBz7qa6xxWrKVu-4zJ70dCakQj_GUjVE6hL42DZ0E/edit?gid=148070959#gid=148070959" target="_blank" style="color:#1a73e8;">결제내역</a></div>
     <div id="sonoSourceLinks" style="display:none;text-align:right;font-size:12px;color:#888;margin-bottom:8px;">데이터 출처: <a href="https://docs.google.com/spreadsheets/d/1hwFUlXDkDt7PFfQCjgu2E4O7Ou4qxqzv8sSA9r54Tu8/edit?gid=1613844215#gid=1613844215" target="_blank" style="color:#1a73e8;">삼성 계약현황</a></div>
+    <div class="chart-row-full" id="allKpiRow" style="display:none;">
+      <div class="table-card">
+        <h3>매출 현황 <span id="allKpiDate" style="font-size:12px;color:#888;font-weight:normal;"></span></h3>
+        <table><thead><tr id="allKpiHead"></tr></thead><tbody id="allKpiBody"></tbody></table>
+      </div>
+    </div>
     <div id="sec-trend"></div>
     <div id="trendRow" class="chart-row-full">
       <div class="chart-card"><h3>월별 매출 트렌드 (YoY) — 25년 1월~현재</h3><canvas id="trendChart" height="80"></canvas></div>
@@ -212,23 +218,6 @@ tr:hover { background: #f7f9fc; }
       <div class="chart-card" style="flex:1;"><h3>AS 매출 상세</h3>
         <div id="sonoASKpi" style="margin-bottom:12px;"></div>
         <table id="sonoASTable"><thead><tr><th>월</th><th class="text-right">매출금액</th><th class="text-right">건수</th></tr></thead><tbody id="sonoASBody"></tbody></table>
-      </div>
-    </div>
-    <!-- 초음파 전용: 재고 현황 -->
-    <div class="chart-row-full" id="sonoInventoryRow" style="display:none;">
-      <div class="table-card">
-        <h3>재고 현황 (장비명 기준)</h3>
-        <table><thead><tr id="sonoInvSummaryHead"></tr></thead><tbody id="sonoInvSummaryBody"></tbody></table>
-      </div>
-    </div>
-    <div class="chart-row" id="sonoInventoryDetailRow" style="display:none;">
-      <div class="table-card">
-        <h3>출고 예정 리스트</h3>
-        <table><thead><tr><th>병원명</th><th>장비명</th></tr></thead><tbody id="sonoOutBody"></tbody></table>
-      </div>
-      <div class="table-card">
-        <h3>견본 재고 리스트</h3>
-        <table><thead><tr><th>장비명</th><th>S/N</th><th>판매가능시점</th></tr></thead><tbody id="sonoSampleBody"></tbody></table>
       </div>
     </div>
     <!-- PT10 전용: 카트리지 트렌드 -->
@@ -394,6 +383,23 @@ tr:hover { background: #f7f9fc; }
       <div class="table-card">
         <h3>월별 매출총이익률</h3>
         <div style="overflow-x:auto;"><table id="profitMarginTable"><thead><tr id="profitMarginHead"></tr></thead><tbody id="profitMarginBody"></tbody></table></div>
+      </div>
+    </div>
+    <!-- 초음파 전용: 재고 현황 (페이지 하단) -->
+    <div class="chart-row-full" id="sonoInventoryRow" style="display:none;">
+      <div class="table-card">
+        <h3>재고 현황 (장비명 기준)</h3>
+        <table><thead><tr id="sonoInvSummaryHead"></tr></thead><tbody id="sonoInvSummaryBody"></tbody></table>
+      </div>
+    </div>
+    <div class="chart-row" id="sonoInventoryDetailRow" style="display:none;">
+      <div class="table-card">
+        <h3>출고 예정(신품) 리스트</h3>
+        <table><thead><tr><th>병원명</th><th>장비명</th></tr></thead><tbody id="sonoOutBody"></tbody></table>
+      </div>
+      <div class="table-card">
+        <h3>견본 재고 리스트</h3>
+        <table><thead><tr><th>장비명</th><th>S/N</th><th>판매가능시점</th></tr></thead><tbody id="sonoSampleBody"></tbody></table>
       </div>
     </div>
   </div>
@@ -682,6 +688,90 @@ function render(){
   document.getElementById('navCharts').style.display=isMD?'':'none';
   document.getElementById('navSupplier').style.display=(isMD||isSono)?'':'none';
   if(isClassOnly){renderPU();renderRebuy()}
+  document.getElementById('allKpiRow').style.display=isAll?'':'none';
+  if(isAll){try{renderAllKPI()}catch(e){console.warn('전체 KPI 에러',e)}}
+}
+
+function renderAllKPI(){
+  const today=new Date();
+  const todayStr=today.toISOString().substring(0,10);
+  const curYear=today.getFullYear();
+  const curMon=today.getMonth()+1;
+  const curMonth=`${curYear}-${String(curMon).padStart(2,'0')}`;
+
+  // 이번주 월~일
+  const day=today.getDay();
+  const monday=new Date(today);monday.setDate(today.getDate()-day+(day===0?-6:1));
+  const sunday=new Date(monday);sunday.setDate(monday.getDate()+6);
+  const mondayStr=monday.toISOString().substring(0,10);
+  const sundayStr=sunday.toISOString().substring(0,10);
+
+  // 이번분기
+  const qStart=Math.floor((curMon-1)/3)*3+1;
+  const qMs=[qStart,qStart+1,qStart+2].map(m=>`${curYear}-${String(m).padStart(2,'0')}`);
+
+  // 월 일수
+  const dim=new Date(curYear,curMon,0).getDate();
+
+  // 카테고리별 목표 계산 함수
+  function getTarget(cats, month){
+    const m=parseInt(month.split('-')[1]);
+    let total=0;
+    cats.forEach(c=>{if(targetData[c]&&targetData[c][m])total+=targetData[c][m]});
+    return total;
+  }
+
+  function colorPct(a,b){
+    if(!b) return '<span>-</span>';
+    const p=(a/b*100);
+    const color = p>=100?'#43a047':p>=70?'#fb8c00':'#e53935';
+    return `<span style="color:${color};font-weight:600">${p.toFixed(1)}%</span>`;
+  }
+
+  const segments = [
+    {label:'초음파', data:sonoData.filter(d=>!d._isAS), cats:['초음파'], dateKey:'주문일'},
+    {label:'의료기기', data:allData, cats:MD_CATEGORIES, dateKey:'주문일'},
+    {label:'클래스', data:classData, cats:CLASS_CATEGORIES, dateKey:'주문일'}
+  ];
+
+  // 헤더
+  document.getElementById('allKpiHead').innerHTML = '<th>구분</th><th class="text-right">이번주 매출</th><th class="text-right">이번주 목표</th><th class="text-right">달성률</th><th class="text-right">이번달 매출</th><th class="text-right">이번달 목표</th><th class="text-right">달성률</th><th class="text-right">이번분기 매출</th><th class="text-right">이번분기 목표</th><th class="text-right">달성률</th>';
+
+  let html = '';
+  let totalW=0,totalWT=0,totalM=0,totalMT=0,totalQ=0,totalQT=0;
+
+  segments.forEach(seg => {
+    // 이번주
+    const wS = seg.data.filter(d=>d[seg.dateKey]>=mondayStr&&d[seg.dateKey]<=sundayStr).reduce((s,d)=>s+d['매출금액'],0);
+    const mTarget = getTarget(seg.cats, curMonth);
+    const wT = mTarget * (7/dim);
+
+    // 이번달
+    const mS = seg.data.filter(d=>d['연월']===curMonth).reduce((s,d)=>s+d['매출금액'],0);
+
+    // 이번분기
+    const qS = seg.data.filter(d=>qMs.includes(d['연월'])).reduce((s,d)=>s+d['매출금액'],0);
+    const qT = qMs.reduce((s,m)=>s+getTarget(seg.cats,m),0);
+
+    totalW+=wS;totalWT+=wT;totalM+=mS;totalMT+=mTarget;totalQ+=qS;totalQT+=qT;
+
+    html += `<tr><td style="font-weight:600">${seg.label}</td>
+      <td class="text-right">${fmtLabel(wS)}</td><td class="text-right" style="color:#888">${fmtLabel(wT)}</td><td class="text-right">${colorPct(wS,wT)}</td>
+      <td class="text-right">${fmtLabel(mS)}</td><td class="text-right" style="color:#888">${fmtLabel(mTarget)}</td><td class="text-right">${colorPct(mS,mTarget)}</td>
+      <td class="text-right">${fmtLabel(qS)}</td><td class="text-right" style="color:#888">${fmtLabel(qT)}</td><td class="text-right">${colorPct(qS,qT)}</td></tr>`;
+  });
+
+  // 합계 행
+  html += `<tr style="font-weight:700;border-top:2px solid #333;"><td>합계</td>
+    <td class="text-right">${fmtLabel(totalW)}</td><td class="text-right" style="color:#888">${fmtLabel(totalWT)}</td><td class="text-right">${colorPct(totalW,totalWT)}</td>
+    <td class="text-right">${fmtLabel(totalM)}</td><td class="text-right" style="color:#888">${fmtLabel(totalMT)}</td><td class="text-right">${colorPct(totalM,totalMT)}</td>
+    <td class="text-right">${fmtLabel(totalQ)}</td><td class="text-right" style="color:#888">${fmtLabel(totalQT)}</td><td class="text-right">${colorPct(totalQ,totalQT)}</td></tr>`;
+
+  document.getElementById('allKpiBody').innerHTML = html;
+
+  // 날짜 표시
+  const qLabel = 'Q'+Math.ceil(curMon/3);
+  document.getElementById('allKpiDate').textContent = `${mondayStr} ~ ${sundayStr} | ${curMonth} | ${curYear} ${qLabel}`;
 }
 
 function renderKPIs(){
@@ -1405,7 +1495,7 @@ async function renderSonoInventory(){
 
     document.getElementById('sonoInvSummaryHead').innerHTML='<th>장비명</th>'+sortedModels.map(m=>`<th class="text-right">${m}</th>`).join('')+(miniProbeCount?'<th class="text-right">미니프로브</th>':'')+'<th class="text-right" style="font-weight:700">합계</th>';
     let sHtml='';
-    [{label:'신품 재고',map:newByModel},{label:'견본 재고',map:sampleByModel},{label:'출고 예정',map:outByModel}].forEach(row=>{
+    [{label:'신품 재고',map:newByModel},{label:'견본 재고',map:sampleByModel},{label:'출고 예정(신품)',map:outByModel}].forEach(row=>{
       let total=0;
       sHtml+=`<tr><td style="font-weight:600">${row.label}</td>`;
       sortedModels.forEach(m=>{const v=row.map[m]||0;total+=v;sHtml+=`<td class="text-right">${v||'-'}</td>`});
@@ -1416,7 +1506,7 @@ async function renderSonoInventory(){
     document.getElementById('sonoInvSummaryBody').innerHTML=sHtml;
 
     // === 출고 예정 리스트 ===
-    document.getElementById('sonoOutBody').innerHTML=outPending.length>0?outPending.map(r=>`<tr><td>${r.hospital}</td><td>${r.model}</td></tr>`).join(''):'<tr><td colspan="2" style="color:#999;text-align:center;">출고 예정 없음</td></tr>';
+    document.getElementById('sonoOutBody').innerHTML=outPending.length>0?outPending.map(r=>`<tr><td>${r.hospital}</td><td>${r.model}</td></tr>`).join(''):'<tr><td colspan="2" style="color:#999;text-align:center;">출고 예정(신품) 없음</td></tr>';
 
     // === 견본 재고 리스트 ===
     document.getElementById('sonoSampleBody').innerHTML=samples.length>0?samples.map(r=>`<tr><td>${r.model}</td><td>${r.sn}</td><td>${r.sellDate}</td></tr>`).join(''):'<tr><td colspan="3" style="color:#999;text-align:center;">견본 재고 없음</td></tr>';
