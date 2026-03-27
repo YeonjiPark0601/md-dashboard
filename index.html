@@ -7,6 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'Segoe UI', -apple-system, sans-serif; background: #f0f2f5; color: #333; }
@@ -276,12 +277,12 @@ tr:hover { background: #f7f9fc; }
     <div id="puRow" style="display:none;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
       <div class="table-card">
         <h3>월별 PU (온라인) — 상품별</h3>
-        <div style="overflow-x:auto;"><table id="puOnTable"><thead><tr id="puOnHead"></tr></thead><tbody id="puOnBody"></tbody></table></div>
+        <div style="overflow-x:auto;"><table id="puOnTable" class="pt10-sticky"><thead><tr id="puOnHead"></tr></thead><tbody id="puOnBody"></tbody></table></div>
         <div id="puOnToggle" onclick="puOnExpanded=!puOnExpanded;renderPU()" style="display:none;text-align:center;padding:10px;color:#1a73e8;cursor:pointer;font-size:13px;font-weight:600;border-top:1px solid #f0f0f0;margin-top:4px;"></div>
       </div>
       <div class="table-card">
         <h3>월별 PU (오프라인) — 상품별</h3>
-        <div style="overflow-x:auto;"><table id="puOffTable"><thead><tr id="puOffHead"></tr></thead><tbody id="puOffBody"></tbody></table></div>
+        <div style="overflow-x:auto;"><table id="puOffTable" class="pt10-sticky"><thead><tr id="puOffHead"></tr></thead><tbody id="puOffBody"></tbody></table></div>
         <div id="puOffToggle" onclick="puOffExpanded=!puOffExpanded;renderPU()" style="display:none;text-align:center;padding:10px;color:#1a73e8;cursor:pointer;font-size:13px;font-weight:600;border-top:1px solid #f0f0f0;margin-top:4px;"></div>
       </div>
     </div>
@@ -314,12 +315,12 @@ tr:hover { background: #f7f9fc; }
       </div>
     </div>
     <div class="chart-row-full" id="pt10BuyerMonthlyRow" style="display:none;">
-      <div class="table-card"><h3>카트리지 월별 구매자 리스트</h3>
+      <div class="table-card"><h3>카트리지 월별 구매자 리스트 <button onclick="downloadBuyerExcel('monthly')" style="font-size:11px;padding:3px 10px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;color:#1a73e8;">엑셀 다운로드</button></h3>
         <div style="overflow-x:auto;"><table class="pt10-sticky"><thead><tr id="pt10BuyerMonthlyHead"></tr></thead><tbody id="pt10BuyerMonthlyBody"></tbody></table></div>
       </div>
     </div>
     <div class="chart-row-full" id="pt10BuyerQuarterlyRow" style="display:none;">
-      <div class="table-card"><h3>카트리지 분기별 구매자 리스트</h3>
+      <div class="table-card"><h3>카트리지 분기별 구매자 리스트 <button onclick="downloadBuyerExcel('quarterly')" style="font-size:11px;padding:3px 10px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;color:#1a73e8;">엑셀 다운로드</button></h3>
         <div style="overflow-x:auto;"><table class="pt10-sticky"><thead><tr id="pt10BuyerQuarterlyHead"></tr></thead><tbody id="pt10BuyerQuarterlyBody"></tbody></table></div>
       </div>
     </div>
@@ -397,7 +398,8 @@ function parseCSV(csv) {
 }
 function parseNum(s){if(s==null||s==='')return 0;return Number(String(s).replace(/[,₩\\s]/g,''))||0}
 function fixYm(ym){if(!ym||typeof ym!=='string')return'';const s=ym.substring(0,7);const p=s.split('-');if(p.length===2)return p[0]+'-'+p[1].padStart(2,'0');return s}
-function fmt(n){if(Math.abs(n)>=1e8)return(n/1e8).toFixed(1)+'억';if(Math.abs(n)>=1e7)return(n/1e7).toFixed(1)+'천만';if(Math.abs(n)>=1e4)return Math.round(n/1e4)+'만';return n.toLocaleString()}
+function fmt(n){return Math.round(n).toLocaleString('ko-KR')+'원'}
+function fmtLabel(n){if(!n)return'';return(n/1e8).toFixed(2)+'억'}
 function yearShift(ym,d){const[y,m]=ym.split('-').map(Number);return`${y+d}-${String(m).padStart(2,'0')}`}
 function getMonday(d){const dt=new Date(d);const day=dt.getDay();dt.setDate(dt.getDate()-day+(day===0?-6:1));return dt}
 function dateStr(d){return d.toISOString().slice(0,10)}
@@ -984,8 +986,8 @@ function renderMonthlyTable(data){
   const needToggle=sorted.length>LIMIT;
   const visible=(!needToggle||monthlyExpanded)?sorted:sorted.slice(0,LIMIT);
 
-  document.getElementById('monthlyHead').innerHTML=`<th>${label}</th>`+months.map(m=>`<th class="text-right">${m.slice(2)}</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
-  document.getElementById('monthlyBody').innerHTML=visible.map(([s,v])=>`<tr><td>${s}</td>`+months.map(m=>`<td class="text-right">${(v[m]||0)?Math.round(v[m]||0).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(v.total).toLocaleString()}</td></tr>`).join('');
+  document.getElementById('monthlyHead').innerHTML=`<th>${label}</th><th class="text-right" style="font-weight:700;">합계</th>`+months.map(m=>`<th class="text-right">${m.slice(2)}</th>`).join('');
+  document.getElementById('monthlyBody').innerHTML=visible.map(([s,v])=>`<tr><td>${s}</td><td class="text-right" style="font-weight:700;">${Math.round(v.total).toLocaleString()}</td>`+months.map(m=>`<td class="text-right">${(v[m]||0)?Math.round(v[m]||0).toLocaleString():'-'}</td>`).join('')+`</tr>`).join('');
 
   const toggleEl=document.getElementById('monthlyToggle');
   if(needToggle){
@@ -1428,15 +1430,15 @@ async function renderPT10DIO(){
         else{const days=Math.floor((stock-rop)/dailyAvg);const d=new Date(today);d.setDate(d.getDate()+days);orderDate=d.toISOString().substring(0,10);}
       }
       let status,statusCls;
-      if(dio<60){status='부족';statusCls='color:#e53935;font-weight:bold';}
-      else if(dio<120){status='적정';statusCls='color:#43a047';}
+      if(dio<45){status='부족';statusCls='color:#e53935;font-weight:bold';}
+      else if(dio<90){status='적정';statusCls='color:#43a047';}
       else{status='과잉';statusCls='color:#fb8c00';}
       // 최신 제품명
       const names=nameMap[p.id]||{};const latestYm=Object.keys(names).sort().pop();
       const displayName=latestYm?names[latestYm]:p.name;
       const shortName=displayName.replace(/^\(냉\)\[프리시젼바이오\]\s*/,'').replace(/^Exdia PT10 카트리지\s*/,'').replace(/\s*1박스$/,'').replace(/\s*1팩$/,'');
 
-      const bold=dio<60?'font-weight:bold':'';
+      const bold=dio<45?'font-weight:bold':'';
       bodyHtml+=`<tr style="${bold}"><td>${shortName}</td><td class="text-right">${stock.toLocaleString()}</td><td class="text-right">${dailyAvg.toFixed(1)}</td><td class="text-right">${dio===Infinity?'∞':dio.toFixed(1)}</td><td class="text-right">${rop.toLocaleString()}</td><td>${orderDate==='즉시'?'<span style="color:#e53935;font-weight:bold">즉시</span>':orderDate}</td><td class="text-right">${p.moqLabel}</td><td style="${statusCls}">${status}</td></tr>`;
 
     });
@@ -1444,7 +1446,7 @@ async function renderPT10DIO(){
     document.getElementById('pt10DioHead').innerHTML=headHtml;
     document.getElementById('pt10DioBody').innerHTML=bodyHtml;
     document.getElementById('dioUpdated').textContent=`기준일: ${todayStr} | 분석 기간: ${periodLabel}`;
-    document.getElementById('dioLegend').textContent='상태 기준: 부족 = DIO 60일 미만 | 적정 = DIO 60~119일 | 과잉 = DIO 120일 이상';
+    document.getElementById('dioLegend').textContent='상태 기준: 부족 = DIO 45일 미만 | 적정 = DIO 45~89일 | 과잉 = DIO 90일 이상';
   }catch(e){console.warn('DIO 로딩 실패',e);document.getElementById('pt10DioBody').innerHTML='<tr><td colspan="8" style="color:#999">DIO 데이터를 불러오지 못했습니다.</td></tr>';}
 }
 
@@ -1563,6 +1565,113 @@ function renderPT10Buyers(){
   if(sorted.length>LIMIT){qBodyEl.parentElement.insertAdjacentHTML('afterend',`<div style="padding:6px 0;"><a href="#" id="toggleQ" onclick="toggleBuyerRows('buyerQ',this);return false" style="color:#4285f4;font-size:13px;">더보기 (${sorted.length-LIMIT}곳)</a></div>`);}
 }
 
+function downloadBuyerExcel(mode){
+  const start=document.getElementById('startMonth').value;
+  const end=document.getElementById('endMonth').value;
+  const cartData=pt10Data.filter(d=>{
+    if(d['구분']!=='카트리지')return false;
+    const ym=d['연월'];if(!ym)return false;
+    if(start&&ym<start)return false;if(end&&ym>end)return false;
+    return true;
+  });
+  if(!cartData.length){alert('데이터가 없습니다.');return;}
+
+  const ymSet=new Set(cartData.map(d=>d['연월']));
+  const activeYMs=[...ymSet].sort();
+
+  // 한의원별 집계 + CID 수집
+  const buyers={};
+  const cidMap={};
+  cartData.forEach(r=>{
+    const name=r['한의원명']||'(미상)';const ym=r['연월'];
+    if(!buyers[name])buyers[name]={};
+    if(!buyers[name][ym])buyers[name][ym]={qty:0,sales:0};
+    buyers[name][ym].qty+=(r['수량']||0);
+    buyers[name][ym].sales+=(r['매출금액']||0);
+    if(!cidMap[name]&&r['CID'])cidMap[name]=r['CID'];
+  });
+  const sorted=Object.keys(buyers).sort((a,b)=>{
+    const ta=activeYMs.reduce((s,ym)=>s+(buyers[a][ym]?.sales||0),0);
+    const tb=activeYMs.reduce((s,ym)=>s+(buyers[b][ym]?.sales||0),0);
+    return tb-ta;
+  });
+
+  const rows=[];
+  let totalRow;
+
+  if(mode==='monthly'){
+    // 헤더
+    const header=['CID','한의원명'];
+    activeYMs.forEach(ym=>{const label=ym.substring(2);header.push(label+' 수량',label+' 매출');});
+    header.push('합계 수량','합계 매출');
+    rows.push(header);
+
+    const monthTotals={};activeYMs.forEach(ym=>{monthTotals[ym]={qty:0,sales:0}});
+    let tq=0,ts=0;
+    sorted.forEach(name=>{
+      const row=[cidMap[name]||'',name];
+      let rq=0,rs=0;
+      activeYMs.forEach(ym=>{
+        const d=buyers[name][ym];const q=d?.qty||0,s=d?.sales||0;
+        row.push(q,Math.round(s));
+        rq+=q;rs+=s;monthTotals[ym].qty+=q;monthTotals[ym].sales+=s;
+      });
+      tq+=rq;ts+=rs;
+      row.push(rq,Math.round(rs));
+      rows.push(row);
+    });
+    totalRow=['','합계'];
+    activeYMs.forEach(ym=>{totalRow.push(monthTotals[ym].qty,Math.round(monthTotals[ym].sales));});
+    totalRow.push(tq,Math.round(ts));
+    rows.push(totalRow);
+  } else {
+    // 분기별
+    const qMap={};
+    activeYMs.forEach(ym=>{
+      const y=ym.substring(0,4);const m=parseInt(ym.substring(5));
+      const q=m<=3?'Q1':m<=6?'Q2':m<=9?'Q3':'Q4';
+      const key=y.substring(2)+'-'+q;
+      sorted.forEach(name=>{
+        const d=buyers[name][ym];if(!d)return;
+        if(!qMap[name])qMap[name]={};
+        if(!qMap[name][key])qMap[name][key]={qty:0,sales:0};
+        qMap[name][key].qty+=d.qty;qMap[name][key].sales+=d.sales;
+      });
+    });
+    const allQKeys=[...new Set(activeYMs.map(ym=>{const y=ym.substring(2,4);const m=parseInt(ym.substring(5));return y+'-'+(m<=3?'Q1':m<=6?'Q2':m<=9?'Q3':'Q4')}))];
+
+    const header=['CID','한의원명'];
+    allQKeys.forEach(k=>{header.push(k+' 수량',k+' 매출');});
+    header.push('합계 수량','합계 매출');
+    rows.push(header);
+
+    const qTotals={};allQKeys.forEach(k=>{qTotals[k]={qty:0,sales:0}});
+    let tq=0,ts=0;
+    sorted.forEach(name=>{
+      const row=[cidMap[name]||'',name];
+      let rq=0,rs=0;
+      allQKeys.forEach(k=>{
+        const d=qMap[name]?.[k];const q=d?.qty||0,s=d?.sales||0;
+        row.push(q,Math.round(s));
+        rq+=q;rs+=s;qTotals[k].qty+=q;qTotals[k].sales+=s;
+      });
+      tq+=rq;ts+=rs;
+      row.push(rq,Math.round(rs));
+      rows.push(row);
+    });
+    totalRow=['','합계'];
+    allQKeys.forEach(k=>{totalRow.push(qTotals[k].qty,Math.round(qTotals[k].sales));});
+    totalRow.push(tq,Math.round(ts));
+    rows.push(totalRow);
+  }
+
+  const ws=XLSX.utils.aoa_to_sheet(rows);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,mode==='monthly'?'월별':'분기별');
+  const fileName=`카트리지_구매자_${mode==='monthly'?'월별':'분기별'}_${start||'all'}~${end||'all'}.xlsx`;
+  XLSX.writeFile(wb,fileName);
+}
+
 function renderProfitMargin(){
   const allMonths=['01','02','03','04','05','06','07','08','09','10','11','12'];
   const years=['2025','2026'];
@@ -1604,10 +1713,10 @@ function renderPU(){
   const onTotals={};puOnData.forEach(d=>{onTotals[d['연월']]=(onTotals[d['연월']]||0)+d['PU']});
   const onGrandTotal=Object.values(onTotals).reduce((s,v)=>s+v,0);
 
-  document.getElementById('puOnHead').innerHTML='<th>상품명</th>'+onMonths.map(m=>`<th class="text-right">${m.slice(2)}</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
+  document.getElementById('puOnHead').innerHTML='<th class="sticky-col">상품명</th>'+onMonths.map(m=>`<th class="text-right">${m.slice(2)}</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
   document.getElementById('puOnBody').innerHTML=
-    onVisible.map(([p,v])=>`<tr><td>${p}</td>`+onMonths.map(m=>`<td class="text-right">${(v[m]||0)?Math.round(v[m]).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(v.total).toLocaleString()}</td></tr>`).join('')+
-    `<tr style="font-weight:700;background:#f0f2f5;"><td>합계</td>`+onMonths.map(m=>`<td class="text-right">${(onTotals[m]||0).toLocaleString()}</td>`).join('')+`<td class="text-right">${onGrandTotal.toLocaleString()}</td></tr>`;
+    onVisible.map(([p,v])=>`<tr><td class="sticky-col">${p}</td>`+onMonths.map(m=>`<td class="text-right">${(v[m]||0)?Math.round(v[m]).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(v.total).toLocaleString()}</td></tr>`).join('')+
+    `<tr style="font-weight:700;background:#f0f2f5;"><td class="sticky-col">합계</td>`+onMonths.map(m=>`<td class="text-right">${(onTotals[m]||0).toLocaleString()}</td>`).join('')+`<td class="text-right">${onGrandTotal.toLocaleString()}</td></tr>`;
   const onToggle=document.getElementById('puOnToggle');
   if(onSorted.length>LIMIT){onToggle.style.display='block';onToggle.textContent=puOnExpanded?'접기 ▲':`더보기 (${onSorted.length-LIMIT}개) ▼`}else{onToggle.style.display='none'}
 
@@ -1619,10 +1728,10 @@ function renderPU(){
   const offTotals={};puOffData.forEach(d=>{offTotals[d['연월']]=(offTotals[d['연월']]||0)+d['PU']});
   const offGrandTotal=Object.values(offTotals).reduce((s,v)=>s+v,0);
 
-  document.getElementById('puOffHead').innerHTML='<th>상품명</th>'+offMonths.map(m=>`<th class="text-right">${m.slice(2)}</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
+  document.getElementById('puOffHead').innerHTML='<th class="sticky-col">상품명</th>'+offMonths.map(m=>`<th class="text-right">${m.slice(2)}</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
   document.getElementById('puOffBody').innerHTML=
-    offVisible.map(([p,v])=>`<tr><td>${p}</td>`+offMonths.map(m=>`<td class="text-right">${(v[m]||0)?Math.round(v[m]).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(v.total).toLocaleString()}</td></tr>`).join('')+
-    `<tr style="font-weight:700;background:#f0f2f5;"><td>합계</td>`+offMonths.map(m=>`<td class="text-right">${(offTotals[m]||0).toLocaleString()}</td>`).join('')+`<td class="text-right">${offGrandTotal.toLocaleString()}</td></tr>`;
+    offVisible.map(([p,v])=>`<tr><td class="sticky-col">${p}</td>`+offMonths.map(m=>`<td class="text-right">${(v[m]||0)?Math.round(v[m]).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(v.total).toLocaleString()}</td></tr>`).join('')+
+    `<tr style="font-weight:700;background:#f0f2f5;"><td class="sticky-col">합계</td>`+offMonths.map(m=>`<td class="text-right">${(offTotals[m]||0).toLocaleString()}</td>`).join('')+`<td class="text-right">${offGrandTotal.toLocaleString()}</td></tr>`;
   const offToggle=document.getElementById('puOffToggle');
   if(offSorted.length>LIMIT){offToggle.style.display='block';offToggle.textContent=puOffExpanded?'접기 ▲':`더보기 (${offSorted.length-LIMIT}개) ▼`}else{offToggle.style.display='none'}
 }
