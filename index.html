@@ -313,6 +313,26 @@ tr:hover { background: #f7f9fc; }
         <div id="dioLegend" style="margin-top:8px;font-size:12px;color:#888;"></div>
       </div>
     </div>
+    <div class="chart-row-full" id="pt10BuyerMonthly26Row" style="display:none;">
+      <div class="table-card"><h3>26년 카트리지 월별 구매자 리스트</h3>
+        <div style="overflow-x:auto;"><table class="pt10-sticky"><thead><tr id="pt10BuyerMonthly26Head"></tr></thead><tbody id="pt10BuyerMonthly26Body"></tbody></table></div>
+      </div>
+    </div>
+    <div class="chart-row-full" id="pt10BuyerQuarterly26Row" style="display:none;">
+      <div class="table-card"><h3>26년 카트리지 분기별 구매자 리스트</h3>
+        <div style="overflow-x:auto;"><table class="pt10-sticky"><thead><tr id="pt10BuyerQuarterly26Head"></tr></thead><tbody id="pt10BuyerQuarterly26Body"></tbody></table></div>
+      </div>
+    </div>
+    <div class="chart-row-full" id="pt10BuyerMonthly25Row" style="display:none;">
+      <div class="table-card"><h3>25년 카트리지 월별 구매자 리스트</h3>
+        <div style="overflow-x:auto;"><table class="pt10-sticky"><thead><tr id="pt10BuyerMonthly25Head"></tr></thead><tbody id="pt10BuyerMonthly25Body"></tbody></table></div>
+      </div>
+    </div>
+    <div class="chart-row-full" id="pt10BuyerQuarterly25Row" style="display:none;">
+      <div class="table-card"><h3>25년 카트리지 분기별 구매자 리스트</h3>
+        <div style="overflow-x:auto;"><table class="pt10-sticky"><thead><tr id="pt10BuyerQuarterly25Head"></tr></thead><tbody id="pt10BuyerQuarterly25Body"></tbody></table></div>
+      </div>
+    </div>
     <div class="chart-row-full" id="pt10Summary2025Row" style="display:none;">
       <div class="table-card"><h3>25년 월별 수량 / 매출</h3>
         <div style="overflow-x:auto;"><table class="pt10-sticky"><thead><tr id="pt10Summary2025Head"></tr></thead><tbody id="pt10Summary2025Body"></tbody></table></div>
@@ -594,7 +614,7 @@ function render(){
   // 클래스 전용: PU + 재구매
   document.getElementById('detailRow').style.display=(isTurnkey||isPT10||isSono||isAll)?'none':'';
   document.getElementById('monthlyRow').style.display=(isPT10||isAll)?'none':'';
-  ['pt10SummaryRow','pt10CartRow','pt10DioRow','pt10Summary2025Row','pt10Cart2025Row','pt10Summary2024Row','pt10Cart2024Row','pt10Summary2023Row','pt10Cart2023Row','pt10CartChartRow'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
+  ['pt10SummaryRow','pt10CartRow','pt10DioRow','pt10BuyerMonthly26Row','pt10BuyerQuarterly26Row','pt10BuyerMonthly25Row','pt10BuyerQuarterly25Row','pt10Summary2025Row','pt10Cart2025Row','pt10Summary2024Row','pt10Cart2024Row','pt10Summary2023Row','pt10Cart2023Row','pt10CartChartRow'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
   document.getElementById('sonoCountChartRow').style.display=isSono?'':'none';
   document.getElementById('sonoMapRow').style.display=isSono?'':'none';
   document.getElementById('navSonoCount').style.display=isSono?'':'none';
@@ -606,7 +626,7 @@ function render(){
   ['navPT10Summary','navPT10CartTrend','navPT10Cart','navPT10Y25','navPT10Y24','navPT10Y23'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
   document.getElementById('navMonthly').style.display=(isPT10||isAll)?'none':'';
   document.getElementById('navDetail').style.display=(isPT10||isTurnkey||isAll)?'none':'';
-  if(isPT10){renderPT10Summary();renderPT10Cart();renderPT10CartTrend();renderPT10DIO()}
+  if(isPT10){renderPT10Summary();renderPT10Cart();renderPT10CartTrend();renderPT10DIO();renderPT10Buyers()}
   document.getElementById('turnkeyKpiRow').style.display=isTurnkey?'grid':'none';
   document.getElementById('profitMarginRow').style.display=isTurnkey?'':'none';
   document.getElementById('navProfitMargin').style.display=isTurnkey?'':'none';
@@ -1436,6 +1456,96 @@ async function renderPT10DIO(){
     document.getElementById('dioUpdated').textContent=`기준일: ${todayStr} | 분석 기간: ${periodLabel}`;
     document.getElementById('dioLegend').textContent='상태 기준: 부족 = DIO 60일 미만 | 적정 = DIO 60~119일 | 과잉 = DIO 120일 이상';
   }catch(e){console.warn('DIO 로딩 실패',e);document.getElementById('pt10DioBody').innerHTML='<tr><td colspan="8" style="color:#999">DIO 데이터를 불러오지 못했습니다.</td></tr>';}
+}
+
+// PT10 카트리지 구매자 리스트 (월별 + 분기별)
+function renderPT10Buyers(){
+  const cartData=pt10Data.filter(d=>d['구분']==='카트리지');
+  ['2026','2025'].forEach(year=>{
+    const dY=cartData.filter(r=>r['연월']&&r['연월'].startsWith(year));
+    if(!dY.length)return;
+    // 한의원별 월별 집계
+    const allMonths=['01','02','03','04','05','06','07','08','09','10','11','12'];
+    const buyers={};// {한의원명: {mm: {qty,sales}}}
+    dY.forEach(r=>{
+      const name=r['한의원명']||'(미상)';
+      const m=(r['연월']||'').split('-')[1];
+      if(!m)return;
+      if(!buyers[name])buyers[name]={};
+      if(!buyers[name][m])buyers[name][m]={qty:0,sales:0};
+      buyers[name][m].qty+=(r['수량']||0);
+      buyers[name][m].sales+=(r['매출금액']||0);
+    });
+    // 총 매출 기준 정렬
+    const sorted=Object.keys(buyers).sort((a,b)=>{
+      const ta=allMonths.reduce((s,m)=>s+(buyers[a][m]?.sales||0),0);
+      const tb=allMonths.reduce((s,m)=>s+(buyers[b][m]?.sales||0),0);
+      return tb-ta;
+    });
+
+    // 월별 테이블
+    const sfx=year==='2026'?'26':'25';
+    const headEl=document.getElementById('pt10BuyerMonthly'+sfx+'Head');
+    const bodyEl=document.getElementById('pt10BuyerMonthly'+sfx+'Body');
+    const activeMonths=allMonths.filter(m=>sorted.some(n=>buyers[n][m]));
+    headEl.innerHTML='<th class="sticky-col">한의원명</th>'+activeMonths.map(m=>`<th class="text-right" colspan="2">${m}월</th>`).join('')+'<th class="text-right" colspan="2">합계</th>';
+    let subHead='<tr style="background:#f7f8fa;font-size:11px;"><td class="sticky-col"></td>';
+    activeMonths.forEach(()=>{subHead+='<td class="text-right">수량</td><td class="text-right">매출</td>';});
+    subHead+='<td class="text-right">수량</td><td class="text-right">매출</td></tr>';
+    let bodyHtml=subHead;
+    // 전체 합계 행
+    let totalQty=0,totalSales=0;
+    const monthTotals={};activeMonths.forEach(m=>{monthTotals[m]={qty:0,sales:0}});
+    sorted.forEach(name=>{
+      let rowQty=0,rowSales=0;
+      let row=`<tr><td class="sticky-col">${name}</td>`;
+      activeMonths.forEach(m=>{
+        const d=buyers[name][m];
+        const q=d?.qty||0,s=d?.sales||0;
+        row+=`<td class="text-right">${q||'-'}</td><td class="text-right">${s?Math.round(s).toLocaleString():'-'}</td>`;
+        rowQty+=q;rowSales+=s;
+        monthTotals[m].qty+=q;monthTotals[m].sales+=s;
+      });
+      totalQty+=rowQty;totalSales+=rowSales;
+      row+=`<td class="text-right" style="font-weight:700">${rowQty}</td><td class="text-right" style="font-weight:700">${Math.round(rowSales).toLocaleString()}</td></tr>`;
+      bodyHtml+=row;
+    });
+    // 합계 행
+    bodyHtml+=`<tr style="font-weight:700;background:#eef3ff;"><td class="sticky-col">합계</td>`;
+    activeMonths.forEach(m=>{bodyHtml+=`<td class="text-right">${monthTotals[m].qty}</td><td class="text-right">${Math.round(monthTotals[m].sales).toLocaleString()}</td>`;});
+    bodyHtml+=`<td class="text-right">${totalQty}</td><td class="text-right">${Math.round(totalSales).toLocaleString()}</td></tr>`;
+    bodyEl.innerHTML=bodyHtml;
+
+    // 분기별 테이블
+    const qHeadEl=document.getElementById('pt10BuyerQuarterly'+sfx+'Head');
+    const qBodyEl=document.getElementById('pt10BuyerQuarterly'+sfx+'Body');
+    const quarters=[{label:'Q1',months:['01','02','03']},{label:'Q2',months:['04','05','06']},{label:'Q3',months:['07','08','09']},{label:'Q4',months:['10','11','12']}];
+    const activeQ=quarters.filter(q=>q.months.some(m=>sorted.some(n=>buyers[n][m])));
+    qHeadEl.innerHTML='<th class="sticky-col">한의원명</th>'+activeQ.map(q=>`<th class="text-right" colspan="2">${q.label}</th>`).join('')+'<th class="text-right" colspan="2">합계</th>';
+    let qSubHead='<tr style="background:#f7f8fa;font-size:11px;"><td class="sticky-col"></td>';
+    activeQ.forEach(()=>{qSubHead+='<td class="text-right">수량</td><td class="text-right">매출</td>';});
+    qSubHead+='<td class="text-right">수량</td><td class="text-right">매출</td></tr>';
+    let qBodyHtml=qSubHead;
+    const qTotals={};activeQ.forEach(q=>{qTotals[q.label]={qty:0,sales:0}});
+    let qTotalQty=0,qTotalSales=0;
+    sorted.forEach(name=>{
+      let rq=0,rs=0;
+      let row=`<tr><td class="sticky-col">${name}</td>`;
+      activeQ.forEach(q=>{
+        let qq=0,qs=0;
+        q.months.forEach(m=>{const d=buyers[name][m];qq+=(d?.qty||0);qs+=(d?.sales||0);});
+        row+=`<td class="text-right">${qq||'-'}</td><td class="text-right">${qs?Math.round(qs).toLocaleString():'-'}</td>`;
+        rq+=qq;rs+=qs;qTotals[q.label].qty+=qq;qTotals[q.label].sales+=qs;
+      });
+      qTotalQty+=rq;qTotalSales+=rs;
+      row+=`<td class="text-right" style="font-weight:700">${rq}</td><td class="text-right" style="font-weight:700">${Math.round(rs).toLocaleString()}</td></tr>`;
+      qBodyHtml+=row;
+    });
+    qBodyHtml+=`<tr style="font-weight:700;background:#eef3ff;"><td class="sticky-col">합계</td>`;
+    activeQ.forEach(q=>{qBodyHtml+=`<td class="text-right">${qTotals[q.label].qty}</td><td class="text-right">${Math.round(qTotals[q.label].sales).toLocaleString()}</td>`;});
+    qBodyHtml+=`<td class="text-right">${qTotalQty}</td><td class="text-right">${Math.round(qTotalSales).toLocaleString()}</td></tr>`;
+    qBodyEl.innerHTML=qBodyHtml;
+  });
 }
 
 function renderProfitMargin(){
