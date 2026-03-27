@@ -214,18 +214,20 @@ tr:hover { background: #f7f9fc; }
         <table id="sonoASTable"><thead><tr><th>월</th><th class="text-right">매출금액</th><th class="text-right">건수</th></tr></thead><tbody id="sonoASBody"></tbody></table>
       </div>
     </div>
-    <!-- 초음파 전용: 재고 테이블 -->
+    <!-- 초음파 전용: 재고 현황 -->
     <div class="chart-row-full" id="sonoInventoryRow" style="display:none;">
       <div class="table-card">
-        <h3>출고 예정</h3>
+        <h3>재고 현황 (장비명 기준)</h3>
+        <table><thead><tr id="sonoInvSummaryHead"></tr></thead><tbody id="sonoInvSummaryBody"></tbody></table>
+      </div>
+    </div>
+    <div class="chart-row" id="sonoInventoryDetailRow" style="display:none;">
+      <div class="table-card">
+        <h3>출고 예정 리스트</h3>
         <table><thead><tr><th>병원명</th><th>장비명</th></tr></thead><tbody id="sonoOutBody"></tbody></table>
       </div>
-      <div class="table-card" style="margin-top:16px;">
-        <h3>신품 재고</h3>
-        <table><thead><tr><th>장비명</th><th>S/N</th><th>입고일</th></tr></thead><tbody id="sonoNewBody"></tbody></table>
-      </div>
-      <div class="table-card" style="margin-top:16px;">
-        <h3>견본 재고</h3>
+      <div class="table-card">
+        <h3>견본 재고 리스트</h3>
         <table><thead><tr><th>장비명</th><th>S/N</th><th>판매가능시점</th></tr></thead><tbody id="sonoSampleBody"></tbody></table>
       </div>
     </div>
@@ -653,6 +655,7 @@ function render(){
   ['pt10SummaryRow','pt10CartRow','pt10DioRow','pt10BuyerMonthlyRow','pt10BuyerQuarterlyRow','pt10InsightRow','pt10Summary2025Row','pt10Cart2025Row','pt10Summary2024Row','pt10Cart2024Row','pt10Summary2023Row','pt10Cart2023Row','pt10CartChartRow'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
   document.getElementById('sonoMapRow').style.display=isSono?'':'none';
   document.getElementById('sonoInventoryRow').style.display=isSono?'':'none';
+  document.getElementById('sonoInventoryDetailRow').style.display=isSono?'grid':'none';
   document.getElementById('navSonoInventory').style.display=isSono?'':'none';
   document.getElementById('navSonoMap').style.display=isSono?'':'none';
   document.getElementById('sonoASRow').style.display=isSono?'':'none';
@@ -1353,87 +1356,71 @@ function renderSonoAS(){
 }
 
 async function renderSonoInventory(){
-  const SHEET_ID = '1s34C5qB-K_A8vJEJQaOOyJ44YM3netORbfCVVfM3idw';
-  const base = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&headers=1&_t=${Date.now()}`;
-
-  try {
-    const [sonoR, selloutR, sampleR] = await Promise.all([
+  const base=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&headers=1&_t=${Date.now()}`;
+  try{
+    const [sonoR,selloutR,sampleR,bdtsR]=await Promise.all([
       fetch(base+'&sheet='+encodeURIComponent('초음파')+'&range=A3:H500'),
       fetch(base+'&sheet='+encodeURIComponent('초음파셀아웃')+'&range=A1:X500'),
-      fetch(base+'&sheet='+encodeURIComponent('초음파견본')+'&range=A1:H200')
+      fetch(base+'&sheet='+encodeURIComponent('초음파견본')+'&range=A1:H200'),
+      fetch(base+'&sheet='+encodeURIComponent('초음파BDTS')+'&range=A1:CU500')
     ]);
+    function csvR(text){const lines=text.replace(/\r/g,'').split('\n').filter(l=>l.trim());return lines.map(l=>{const res=[];let cur='',q=false;for(let i=0;i<l.length;i++){if(q){if(l[i]==='"'&&l[i+1]==='"'){cur+='"';i++}else if(l[i]==='"')q=false;else cur+=l[i]}else{if(l[i]==='"')q=true;else if(l[i]===','){res.push(cur);cur=''}else cur+=l[i]}}res.push(cur);return res})}
 
-    function csvRows(text){
-      const lines = text.replace(/\r/g,'').split('\n').filter(l=>l.trim());
-      return lines.map(l => {
-        const result = [];
-        let current = '', inQuote = false;
-        for(let i=0;i<l.length;i++){
-          if(inQuote){
-            if(l[i]==='"'&&l[i+1]==='"'){current+='"';i++}
-            else if(l[i]==='"')inQuote=false;
-            else current+=l[i];
-          }else{
-            if(l[i]==='"')inQuote=true;
-            else if(l[i]===','){result.push(current);current=''}
-            else current+=l[i];
-          }
-        }
-        result.push(current);
-        return result;
-      });
-    }
+    // 출고 예정
+    const outPending=[];
+    if(sonoR.ok){const rows=csvR(await sonoR.text());for(let i=1;i<rows.length;i++){const r=rows[i];if(r.length<8)continue;if(r[1].trim()==='상품'&&(r[7].trim()==='#N/A'||r[7].trim()==='')&&r[3].trim()&&r[3].trim()!==' ')outPending.push({hospital:r[3].trim(),model:r[6].trim()})}}
 
-    // === 출고 예정: 초음파 시트, B열=상품, H열=#N/A ===
-    if(sonoR.ok){
-      const rows = csvRows(await sonoR.text());
-      const outPending = [];
-      for(let i=1;i<rows.length;i++){
-        const r=rows[i];if(r.length<8)continue;
-        const biz=r[1].trim(), hospital=r[3].trim(), model=r[6].trim(), sn=r[7].trim();
-        if(biz==='상품' && (sn==='#N/A'||sn==='') && hospital && hospital!==' ')
-          outPending.push({hospital, model});
-      }
-      document.getElementById('sonoOutBody').innerHTML = outPending.length > 0 ?
-        outPending.map(r=>`<tr><td>${r.hospital}</td><td>${r.model}</td></tr>`).join('') :
-        '<tr><td colspan="2" style="color:#999;text-align:center;">출고 예정 없음</td></tr>';
-    }
+    // 신품 재고
+    const newStock=[];
+    if(selloutR.ok){const rows=csvR(await selloutR.text());for(let i=1;i<rows.length;i++){const r=rows[i];if(r.length<24)continue;if((r[11].trim()==='유통'||r[11].trim()==='증정')&&r[23].trim()===''&&r[8].trim())newStock.push({model:r[8].trim(),sn:r[10].trim(),inDate:r[2].trim()})}}
 
-    // === 신품 재고: 초음파셀아웃 시트 ===
-    // [2]=입고일(C), [8]=모델명(I), [10]=S/N(K), [11]=IN유형(L), [23]=참고사항(X)
-    // 필터: IN유형 = "유통" or "증정", 참고사항 = 공백
-    if(selloutR.ok){
-      const rows = csvRows(await selloutR.text());
-      const newStock = [];
-      for(let i=1;i<rows.length;i++){
-        const r=rows[i];if(r.length<24)continue;
-        const inType=r[11].trim(), remark=r[23].trim(), model=r[8].trim(), sn=r[10].trim(), inDate=r[2].trim();
-        if((inType==='유통'||inType==='증정') && remark==='' && model)
-          newStock.push({model, sn, inDate});
-      }
-      document.getElementById('sonoNewBody').innerHTML = newStock.length > 0 ?
-        newStock.map(r=>`<tr><td>${r.model}</td><td>${r.sn}</td><td>${r.inDate}</td></tr>`).join('') :
-        '<tr><td colspan="3" style="color:#999;text-align:center;">신품 재고 없음</td></tr>';
-    }
+    // 견본 재고
+    const samples=[];
+    if(sampleR.ok){const rows=csvR(await sampleR.text());for(let i=1;i<rows.length;i++){const r=rows[i];if(r.length<7)continue;if(r[0].trim()&&r[6].trim()===''&&r[5].trim()&&r[5].trim()<='2026-12-31')samples.push({model:r[0].trim(),sn:r[3].trim(),sellDate:r[5].trim()})}}
+    samples.sort((a,b)=>a.sellDate.localeCompare(b.sellDate));
 
-    // === 견본 재고: 초음파견본 시트 ===
-    // [0]=견본품리스트(장비명), [3]=S/N, [5]=판매가능시점(F), [6]=한의원(G)
-    // 필터: 한의원 공백, 판매가능시점 <= 2026-12-31
-    if(sampleR.ok){
-      const rows = csvRows(await sampleR.text());
-      const samples = [];
-      for(let i=1;i<rows.length;i++){
-        const r=rows[i];if(r.length<7)continue;
-        const model=r[0].trim(), sn=r[3].trim(), sellDate=r[5].trim(), hospital=r[6].trim();
-        if(model && hospital==='' && sellDate && sellDate<='2026-12-31')
-          samples.push({model, sn, sellDate});
-      }
-      samples.sort((a,b)=>a.sellDate.localeCompare(b.sellDate));
-      document.getElementById('sonoSampleBody').innerHTML = samples.length > 0 ?
-        samples.map(r=>`<tr><td>${r.model}</td><td>${r.sn}</td><td>${r.sellDate}</td></tr>`).join('') :
-        '<tr><td colspan="3" style="color:#999;text-align:center;">견본 재고 없음</td></tr>';
-    }
-  } catch(e){console.warn('재고 로딩 에러',e)}
+    // 미니프로브: 초음파BDTS AF열(인덱스31)=L3-22, 출고처 공백 확인
+    let miniProbeCount=0;
+    if(bdtsR.ok){const rows=csvR(await bdtsR.text());
+      // AF열 = 인덱스 31, 출고처 열 확인 필요
+      const hdr=rows[0]||[];let afIdx=-1,outIdx=-1;
+      for(let j=0;j<hdr.length;j++){if(hdr[j].includes('Basic Name')||j===31)afIdx=j;if(hdr[j].includes('출고처'))outIdx=j}
+      if(afIdx===-1)afIdx=31;
+      for(let i=1;i<rows.length;i++){const r=rows[i];if(r.length<=Math.max(afIdx,outIdx))continue;
+        const af=r[afIdx]?.trim()||'';const out=outIdx>=0?(r[outIdx]?.trim()||''):'';
+        if(af==='L3-22'&&out==='')miniProbeCount++}}
+
+    // === 요약 테이블 ===
+    const allModels=new Set();
+    outPending.forEach(r=>allModels.add(r.model));
+    newStock.forEach(r=>allModels.add(r.model));
+    samples.forEach(r=>allModels.add(r.model));
+    const modelOrder=['V5','V6','V7','V8','HS40','HS50','HM70 EVO','RS85 Prestige','R20'];
+    const sortedModels=[...allModels].sort((a,b)=>{const ai=modelOrder.indexOf(a),bi=modelOrder.indexOf(b);return(ai<0?99:ai)-(bi<0?99:bi)});
+
+    const newByModel={},sampleByModel={},outByModel={};
+    newStock.forEach(r=>{newByModel[r.model]=(newByModel[r.model]||0)+1});
+    samples.forEach(r=>{sampleByModel[r.model]=(sampleByModel[r.model]||0)+1});
+    outPending.forEach(r=>{outByModel[r.model]=(outByModel[r.model]||0)+1});
+
+    document.getElementById('sonoInvSummaryHead').innerHTML='<th>장비명</th>'+sortedModels.map(m=>`<th class="text-right">${m}</th>`).join('')+(miniProbeCount?'<th class="text-right">미니프로브</th>':'')+'<th class="text-right" style="font-weight:700">합계</th>';
+    let sHtml='';
+    [{label:'신품 재고',map:newByModel},{label:'견본 재고',map:sampleByModel},{label:'출고 예정',map:outByModel}].forEach(row=>{
+      let total=0;
+      sHtml+=`<tr><td style="font-weight:600">${row.label}</td>`;
+      sortedModels.forEach(m=>{const v=row.map[m]||0;total+=v;sHtml+=`<td class="text-right">${v||'-'}</td>`});
+      if(miniProbeCount)sHtml+=`<td class="text-right">${row.label==='신품 재고'?miniProbeCount:'-'}</td>`;
+      total+=(row.label==='신품 재고'?miniProbeCount:0);
+      sHtml+=`<td class="text-right" style="font-weight:700">${total}</td></tr>`;
+    });
+    document.getElementById('sonoInvSummaryBody').innerHTML=sHtml;
+
+    // === 출고 예정 리스트 ===
+    document.getElementById('sonoOutBody').innerHTML=outPending.length>0?outPending.map(r=>`<tr><td>${r.hospital}</td><td>${r.model}</td></tr>`).join(''):'<tr><td colspan="2" style="color:#999;text-align:center;">출고 예정 없음</td></tr>';
+
+    // === 견본 재고 리스트 ===
+    document.getElementById('sonoSampleBody').innerHTML=samples.length>0?samples.map(r=>`<tr><td>${r.model}</td><td>${r.sn}</td><td>${r.sellDate}</td></tr>`).join(''):'<tr><td colspan="3" style="color:#999;text-align:center;">견본 재고 없음</td></tr>';
+  }catch(e){console.warn('재고 로딩 에러',e)}
 }
 
 function renderPT10CartTrend(){
