@@ -555,7 +555,7 @@ async function fetchData(){
     try{if(surveyR.ok){const t=await surveyR.text();if(t.trim()){turnkeySurveyData=parseCSV(t).filter(r=>r['문의날짜']&&String(r['문의날짜']).trim()).map(r=>{
       const d=String(r['문의날짜']||'');r['_date']=d.substring(0,10);r['_ym']=fixYm(d.substring(0,7));
       const cd=String(r['실제 컨설팅 일자']||'').substring(0,10);r['_consultDate']=cd&&cd.match(/^\d{4}/)?cd:'';
-      r['_consultOK']=String(r['[(사용안함)2024_턴키관리] 시트에서 CID 를 기준으로 컨설팅 여부 확인']||'').trim()==='O';
+      r['_consultOK']=String(r['개원 컨설팅 진행 여부']||'').trim()==='O';
       r['_manager']=r['담당자']||'';
       r['_result']=String(r['결과']||'').trim();
       r['_cid']=String(r['CID']||'').trim();
