@@ -1510,7 +1510,7 @@ async function renderSonoInventory(){
     document.getElementById('sonoOutBody').innerHTML=outPending.length>0?outPending.map(r=>`<tr><td>${r.hospital}</td><td>${r.model}</td></tr>`).join(''):'<tr><td colspan="2" style="color:#999;text-align:center;">출고 예정(신품) 없음</td></tr>';
 
     // === 견본 재고 리스트 (판매가능시점 오름차순) ===
-    samples.sort(function(a,b){return b.sellDate.localeCompare(a.sellDate)});
+    samples.sort(function(a,b){return a.sellDate.localeCompare(b.sellDate)});
     document.getElementById('sonoSampleBody').innerHTML=samples.length>0?samples.map(r=>`<tr><td>${r.model}</td><td>${r.sn}</td><td>${r.sellDate}</td></tr>`).join(''):'<tr><td colspan="3" style="color:#999;text-align:center;">견본 재고 없음</td></tr>';
   }catch(e){console.warn('재고 로딩 에러',e)}
 }
