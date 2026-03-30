@@ -2366,79 +2366,73 @@ function renderTurnkeySurvey(){
 }
 
 function renderConsultImpact(){
-  // CID별 결제 매출 합계 (결제내역)
-  const cidSales={},cidFirstPayDate={};
-  turnkeyData.forEach(d=>{
-    const cid=d['CID']||'';if(!cid)return;
-    cidSales[cid]=(cidSales[cid]||0)+d['매출금액'];
-    const dt=d['주문일']||'';
-    if(!cidFirstPayDate[cid]||dt<cidFirstPayDate[cid])cidFirstPayDate[cid]=dt;
-  });
-  // CID별 할인전금액 합계 (FULL/HALF 분류용)
-  const cidClassify={};
-  turnkeyData.forEach(d=>{const cid=d['CID']||'';cidClassify[cid]=(cidClassify[cid]||0)+(d['할인전금액']||0)});
-
-  // 상담관리에서 참여/미참여 분류
-  const participated=[],notParticipated=[];
-  const seen=new Set();
-  turnkeySurveyData.forEach(d=>{
-    const cid=d['_cid'];if(!cid||seen.has(cid))return;seen.add(cid);
-    const hasConsult=d['_consultDate']&&d['_consultOK'];
-    const sales=cidSales[cid]||0;
-    const hasPaid=sales>0;
-    const consultDate=d['_consultDate']||'';
-    const firstPay=cidFirstPayDate[cid]||'';
-    const isFull=(cidClassify[cid]||0)>=30000000;
-    const obj={cid,sales,hasPaid,consultDate,firstPay,isFull};
-    if(hasConsult)participated.push(obj);else notParticipated.push(obj);
-  });
-
   function median(arr){if(!arr.length)return 0;const s=[...arr].sort((a,b)=>a-b);const m=Math.floor(s.length/2);return s.length%2?s[m]:(s[m-1]+s[m])/2}
   function daysDiff(a,b){if(!a||!b)return null;return Math.round((new Date(b)-new Date(a))/86400000)}
+  const cs='padding:6px 10px;';const csr=cs+'text-align:right;';const csb=cs+'font-weight:700;';
 
-  // 1. 결제 전환율
-  const pPaid=participated.filter(d=>d.hasPaid);
-  const npPaid=notParticipated.filter(d=>d.hasPaid);
-  const pRate=participated.length?(pPaid.length/participated.length*100):0;
-  const npRate=notParticipated.length?(npPaid.length/notParticipated.length*100):0;
+  // 기간별 분석 함수
+  function calcImpact(yearFilter){
+    const cidSales={},cidFirstPayDate={},cidClassify={};
+    const tkFiltered=yearFilter?turnkeyData.filter(d=>(d['주문일']||'').startsWith(yearFilter)):turnkeyData;
+    tkFiltered.forEach(d=>{
+      const cid=d['CID']||'';if(!cid)return;
+      cidSales[cid]=(cidSales[cid]||0)+d['매출금액'];
+      cidClassify[cid]=(cidClassify[cid]||0)+(d['할인전금액']||0);
+      const dt=d['주문일']||'';if(!cidFirstPayDate[cid]||dt<cidFirstPayDate[cid])cidFirstPayDate[cid]=dt;
+    });
+    const svFiltered=yearFilter?turnkeySurveyData.filter(d=>(d['_date']||'').startsWith(yearFilter)):turnkeySurveyData;
+    const participated=[],notParticipated=[];const seen=new Set();
+    svFiltered.forEach(d=>{
+      const cid=d['_cid'];if(!cid||seen.has(cid))return;seen.add(cid);
+      const hasConsult=d['_consultDate']&&d['_consultOK'];
+      const sales=cidSales[cid]||0;const hasPaid=sales>0;
+      const obj={cid,sales,hasPaid,consultDate:d['_consultDate']||'',firstPay:cidFirstPayDate[cid]||'',isFull:(cidClassify[cid]||0)>=30000000};
+      if(hasConsult)participated.push(obj);else notParticipated.push(obj);
+    });
+    const pPaid=participated.filter(d=>d.hasPaid),npPaid=notParticipated.filter(d=>d.hasPaid);
+    const pRate=participated.length?(pPaid.length/participated.length*100):0;
+    const npRate=notParticipated.length?(npPaid.length/notParticipated.length*100):0;
+    const pSales=pPaid.map(d=>d.sales),npSales=npPaid.map(d=>d.sales);
+    const pAvg=pSales.length?pSales.reduce((a,b)=>a+b,0)/pSales.length:0;
+    const npAvg=npSales.length?npSales.reduce((a,b)=>a+b,0)/npSales.length:0;
+    const pMed=median(pSales),npMed=median(npSales);
+    const pDays=pPaid.map(d=>daysDiff(d.consultDate,d.firstPay)).filter(d=>d!==null&&d>=0);
+    const pDaysAvg=pDays.length?Math.round(pDays.reduce((a,b)=>a+b,0)/pDays.length):'-';
+    const pDaysMed=pDays.length?Math.round(median(pDays)):'-';
+    const pFull=pPaid.filter(d=>d.isFull).length,npFull=npPaid.filter(d=>d.isFull).length;
+    const pFullRate=pPaid.length?(pFull/pPaid.length*100):0,npFullRate=npPaid.length?(npFull/npPaid.length*100):0;
+    return{pN:participated.length,npN:notParticipated.length,pPaidN:pPaid.length,npPaidN:npPaid.length,pRate,npRate,pAvg,npAvg,pMed,npMed,pDaysAvg,pDaysMed,pFullRate,npFullRate,pFull,npFull,pPaidLen:pPaid.length,npPaidLen:npPaid.length};
+  }
 
-  // 2. 평균/중앙값 결제금액 (결제한 건만)
-  const pSales=pPaid.map(d=>d.sales);
-  const npSales=npPaid.map(d=>d.sales);
-  const pAvg=pSales.length?pSales.reduce((a,b)=>a+b,0)/pSales.length:0;
-  const npAvg=npSales.length?npSales.reduce((a,b)=>a+b,0)/npSales.length:0;
-  const pMed=median(pSales);
-  const npMed=median(npSales);
-
-  // 3. 결제까지 소요일 (컨설팅일 → 첫 결제일)
-  const pDays=pPaid.map(d=>daysDiff(d.consultDate,d.firstPay)).filter(d=>d!==null&&d>=0);
-  const pDaysAvg=pDays.length?Math.round(pDays.reduce((a,b)=>a+b,0)/pDays.length):'-';
-  const pDaysMed=pDays.length?Math.round(median(pDays)):'-';
-
-  // 4. FULL 비율
-  const pFull=pPaid.filter(d=>d.isFull).length;
-  const npFull=npPaid.filter(d=>d.isFull).length;
-  const pFullRate=pPaid.length?(pFull/pPaid.length*100):0;
-  const npFullRate=npPaid.length?(npFull/npPaid.length*100):0;
-
-  const diff=pAvg-npAvg;
-  const diffPct=npAvg?(diff/npAvg*100):0;
-
-  const cs='padding:8px 12px;';const csr=cs+'text-align:right;';const csb=cs+'font-weight:700;';
-  let html=`<table style="width:100%;border-collapse:collapse;margin-bottom:16px;">
-    <thead><tr style="background:#f7f8fa;">
-      <th style="${cs}">지표</th><th style="${csr}">컨설팅 참여 (n=${participated.length})</th><th style="${csr}">미참여 (n=${notParticipated.length})</th><th style="${csr}">차이</th>
+  function renderTable(label,r){
+    const diff=r.pAvg-r.npAvg;const diffPct=r.npAvg?(diff/r.npAvg*100):0;
+    return`<h4 style="margin:16px 0 8px;font-size:14px;font-weight:600;color:#333;">${label}</h4>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:8px;"><thead><tr style="background:#f7f8fa;">
+      <th style="${cs}">지표</th><th style="${csr}">참여 (n=${r.pN})</th><th style="${csr}">미참여 (n=${r.npN})</th><th style="${csr}">차이</th>
     </tr></thead><tbody>
-    <tr><td style="${csb}">결제 전환율</td><td style="${csr}">${pRate.toFixed(1)}% (${pPaid.length}/${participated.length})</td><td style="${csr}">${npRate.toFixed(1)}% (${npPaid.length}/${notParticipated.length})</td><td style="${csr}color:${pRate>npRate?'#43a047':'#e53935'};font-weight:600">▲${(pRate-npRate).toFixed(1)}%p</td></tr>
-    <tr><td style="${csb}">평균 결제금액</td><td style="${csr}">${fmt(Math.round(pAvg))}</td><td style="${csr}">${fmt(Math.round(npAvg))}</td><td style="${csr}color:${diff>0?'#43a047':'#e53935'};font-weight:600">${diff>0?'▲':'▼'}${fmt(Math.abs(Math.round(diff)))} (${diff>0?'+':''}${diffPct.toFixed(1)}%)</td></tr>
-    <tr><td style="${csb}">중앙값 결제금액</td><td style="${csr}">${fmt(Math.round(pMed))}</td><td style="${csr}">${fmt(Math.round(npMed))}</td><td style="${csr}color:${pMed>npMed?'#43a047':'#e53935'};font-weight:600">${pMed>npMed?'▲':'▼'}${fmt(Math.abs(Math.round(pMed-npMed)))}</td></tr>
-    <tr><td style="${csb}">결제까지 소요일</td><td style="${csr}">평균 ${pDaysAvg}일 / 중앙값 ${pDaysMed}일</td><td style="${csr}color:#888">-</td><td style="${csr}color:#888">-</td></tr>
-    <tr><td style="${csb}">FULL(3천만↑) 비율</td><td style="${csr}">${pFullRate.toFixed(1)}% (${pFull}/${pPaid.length})</td><td style="${csr}">${npFullRate.toFixed(1)}% (${npFull}/${npPaid.length})</td><td style="${csr}color:${pFullRate>npFullRate?'#43a047':'#e53935'};font-weight:600">▲${(pFullRate-npFullRate).toFixed(1)}%p</td></tr>
-  </tbody></table>`;
+    <tr><td style="${csb}">결제 전환율</td><td style="${csr}">${r.pRate.toFixed(1)}% (${r.pPaidN}/${r.pN})</td><td style="${csr}">${r.npRate.toFixed(1)}% (${r.npPaidN}/${r.npN})</td><td style="${csr}color:${r.pRate>=r.npRate?'#43a047':'#e53935'};font-weight:600">${r.pRate>=r.npRate?'▲':'▼'}${Math.abs(r.pRate-r.npRate).toFixed(1)}%p</td></tr>
+    <tr><td style="${csb}">평균 결제금액</td><td style="${csr}">${fmt(Math.round(r.pAvg))}</td><td style="${csr}">${fmt(Math.round(r.npAvg))}</td><td style="${csr}color:${diff>=0?'#43a047':'#e53935'};font-weight:600">${diff>=0?'▲':'▼'}${fmt(Math.abs(Math.round(diff)))} (${diffPct>=0?'+':''}${diffPct.toFixed(1)}%)</td></tr>
+    <tr><td style="${csb}">중앙값 결제금액</td><td style="${csr}">${fmt(Math.round(r.pMed))}</td><td style="${csr}">${fmt(Math.round(r.npMed))}</td><td style="${csr}color:${r.pMed>=r.npMed?'#43a047':'#e53935'};font-weight:600">${r.pMed>=r.npMed?'▲':'▼'}${fmt(Math.abs(Math.round(r.pMed-r.npMed)))}</td></tr>
+    <tr><td style="${csb}">결제까지 소요일</td><td style="${csr}">평균 ${r.pDaysAvg}일 / 중앙값 ${r.pDaysMed}일</td><td style="${csr}color:#888">-</td><td style="${csr}color:#888">-</td></tr>
+    <tr><td style="${csb}">FULL(3천만↑) 비율</td><td style="${csr}">${r.pFullRate.toFixed(1)}% (${r.pFull}/${r.pPaidLen})</td><td style="${csr}">${r.npFullRate.toFixed(1)}% (${r.npFull}/${r.npPaidLen})</td><td style="${csr}color:${r.pFullRate>=r.npFullRate?'#43a047':'#e53935'};font-weight:600">${r.pFullRate>=r.npFullRate?'▲':'▼'}${Math.abs(r.pFullRate-r.npFullRate).toFixed(1)}%p</td></tr>
+    </tbody></table>`;
+  }
 
-  // 요약 인사이트
-  html+=`<div style="background:#f0faf9;border-radius:8px;padding:12px 16px;font-size:13px;">
-    <strong>인사이트:</strong> 컨설팅 참여 그룹이 미참여 대비 전환율 <strong>${(pRate-npRate).toFixed(1)}%p</strong> 높고, 평균 결제금액 <strong>${fmt(Math.abs(Math.round(diff)))}</strong> (${diffPct>0?'+':''}${diffPct.toFixed(0)}%) 높음. FULL 비율도 <strong>${(pFullRate-npFullRate).toFixed(1)}%p</strong> 차이. ${pDaysAvg!=='-'?'컨설팅 후 평균 <strong>'+pDaysAvg+'일</strong> 만에 결제.':''}
+  // 누적
+  const allR=calcImpact(null);
+  let html=renderTable('전체 누적',allR);
+
+  // 연도별
+  const curYear=new Date().getFullYear();
+  for(let y=curYear;y>=2023;y--){
+    const r=calcImpact(String(y));
+    if(r.pN+r.npN>0)html+=renderTable(y+'년',r);
+  }
+
+  // 요약 인사이트 (누적 기준)
+  const diff=allR.pAvg-allR.npAvg;const diffPct=allR.npAvg?(diff/allR.npAvg*100):0;
+  html+=`<div style="background:#f0faf9;border-radius:8px;padding:12px 16px;font-size:13px;margin-top:12px;">
+    <strong>인사이트 (누적):</strong> 컨설팅 참여 그룹이 미참여 대비 전환율 <strong>${(allR.pRate-allR.npRate).toFixed(1)}%p</strong> 높고, 평균 결제금액 <strong>${fmt(Math.abs(Math.round(diff)))}</strong> (${diffPct>=0?'+':''}${diffPct.toFixed(0)}%) 높음. FULL 비율 <strong>${(allR.pFullRate-allR.npFullRate).toFixed(1)}%p</strong> 차이. ${allR.pDaysAvg!=='-'?'컨설팅 후 평균 <strong>'+allR.pDaysAvg+'일</strong> 만에 결제.':''}
   </div>`;
 
   document.getElementById('consultImpactContent').innerHTML=html;
