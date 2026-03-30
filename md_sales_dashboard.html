@@ -181,23 +181,23 @@ tr:hover { background: #f7f9fc; }
       <div class="kpi-card">
         <div class="label">이번 주 결제</div>
         <div class="value" id="tkWeekDone" style="font-size:20px;">Done: -</div>
-        <div class="sub-row" style="font-size:13px;"><span id="tkWeekDoneAvg">건당: -</span></div>
+        <div class="sub-row" style="font-size:13px;"><span id="tkWeekDoneTotal">총: -</span> · <span id="tkWeekDoneAvg">건당: -</span></div>
         <div class="value" id="tkWeekHalfR" style="font-size:20px;margin-top:4px;">HALF: -</div>
-        <div class="sub-row" style="font-size:13px;"><span id="tkWeekHalfRAvg">건당: -</span></div>
+        <div class="sub-row" style="font-size:13px;"><span id="tkWeekHalfRTotal">총: -</span> · <span id="tkWeekHalfRAvg">건당: -</span></div>
       </div>
       <div class="kpi-card">
         <div class="label">이번 달 결제</div>
         <div class="value" id="tkMonthDone" style="font-size:20px;">Done: -</div>
-        <div class="sub-row" style="font-size:13px;"><span id="tkMonthDoneAvg">건당: -</span></div>
+        <div class="sub-row" style="font-size:13px;"><span id="tkMonthDoneTotal">총: -</span> · <span id="tkMonthDoneAvg">건당: -</span></div>
         <div class="value" id="tkMonthHalfR" style="font-size:20px;margin-top:4px;">HALF: -</div>
-        <div class="sub-row" style="font-size:13px;"><span id="tkMonthHalfRAvg">건당: -</span></div>
+        <div class="sub-row" style="font-size:13px;"><span id="tkMonthHalfRTotal">총: -</span> · <span id="tkMonthHalfRAvg">건당: -</span></div>
       </div>
       <div class="kpi-card">
         <div class="label">이번 분기 결제</div>
         <div class="value" id="tkQtrDone" style="font-size:20px;">Done: -</div>
-        <div class="sub-row" style="font-size:13px;"><span id="tkQtrDoneAvg">건당: -</span></div>
+        <div class="sub-row" style="font-size:13px;"><span id="tkQtrDoneTotal">총: -</span> · <span id="tkQtrDoneAvg">건당: -</span></div>
         <div class="value" id="tkQtrHalfR" style="font-size:20px;margin-top:4px;">HALF: -</div>
-        <div class="sub-row" style="font-size:13px;"><span id="tkQtrHalfRAvg">건당: -</span></div>
+        <div class="sub-row" style="font-size:13px;"><span id="tkQtrHalfRTotal">총: -</span> · <span id="tkQtrHalfRAvg">건당: -</span></div>
       </div>
     </div>
     <div id="turnkeyKpiRow" style="display:none;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;">
@@ -1361,8 +1361,10 @@ function renderTurnkeyKPI(){
       else if(r==='HALF'){hc++;hs+=sales}
     });
     document.getElementById(p.prefix+'Done').textContent='Done: '+dc+'건';
+    document.getElementById(p.prefix+'DoneTotal').textContent='총: '+(dc?fmt(Math.round(ds)):'-');
     document.getElementById(p.prefix+'DoneAvg').textContent='건당: '+(dc?fmt(Math.round(ds/dc)):'-');
     document.getElementById(p.prefix+'HalfR').textContent='HALF: '+hc+'건';
+    document.getElementById(p.prefix+'HalfRTotal').textContent='총: '+(hc?fmt(Math.round(hs)):'-');
     document.getElementById(p.prefix+'HalfRAvg').textContent='건당: '+(hc?fmt(Math.round(hs/hc)):'-');
   });
 }
