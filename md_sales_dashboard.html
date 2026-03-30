@@ -2228,27 +2228,24 @@ function renderTurnkeySurvey(){
     scales:{y:{ticks:{callback:function(v){return v+'건'}}}}}});
 
   // === 주별 차트 (YoY) ===
-  function getMon(d){const dt=new Date(d);const day=dt.getDay();dt.setDate(dt.getDate()-day+(day===0?-6:1));return dt.toISOString().substring(0,10)}
+  function getMon(d){try{const dt=new Date(d);if(isNaN(dt))return'';const day=dt.getDay();dt.setDate(dt.getDate()-day+(day===0?-6:1));return dt.toISOString().substring(0,10)}catch(e){return''}}
   const weekTY={},weekPY={};
   // 25년~현재 주별 집계
   const startDate='2025-01-01';
   turnkeySurveyData.forEach(d=>{
     const dt=d['_date'];if(!dt||dt<startDate)return;
-    const mon=getMon(dt);weekTY[mon]=(weekTY[mon]||0)+1;
-    // 전년 동주
-    const prevDt=new Date(dt);prevDt.setFullYear(prevDt.getFullYear()-1);
-    const prevMon=getMon(prevDt.toISOString().substring(0,10));
-    // 전년 데이터는 별도 수집
+    const mon=getMon(dt);if(mon)weekTY[mon]=(weekTY[mon]||0)+1;
   });
   // 전년 데이터 (24년~)
   turnkeySurveyData.forEach(d=>{
     const dt=d['_date'];if(!dt)return;
-    const shifted=new Date(dt);shifted.setFullYear(shifted.getFullYear()+1);
-    const shiftedStr=shifted.toISOString().substring(0,10);
-    if(shiftedStr<startDate)return;
-    const mon=getMon(shiftedStr);weekPY[mon]=(weekPY[mon]||0)+1;
+    const mon=getMon(dt);if(!mon)return;
+    const shifted=new Date(mon);shifted.setFullYear(shifted.getFullYear()+1);
+    const shiftedMon=getMon(shifted.toISOString().substring(0,10));
+    if(!shiftedMon||shiftedMon<startDate)return;
+    weekPY[shiftedMon]=(weekPY[shiftedMon]||0)+1;
   });
-  const allWeeks=Object.keys(weekTY).sort();
+  const allWeeks=Object.keys(weekTY).filter(k=>k).sort();
   const weekLabelPlugin={id:'weekLabels',afterDraw:function(chart){
     const ctx=chart.ctx;const meta=chart.getDatasetMeta(0);if(!meta||meta.hidden)return;
     ctx.save();ctx.font='bold 9px Segoe UI, sans-serif';ctx.fillStyle='#333';ctx.textAlign='center';ctx.textBaseline='bottom';
@@ -2303,11 +2300,11 @@ function renderTurnkeySurvey(){
   turnkeySurveyData.forEach(d=>{
     if(!d['_consultOK']||!d['_consultDate'])return;
     const cdt=d['_consultDate'];if(cdt<startDate)return;
-    const mon=getMon(cdt);const mgr=d['_manager']||'미배정';
+    const mon=getMon(cdt);if(!mon)return;const mgr=d['_manager']||'미배정';
     if(!cWeekByMgr[mgr])cWeekByMgr[mgr]={};
     cWeekByMgr[mgr][mon]=(cWeekByMgr[mgr][mon]||0)+1;
   });
-  const cAllWeeks=[...new Set(Object.values(cWeekByMgr).flatMap(m=>Object.keys(m)))].sort();
+  const cAllWeeks=[...new Set(Object.values(cWeekByMgr).flatMap(m=>Object.keys(m)))].filter(k=>k).sort();
   const cWeekDatasets=cMgrList.map(function(mgr,i){
     return{label:mgr,data:cAllWeeks.map(function(w){return cWeekByMgr[mgr]?.[w]||0}),backgroundColor:cMonthColors[i%cMonthColors.length],stack:'consult',order:2}
   });
