@@ -181,6 +181,23 @@ tr:hover { background: #f7f9fc; }
         <div class="sub-row"><span id="tkHalfRate">비율: -</span></div>
       </div>
     </div>
+    <div id="turnkeySurveyKpiRow" style="display:none;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;">
+      <div class="kpi-card">
+        <div class="label">이번 주</div>
+        <div class="sub-row"><span id="tkWeekInbound">인입: -</span></div>
+        <div class="sub-row"><span id="tkWeekConsult">컨설팅: -</span></div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">이번 달</div>
+        <div class="sub-row"><span id="tkMonthInbound">인입: -</span></div>
+        <div class="sub-row"><span id="tkMonthConsult">컨설팅: -</span></div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">이번 분기</div>
+        <div class="sub-row"><span id="tkQtrInbound">인입: -</span></div>
+        <div class="sub-row"><span id="tkQtrConsult">컨설팅: -</span></div>
+      </div>
+    </div>
     <div id="turnkeySourceLinks" style="display:none;text-align:right;font-size:12px;color:#888;margin-bottom:8px;">데이터 출처: <a href="https://docs.google.com/spreadsheets/d/1rviBz7qa6xxWrKVu-4zJ70dCakQj_GUjVE6hL42DZ0E/edit?gid=665745561#gid=665745561" target="_blank" style="color:#1a73e8;">상담관리</a> | <a href="https://docs.google.com/spreadsheets/d/1rviBz7qa6xxWrKVu-4zJ70dCakQj_GUjVE6hL42DZ0E/edit?gid=148070959#gid=148070959" target="_blank" style="color:#1a73e8;">결제내역</a></div>
     <div id="sonoSourceLinks" style="display:none;text-align:right;font-size:12px;color:#888;margin-bottom:8px;">데이터 출처: <a href="https://docs.google.com/spreadsheets/d/1hwFUlXDkDt7PFfQCjgu2E4O7Ou4qxqzv8sSA9r54Tu8/edit?gid=1613844215#gid=1613844215" target="_blank" style="color:#1a73e8;">삼성 계약현황</a></div>
     <div class="chart-row-full" id="allKpiRow" style="display:none;">
@@ -504,7 +521,10 @@ async function fetchData(){
       ['총구매자수','이탈고객수','재구매자수','신규구매자수'].forEach(k=>{r[k]=parseNum(r[k])});
       ['이탈율','재구매율','신규구매비율'].forEach(k=>{r[k]=parseFloat(r[k])||0});return r})}}catch(e){console.warn('재구매 에러',e)}
     try{if(surveyR.ok){const t=await surveyR.text();if(t.trim()){turnkeySurveyData=parseCSV(t).filter(r=>r['문의날짜']&&String(r['문의날짜']).trim()).map(r=>{
-      const d=String(r['문의날짜']||'');r['_date']=d.substring(0,10);r['_ym']=fixYm(d.substring(0,7));return r})}}}catch(e){console.warn('설문 에러',e)}
+      const d=String(r['문의날짜']||'');r['_date']=d.substring(0,10);r['_ym']=fixYm(d.substring(0,7));
+      const cd=String(r['실제 컨설팅 일자']||'').substring(0,10);r['_consultDate']=cd&&cd.match(/^\d{4}/)?cd:'';
+      r['_consultOK']=String(r['[(사용안함)2024_턴키관리] 시트에서 CID 를 기준으로 컨설팅 여부 확인']||'').trim()==='O';
+      return r})}}}catch(e){console.warn('설문 에러',e)}
     try{if(targetR.ok){const tr=parseCSV(await targetR.text());const mc=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];tr.forEach(r=>{const c=r['품목']||'';if(!c)return;targetData[c]={};mc.forEach((m,i)=>{targetData[c][i+1]=parseNum(r[m])})})}}catch(e){console.warn('목표 에러',e)}
     initFilters();render();
     document.getElementById('loadingMsg').style.display='none';
@@ -680,6 +700,7 @@ function render(){
   document.getElementById('navDetail').style.display=(isPT10||isTurnkey||isAll)?'none':'';
   if(isPT10){renderPT10Summary();renderPT10Cart();renderPT10CartTrend();renderPT10DIO();try{renderPT10Buyers()}catch(e){console.warn('Buyers err',e)}try{renderPT10Insight()}catch(e){console.warn('Insight err',e)}}
   document.getElementById('turnkeyKpiRow').style.display=isTurnkey?'grid':'none';
+  document.getElementById('turnkeySurveyKpiRow').style.display=isTurnkey?'grid':'none';
   document.getElementById('turnkeySourceLinks').style.display=isTurnkey?'block':'none';
   document.getElementById('sonoSourceLinks').style.display=isSono?'block':'none';
   document.getElementById('profitMarginRow').style.display=isTurnkey?'':'none';
@@ -1244,6 +1265,34 @@ function renderTurnkeyKPI(){
   document.getElementById('tkHalfCount').textContent='건수: '+halfCount.toLocaleString()+'건';
   document.getElementById('tkHalfAvg').textContent='객단가: '+(halfCount?fmt(Math.round(halfSales/halfCount)):'-');
   document.getElementById('tkHalfRate').textContent='비율: '+(totalCount?(halfCount/totalCount*100).toFixed(0)+'%':'-');
+
+  // 인입/컨설팅 건수
+  const todayStr=today.toISOString().substring(0,10);
+  const curMon=today.getMonth()+1;
+  const curMonth=`${curYear}-${String(curMon).padStart(2,'0')}`;
+  const day=today.getDay();const monday=new Date(today);monday.setDate(today.getDate()-day+(day===0?-6:1));
+  const sunday=new Date(monday);sunday.setDate(monday.getDate()+6);
+  const mondayStr=monday.toISOString().substring(0,10);const sundayStr=sunday.toISOString().substring(0,10);
+  const qS=Math.floor((curMon-1)/3)*3+1;
+  const qMs=[qS,qS+1,qS+2].map(m=>`${curYear}-${String(m).padStart(2,'0')}`);
+
+  let wIn=0,wCon=0,mIn=0,mCon=0,qIn=0,qCon=0;
+  turnkeySurveyData.forEach(d=>{
+    const dt=d['_date'];const ym=d['_ym'];
+    const cdt=d['_consultDate'];const cok=d['_consultOK'];
+    // 이번주
+    if(dt>=mondayStr&&dt<=sundayStr){wIn++;if(cdt>=mondayStr&&cdt<=sundayStr&&cok)wCon++}
+    // 이번달
+    if(ym===curMonth){mIn++;if(cdt&&fixYm(cdt.substring(0,7))===curMonth&&cok)mCon++}
+    // 이번분기
+    if(qMs.includes(ym)){qIn++;if(cdt){const cym=fixYm(cdt.substring(0,7));if(qMs.includes(cym)&&cok)qCon++}}
+  });
+  document.getElementById('tkWeekInbound').textContent='인입: '+wIn+'건';
+  document.getElementById('tkWeekConsult').textContent='컨설팅: '+wCon+'건';
+  document.getElementById('tkMonthInbound').textContent='인입: '+mIn+'건';
+  document.getElementById('tkMonthConsult').textContent='컨설팅: '+mCon+'건';
+  document.getElementById('tkQtrInbound').textContent='인입: '+qIn+'건';
+  document.getElementById('tkQtrConsult').textContent='컨설팅: '+qCon+'건';
 }
 
 function renderSonoCountChart(){
