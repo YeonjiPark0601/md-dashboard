@@ -112,25 +112,37 @@ tr:hover { background: #f7f9fc; }
 </div>
 
 <nav class="side-nav" id="sideNav">
-  <a href="#sec-kpi" onclick="scrollTo2('sec-kpi')">KPI</a>
-  <a href="#sec-trend" onclick="scrollTo2('sec-trend')">매출 트렌드</a>
-  <a href="#sec-charts" onclick="scrollTo2('sec-charts')" id="navCharts">차트</a>
-  <a href="#sec-supplier-chart" onclick="scrollTo2('sec-supplier-chart')" id="navSupplier">공급처별 매출</a>
-  <a href="#sec-monthly" onclick="scrollTo2('sec-monthly')" id="navMonthly">월별 매출</a>
-  <a href="#sec-detail" onclick="scrollTo2('sec-detail')" id="navDetail">매출 상세</a>
-  <a href="#sec-pu" onclick="scrollTo2('sec-pu')" id="navPU" style="display:none;">PU 분석</a>
-  <a href="#sec-rebuy" onclick="scrollTo2('sec-rebuy')" id="navRebuy" style="display:none;">재구매 분석</a>
-  <a href="#sec-pt10summary" onclick="scrollTo2('sec-pt10summary')" id="navPT10Summary" style="display:none;">26년 수량/매출</a>
-  <a href="#sonoInventoryRow" onclick="scrollTo2('sonoInventoryRow')" id="navSonoInventory" style="display:none;">재고 현황</a>
-  <a href="#sonoMapRow" onclick="scrollTo2('sonoMapRow')" id="navSonoMap" style="display:none;">지역별 매출</a>
-  <a href="#sonoASRow" onclick="scrollTo2('sonoASRow')" id="navSonoAS" style="display:none;">AS 매출</a>
-  <a href="#sonoQtyChartRow" onclick="scrollTo2('sonoQtyChartRow')" id="navSonoQty" style="display:none;">모델별 수량</a>
-  <a href="#pt10CartChartRow" onclick="scrollTo2('pt10CartChartRow')" id="navPT10CartTrend" style="display:none;">카트리지 트렌드</a>
-  <a href="#sec-pt10cart" onclick="scrollTo2('pt10CartRow')" id="navPT10Cart" style="display:none;">26년 카트리지</a>
-  <a href="#sec-pt10y25" onclick="scrollTo2('pt10Summary2025Row')" id="navPT10Y25" style="display:none;">25년</a>
-  <a href="#sec-pt10y24" onclick="scrollTo2('pt10Summary2024Row')" id="navPT10Y24" style="display:none;">24년</a>
-  <a href="#sec-pt10y23" onclick="scrollTo2('pt10Summary2023Row')" id="navPT10Y23" style="display:none;">23년</a>
-  <a href="#sec-profitMargin" onclick="scrollTo2('sec-profitMargin')" id="navProfitMargin" style="display:none;">매출총이익률</a>
+  <!-- 공통 -->
+  <a href="#sec-kpi" onclick="return scrollTo2('sec-kpi')">KPI</a>
+  <a href="#sec-trend" onclick="return scrollTo2('sec-trend')">매출 트렌드</a>
+  <!-- 의료기기 -->
+  <a href="#sec-charts" onclick="return scrollTo2('sec-charts')" id="navCharts" style="display:none;">차트</a>
+  <a href="#sec-supplier-chart" onclick="return scrollTo2('sec-supplier-chart')" id="navSupplier" style="display:none;">공급처별 매출</a>
+  <a href="#sec-monthly" onclick="return scrollTo2('sec-monthly')" id="navMonthly" style="display:none;">월별 매출</a>
+  <a href="#sec-detail" onclick="return scrollTo2('sec-detail')" id="navDetail" style="display:none;">매출 상세</a>
+  <!-- 클래스 -->
+  <a href="#sec-pu" onclick="return scrollTo2('sec-pu')" id="navPU" style="display:none;">PU 분석</a>
+  <a href="#sec-rebuy" onclick="return scrollTo2('sec-rebuy')" id="navRebuy" style="display:none;">재구매 분석</a>
+  <!-- 초음파 -->
+  <a href="#sonoMapRow" onclick="return scrollTo2('sonoMapRow')" id="navSonoMap" style="display:none;">지역별 매출</a>
+  <a href="#sonoASRow" onclick="return scrollTo2('sonoASRow')" id="navSonoAS" style="display:none;">AS 매출</a>
+  <a href="#sonoQtyChartRow" onclick="return scrollTo2('sonoQtyChartRow')" id="navSonoQty" style="display:none;">모델별 수량</a>
+  <a href="#sonoInventoryRow" onclick="return scrollTo2('sonoInventoryRow')" id="navSonoInventory" style="display:none;">재고 현황</a>
+  <!-- 턴키 -->
+  <a href="#turnkeySurveyMonthRow" onclick="return scrollTo2('turnkeySurveyMonthRow')" id="navTkSurvey" style="display:none;">설문 응답</a>
+  <a href="#turnkeyConsultMonthRow" onclick="return scrollTo2('turnkeyConsultMonthRow')" id="navTkConsult" style="display:none;">컨설팅 현황</a>
+  <a href="#sec-profitMargin" onclick="return scrollTo2('sec-profitMargin')" id="navProfitMargin" style="display:none;">매출총이익률</a>
+  <a href="#turnkeyConsultImpactRow" onclick="return scrollTo2('turnkeyConsultImpactRow')" id="navTkImpact" style="display:none;">기여도 분석</a>
+  <!-- PT10 -->
+  <a href="#sec-pt10summary" onclick="return scrollTo2('pt10SummaryRow')" id="navPT10Summary" style="display:none;">26년 수량/매출</a>
+  <a href="#pt10CartChartRow" onclick="return scrollTo2('pt10CartChartRow')" id="navPT10CartTrend" style="display:none;">카트리지 트렌드</a>
+  <a href="#pt10CartRow" onclick="return scrollTo2('pt10CartRow')" id="navPT10Cart" style="display:none;">카트리지 상세</a>
+  <a href="#pt10DioRow" onclick="return scrollTo2('pt10DioRow')" id="navPT10Dio" style="display:none;">재고 DIO</a>
+  <a href="#pt10BuyerMonthlyRow" onclick="return scrollTo2('pt10BuyerMonthlyRow')" id="navPT10Buyer" style="display:none;">구매자 리스트</a>
+  <a href="#pt10InsightRow" onclick="return scrollTo2('pt10InsightRow')" id="navPT10Insight" style="display:none;">인사이트</a>
+  <a href="#pt10Summary2025Row" onclick="return scrollTo2('pt10Summary2025Row')" id="navPT10Y25" style="display:none;">25년</a>
+  <a href="#pt10Summary2024Row" onclick="return scrollTo2('pt10Summary2024Row')" id="navPT10Y24" style="display:none;">24년</a>
+  <a href="#pt10Summary2023Row" onclick="return scrollTo2('pt10Summary2023Row')" id="navPT10Y23" style="display:none;">23년</a>
 </nav>
 
 <div class="container">
@@ -739,7 +751,8 @@ function render(){
   document.getElementById('navSonoAS').style.display=isSono?'':'none';
   document.getElementById('sonoQtyChartRow').style.display=isSono?'':'none';
   document.getElementById('navSonoQty').style.display=isSono?'':'none';
-  ['navPT10Summary','navPT10CartTrend','navPT10Cart','navPT10Y25','navPT10Y24','navPT10Y23'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
+  ['navPT10Summary','navPT10CartTrend','navPT10Cart','navPT10Dio','navPT10Buyer','navPT10Insight','navPT10Y25','navPT10Y24','navPT10Y23'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
+  ['navTkSurvey','navTkConsult','navTkImpact'].forEach(id=>{document.getElementById(id).style.display=isTurnkey?'':'none'});
   document.getElementById('navMonthly').style.display=(isPT10||isAll)?'none':'';
   document.getElementById('navDetail').style.display=(isPT10||isTurnkey||isAll)?'none':'';
   if(isPT10){renderPT10Summary();renderPT10Cart();renderPT10CartTrend();renderPT10DIO();try{renderPT10Buyers()}catch(e){console.warn('Buyers err',e)}try{renderPT10Insight()}catch(e){console.warn('Insight err',e)}}
@@ -2474,7 +2487,7 @@ function renderRebuy(){
 
 function scrollTo2(id){
   const el=document.getElementById(id);
-  if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+  if(el){const y=el.getBoundingClientRect().top+window.scrollY-120;window.scrollTo({top:y,behavior:'smooth'})}
   return false;
 }
 
