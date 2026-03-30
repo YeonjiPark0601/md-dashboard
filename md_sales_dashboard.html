@@ -505,6 +505,7 @@ function parseCSV(csv) {
 }
 function parseNum(s){if(s==null||s==='')return 0;return Number(String(s).replace(/[,₩\\s]/g,''))||0}
 function fixYm(ym){if(!ym||typeof ym!=='string')return'';const s=ym.substring(0,7);const p=s.split('-');if(p.length===2)return p[0]+'-'+p[1].padStart(2,'0');return s}
+function fixDate(d){if(!d||typeof d!=='string')return'';const p=d.substring(0,10).split('-');if(p.length===3)return p[0]+'-'+p[1].padStart(2,'0')+'-'+p[2].padStart(2,'0');return d.substring(0,10)}
 function fmt(n){return Math.round(n).toLocaleString('ko-KR')+'원'}
 function fmtLabel(n){if(!n||n===0)return'0.00억';return(n/1e8).toFixed(2)+'억'}
 function yearShift(ym,d){const[y,m]=ym.split('-').map(Number);return`${y+d}-${String(m).padStart(2,'0')}`}
@@ -523,19 +524,19 @@ async function fetchData(){
       fetch(sheetUrl('턴키 상담관리'))
     ]);
     if(!salesR.ok)throw new Error('매출 데이터 로딩 실패');
-    allData=parseCSV(await salesR.text()).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['공급가']=parseNum(r['공급가']);r['수량']=parseNum(r['수량']);r['연월']=fixYm(r['연월']);if(r['주문일']&&r['주문일'].length>10)r['주문일']=r['주문일'].substring(0,10);return r});
-    try{if(classR.ok){const ct=await classR.text();if(ct.trim()){classData=parseCSV(ct).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['연월']=fixYm(r['연월']);if(r['주문일']&&r['주문일'].length>10)r['주문일']=r['주문일'].substring(0,10);return r})}}}catch(e){console.warn('클래스 파싱 에러',e)}
+    allData=parseCSV(await salesR.text()).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['공급가']=parseNum(r['공급가']);r['수량']=parseNum(r['수량']);r['연월']=fixYm(r['연월']);r['주문일']=fixDate(r['주문일']||'');return r});
+    try{if(classR.ok){const ct=await classR.text();if(ct.trim()){classData=parseCSV(ct).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['연월']=fixYm(r['연월']);r['주문일']=fixDate(r['주문일']||'');return r})}}}catch(e){console.warn('클래스 파싱 에러',e)}
     try{if(turnkeyR.ok){const tt=await turnkeyR.text();if(tt.trim()){
       const tkAll=parseCSV(tt).filter(r=>r['결제 일자']&&String(r['결제 일자']).trim()).map(r=>{
         r['매출금액']=parseNum(r['최종 결제액'])/1.1;r['공급가']=parseNum(r['총 공급가액'])/1.1;r['매출총이익']=parseNum(r['최종 매출총이익'])/1.1;r['할인전금액']=parseNum(r['금액']);
-        const dt=String(r['결제 일자']||'');r['주문일']=dt.substring(0,10);r['연월']=fixYm(dt.substring(0,7));
+        const dt=String(r['결제 일자']||'');r['주문일']=fixDate(dt);r['연월']=fixYm(dt.substring(0,7));
         r['카테고리']=r['카테고리']||'';return r});
       // key별 금액(O열) 합계 600만 이상만 포함
       const keySum={};tkAll.forEach(r=>{const k=r['key']||'';keySum[k]=(keySum[k]||0)+parseNum(r['금액'])});
       turnkeyData=tkAll.filter(r=>{const k=r['key']||'';return keySum[k]>=6000000})
     }}}catch(e){console.warn('턴키 파싱 에러',e)}
     try{if(pt10MasterR.ok){const t=await pt10MasterR.text();if(t.trim()){parseCSV(t).forEach(r=>{const code=r['품목코드']||'';if(code&&!pt10Master[code])pt10Master[code]={구분:r['구분']||'',상세:r['상세']||''}})}}}catch(e){console.warn('PT10마스터 에러',e)}
-    try{if(pt10R.ok){const t=await pt10R.text();if(t.trim()){pt10Data=parseCSV(t).filter(r=>r['주문일']&&String(r['주문일']).trim()).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['수량']=parseNum(r['수량']);r['연월']=fixYm(r['연월']);if(r['주문일']&&r['주문일'].length>10)r['주문일']=r['주문일'].substring(0,10);
+    try{if(pt10R.ok){const t=await pt10R.text();if(t.trim()){pt10Data=parseCSV(t).filter(r=>r['주문일']&&String(r['주문일']).trim()).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['수량']=parseNum(r['수량']);r['연월']=fixYm(r['연월']);r['주문일']=fixDate(r['주문일']||'');
       const m=pt10Master[r['품목코드']||''];if(m){r['구분']=m.구분;r['상세']=m.상세}else if(!r['구분']){r['구분']='';r['상세']=''}
       return r})}}}catch(e){console.warn('PT10 에러',e)}
     // 초음파: 2개 시트 합산
@@ -552,7 +553,7 @@ async function fetchData(){
           if(!amt)continue;
           const ym=fixYm(dt.substring(0,7));
           const model=(cols[6]||'').replace(/\s*\(.*?\)/g,'').trim(); // 장비명에서 괄호 제거
-          sonoArr.push({주문일:dt.substring(0,10),연월:ym,한의원명:cols[3]||'', // D열=병원명
+          sonoArr.push({주문일:fixDate(dt),연월:ym,한의원명:cols[3]||'', // D열=병원명
             품목명:model,공급업체:model, // G열=장비명 (괄호 제거)
             지역:cols[5]||'', // F열=지역
             카테고리:cols[1]||'', // B열=재고기준(상품/견본)
@@ -564,7 +565,7 @@ async function fetchData(){
         const isProbe=/프로브|미니프로브|미니 프로브/i.test(pn);
         const isOption=/옵션|ADVR|AUTOIMT|EZHRI|NEEDLEMATE|BatteryAssist|ECG|PANORAMIC|Foot|ONTPKG/i.test(pn);
         const cat=isAS?'AS':isProbe?'프로브':isOption?'옵션':'누락';
-        sonoArr.push({주문일:(r['결제일']||'').substring(0,10),연월:fixYm(r['연월']||''),한의원명:r['주문자']||'',품목명:cat,공급업체:cat,카테고리:cat,매출금액:parseNum(r['매출액(real_rev)'])/1.1,공급가:parseNum(r['공급가(VAT제외)']),_isAS:isAS})})}}
+        sonoArr.push({주문일:fixDate(r['결제일']||''),연월:fixYm(r['연월']||''),한의원명:r['주문자']||'',품목명:cat,공급업체:cat,카테고리:cat,매출금액:parseNum(r['매출액(real_rev)'])/1.1,공급가:parseNum(r['공급가(VAT제외)']),_isAS:isAS})})}}
       sonoData=sonoArr;
     }catch(e){console.warn('초음파 에러',e)}
     try{if(puOnR.ok){const t=await puOnR.text();if(t.trim())puOnData=parseCSV(t).map(r=>{r['PU']=parseNum(r['PU']);return r})}}catch(e){console.warn('PU온라인 에러',e)}
