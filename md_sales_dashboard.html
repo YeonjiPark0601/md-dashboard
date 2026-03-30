@@ -577,8 +577,16 @@ function getFilteredData(){
 
 function getTargetForMonth(month){
   if(currentTab==='턴키')return getTurnkeyTargetForMonth(month);
-  const m=parseInt(month.split('-')[1]);let total=0;
-  const cats=currentTab==='전체'?[...MD_CATEGORIES,'초음파',...CLASS_CATEGORIES]:currentTab==='초음파'?['초음파']:currentTab==='PT10'?['PT10']:currentTab==='의료기기'?MD_CATEGORIES:currentTab==='클래스'?CLASS_CATEGORIES:[];
+  const m=parseInt(month.split('-')[1]);
+  // 의료기기/전체: 시트의 '의료기기' 합산 행 직접 사용
+  if(currentTab==='의료기기'){return(targetData['의료기기']&&targetData['의료기기'][m])||0}
+  if(currentTab==='전체'){
+    let total=0;
+    ['의료기기','초음파',...CLASS_CATEGORIES].forEach(c=>{if(targetData[c]&&targetData[c][m])total+=targetData[c][m]});
+    return total;
+  }
+  let total=0;
+  const cats=currentTab==='초음파'?['초음파']:currentTab==='PT10'?['PT10']:currentTab==='클래스'?CLASS_CATEGORIES:[];
   cats.forEach(c=>{if(targetData[c]&&targetData[c][m])total+=targetData[c][m]});
   return total;
 }
