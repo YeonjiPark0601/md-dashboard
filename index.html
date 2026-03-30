@@ -1280,12 +1280,17 @@ function renderTurnkeyKPI(){
   turnkeySurveyData.forEach(d=>{
     const dt=d['_date'];const ym=d['_ym'];
     const cdt=d['_consultDate'];const cok=d['_consultOK'];
-    // 이번주
-    if(dt>=mondayStr&&dt<=sundayStr){wIn++;if(cdt>=mondayStr&&cdt<=sundayStr&&cok)wCon++}
-    // 이번달
-    if(ym===curMonth){mIn++;if(cdt&&fixYm(cdt.substring(0,7))===curMonth&&cok)mCon++}
-    // 이번분기
-    if(qMs.includes(ym)){qIn++;if(cdt){const cym=fixYm(cdt.substring(0,7));if(qMs.includes(cym)&&cok)qCon++}}
+    const cym=cdt?fixYm(cdt.substring(0,7)):'';
+    // 인입: 문의날짜 기준
+    if(dt>=mondayStr&&dt<=sundayStr)wIn++;
+    if(ym===curMonth)mIn++;
+    if(qMs.includes(ym))qIn++;
+    // 컨설팅: 컨설팅 날짜 기준 (인입과 독립)
+    if(cok&&cdt){
+      if(cdt>=mondayStr&&cdt<=sundayStr)wCon++;
+      if(cym===curMonth)mCon++;
+      if(qMs.includes(cym))qCon++;
+    }
   });
   document.getElementById('tkWeekInbound').textContent='인입: '+wIn+'건';
   document.getElementById('tkWeekConsult').textContent='컨설팅: '+wCon+'건';
