@@ -2269,7 +2269,8 @@ function renderTurnkeySurvey(){
 
   if(surveyWeekChart)surveyWeekChart.destroy();
   var _oldW=document.getElementById('surveyWeekChart');var _newW=document.createElement('canvas');_newW.id='surveyWeekChart';_newW.height=80;_oldW.parentNode.replaceChild(_newW,_oldW);
-  surveyWeekChart=new Chart(_newW,{type:'bar',data:{labels:allWeeks.map(w=>w.substring(5)),datasets:[
+  function toWkLabel(dateStr){var d=new Date(dateStr);var jan1=new Date(d.getFullYear(),0,1);var days=Math.floor((d-jan1)/86400000);var wk=Math.ceil((days+jan1.getDay()+1)/7);return 'WK'+String(wk).padStart(2,'0')}
+  surveyWeekChart=new Chart(_newW,{type:'bar',data:{labels:allWeeks.map(w=>toWkLabel(w)),datasets:[
     {label:'올해',data:allWeeks.map(w=>weekTY[w]||0),backgroundColor:'#9334e6',borderRadius:4,order:2},
     {label:'전년',data:allWeeks.map(w=>weekPY[w]||0),type:'line',borderColor:'#bbb',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,borderDash:[5,3],pointRadius:2,pointBackgroundColor:'#999',order:0,fill:false}
   ]},plugins:[weekLabelPlugin],options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:20}},
@@ -2335,7 +2336,7 @@ function renderTurnkeySurvey(){
     ctx.restore()}};
   if(consultWeekChart)consultWeekChart.destroy();
   var _oldCW=document.getElementById('consultWeekChart');var _newCW=document.createElement('canvas');_newCW.id='consultWeekChart';_newCW.height=80;_oldCW.parentNode.replaceChild(_newCW,_oldCW);
-  consultWeekChart=new Chart(_newCW,{type:'bar',data:{labels:cAllWeeks.map(w=>w.substring(5)),datasets:cWeekDatasets},plugins:[cWeekStackPlugin],options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:20}},
+  consultWeekChart=new Chart(_newCW,{type:'bar',data:{labels:cAllWeeks.map(w=>toWkLabel(w)),datasets:cWeekDatasets},plugins:[cWeekStackPlugin],options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:20}},
     plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:12}},datalabels:{display:false},
       tooltip:{mode:'index',callbacks:{label:function(ctx){return ctx.dataset.label+': '+ctx.raw+'건'},
         afterBody:function(items){var t=0;items.forEach(function(it){t+=it.raw});return '합계: '+t+'건'}}}},
