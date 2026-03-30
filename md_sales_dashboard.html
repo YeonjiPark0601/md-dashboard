@@ -533,6 +533,7 @@ async function fetchData(){
       const d=String(r['문의날짜']||'');r['_date']=d.substring(0,10);r['_ym']=fixYm(d.substring(0,7));
       const cd=String(r['실제 컨설팅 일자']||'').substring(0,10);r['_consultDate']=cd&&cd.match(/^\d{4}/)?cd:'';
       r['_consultOK']=String(r['[(사용안함)2024_턴키관리] 시트에서 CID 를 기준으로 컨설팅 여부 확인']||'').trim()==='O';
+      r['_manager']=r['담당자']||'';
       return r})}}}catch(e){console.warn('설문 에러',e)}
     try{if(targetR.ok){const tr=parseCSV(await targetR.text());const mc=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];tr.forEach(r=>{const c=r['품목']||'';if(!c)return;targetData[c]={};mc.forEach((m,i)=>{targetData[c][i+1]=parseNum(r[m])})})}}catch(e){console.warn('목표 에러',e)}
     initFilters();render();
@@ -2208,59 +2209,69 @@ function renderTurnkeySurvey(){
       tooltip:{callbacks:{label:function(ctx){return ctx.dataset.label+': '+ctx.raw+'건'}}}},
     scales:{y:{ticks:{callback:function(v){return v+'건'}}}}}});
 
-  // === 컨설팅 월별 차트 ===
-  const cMonthTY={},cMonthPY={};
+  // === 컨설팅 월별 차트 (담당자별 누적) ===
+  const cManagers=new Set();const cMonthByMgr={};
   turnkeySurveyData.forEach(d=>{
     if(!d['_consultOK']||!d['_consultDate'])return;
-    const cym=fixYm(d['_consultDate'].substring(0,7));if(!cym)return;
-    if(months.includes(cym))cMonthTY[cym]=(cMonthTY[cym]||0)+1;
-    const sh=yearShift(cym,1);if(months.includes(sh))cMonthPY[sh]=(cMonthPY[sh]||0)+1;
+    const cym=fixYm(d['_consultDate'].substring(0,7));if(!cym||!months.includes(cym))return;
+    const mgr=d['_manager']||'미배정';
+    cManagers.add(mgr);
+    if(!cMonthByMgr[mgr])cMonthByMgr[mgr]={};
+    cMonthByMgr[mgr][cym]=(cMonthByMgr[mgr][cym]||0)+1;
   });
-  const cMonthLabelPlugin={id:'cMonthLabels',afterDraw:function(chart){
-    const ctx=chart.ctx;const meta=chart.getDatasetMeta(0);if(!meta||meta.hidden)return;
+  const cMgrList=[...cManagers].sort();
+  const cMonthColors=['#0d9488','#4285f4','#ea4335','#fbbc04','#9334e6','#ff6d01','#46bdc6','#e8710a'];
+  const cMonthDatasets=cMgrList.map(function(mgr,i){
+    return{label:mgr,data:months.map(function(m){return cMonthByMgr[mgr]?.[m]||0}),backgroundColor:cMonthColors[i%cMonthColors.length],stack:'consult',order:2}
+  });
+  const cMonthStackPlugin={id:'cMonthStack',afterDraw:function(chart){
+    const ctx=chart.ctx;const ds=chart.data.datasets;
     ctx.save();ctx.font='bold 10px Segoe UI, sans-serif';ctx.fillStyle='#333';ctx.textAlign='center';ctx.textBaseline='bottom';
-    meta.data.forEach(function(bar,i){var v=chart.data.datasets[0].data[i];if(v>0)ctx.fillText(v+'건',bar.x,bar.y-4)});
+    const monthCount=chart.data.labels.length;
+    for(var di=0;di<monthCount;di++){
+      var total=0,lastBar=null;
+      for(var j=0;j<ds.length;j++){var meta=chart.getDatasetMeta(j);if(!meta.hidden){total+=ds[j].data[di]||0;if(ds[j].data[di])lastBar=meta.data[di]}}
+      if(total>0&&lastBar)ctx.fillText(total+'건',lastBar.x,lastBar.y-4);
+    }
     ctx.restore()}};
   if(consultMonthChart)consultMonthChart.destroy();
   var _oldCM=document.getElementById('consultMonthChart');var _newCM=document.createElement('canvas');_newCM.id='consultMonthChart';_newCM.height=80;_oldCM.parentNode.replaceChild(_newCM,_oldCM);
-  consultMonthChart=new Chart(_newCM,{type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets:[
-    {label:'올해',data:months.map(m=>cMonthTY[m]||0),backgroundColor:'#0d9488',borderRadius:4,order:2},
-    {label:'전년',data:months.map(m=>cMonthPY[m]||0),type:'line',borderColor:'#bbb',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,borderDash:[5,3],pointRadius:3,pointBackgroundColor:'#999',order:0,fill:false}
-  ]},plugins:[cMonthLabelPlugin],options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:25}},
-    plugins:{legend:{position:'top'},datalabels:{display:false},
-      tooltip:{callbacks:{label:function(ctx){return ctx.dataset.label+': '+ctx.raw+'건'}}}},
-    scales:{y:{ticks:{callback:function(v){return v+'건'}}}}}});
+  consultMonthChart=new Chart(_newCM,{type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets:cMonthDatasets},plugins:[cMonthStackPlugin],options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:25}},
+    plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:12}},datalabels:{display:false},
+      tooltip:{mode:'index',callbacks:{label:function(ctx){return ctx.dataset.label+': '+ctx.raw+'건'},
+        afterBody:function(items){var t=0;items.forEach(function(it){t+=it.raw});return '합계: '+t+'건'}}}},
+    scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:function(v){return v+'건'}}}}}});
 
-  // === 컨설팅 주별 차트 ===
-  const cWeekTY={},cWeekPY={};
+  // === 컨설팅 주별 차트 (담당자별 누적) ===
+  const cWeekByMgr={};
   turnkeySurveyData.forEach(d=>{
     if(!d['_consultOK']||!d['_consultDate'])return;
     const cdt=d['_consultDate'];if(cdt<startDate)return;
-    const mon=getMon(cdt);cWeekTY[mon]=(cWeekTY[mon]||0)+1;
+    const mon=getMon(cdt);const mgr=d['_manager']||'미배정';
+    if(!cWeekByMgr[mgr])cWeekByMgr[mgr]={};
+    cWeekByMgr[mgr][mon]=(cWeekByMgr[mgr][mon]||0)+1;
   });
-  turnkeySurveyData.forEach(d=>{
-    if(!d['_consultOK']||!d['_consultDate'])return;
-    const cdt=d['_consultDate'];
-    const shifted=new Date(cdt);shifted.setFullYear(shifted.getFullYear()+1);
-    const shiftedStr=shifted.toISOString().substring(0,10);
-    if(shiftedStr<startDate)return;
-    const mon=getMon(shiftedStr);cWeekPY[mon]=(cWeekPY[mon]||0)+1;
+  const cAllWeeks=[...new Set(Object.values(cWeekByMgr).flatMap(m=>Object.keys(m)))].sort();
+  const cWeekDatasets=cMgrList.map(function(mgr,i){
+    return{label:mgr,data:cAllWeeks.map(function(w){return cWeekByMgr[mgr]?.[w]||0}),backgroundColor:cMonthColors[i%cMonthColors.length],stack:'consult',order:2}
   });
-  const cAllWeeks=Object.keys(cWeekTY).sort();
-  const cWeekLabelPlugin={id:'cWeekLabels',afterDraw:function(chart){
-    const ctx=chart.ctx;const meta=chart.getDatasetMeta(0);if(!meta||meta.hidden)return;
+  const cWeekStackPlugin={id:'cWeekStack',afterDraw:function(chart){
+    const ctx=chart.ctx;const ds=chart.data.datasets;
     ctx.save();ctx.font='bold 9px Segoe UI, sans-serif';ctx.fillStyle='#333';ctx.textAlign='center';ctx.textBaseline='bottom';
-    meta.data.forEach(function(bar,i){var v=chart.data.datasets[0].data[i];if(v>0)ctx.fillText(v+'건',bar.x,bar.y-3)});
+    const wCount=chart.data.labels.length;
+    for(var di=0;di<wCount;di++){
+      var total=0,lastBar=null;
+      for(var j=0;j<ds.length;j++){var meta=chart.getDatasetMeta(j);if(!meta.hidden){total+=ds[j].data[di]||0;if(ds[j].data[di])lastBar=meta.data[di]}}
+      if(total>0&&lastBar)ctx.fillText(total+'건',lastBar.x,lastBar.y-3);
+    }
     ctx.restore()}};
   if(consultWeekChart)consultWeekChart.destroy();
   var _oldCW=document.getElementById('consultWeekChart');var _newCW=document.createElement('canvas');_newCW.id='consultWeekChart';_newCW.height=80;_oldCW.parentNode.replaceChild(_newCW,_oldCW);
-  consultWeekChart=new Chart(_newCW,{type:'bar',data:{labels:cAllWeeks.map(w=>w.substring(5)),datasets:[
-    {label:'올해',data:cAllWeeks.map(w=>cWeekTY[w]||0),backgroundColor:'#0d9488',borderRadius:4,order:2},
-    {label:'전년',data:cAllWeeks.map(w=>cWeekPY[w]||0),type:'line',borderColor:'#bbb',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,borderDash:[5,3],pointRadius:2,pointBackgroundColor:'#999',order:0,fill:false}
-  ]},plugins:[cWeekLabelPlugin],options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:20}},
-    plugins:{legend:{position:'top'},datalabels:{display:false},
-      tooltip:{callbacks:{label:function(ctx){return ctx.dataset.label+': '+ctx.raw+'건'}}}},
-    scales:{y:{ticks:{callback:function(v){return v+'건'}}}}}});
+  consultWeekChart=new Chart(_newCW,{type:'bar',data:{labels:cAllWeeks.map(w=>w.substring(5)),datasets:cWeekDatasets},plugins:[cWeekStackPlugin],options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:20}},
+    plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:12}},datalabels:{display:false},
+      tooltip:{mode:'index',callbacks:{label:function(ctx){return ctx.dataset.label+': '+ctx.raw+'건'},
+        afterBody:function(items){var t=0;items.forEach(function(it){t+=it.raw});return '합계: '+t+'건'}}}},
+    scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:function(v){return v+'건'}}}}}});
 }
 
 function renderPU(){
