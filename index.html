@@ -454,8 +454,10 @@ const SHEET_ID = '1s34C5qB-K_A8vJEJQaOOyJ44YM3netORbfCVVfM3idw';
 const TARGET_SHEET_ID = '1Z8C_uiDHD6udIq7b9C79xlPxz4ERK5aC-vkoIbvTxic';
 const TARGET_URL = `https://docs.google.com/spreadsheets/d/${TARGET_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('26년 품목별 목표')}&_t=${Date.now()}`;
 
-// ChartDataLabels 전역 등록
+// ChartDataLabels 전역 등록 + 툴팁 항상 위로
 if(typeof ChartDataLabels!=='undefined'){Chart.register(ChartDataLabels)}
+Chart.defaults.plugins.tooltip.position='nearest';
+Chart.defaults.plugins.tooltip.yAlign='top';
 
 let currentTab = '의료기기';
 let allData = [], classData = [], turnkeyData = [], pt10Data = [], pt10Master = {}, sonoData = [], puOnData = [], puOffData = [], rebuyData = [], targetData = {}, pt10PuData = [], turnkeySurveyData = [];
