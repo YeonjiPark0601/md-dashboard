@@ -495,7 +495,7 @@ async function fetchData(){
         const isProbe=/프로브|미니프로브|미니 프로브/i.test(pn);
         const isOption=/옵션|ADVR|AUTOIMT|EZHRI|NEEDLEMATE|BatteryAssist|ECG|PANORAMIC|Foot|ONTPKG/i.test(pn);
         const cat=isAS?'AS':isProbe?'프로브':isOption?'옵션':'누락';
-        sonoArr.push({주문일:(r['결제일']||'').substring(0,10),연월:fixYm(r['연월']||''),한의원명:r['주문자']||'',품목명:cat,공급업체:cat,카테고리:cat,매출금액:parseNum(r['매출액(real_rev)']),공급가:parseNum(r['공급가(VAT제외)']),_isAS:isAS})})}}
+        sonoArr.push({주문일:(r['결제일']||'').substring(0,10),연월:fixYm(r['연월']||''),한의원명:r['주문자']||'',품목명:cat,공급업체:cat,카테고리:cat,매출금액:parseNum(r['매출액(real_rev)'])/1.1,공급가:parseNum(r['공급가(VAT제외)']),_isAS:isAS})})}}
       sonoData=sonoArr;
     }catch(e){console.warn('초음파 에러',e)}
     try{if(puOnR.ok){const t=await puOnR.text();if(t.trim())puOnData=parseCSV(t).map(r=>{r['PU']=parseNum(r['PU']);return r})}}catch(e){console.warn('PU온라인 에러',e)}
@@ -738,7 +738,7 @@ function renderAllKPI(){
 
   const segments = [
     {label:'초음파', data:sonoData.filter(d=>!d._isAS), cats:['초음파'], dateKey:'주문일'},
-    {label:'의료기기', data:allData, cats:MD_CATEGORIES, dateKey:'주문일'},
+    {label:'의료기기', data:allData, cats:['의료기기'], dateKey:'주문일'},
     {label:'클래스', data:classData, cats:CLASS_CATEGORIES, dateKey:'주문일'}
   ];
 
@@ -2117,47 +2117,49 @@ function renderTurnkeySurvey(){
   const recentWeeks=allWeeks.slice(-12);
 
   if(surveyWeekChart)surveyWeekChart.destroy();
-  var _old2=document.getElementById('surveyWeekChart');var _new2=document.createElement('canvas');_new2.id='surveyWeekChart';_new2.height=120;_old2.parentNode.replaceChild(_new2,_old2);
-  surveyWeekChart=new Chart(_new2,{type:'line',data:{labels:recentWeeks.map(w=>w.substring(5)),datasets:[
-    {label:'주별 건수',data:recentWeeks.map(w=>weekMap[w]||0),borderColor:'#9334e6',backgroundColor:'rgba(147,52,230,0.1)',borderWidth:2.5,pointRadius:4,pointBackgroundColor:'#9334e6',fill:true,tension:0.3}
-  ]},options:{responsive:true,interaction:{mode:'index',intersect:false},
+  var _oldW=document.getElementById('surveyWeekChart');
+  var _newW=document.createElement('canvas');_newW.id='surveyWeekChart';_newW.height=120;
+  _oldW.parentNode.replaceChild(_newW,_oldW);
+  surveyWeekChart=new Chart(_newW,{type:'line',data:{
+    labels:recentWeeks.map(w=>{const p=w.split('-');return p[1]+'-'+p[2]}),
+    datasets:[{label:'주별 건수',data:recentWeeks.map(w=>weekMap[w]||0),borderColor:'#9334e6',backgroundColor:'rgba(147,52,230,0.1)',borderWidth:2.5,pointRadius:4,pointBackgroundColor:'#9334e6',fill:true,tension:0.3}]
+  },options:{responsive:true,interaction:{mode:'index',intersect:false},
     plugins:{legend:{display:false},datalabels:{display:false},
-      tooltip:{callbacks:{label:function(ctx){return ctx.raw+'건 ('+recentWeeks[ctx.dataIndex]+'주)'}}}},
-    scales:{y:{ticks:{callback:function(v){return v+'건'}}}}}});
+      tooltip:{callbacks:{label:function(ctx){return ctx.raw+'건 ('+recentWeeks[ctx.dataIndex]+' 주차)'}}}},
+    scales:{y:{beginAtZero:true,ticks:{callback:function(v){return v+'건'}}}}}});
 
   // === 3. 분기별 테이블 ===
-  const qData={};// {'26-Q1': {count, prevCount}}
+  const qCount={};
   turnkeySurveyData.forEach(d=>{
     const ym=d['_ym'];if(!ym)return;
-    const y=ym.substring(0,4);const m=parseInt(ym.substring(5));
-    const q=m<=3?'Q1':m<=6?'Q2':m<=9?'Q3':'Q4';
-    const key=y.substring(2)+'-'+q;
-    const prevKey=(parseInt(y)-1+'').substring(2)+'-'+q;
-    if(!qData[key])qData[key]={count:0};
-    qData[key].count+=1;
-    if(!qData[prevKey])qData[prevKey]={count:0};
+    const y=parseInt(ym.substring(0,4));const m=parseInt(ym.substring(5));
+    const q=m<=3?1:m<=6?2:m<=9?3:4;
+    const key=y+'-Q'+q;
+    qCount[key]=(qCount[key]||0)+1;
   });
+
   // 25-Q1 ~ 현재분기
   const allQKeys=[];
-  for(let y=2025;;){for(let qi=1;qi<=4;qi++){
-    const ym=`${y}-${String(qi*3).padStart(2,'0')}`;
-    const key=String(y).substring(2)+'-Q'+qi;
-    allQKeys.push(key);
-    if(ym>=curYm)break;
-  }if(allQKeys[allQKeys.length-1].startsWith(String(now.getFullYear()).substring(2)))break;y++}
+  const curQ=Math.ceil((now.getMonth()+1)/3);
+  for(let y=2025;y<=now.getFullYear();y++){
+    const maxQ=(y===now.getFullYear())?curQ:4;
+    for(let qi=1;qi<=maxQ;qi++){allQKeys.push(y+'-Q'+qi)}
+  }
 
-  document.getElementById('surveyQHead').innerHTML='<th>구분</th>'+allQKeys.map(k=>`<th class="text-right">${k}</th>`).join('');
+  const qLabels=allQKeys.map(k=>k.substring(2));
+  document.getElementById('surveyQHead').innerHTML='<th>구분</th>'+qLabels.map(l=>`<th class="text-right">${l}</th>`).join('');
+
   let qHtml='<tr><td style="font-weight:600">건수</td>';
-  allQKeys.forEach(k=>{qHtml+=`<td class="text-right">${qData[k]?.count||0}</td>`});
+  allQKeys.forEach(k=>{qHtml+=`<td class="text-right">${qCount[k]||0}</td>`});
   qHtml+='</tr><tr><td style="font-weight:600">전년 동기</td>';
   allQKeys.forEach(k=>{
-    const py=String(parseInt('20'+k.substring(0,2))-1).substring(2)+'-'+k.substring(3);
-    qHtml+=`<td class="text-right" style="color:#888">${qData[py]?.count||0}</td>`;
+    const py=(parseInt(k.substring(0,4))-1)+k.substring(4);
+    qHtml+=`<td class="text-right" style="color:#888">${qCount[py]||0}</td>`;
   });
   qHtml+='</tr><tr><td style="font-weight:600">증감</td>';
   allQKeys.forEach(k=>{
-    const py=String(parseInt('20'+k.substring(0,2))-1).substring(2)+'-'+k.substring(3);
-    const cur=qData[k]?.count||0;const prev=qData[py]?.count||0;
+    const py=(parseInt(k.substring(0,4))-1)+k.substring(4);
+    const cur=qCount[k]||0;const prev=qCount[py]||0;
     const diff=cur-prev;const color=diff>0?'#43a047':diff<0?'#e53935':'#333';
     qHtml+=`<td class="text-right" style="color:${color};font-weight:600">${diff>0?'+':''}${diff}</td>`;
   });
