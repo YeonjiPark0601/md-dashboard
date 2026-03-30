@@ -1338,23 +1338,27 @@ function renderTurnkeyKPI(){
   document.getElementById('tkQtrInbound').textContent='인입: '+qIn+'건';
   document.getElementById('tkQtrConsult').textContent='컨설팅: '+qCon+'건';
 
-  // Done/HALF 건수 + 건당 매출 (CID 매칭, 기간별)
-  const cidTotalSales={};
-  turnkeyData.forEach(d=>{const cid=d['CID']||'';cidTotalSales[cid]=(cidTotalSales[cid]||0)+d['매출금액']});
-
+  // Done/HALF 건수 + 건당 매출 (결제일자 기준, CID로 결과 매칭)
+  // 상담관리 CID → 결과 매핑
+  const cidResult={};
+  turnkeySurveyData.forEach(function(d){
+    const cid=d['_cid'];const result=d['_result'];
+    if(cid&&(result==='Done'||result==='HALF'))cidResult[cid]=result;
+  });
+  // 결제내역 CID별 기간별 매출 집계
   const periods=[
-    {prefix:'tkWeek',filter:function(dt){return dt>=mondayStr&&dt<=sundayStr}},
-    {prefix:'tkMonth',filter:function(dt,ym){return ym===curMonth}},
-    {prefix:'tkQtr',filter:function(dt,ym){return qMs.includes(ym)}}
+    {prefix:'tkWeek',filter:function(d){return d['주문일']>=mondayStr&&d['주문일']<=sundayStr}},
+    {prefix:'tkMonth',filter:function(d){return d['연월']===curMonth}},
+    {prefix:'tkQtr',filter:function(d){return qMs.includes(d['연월'])}}
   ];
   periods.forEach(function(p){
+    const cidSales={};
+    turnkeyData.filter(p.filter).forEach(function(d){const cid=d['CID']||'';cidSales[cid]=(cidSales[cid]||0)+d['매출금액']});
     let dc=0,ds=0,hc=0,hs=0;
-    turnkeySurveyData.forEach(function(d){
-      const result=d['_result'];const cid=d['_cid'];const dt=d['_date'];const ym=d['_ym'];
-      if(!cid||!p.filter(dt,ym))return;
-      const sales=cidTotalSales[cid]||0;
-      if(result==='Done'){dc++;ds+=sales}
-      else if(result==='HALF'){hc++;hs+=sales}
+    Object.entries(cidSales).forEach(function([cid,sales]){
+      const r=cidResult[cid];
+      if(r==='Done'){dc++;ds+=sales}
+      else if(r==='HALF'){hc++;hs+=sales}
     });
     document.getElementById(p.prefix+'Done').textContent='Done: '+dc+'건';
     document.getElementById(p.prefix+'DoneAvg').textContent='건당: '+(dc?fmt(Math.round(ds/dc)):'-');
