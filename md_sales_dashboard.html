@@ -160,6 +160,23 @@ tr:hover { background: #f7f9fc; }
       </div>
     </div>
     <!-- 턴키 전용 KPI 2행: 건수 + Full/Half -->
+    <div id="turnkeySurveyKpiRow" style="display:none;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;">
+      <div class="kpi-card">
+        <div class="label">이번 주</div>
+        <div class="value" id="tkWeekInbound" style="font-size:22px;">인입: -</div>
+        <div class="sub-row" style="font-size:14px;font-weight:600;color:#9334e6;"><span id="tkWeekConsult">컨설팅: -</span></div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">이번 달</div>
+        <div class="value" id="tkMonthInbound" style="font-size:22px;">인입: -</div>
+        <div class="sub-row" style="font-size:14px;font-weight:600;color:#9334e6;"><span id="tkMonthConsult">컨설팅: -</span></div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">이번 분기</div>
+        <div class="value" id="tkQtrInbound" style="font-size:22px;">인입: -</div>
+        <div class="sub-row" style="font-size:14px;font-weight:600;color:#9334e6;"><span id="tkQtrConsult">컨설팅: -</span></div>
+      </div>
+    </div>
     <div id="turnkeyKpiRow" style="display:none;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;">
       <div class="kpi-card">
         <div class="label">연누적 실적</div>
@@ -179,23 +196,6 @@ tr:hover { background: #f7f9fc; }
         <div class="value" id="tkHalfSales" style="font-size:22px;">-</div>
         <div class="sub-row"><span id="tkHalfCount">건수: -</span><span id="tkHalfAvg">객단가: -</span></div>
         <div class="sub-row"><span id="tkHalfRate">비율: -</span></div>
-      </div>
-    </div>
-    <div id="turnkeySurveyKpiRow" style="display:none;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;">
-      <div class="kpi-card">
-        <div class="label">이번 주</div>
-        <div class="sub-row"><span id="tkWeekInbound">인입: -</span></div>
-        <div class="sub-row"><span id="tkWeekConsult">컨설팅: -</span></div>
-      </div>
-      <div class="kpi-card">
-        <div class="label">이번 달</div>
-        <div class="sub-row"><span id="tkMonthInbound">인입: -</span></div>
-        <div class="sub-row"><span id="tkMonthConsult">컨설팅: -</span></div>
-      </div>
-      <div class="kpi-card">
-        <div class="label">이번 분기</div>
-        <div class="sub-row"><span id="tkQtrInbound">인입: -</span></div>
-        <div class="sub-row"><span id="tkQtrConsult">컨설팅: -</span></div>
       </div>
     </div>
     <div id="turnkeySourceLinks" style="display:none;text-align:right;font-size:12px;color:#888;margin-bottom:8px;">데이터 출처: <a href="https://docs.google.com/spreadsheets/d/1rviBz7qa6xxWrKVu-4zJ70dCakQj_GUjVE6hL42DZ0E/edit?gid=665745561#gid=665745561" target="_blank" style="color:#1a73e8;">상담관리</a> | <a href="https://docs.google.com/spreadsheets/d/1rviBz7qa6xxWrKVu-4zJ70dCakQj_GUjVE6hL42DZ0E/edit?gid=148070959#gid=148070959" target="_blank" style="color:#1a73e8;">결제내역</a></div>
