@@ -1249,10 +1249,10 @@ function showDetail(name){
   document.getElementById('detailTitle').textContent=`${name} 매출 상세 (${data.length}건)`;
   const dh=document.getElementById('detailHead');
   if(isClass)dh.innerHTML='<th>주문일</th><th>소분류</th><th>카테고리</th><th class="text-right">매출금액</th>';
-  else dh.innerHTML='<th>주문일</th><th>한의원명</th><th>품목명</th><th>옵션명</th><th class="text-right">매출금액</th><th class="text-right">공급가</th><th class="text-right">수량</th><th>구분</th>';
+  else dh.innerHTML='<th>주문번호</th><th>주문일</th><th>한의원명</th><th>품목명</th><th>옵션명</th><th class="text-right">매출금액</th><th class="text-right">공급가</th><th class="text-right">수량</th><th>구분</th>';
   document.getElementById('detailBody').innerHTML=data.map(d=>{
     if(isClass)return`<tr><td>${d['주문일']||''}</td><td>${d['소분류']||''}</td><td>${d['카테고리']||''}</td><td class="text-right">${Math.round(d['매출금액']).toLocaleString()}</td></tr>`;
-    return`<tr><td>${d['주문일']||''}</td><td>${d['한의원명']||''}</td><td>${d['품목명']||''}</td><td>${d['옵션명']||''}</td><td class="text-right">${Math.round(d['매출금액']).toLocaleString()}</td><td class="text-right">${Math.round(d['공급가']||0).toLocaleString()}</td><td class="text-right">${(d['수량']||0).toLocaleString()}</td><td>${d['구분']||''}</td></tr>`}).join('');
+    return`<tr><td>${d['주문번호']||''}</td><td>${d['주문일']||''}</td><td>${d['한의원명']||''}</td><td>${d['품목명']||''}</td><td>${d['옵션명']||''}</td><td class="text-right">${Math.round(d['매출금액']).toLocaleString()}</td><td class="text-right">${Math.round(d['공급가']||0).toLocaleString()}</td><td class="text-right">${(d['수량']||0).toLocaleString()}</td><td>${d['구분']||''}</td></tr>`}).join('');
   document.getElementById('detailSection').style.display='block';
   document.getElementById('detailSection').scrollIntoView({behavior:'smooth',block:'start'});
 }
