@@ -177,6 +177,18 @@ tr:hover { background: #f7f9fc; }
         <div class="sub-row" style="font-size:14px;font-weight:600;color:#9334e6;"><span id="tkQtrConsult">컨설팅: -</span></div>
       </div>
     </div>
+    <div id="turnkeyResultKpiRow" style="display:none;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+      <div class="kpi-card">
+        <div class="label">Done (계약 완료)</div>
+        <div class="value" id="tkDoneCount" style="font-size:22px;">-</div>
+        <div class="sub-row"><span id="tkDoneAvgSales">건당 매출: -</span></div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">HALF (반계약)</div>
+        <div class="value" id="tkHalfResultCount" style="font-size:22px;">-</div>
+        <div class="sub-row"><span id="tkHalfResultAvgSales">건당 매출: -</span></div>
+      </div>
+    </div>
     <div id="turnkeyKpiRow" style="display:none;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;">
       <div class="kpi-card">
         <div class="label">연누적 실적</div>
@@ -534,6 +546,8 @@ async function fetchData(){
       const cd=String(r['실제 컨설팅 일자']||'').substring(0,10);r['_consultDate']=cd&&cd.match(/^\d{4}/)?cd:'';
       r['_consultOK']=String(r['[(사용안함)2024_턴키관리] 시트에서 CID 를 기준으로 컨설팅 여부 확인']||'').trim()==='O';
       r['_manager']=r['담당자']||'';
+      r['_result']=String(r['결과']||'').trim();
+      r['_cid']=String(r['CID']||'').trim();
       return r})}}}catch(e){console.warn('설문 에러',e)}
     try{if(targetR.ok){const tr=parseCSV(await targetR.text());const mc=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];tr.forEach(r=>{const c=r['품목']||'';if(!c)return;targetData[c]={};mc.forEach((m,i)=>{targetData[c][i+1]=parseNum(r[m])})})}}catch(e){console.warn('목표 에러',e)}
     initFilters();render();
@@ -709,6 +723,7 @@ function render(){
   document.getElementById('navMonthly').style.display=(isPT10||isAll)?'none':'';
   document.getElementById('navDetail').style.display=(isPT10||isTurnkey||isAll)?'none':'';
   if(isPT10){renderPT10Summary();renderPT10Cart();renderPT10CartTrend();renderPT10DIO();try{renderPT10Buyers()}catch(e){console.warn('Buyers err',e)}try{renderPT10Insight()}catch(e){console.warn('Insight err',e)}}
+  document.getElementById('turnkeyResultKpiRow').style.display=isTurnkey?'grid':'none';
   document.getElementById('turnkeyKpiRow').style.display=isTurnkey?'grid':'none';
   document.getElementById('turnkeySurveyKpiRow').style.display=isTurnkey?'grid':'none';
   document.getElementById('turnkeySourceLinks').style.display=isTurnkey?'block':'none';
@@ -1311,6 +1326,23 @@ function renderTurnkeyKPI(){
   document.getElementById('tkMonthConsult').textContent='컨설팅: '+mCon+'건';
   document.getElementById('tkQtrInbound').textContent='인입: '+qIn+'건';
   document.getElementById('tkQtrConsult').textContent='컨설팅: '+qCon+'건';
+
+  // Done/HALF 건수 + 건당 매출 (CID 매칭)
+  // turnkeyData의 CID별 매출 합계
+  const cidTotalSales={};
+  turnkeyData.forEach(d=>{const cid=d['CID']||'';cidTotalSales[cid]=(cidTotalSales[cid]||0)+d['매출금액']});
+  // 상담관리의 결과별 CID 수집
+  let doneCount=0,doneSales=0,halfRCount=0,halfRSales=0;
+  turnkeySurveyData.forEach(d=>{
+    const result=d['_result'];const cid=d['_cid'];if(!cid)return;
+    const sales=cidTotalSales[cid]||0;
+    if(result==='Done'){doneCount++;doneSales+=sales}
+    else if(result==='HALF'){halfRCount++;halfRSales+=sales}
+  });
+  document.getElementById('tkDoneCount').textContent=doneCount+'건';
+  document.getElementById('tkDoneAvgSales').textContent='건당 매출: '+(doneCount?fmt(Math.round(doneSales/doneCount)):'-');
+  document.getElementById('tkHalfResultCount').textContent=halfRCount+'건';
+  document.getElementById('tkHalfResultAvgSales').textContent='건당 매출: '+(halfRCount?fmt(Math.round(halfRSales/halfRCount)):'-');
 }
 
 function renderSonoCountChart(){
