@@ -326,7 +326,8 @@ tr:hover { background: #f7f9fc; }
             <span id="detailTitle">-</span>
             <span onclick="closeDetail()" style="float:right;cursor:pointer;color:#888;font-size:12px;">닫기 ✕</span>
           </h3>
-          <table><thead><tr id="detailHead"></tr></thead><tbody id="detailBody"></tbody></table>
+          <div style="overflow-x:auto;"><table style="width:100%;white-space:nowrap;"><thead><tr id="detailHead"></tr></thead><tbody id="detailBody"></tbody></table></div>
+          <div id="detailToggle" onclick="toggleDetailList()" style="display:none;text-align:center;padding:10px;color:#1a73e8;cursor:pointer;font-size:13px;font-weight:600;border-top:1px solid #f0f0f0;margin-top:4px;"></div>
         </div>
       </div>
     </div>
@@ -1250,11 +1251,25 @@ function showDetail(name){
   const dh=document.getElementById('detailHead');
   if(isClass)dh.innerHTML='<th>주문일</th><th>소분류</th><th>카테고리</th><th class="text-right">매출금액</th>';
   else dh.innerHTML='<th>주문번호</th><th>주문일</th><th>한의원명</th><th>품목명</th><th>옵션명</th><th class="text-right">매출금액</th><th class="text-right">공급가</th><th class="text-right">수량</th><th>구분</th>';
-  document.getElementById('detailBody').innerHTML=data.map(d=>{
+  const DLIMIT=20;
+  detailListExpanded=false;
+  const allRows=data.map(d=>{
     if(isClass)return`<tr><td>${d['주문일']||''}</td><td>${d['소분류']||''}</td><td>${d['카테고리']||''}</td><td class="text-right">${Math.round(d['매출금액']).toLocaleString()}</td></tr>`;
-    return`<tr><td>${d['주문번호']||''}</td><td>${d['주문일']||''}</td><td>${d['한의원명']||''}</td><td>${d['품목명']||''}</td><td>${d['옵션명']||''}</td><td class="text-right">${Math.round(d['매출금액']).toLocaleString()}</td><td class="text-right">${Math.round(d['공급가']||0).toLocaleString()}</td><td class="text-right">${(d['수량']||0).toLocaleString()}</td><td>${d['구분']||''}</td></tr>`}).join('');
+    return`<tr><td>${d['주문번호']||''}</td><td>${d['주문일']||''}</td><td>${d['한의원명']||''}</td><td>${d['품목명']||''}</td><td>${d['옵션명']||''}</td><td class="text-right">${Math.round(d['매출금액']).toLocaleString()}</td><td class="text-right">${Math.round(d['공급가']||0).toLocaleString()}</td><td class="text-right">${(d['수량']||0).toLocaleString()}</td><td>${d['구분']||''}</td></tr>`});
+  window._detailAllRows=allRows;
+  document.getElementById('detailBody').innerHTML=allRows.slice(0,DLIMIT).join('');
+  const toggleEl=document.getElementById('detailToggle');
+  if(allRows.length>DLIMIT){toggleEl.style.display='block';toggleEl.textContent=`더보기 (${allRows.length-DLIMIT}건) ▼`}
+  else{toggleEl.style.display='none'}
   document.getElementById('detailSection').style.display='block';
   document.getElementById('detailSection').scrollIntoView({behavior:'smooth',block:'start'});
+}
+let detailListExpanded=false;
+function toggleDetailList(){
+  detailListExpanded=!detailListExpanded;
+  const all=window._detailAllRows||[];
+  document.getElementById('detailBody').innerHTML=detailListExpanded?all.join(''):all.slice(0,20).join('');
+  document.getElementById('detailToggle').textContent=detailListExpanded?'접기 ▲':`더보기 (${all.length-20}건) ▼`;
 }
 function closeDetail(){document.getElementById('detailSection').style.display='none'}
 function sortTable(col){if(sortCol===col)sortAsc=!sortAsc;else{sortCol=col;sortAsc=col===0}render()}
