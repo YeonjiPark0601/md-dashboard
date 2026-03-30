@@ -315,6 +315,7 @@ tr:hover { background: #f7f9fc; }
           <div style="display:flex;gap:8px;align-items:center;">
             <button onclick="toggleSupplierPicker()" style="font-size:12px;padding:4px 12px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;" id="supplierPickerBtn">공급처 선택 ▾</button>
             <button onclick="clearSupplierSelection()" style="font-size:11px;padding:3px 8px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;color:#888;">초기화</button>
+            <button onclick="downloadDetailExcel()" style="font-size:11px;padding:3px 10px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;color:#1a73e8;">엑셀 다운로드</button>
           </div>
         </h3>
         <div id="supplierPicker" style="display:none;background:#f7f8fa;border:1px solid #e0e0e0;border-radius:8px;padding:12px;margin-bottom:12px;max-height:200px;overflow-y:auto;">
@@ -1295,6 +1296,30 @@ function toggleDetailList(){
   document.getElementById('detailToggle').textContent=detailListExpanded?'접기 ▲':`더보기 (${all.length-20}건) ▼`;
 }
 function closeDetail(){document.getElementById('detailSection').style.display='none'}
+function downloadDetailExcel(){
+  const data=getFilteredData();
+  if(!data.length){alert('데이터가 없습니다.');return;}
+  const isClass=currentTab==='클래스';
+  const isMD=currentTab==='의료기기';
+  const rows=[];
+  if(isClass){
+    rows.push(['주문일','상품명','카테고리','매출금액']);
+    data.sort((a,b)=>(b['주문일']||'').localeCompare(a['주문일']||'')).forEach(d=>{
+      rows.push([d['주문일']||'',d['상품명']||'',d['카테고리']||'',Math.round(d['매출금액']||0)]);
+    });
+  }else{
+    rows.push(['주문번호','주문일','한의원명','공급업체','품목명','옵션명','매출금액','공급가','수량','구분']);
+    data.sort((a,b)=>(b['주문일']||'').localeCompare(a['주문일']||'')).forEach(d=>{
+      rows.push([d['주문번호']||'',d['주문일']||'',d['한의원명']||'',d['공급업체']||'',d['품목명']||'',d['옵션명']||'',Math.round(d['매출금액']||0),Math.round(d['공급가']||0),d['수량']||0,d['구분']||'']);
+    });
+  }
+  const start=document.getElementById('startMonth').value;
+  const end=document.getElementById('endMonth').value;
+  const ws=XLSX.utils.aoa_to_sheet(rows);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'매출 상세');
+  XLSX.writeFile(wb,`${currentTab}_매출상세_${start||'all'}~${end||'all'}.xlsx`);
+}
 function sortTable(col){if(sortCol===col)sortAsc=!sortAsc;else{sortCol=col;sortAsc=col===0}render()}
 function clearDrill(){drillCategory=null;document.getElementById('drillFilter').classList.remove('show');render()}
 
