@@ -1127,7 +1127,7 @@ function renderTrendChart(data){
   const HC_CLASS_OFF_2024=[41938648,101327262,45868245,44041119,42947864,32081868,66937357,-659577,29047742,38665684,27420707,41439620];
   if(currentTab==='의료기기'&&!cat&&!type&&!drillCategory){for(let m=1;m<=12;m++){const ym='2025-'+String(m).padStart(2,'0');if(months.includes(ym)&&!pY[ym])pY[ym]=HC_MD_2024[m-1]}}
   if(currentTab==='클래스'&&!cat&&!drillCategory){for(let m=1;m<=12;m++){const ym='2025-'+String(m).padStart(2,'0');if(months.includes(ym)&&!pY[ym])pY[ym]=HC_CLASS_ON_2024[m-1]+HC_CLASS_OFF_2024[m-1]}}
-  if(currentTab==='전체'){for(let m=1;m<=12;m++){const ym='2025-'+String(m).padStart(2,'0');if(months.includes(ym))pY[ym]=(pY[ym]||0)+(HC_MD_2024[m-1]||0)+(HC_CLASS_ON_2024[m-1]||0)+(HC_CLASS_OFF_2024[m-1]||0)};console.log('전체 pY:',JSON.stringify(pY))}
+  if(currentTab==='전체'){for(let m=1;m<=12;m++){const ym='2025-'+String(m).padStart(2,'0');if(months.includes(ym))pY[ym]=(pY[ym]||0)+(HC_MD_2024[m-1]||0)+(HC_CLASS_ON_2024[m-1]||0)+(HC_CLASS_OFF_2024[m-1]||0)}}
   const yL=months.map(m=>{const c=tY[m]||0,p=pY[m]||0;if(!p)return'';const pc=((c-p)/p*100).toFixed(0);return(pc>0?'+':'')+pc+'%'});
   let cfg;
   if(currentTab==='클래스'){
@@ -1169,6 +1169,8 @@ function renderTrendChart(data){
     allData.forEach(d=>{const ym=d['연월'];if(!ym||!months.includes(ym))return;mdM[ym]=(mdM[ym]||0)+d['매출금액']});
     sonoData.filter(d=>!d._isAS).forEach(d=>{const ym=d['연월'];if(!ym||!months.includes(ym))return;sonoM[ym]=(sonoM[ym]||0)+d['매출금액']});
     classData.forEach(d=>{const ym=d['연월'];if(!ym||!months.includes(ym))return;classM[ym]=(classM[ym]||0)+d['매출금액']});
+    // 24년 하드코딩 (시트에 없는 의료기기/클래스)
+    for(let m=1;m<=12;m++){const ym='2024-'+String(m).padStart(2,'0');if(months.includes(ym)){mdM[ym]=(mdM[ym]||0)+HC_MD_2024[m-1];classM[ym]=(classM[ym]||0)+(HC_CLASS_ON_2024[m-1]+HC_CLASS_OFF_2024[m-1])}}
     cfg={type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets:[
       {label:'초음파',data:months.map(m=>sonoM[m]||0),backgroundColor:'#4285f4',borderRadius:0,stack:'thisYear',order:2,datalabels:{display:false}},
       {label:'의료기기',data:months.map(m=>mdM[m]||0),backgroundColor:'#34a853',borderRadius:0,stack:'thisYear',order:2,datalabels:{display:false}},
