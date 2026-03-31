@@ -1749,7 +1749,7 @@ async function renderSonoInventory(){
     let sHtml='';
     [{label:'신품 재고',map:newByModel,l322:l322New},{label:'견본 재고(전체)',map:sampleByModel,l322:l322Sample},{label:'견본 재고(판매가능)',map:sampleSellByModel,l322:0,highlight:true},{label:'출고 예정(신품)',map:outByModel,l322:0}].forEach(row=>{
       let total=0;
-      const bg=row.highlight?'background:#eef7ee;':'';
+      const bg='';
       sHtml+=`<tr style="${bg}"><td style="font-weight:600">${row.label}</td>`;
       sortedModels.forEach(m=>{const v=row.map[m]||0;total+=v;sHtml+=`<td class="text-right">${v||'-'}</td>`});
       if(hasL322){sHtml+=`<td class="text-right">${row.l322||'-'}</td>`;total+=row.l322||0}
