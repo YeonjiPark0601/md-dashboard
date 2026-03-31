@@ -1704,11 +1704,15 @@ async function renderSonoInventory(){
     let l322New=0,l322Sample=0;
     if(bdtsR.ok){const rows=csvR(await bdtsR.text());
       const hdr=rows[0]||[];let afIdx=31,bdIdx=55,contIdx=-1;
-      for(let j=0;j<hdr.length;j++){if(hdr[j].includes('Basic Name'))afIdx=j;if(hdr[j].includes('상품/견본')||j===55)bdIdx=j;if(hdr[j].includes('계약번호'))contIdx=j}
+      for(let j=0;j<hdr.length;j++){const h=(hdr[j]||'').trim();if(h.includes('Basic Name'))afIdx=j;if(h.includes('상품/견본'))bdIdx=j;if(h.includes('계약번호')||h.includes('Contract')||h==='KRUS')contIdx=j}
+      console.log('BDTS L3-22 탐색: afIdx='+afIdx+', bdIdx='+bdIdx+', contIdx='+contIdx+', rows='+rows.length);
       for(let i=1;i<rows.length;i++){const r=rows[i];if(r.length<=Math.max(afIdx,bdIdx))continue;
-        const af=r[afIdx]?.trim()||'';const contract=contIdx>=0?(r[contIdx]?.trim()||''):'x';
+        const af=r[afIdx]?.trim()||'';
+        // 계약번호 열 못 찾으면 계약번호 조건 무시 (기존 동작 유지)
+        const contract=contIdx>=0?(r[contIdx]?.trim()||''):'';
         const kind=r[bdIdx]?.trim()||'';
-        if(af==='L3-22'&&contract===''){if(kind==='견본')l322Sample++;else l322New++}}}
+        if(af==='L3-22'&&contract===''){if(kind==='견본')l322Sample++;else l322New++}}
+      console.log('L3-22 결과: 신품='+l322New+', 견본='+l322Sample)}
 
     // === 요약 테이블 ===
     const allModels=new Set();
