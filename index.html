@@ -243,10 +243,10 @@ tr:hover { background: #f7f9fc; }
     </div>
     <div id="sec-trend"></div>
     <div id="trendRow" class="chart-row-full">
-      <div class="chart-card"><h3>월별 매출 트렌드 (YoY) — 25년 1월~현재</h3><canvas id="trendChart" height="80"></canvas></div>
+      <div class="chart-card"><h3 id="trendChartTitle">월별 매출 트렌드 (YoY)</h3><canvas id="trendChart" height="80"></canvas></div>
     </div>
     <div id="classTrendRow" class="chart-row" style="display:none;">
-      <div class="chart-card" style="display:flex;flex-direction:column;"><h3>월별 매출 트렌드 (YoY) — 25년 1월~현재</h3><canvas id="trendChart2" style="flex:1;min-height:0;"></canvas></div>
+      <div class="chart-card" style="display:flex;flex-direction:column;"><h3 id="trendChartTitle2">월별 매출 트렌드 (YoY)</h3><canvas id="trendChart2" style="flex:1;min-height:0;"></canvas></div>
       <div class="chart-card" style="display:flex;flex-direction:column;"><h3 id="typeChartTitle2">온/오프라인 비중</h3><canvas id="typeChart2" style="flex:1;min-height:0;"></canvas></div>
     </div>
     <!-- 턴키 전용: 설문 응답 트렌드 -->
@@ -264,12 +264,12 @@ tr:hover { background: #f7f9fc; }
     </div>
     <!-- 초음파 전용: 월별 계약건수 + 지역별 매출 -->
     <div class="chart-row" id="sonoMapRow" style="display:none;grid-template-columns:3fr 2fr;">
-      <div class="chart-card" style="min-height:500px;"><h3>26년 지역별 매출</h3><div id="sonoMapContainer" style="position:relative;width:100%;height:450px;"></div></div>
-      <div class="chart-card"><h3>26년 지역별 매출 상세</h3><table id="sonoRegionTable"><thead><tr><th>권역</th><th>지역</th><th class="text-right">매출금액</th><th class="text-right">건수</th><th class="text-right">비중</th></tr></thead><tbody id="sonoRegionBody"></tbody></table></div>
+      <div class="chart-card"><h3>지역별 매출</h3><canvas id="sonoRegionChart" height="220"></canvas></div>
+      <div class="chart-card"><h3 style="display:flex;justify-content:space-between;align-items:center;"><span>지역별 매출 상세</span><span id="sonoRegionYearFilter" style="display:flex;gap:6px;font-size:12px;font-weight:400;"></span></h3><table id="sonoRegionTable"><thead><tr><th>권역</th><th>지역</th><th class="text-right">매출금액</th><th class="text-right">건수</th><th class="text-right">비중</th></tr></thead><tbody id="sonoRegionBody"></tbody></table></div>
     </div>
     <!-- 초음파 전용: AS 매출 + 건수 -->
     <div class="chart-row" id="sonoASRow" style="display:none;">
-      <div class="chart-card" style="flex:2;"><h3>AS 월별 매출 & 건수 — 25년 1월~현재</h3><canvas id="sonoASChart" height="150"></canvas></div>
+      <div class="chart-card" style="flex:2;"><h3 id="sonoASChartTitle">AS 월별 매출 & 건수</h3><canvas id="sonoASChart" height="150"></canvas></div>
       <div class="chart-card" style="flex:1;"><h3>AS 매출 상세</h3>
         <div id="sonoASKpi" style="margin-bottom:12px;"></div>
         <table id="sonoASTable"><thead><tr><th>월</th><th class="text-right">매출금액</th><th class="text-right">건수</th></tr></thead><tbody id="sonoASBody"></tbody></table>
@@ -297,7 +297,10 @@ tr:hover { background: #f7f9fc; }
     </div>
     <div class="chart-row-full" id="sonoQtyChartRow" style="display:none;">
       <div class="chart-card">
-        <h3>모델별 수량</h3>
+        <h3 style="display:flex;justify-content:space-between;align-items:center;">
+          <span>모델별 수량</span>
+          <span><button onclick="hideAllSonoQtyLegend()" style="font-size:11px;padding:3px 8px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;color:#888;margin-right:4px;">전체 선택 해제</button><button onclick="resetSonoQtyLegend()" style="font-size:11px;padding:3px 8px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;color:#888;">초기화</button></span>
+        </h3>
         <canvas id="sonoQtyChart" height="150"></canvas>
       </div>
     </div>
@@ -596,7 +599,7 @@ function switchTab(tab){
   currentTab=tab;
   history.replaceState(null,null,'#'+encodeURIComponent(tab));
   document.querySelectorAll('.tab[data-tab]').forEach(t=>{t.classList.toggle('active',t.dataset.tab===tab)});
-  drillCategory=null;selectedSuppliers=[];sortCol=-1;monthlyExpanded=false;detailTableExpanded=false;
+  drillCategory=null;selectedSuppliers=[];sortCol=-1;monthlyExpanded=false;detailTableExpanded=false;sonoRegionSelectedYears=null;
   document.getElementById('drillFilter').classList.remove('show');
   document.getElementById('supplierSummary').style.display='none';
   document.getElementById('detailSection').style.display='none';
@@ -615,7 +618,11 @@ function initFilters(){
   const nameKey=currentTab==='클래스'?'상품명':currentTab==='턴키'?'상품명':'공급업체';
   const suppliers=[...new Set(data.map(d=>d[nameKey]).filter(Boolean))].sort();
 
-  if(months.length){document.getElementById('startMonth').value=months[0];document.getElementById('endMonth').value=months[months.length-1]}
+  if(months.length){
+    const now=new Date();const curYm=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+    document.getElementById('startMonth').value=(currentTab==='초음파'&&months.includes('2025-01'))?'2025-01':months[0];
+    document.getElementById('endMonth').value=months.includes(curYm)?curYm:months[months.length-1];
+  }
   const catSel=document.getElementById('categoryFilter');catSel.innerHTML='<option value="">전체</option>';
   categories.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;catSel.appendChild(o)});
   if(currentTab!=='클래스'){
@@ -737,8 +744,7 @@ function render(){
   if(currentTab==='클래스')renderTypeChart(data);
   if(isMD){renderTypeChart(data);renderCategoryChart(data);renderCategoryPieChart(data);renderSupplierChart(data);}
   if(isSono){renderSupplierChart(data);renderSonoQtyChart(data);renderSonoAS();try{renderSonoInventory()}catch(e){console.warn('재고 로딩 에러',e)}
-    // 지도는 D3 로드 후 렌더
-    if(typeof d3!=='undefined')renderSonoMap();else document.querySelector('script[src*="d3@7"]').addEventListener('load',()=>renderSonoMap())}
+    renderSonoRegionChart()}
   if(!isAll){renderTable(data);renderMonthlyTable(data)}
   // 클래스 전용: PU + 재구매
   document.getElementById('detailRow').style.display=(isTurnkey||isPT10||isSono||isAll)?'none':'';
@@ -925,9 +931,11 @@ function renderKPIs(){
   setKPI('kpiMonth',mS,mT,mY,'YoY',mMom,'MoM',null,'#34a853');
   setKPI('kpiQtr',qS2,qT,qY,'YoY',qQoq,'QoQ',null,'#fbbc04');
 
-  // 턴키: 1행에 건수 표시
+  // 턴키/초음파: 1행에 건수 표시
   const isTK=currentTab==='턴키';
-  ['Week','Month','Qtr'].forEach(p=>{document.getElementById('kpi'+p+'CountRow').style.display=isTK?'':'none'});
+  const isSonoKpi=currentTab==='초음파';
+  const showCount=isTK||isSonoKpi;
+  ['Week','Month','Qtr'].forEach(p=>{document.getElementById('kpi'+p+'CountRow').style.display=showCount?'':'none'});
   if(isTK){
     const wCids=new Set(wD.map(d=>d['CID']).filter(Boolean));
     const mCids=new Set(mD.map(d=>d['CID']).filter(Boolean));
@@ -936,11 +944,25 @@ function renderKPIs(){
     document.getElementById('kpiMonthCount').textContent='건수: '+mCids.size.toLocaleString()+'건';
     document.getElementById('kpiQtrCount').textContent='건수: '+qCids.size.toLocaleString()+'건';
   }
+  if(isSonoKpi){
+    document.getElementById('kpiWeekCount').textContent='건수: '+wD.length+'건';
+    document.getElementById('kpiMonthCount').textContent='건수: '+mD.length+'건';
+    document.getElementById('kpiQtrCount').textContent='건수: '+qD.length+'건';
+  }
 }
 
+function genMonthRange(start,end){
+  const months=[];const[sy,sm]=start.split('-').map(Number);const[ey,em]=end.split('-').map(Number);
+  for(let y=sy,m=sm;;){const ym=y+'-'+String(m).padStart(2,'0');months.push(ym);if(y===ey&&m===em)break;m++;if(m>12){m=1;y++}}return months;
+}
 function renderTrendChart(data){
+  const startYm=document.getElementById('startMonth').value||'2025-01';
   const now=new Date();const curYm=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-  const months=[];for(let y=2025;;){for(let m=1;m<=12;m++){const ym=`${y}-${String(m).padStart(2,'0')}`;months.push(ym);if(ym===curYm)break}if(months[months.length-1]===curYm)break;y++}
+  const endYm=document.getElementById('endMonth').value||curYm;
+  const months=genMonthRange(startYm,endYm);
+  const titleSuffix=' — '+startYm.substring(2)+'~'+endYm.substring(2);
+  if(document.getElementById('trendChartTitle'))document.getElementById('trendChartTitle').textContent='월별 매출 트렌드 (YoY)'+titleSuffix;
+  if(document.getElementById('trendChartTitle2'))document.getElementById('trendChartTitle2').textContent='월별 매출 트렌드 (YoY)'+titleSuffix;
   const ad=getData();const cat=document.getElementById('categoryFilter').value;
   const type=currentTab!=='클래스'?document.getElementById('typeFilter').value:'';
   const tY={},pY={};
@@ -1171,6 +1193,8 @@ function renderSonoQtyChart(data){
       tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.raw+'대'}}},
       scales:{x:{stacked:true},y:{stacked:true,grace:'15%',ticks:{callback:v=>v+'대'}}}}});
 }
+function hideAllSonoQtyLegend(){if(!sonoQtyChart)return;sonoQtyChart.data.datasets.forEach((_,i)=>{sonoQtyChart.setDatasetVisibility(i,false)});sonoQtyChart.update()}
+function resetSonoQtyLegend(){if(!sonoQtyChart)return;sonoQtyChart.data.datasets.forEach((_,i)=>{sonoQtyChart.setDatasetVisibility(i,true)});sonoQtyChart.update()}
 
 function renderTable(data){
   const nk=currentTab==='의료기기'?'공급업체':currentTab==='초음파'?'품목명':'상품명';
@@ -1448,121 +1472,25 @@ function renderSonoCountChart(){
     scales:{y:{ticks:{callback:v=>v+'건'}}}}});
 }
 
-function renderSonoMap(){
-  const sd26=sonoData.filter(d=>!d._isAS&&d['연월']&&d['연월'].startsWith('2026')&&d['지역']);
+let sonoRegionChartInst=null;
+let sonoRegionSelectedYears=null; // null=auto from filter
+function renderSonoRegionChart(){
+  const startYm=document.getElementById('startMonth').value||'2025-01';
+  const endYm=document.getElementById('endMonth').value||'2026-12';
+  // 연도 체크박스 생성
+  const allSonoYears=[...new Set(sonoData.filter(d=>!d._isAS&&d['연월']&&d['지역']).map(d=>d['연월'].substring(0,4)))].sort();
+  const filterEl=document.getElementById('sonoRegionYearFilter');
+  if(filterEl&&allSonoYears.length>1){
+    if(!sonoRegionSelectedYears)sonoRegionSelectedYears=allSonoYears.filter(y=>y>=startYm.substring(0,4)&&y<=endYm.substring(0,4));
+    filterEl.innerHTML=allSonoYears.map(y=>`<label style="display:inline-flex;align-items:center;gap:2px;cursor:pointer;"><input type="checkbox" value="${y}" ${sonoRegionSelectedYears.includes(y)?'checked':''} onchange="onSonoRegionYearChange()"> ${y}년</label>`).join('');
+  }
+  const activeYears=sonoRegionSelectedYears||allSonoYears;
+  const filtered=sonoData.filter(d=>!d._isAS&&d['연월']&&d['연월']>=startYm&&d['연월']<=endYm&&activeYears.includes(d['연월'].substring(0,4))&&d['지역']);
   const regionSales={},regionCount={};
-  sd26.forEach(d=>{const r=d['지역'];regionSales[r]=(regionSales[r]||0)+d['매출금액'];regionCount[r]=(regionCount[r]||0)+1});
+  filtered.forEach(d=>{const r=d['지역'];regionSales[r]=(regionSales[r]||0)+d['매출금액'];regionCount[r]=(regionCount[r]||0)+1});
   const total=Object.values(regionSales).reduce((s,v)=>s+v,0);
-  const sorted=Object.entries(regionSales).sort((a,b)=>b[1]-a[1]);
 
-  const maxSales=Math.max(...Object.values(regionSales),1);
-  const container=document.getElementById('sonoMapContainer');
-
-  // === Embedded simplified South Korea GeoJSON (17 시도) ===
-  const koreaGeoJSON={"type":"FeatureCollection","features":[
-    {"type":"Feature","properties":{"name":"서울"},"geometry":{"type":"Polygon","coordinates":[[[126.76,37.43],[126.76,37.60],[127.09,37.60],[127.09,37.71],[127.18,37.69],[127.18,37.43],[126.76,37.43]]]}},
-    {"type":"Feature","properties":{"name":"인천"},"geometry":{"type":"Polygon","coordinates":[[[126.30,37.25],[126.30,37.62],[126.76,37.62],[126.76,37.43],[126.63,37.38],[126.63,37.25],[126.30,37.25]]]}},
-    {"type":"Feature","properties":{"name":"경기"},"geometry":{"type":"Polygon","coordinates":[[[126.38,36.90],[126.38,37.25],[126.63,37.25],[126.63,37.38],[126.76,37.43],[126.76,37.62],[126.30,37.62],[126.30,37.85],[126.63,38.00],[127.00,38.05],[127.50,38.30],[127.85,38.20],[127.85,37.80],[128.00,37.65],[127.60,37.40],[127.55,37.20],[127.18,37.12],[127.18,37.43],[127.18,37.69],[127.09,37.71],[127.09,37.60],[126.76,37.60],[126.76,37.43],[126.63,37.38],[126.63,37.25],[126.38,37.25],[126.38,36.90]]]}},
-    {"type":"Feature","properties":{"name":"강원"},"geometry":{"type":"Polygon","coordinates":[[[127.85,38.20],[127.50,38.30],[127.00,38.05],[127.00,38.30],[128.10,38.62],[128.38,38.61],[128.95,38.30],[129.10,37.90],[129.30,37.50],[129.10,37.25],[128.75,37.10],[128.30,36.95],[128.00,37.08],[127.55,37.20],[127.60,37.40],[128.00,37.65],[127.85,37.80],[127.85,38.20]]]}},
-    {"type":"Feature","properties":{"name":"충북"},"geometry":{"type":"Polygon","coordinates":[[[127.18,37.12],[127.55,37.20],[128.00,37.08],[128.10,36.95],[128.20,36.75],[128.05,36.50],[127.85,36.30],[127.50,36.28],[127.20,36.38],[126.95,36.55],[126.95,36.75],[127.00,36.90],[127.18,37.12]]]}},
-    {"type":"Feature","properties":{"name":"세종"},"geometry":{"type":"Polygon","coordinates":[[[126.95,36.43],[126.95,36.55],[127.10,36.60],[127.20,36.58],[127.20,36.43],[126.95,36.43]]]}},
-    {"type":"Feature","properties":{"name":"대전"},"geometry":{"type":"Polygon","coordinates":[[[127.20,36.25],[127.20,36.43],[127.50,36.43],[127.50,36.25],[127.20,36.25]]]}},
-    {"type":"Feature","properties":{"name":"충남"},"geometry":{"type":"Polygon","coordinates":[[[126.10,36.10],[126.10,36.65],[126.38,36.90],[126.95,36.90],[126.95,36.75],[126.95,36.55],[126.95,36.43],[127.20,36.43],[127.20,36.25],[127.50,36.28],[127.50,36.10],[127.20,36.00],[126.80,36.00],[126.50,36.00],[126.10,36.10]]]}},
-    {"type":"Feature","properties":{"name":"전북"},"geometry":{"type":"Polygon","coordinates":[[[126.35,35.40],[126.35,35.80],[126.50,36.00],[126.80,36.00],[127.20,36.00],[127.50,36.10],[127.50,36.28],[127.85,36.30],[127.85,35.90],[127.65,35.70],[127.40,35.55],[127.10,35.50],[126.90,35.40],[126.35,35.40]]]}},
-    {"type":"Feature","properties":{"name":"광주"},"geometry":{"type":"Polygon","coordinates":[[[126.68,35.05],[126.68,35.25],[127.02,35.25],[127.02,35.05],[126.68,35.05]]]}},
-    {"type":"Feature","properties":{"name":"전남"},"geometry":{"type":"Polygon","coordinates":[[[126.05,34.20],[125.95,34.55],[126.05,34.80],[126.10,35.05],[126.35,35.40],[126.90,35.40],[127.10,35.50],[127.40,35.55],[127.65,35.30],[127.90,35.10],[127.80,34.95],[127.65,34.80],[127.50,34.60],[127.30,34.45],[126.90,34.30],[126.50,34.20],[126.05,34.20]]]}},
-    {"type":"Feature","properties":{"name":"경북"},"geometry":{"type":"Polygon","coordinates":[[[128.05,36.50],[128.20,36.75],[128.10,36.95],[128.30,36.95],[128.75,37.10],[129.10,37.25],[129.30,37.00],[129.40,36.70],[129.50,36.30],[129.40,35.95],[129.20,35.80],[128.95,35.72],[128.70,35.78],[128.40,35.80],[128.05,35.95],[127.85,35.90],[127.85,36.30],[128.05,36.50]]]}},
-    {"type":"Feature","properties":{"name":"대구"},"geometry":{"type":"Polygon","coordinates":[[[128.40,35.76],[128.40,35.95],[128.75,35.95],[128.78,35.76],[128.40,35.76]]]}},
-    {"type":"Feature","properties":{"name":"울산"},"geometry":{"type":"Polygon","coordinates":[[[128.95,35.35],[128.95,35.72],[129.20,35.80],[129.40,35.65],[129.40,35.35],[128.95,35.35]]]}},
-    {"type":"Feature","properties":{"name":"부산"},"geometry":{"type":"Polygon","coordinates":[[[128.80,34.95],[128.80,35.28],[129.00,35.35],[129.20,35.35],[129.25,35.10],[129.05,34.95],[128.80,34.95]]]}},
-    {"type":"Feature","properties":{"name":"경남"},"geometry":{"type":"Polygon","coordinates":[[[127.65,35.30],[127.40,35.55],[127.65,35.70],[127.85,35.90],[128.05,35.95],[128.40,35.80],[128.40,35.95],[128.70,35.95],[128.95,35.72],[128.95,35.35],[129.00,35.35],[128.80,35.28],[128.80,34.95],[128.50,34.85],[128.10,34.88],[127.90,35.10],[127.65,35.30]]]}},
-    {"type":"Feature","properties":{"name":"제주"},"geometry":{"type":"Polygon","coordinates":[[[126.15,33.20],[126.15,33.52],[126.58,33.56],[126.90,33.53],[127.00,33.45],[126.97,33.22],[126.55,33.12],[126.15,33.20]]]}}
-  ]};
-
-  // === D3 Choropleth Rendering ===
-  container.innerHTML='';
-  const width=container.clientWidth||500;
-  const height=Math.max(container.clientHeight,400);
-
-  const svg=d3.select(container).append('svg')
-    .attr('width','100%').attr('height','100%')
-    .attr('viewBox',`0 0 ${width} ${height}`)
-    .attr('preserveAspectRatio','xMidYMid meet')
-    .style('background','#f8f9fa').style('border-radius','8px');
-
-  // Projection: Mercator centered on South Korea
-  const projection=d3.geoMercator()
-    .center([127.8,36.0])
-    .scale(width*6.5)
-    .translate([width/2,height/2]);
-  const path=d3.geoPath().projection(projection);
-
-  // Color scale
-  const colorScale=d3.scaleLinear()
-    .domain([0,maxSales])
-    .range(['#f0f4ff','#1a73e8']);
-
-  // Tooltip
-  const tooltip=d3.select(container).append('div')
-    .style('position','absolute').style('pointer-events','none')
-    .style('background','rgba(30,30,50,0.92)').style('color','#fff')
-    .style('padding','8px 12px').style('border-radius','6px')
-    .style('font-size','12px').style('line-height','1.6')
-    .style('box-shadow','0 2px 8px rgba(0,0,0,0.25)')
-    .style('opacity',0).style('z-index',10)
-    .style('white-space','nowrap').style('transition','opacity 0.15s');
-
-  // Draw provinces — 도를 먼저, 광역시를 나중에 (위에) 그려서 호버 가능하게
-  const metros=new Set(['서울','인천','대전','세종','광주','대구','울산','부산']);
-  const sortedFeatures=[...koreaGeoJSON.features].sort((a,b)=>{
-    const aM=metros.has(a.properties.name)?1:0;
-    const bM=metros.has(b.properties.name)?1:0;
-    return aM-bM;
-  });
-  svg.selectAll('path.region')
-    .data(sortedFeatures)
-    .enter().append('path')
-    .attr('class','region')
-    .attr('d',path)
-    .attr('fill',d=>{const s=regionSales[d.properties.name]||0;return s?colorScale(s):'#e8e8e8';})
-    .attr('stroke',d=>metros.has(d.properties.name)?'#1a1a2e':'#fff')
-    .attr('stroke-width',d=>metros.has(d.properties.name)?1.8:1.2)
-    .style('cursor','pointer')
-    .style('transition','opacity 0.15s')
-    .on('mouseover',function(event,d){
-      d3.select(this).attr('stroke','#1a1a2e').attr('stroke-width',2.2).style('opacity',0.85);
-      const name=d.properties.name;
-      const s=regionSales[name]||0;
-      const c=regionCount[name]||0;
-      const pct=total?(s/total*100).toFixed(1):'0.0';
-      tooltip.html(`<b>${name}</b><br>매출: ${fmt(Math.round(s))}<br>건수: ${c}건<br>비중: ${pct}%`)
-        .style('opacity',1);
-    })
-    .on('mousemove',function(event){
-      const rect=container.getBoundingClientRect();
-      tooltip.style('left',(event.clientX-rect.left+12)+'px')
-        .style('top',(event.clientY-rect.top-10)+'px');
-    })
-    .on('mouseout',function(){
-      d3.select(this).attr('stroke','#fff').attr('stroke-width',1.2).style('opacity',1);
-      tooltip.style('opacity',0);
-    });
-
-  // Region labels
-  svg.selectAll('text.label')
-    .data(koreaGeoJSON.features)
-    .enter().append('text')
-    .attr('class','label')
-    .attr('x',d=>path.centroid(d)[0])
-    .attr('y',d=>path.centroid(d)[1])
-    .attr('text-anchor','middle').attr('dy','0.35em')
-    .attr('font-size','10px').attr('font-weight','600')
-    .attr('fill',d=>{const s=regionSales[d.properties.name]||0;return s/maxSales>0.45?'#fff':'#333';})
-    .attr('pointer-events','none')
-    .text(d=>d.properties.name);
-
-  // Region table (권역 그룹핑)
-  const totalCount=Object.values(regionCount).reduce((s,v)=>s+v,0);
+  // 권역 그룹핑 (차트용: 권역 소계 기준 정렬)
   const regionGroups=[
     {group:'수도권',regions:['경기','서울','인천']},
     {group:'영남권',regions:['경남','경북','대구','부산','울산']},
@@ -1571,12 +1499,31 @@ function renderSonoMap(){
     {group:'강원',regions:['강원']},
     {group:'제주',regions:['제주']}
   ];
+  const groupTotals=regionGroups.map(g=>({...g,total:g.regions.reduce((s,r)=>s+(regionSales[r]||0),0)})).sort((a,b)=>b.total-a.total);
+
+  // 차트 데이터: 권역별 소계
+  const labels=groupTotals.map(g=>g.group);
+  const values=groupTotals.map(g=>g.total);
+  const counts=groupTotals.map(g=>g.regions.reduce((s,r)=>s+(regionCount[r]||0),0));
+  const colors=['#4285f4','#34a853','#fbbc04','#ea4335','#9334e6','#ff6d01'];
+
+  const ctx=document.getElementById('sonoRegionChart').getContext('2d');
+  if(sonoRegionChartInst)sonoRegionChartInst.destroy();
+  sonoRegionChartInst=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'매출금액',data:values,backgroundColor:colors.slice(0,labels.length),borderRadius:6}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},datalabels:{anchor:'end',align:'end',font:{size:11,weight:'600'},
+        formatter:(v,ctx2)=>{const c=counts[ctx2.dataIndex];return fmtLabel(v)+' ('+c+'건)'}},
+        tooltip:{callbacks:{label:ctx2=>{const c=counts[ctx2.dataIndex];const pct=total?(ctx2.raw/total*100).toFixed(1):'0';return ctx2.dataset.label+': '+fmt(Math.round(ctx2.raw))+' | '+c+'건 | '+pct+'%'}}}},
+      scales:{x:{ticks:{callback:v=>fmtLabel(v)},grid:{color:'#f0f0f0'}},y:{grid:{display:false}}}}});
+
+  // 테이블 (권역 그룹핑)
+  const totalCount=Object.values(regionCount).reduce((s,v)=>s+v,0);
   let regionHtml='';
-  regionGroups.forEach(g=>{
+  groupTotals.forEach(g=>{
     const groupRegions=g.regions.filter(r=>regionSales[r]).sort((a,b)=>(regionSales[b]||0)-(regionSales[a]||0));
     if(!groupRegions.length)return;
-    const groupSales=groupRegions.reduce((s,r)=>s+(regionSales[r]||0),0);
-    const groupCount=groupRegions.reduce((s,r)=>s+(regionCount[r]||0),0);
+    const groupSales=g.total;
+    const groupCount=g.regions.reduce((s,r)=>s+(regionCount[r]||0),0);
     const needSubtotal=g.regions.length>1;
     groupRegions.forEach((r,i)=>{
       regionHtml+=`<tr><td style="font-weight:${i===0?'700':'400'};color:${i===0?'#333':'#999'}">${i===0?g.group:''}</td><td>${r}</td><td class="text-right">${Math.round(regionSales[r]).toLocaleString()}</td><td class="text-right">${regionCount[r]}</td><td class="text-right">${total?(regionSales[r]/total*100).toFixed(1)+'%':'-'}</td></tr>`;
@@ -1586,10 +1533,18 @@ function renderSonoMap(){
   regionHtml+=`<tr style="font-weight:700;background:#f0f2f5;"><td>합계</td><td></td><td class="text-right">${Math.round(total).toLocaleString()}</td><td class="text-right">${totalCount}</td><td class="text-right">100%</td></tr>`;
   document.getElementById('sonoRegionBody').innerHTML=regionHtml;
 }
+function onSonoRegionYearChange(){
+  const checks=document.querySelectorAll('#sonoRegionYearFilter input[type=checkbox]');
+  sonoRegionSelectedYears=[...checks].filter(c=>c.checked).map(c=>c.value);
+  renderSonoRegionChart();
+}
 
 function renderSonoAS(){
+  const startYm=document.getElementById('startMonth').value||'2025-01';
   const now=new Date();const curYm=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-  const months=[];for(let y=2025;;){for(let m=1;m<=12;m++){const ym=`${y}-${String(m).padStart(2,'0')}`;months.push(ym);if(ym===curYm)break}if(months[months.length-1]===curYm)break;y++}
+  const endYm=document.getElementById('endMonth').value||curYm;
+  const months=genMonthRange(startYm,endYm);
+  document.getElementById('sonoASChartTitle').textContent='AS 월별 매출 & 건수 — '+startYm.substring(2)+'~'+endYm.substring(2);
   const asData=sonoData.filter(d=>d._isAS);
   const salesByM={},countByM={};
   asData.forEach(d=>{const ym=d['연월'];if(!ym||!months.includes(ym))return;salesByM[ym]=(salesByM[ym]||0)+d['매출금액'];countByM[ym]=(countByM[ym]||0)+1});
