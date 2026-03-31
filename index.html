@@ -1195,9 +1195,11 @@ function renderTrendChart(data){
     ];
     const scales={y:{ticks:{callback:v=>fmt(v)}}};
     // 턴키: 매출총이익률 라인 추가 (우측 Y축)
+    let _tkProfitM={};
     if(currentTab==='턴키'){
       const profitM={},salesM={};
       ad.forEach(d=>{const ym=d['연월'];if(!ym||!months.includes(ym))return;profitM[ym]=(profitM[ym]||0)+(d['매출총이익']||0);salesM[ym]=(salesM[ym]||0)+d['매출금액']});
+      _tkProfitM=profitM;
       datasets.push({label:'매출총이익률',data:months.map(m=>salesM[m]?(profitM[m]/salesM[m]*100):null),type:'line',borderColor:'#0d9488',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,pointRadius:4,pointBackgroundColor:'#0d9488',order:0,fill:false,yAxisID:'y1',
         datalabels:{display:false}});
       scales.y1={position:'right',grid:{drawOnChartArea:false},ticks:{callback:v=>v.toFixed(0)+'%'},min:0,max:50};
@@ -1207,6 +1209,7 @@ function renderTrendChart(data){
             const actual=items.find(it=>it.dataset.label==='올해');const sales=actual?actual.raw:0;
             const target=getTargetForMonth(months[i]);if(target&&sales)lines.push('달성률: '+(sales/target*100).toFixed(1)+'%  (목표: '+fmt(target)+')');
             if(yL[i])lines.push('YoY: '+yL[i]);
+            if(_tkProfitM[months[i]])lines.push('매출총이익: '+fmt(Math.round(_tkProfitM[months[i]])));
             return lines.join('\n')}}}},
       scales,onClick:(e,el)=>{if(el.length>0){const ym=months[el[0].index];document.getElementById('startMonth').value=ym;document.getElementById('endMonth').value=ym;render()}}}};
     if(trendChart)trendChart.destroy();
