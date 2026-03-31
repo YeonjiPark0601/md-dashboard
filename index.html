@@ -1116,6 +1116,49 @@ function renderTrendChart(data){
     if(trendChart)trendChart.destroy();
     var _old=document.getElementById('trendChart');var _new=document.createElement('canvas');_new.id='trendChart';_new.height=80;_old.parentNode.replaceChild(_new,_old);
     trendChart=new Chart(_new,cfg);
+  }else if(currentTab==='초음파'){
+    // 초음파 전용: 누적 꺾은선 (2023~2026 + 목표), X축 1~12월 고정
+    const mLabels=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+    const years=['2023','2024','2025','2026'];
+    const yearColors={'2023':'#bbb','2024':'#999','2025':'#34a853','2026':'#4285f4'};
+    const yearSales={};
+    years.forEach(y=>{yearSales[y]={}});
+    // sonoData에서 연도별 월별 매출 집계
+    sonoData.filter(d=>!d._isAS).forEach(d=>{
+      const ym=d['연월'];if(!ym)return;const y=ym.substring(0,4);const m=parseInt(ym.substring(5,7));
+      if(yearSales[y])yearSales[y][m]=(yearSales[y][m]||0)+d['매출금액'];
+    });
+    // 목표
+    const targetByM={};for(let m=1;m<=12;m++){targetByM[m]=getTargetForMonth('2026-'+String(m).padStart(2,'0'))}
+    // 누적 계산
+    function cumulate(byM){const arr=[];let sum=0;for(let m=1;m<=12;m++){sum+=byM[m]||0;arr.push(sum)}return arr}
+    const datasets=[];
+    years.forEach(y=>{
+      const cum=cumulate(yearSales[y]);
+      const hidden=(y==='2023'||y==='2024');
+      datasets.push({label:y+'년',data:cum,borderColor:yearColors[y],backgroundColor:yearColors[y]+'30',
+        borderWidth:hidden?1.5:2.5,pointRadius:hidden?2:3,pointBackgroundColor:yearColors[y],
+        fill:true,tension:0.3,hidden,datalabels:{display:false}});
+    });
+    // 목표 누적
+    const cumTarget=cumulate(targetByM);
+    datasets.push({label:'목표',data:cumTarget,borderColor:'#ea4335',backgroundColor:'rgba(0,0,0,0)',
+      borderWidth:2,borderDash:[6,4],pointRadius:0,fill:false,datalabels:{display:false}});
+
+    cfg={type:'line',data:{labels:mLabels,datasets},plugins:[ChartDataLabels],
+      options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:10}},
+        plugins:{legend:{position:'top',labels:{font:{size:11}}},datalabels:{display:false},
+          tooltip:{callbacks:{
+            label:ctx=>{const v=ctx.raw;return ctx.dataset.label+': '+fmt(Math.round(v))},
+            afterBody:items=>{if(!items.length)return'';const mi=items[0].dataIndex+1;
+              const s26=yearSales['2026'][mi]||0;const s25=yearSales['2025'][mi]||0;
+              const lines=[];if(s26&&s25){const yoy=((s26-s25)/s25*100).toFixed(1);lines.push('당월 YoY: '+(yoy>0?'+':'')+yoy+'%')}
+              const t=targetByM[mi];if(t&&s26)lines.push('당월 달성률: '+(s26/t*100).toFixed(1)+'%');
+              return lines.join('\n')}}}},
+        scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>fmtLabel(v)},grid:{color:'#f0f0f0'}}}}};
+    if(trendChart)trendChart.destroy();
+    var _old=document.getElementById('trendChart');var _new=document.createElement('canvas');_new.id='trendChart';_new.height=80;_old.parentNode.replaceChild(_new,_old);
+    trendChart=new Chart(_new,cfg);
   }else{
     const trendLabelPlugin={id:'trendLabels',afterDraw:function(chart){
       const ctx=chart.ctx;const meta=chart.getDatasetMeta(0);if(!meta||meta.hidden)return;
@@ -1127,13 +1170,6 @@ function renderTrendChart(data){
       {label:'전년',data:months.map(m=>pY[m]||0),type:'line',borderColor:'#bbb',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,borderDash:[5,3],pointRadius:3,pointBackgroundColor:'#999',order:0,fill:false}
     ];
     const scales={y:{ticks:{callback:v=>fmt(v)}}};
-    // 초음파: 계약건수 집계 (툴팁용)
-    const sonoCountByM={},sonoPrevCountByM={};
-    if(currentTab==='초음파'){
-      const sd=sonoData.filter(d=>!d._isAS&&d._src==='sono');
-      sd.forEach(d=>{const ym=d['연월'];if(!ym)return;if(months.includes(ym))sonoCountByM[ym]=(sonoCountByM[ym]||0)+1;
-        const sh=yearShift(ym,1);if(months.includes(sh))sonoPrevCountByM[sh]=(sonoPrevCountByM[sh]||0)+1});
-    }
     // 턴키: 매출총이익률 라인 추가 (우측 Y축)
     if(currentTab==='턴키'){
       const profitM={},salesM={};
@@ -1147,7 +1183,6 @@ function renderTrendChart(data){
             const actual=items.find(it=>it.dataset.label==='올해');const sales=actual?actual.raw:0;
             const target=getTargetForMonth(months[i]);if(target&&sales)lines.push('달성률: '+(sales/target*100).toFixed(1)+'%  (목표: '+fmt(target)+')');
             if(yL[i])lines.push('YoY: '+yL[i]);
-            if(sonoCountByM[months[i]]||sonoPrevCountByM[months[i]]){lines.push('계약건수: '+(sonoCountByM[months[i]]||0)+'건'+(sonoPrevCountByM[months[i]]?' (전년 '+sonoPrevCountByM[months[i]]+'건)':''))}
             return lines.join('\n')}}}},
       scales,onClick:(e,el)=>{if(el.length>0){const ym=months[el[0].index];document.getElementById('startMonth').value=ym;document.getElementById('endMonth').value=ym;render()}}}};
     if(trendChart)trendChart.destroy();
@@ -2612,7 +2647,11 @@ function renderRebuy(){
     return`<tr><td>${r['연월']||''}</td><td class="text-right">${r['총구매자수'].toLocaleString()}</td><td class="text-right">${r['이탈고객수'].toLocaleString()}</td><td class="text-right">${r['재구매자수'].toLocaleString()}</td><td class="text-right">${r['신규구매자수'].toLocaleString()}</td><td class="text-right">${(r['이탈율']*100).toFixed(1)}%</td><td class="text-right">${(r['재구매율']*100).toFixed(1)}%</td><td class="text-right">${(r['신규구매비율']*100).toFixed(1)}%</td></tr>`}).join('');
 }
 
+const SONO_NAV_SECTION_MAP={sonoASRow:'sonoASSection',sonoQtyChartRow:'sonoQtySection',sonoInventoryRow:'sonoInventorySection',supplierChartRow:'sonoSupplierSection',monthlyRow:'sonoMonthlySection'};
 function scrollTo2(id){
+  // 초음파 접기 섹션이면 자동 펼치기
+  const secId=SONO_NAV_SECTION_MAP[id];
+  if(secId){const sec=document.getElementById(secId);if(sec&&!sec.classList.contains('open'))toggleSonoSection(secId)}
   const el=document.getElementById(id);
   if(el){const y=el.getBoundingClientRect().top+window.scrollY-120;window.scrollTo({top:y,behavior:'smooth'})}
   return false;
