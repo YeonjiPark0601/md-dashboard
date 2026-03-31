@@ -1120,7 +1120,8 @@ function renderTrendChart(data){
     // 초음파 전용: 누적 꺾은선 (2023~2026 + 목표), X축 1~12월 고정
     const mLabels=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
     const years=['2023','2024','2025','2026'];
-    const yearColors={'2023':'#bbb','2024':'#999','2025':'#34a853','2026':'#4285f4'};
+    const yearColors={'2023':'#ff9800','2024':'#9334e6','2025':'#34a853','2026':'#4285f4'};
+    const yearFills={'2023':'rgba(255,152,0,0.12)','2024':'rgba(147,52,230,0.12)','2025':'rgba(52,168,83,0.15)','2026':'rgba(66,133,244,0.18)'};
     const yearSales={};
     years.forEach(y=>{yearSales[y]={}});
     // sonoData에서 연도별 월별 매출 집계
@@ -1136,7 +1137,7 @@ function renderTrendChart(data){
     years.forEach(y=>{
       const cum=cumulate(yearSales[y]);
       const hidden=(y==='2023'||y==='2024');
-      datasets.push({label:y+'년',data:cum,borderColor:yearColors[y],backgroundColor:yearColors[y]+'30',
+      datasets.push({label:y+'년',data:cum,borderColor:yearColors[y],backgroundColor:yearFills[y],
         borderWidth:hidden?1.5:2.5,pointRadius:hidden?2:3,pointBackgroundColor:yearColors[y],
         fill:true,tension:0.3,hidden,datalabels:{display:false}});
     });
