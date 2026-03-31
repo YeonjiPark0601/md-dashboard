@@ -1043,7 +1043,8 @@ function renderTrendChart(data){
   const endYm=document.getElementById('endMonth').value||curYm;
   const months=genMonthRange(startYm,endYm);
   const titleSuffix=' — '+startYm.substring(2)+'~'+endYm.substring(2);
-  if(document.getElementById('trendChartTitle'))document.getElementById('trendChartTitle').textContent='월별 매출 트렌드 (YoY)'+titleSuffix;
+  const trendTitle=currentTab==='초음파'?'월별 누적 매출 트렌드':'월별 매출 트렌드 (YoY)'+titleSuffix;
+  if(document.getElementById('trendChartTitle'))document.getElementById('trendChartTitle').textContent=trendTitle;
   if(document.getElementById('trendChartTitle2'))document.getElementById('trendChartTitle2').textContent='월별 매출 트렌드 (YoY)'+titleSuffix;
   const ad=getData();const cat=document.getElementById('categoryFilter').value;
   const type=currentTab!=='클래스'?document.getElementById('typeFilter').value:'';
