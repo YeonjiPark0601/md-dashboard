@@ -1488,7 +1488,8 @@ function showDetail(name){
   const nk=currentTab==='의료기기'?'공급업체':currentTab==='초음파'?'품목명':'상품명';const isClass=currentTab!=='의료기기';
   const data=getFilteredData().filter(d=>d[nk]===name);
   data.sort((a,b)=>(b['주문일']||'').localeCompare(a['주문일']||''));
-  document.getElementById('detailTitle').textContent=`${name} 매출 상세 (${data.length}건)`;
+  const detailCount=data.filter(d=>!d._cancelled).length;
+  document.getElementById('detailTitle').textContent=`${name} 매출 상세 (${detailCount}건)`;
   const dh=document.getElementById('detailHead');
   if(isClass)dh.innerHTML='<th>주문일</th><th>소분류</th><th>카테고리</th><th class="text-right">매출금액</th>';
   else dh.innerHTML='<th>주문번호</th><th>주문일</th><th>한의원명</th><th>품목명</th><th>옵션명</th><th class="text-right">매출금액</th><th class="text-right">공급가</th><th class="text-right">수량</th><th>구분</th>';
