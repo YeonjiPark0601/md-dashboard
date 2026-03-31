@@ -1715,14 +1715,20 @@ async function renderSonoInventory(){
 
     // L3-22: BDTS AF열(31)=Basic Name, BD열(55)=상품/견본, 계약번호 열 동적 탐색
     let l322New=0,l322Sample=0;
-    if(bdtsR.ok){const rows=csvR(await bdtsR.text());
-      const hdr=rows[0]||[];let afIdx=31,bdIdx=55,contIdx=96; // CS열=96
+    if(bdtsR.ok){const bdtsText=await bdtsR.text();const rows=csvR(bdtsText);
+      console.log('BDTS rows:',rows.length,'첫행 샘플:',JSON.stringify((rows[0]||[]).slice(30,33)),'...',JSON.stringify((rows[0]||[]).slice(54,57)),'...',JSON.stringify((rows[0]||[]).slice(94,98)));
+      const hdr=rows[0]||[];let afIdx=31,bdIdx=55,contIdx=96;
       for(let j=0;j<hdr.length;j++){const h=(hdr[j]||'').trim();if(h.includes('Basic Name'))afIdx=j;if(h.includes('상품/견본'))bdIdx=j;if(h.includes('계약번호')||h.includes('메디계약'))contIdx=j}
+      console.log('BDTS 인덱스: afIdx='+afIdx+', bdIdx='+bdIdx+', contIdx='+contIdx);
+      let l322Total=0;
       for(let i=1;i<rows.length;i++){const r=rows[i];if(r.length<=afIdx)continue;
         const af=r[afIdx]?.trim()||'';
-        const contract=contIdx<r.length?(r[contIdx]?.trim()||''):'';
-        const kind=bdIdx<r.length?(r[bdIdx]?.trim()||''):'';
-        if(af==='L3-22'&&contract===''){if(kind==='견본')l322Sample++;else l322New++}}}
+        if(af==='L3-22'){l322Total++;
+          const contract=contIdx<r.length?(r[contIdx]?.trim()||''):'NOCOL';
+          const kind=bdIdx<r.length?(r[bdIdx]?.trim()||''):'NOCOL';
+          if(l322Total<=3)console.log('L3-22 발견 row'+i+': contract=['+contract+'] kind=['+kind+']');
+          if(contract===''){if(kind==='견본')l322Sample++;else l322New++}}}
+      console.log('L3-22 결과: 전체발견='+l322Total+', 신품='+l322New+', 견본='+l322Sample)}
 
     // === 요약 테이블 ===
     const allModels=new Set();
