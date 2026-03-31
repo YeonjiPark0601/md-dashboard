@@ -94,6 +94,7 @@ tr:hover { background: #f7f9fc; }
   <div class="tab" data-tab="클래스" onclick="switchTab('클래스')">클래스</div>
   <div class="tab" data-tab="턴키" onclick="switchTab('턴키')">턴키</div>
   <div class="tab" data-tab="PT10" onclick="switchTab('PT10')">PT10</div>
+  <div class="tab" data-tab="옴니핏" onclick="switchTab('옴니핏')">옴니핏</div>
 </div>
 <div class="filters">
   <div class="filter-group">
@@ -518,7 +519,7 @@ Chart.defaults.plugins.tooltip.position='nearest';
 Chart.defaults.plugins.tooltip.yAlign='top';
 
 let currentTab = '의료기기';
-let allData = [], classData = [], turnkeyData = [], pt10Data = [], pt10Master = {}, sonoData = [], puOnData = [], puOffData = [], rebuyData = [], targetData = {}, pt10PuData = [], turnkeySurveyData = [];
+let allData = [], classData = [], turnkeyData = [], pt10Data = [], pt10Master = {}, sonoData = [], puOnData = [], puOffData = [], rebuyData = [], targetData = {}, pt10PuData = [], turnkeySurveyData = [], omnifitData = [];
 let drillCategory = null, selectedSuppliers = [], sortCol = -1, sortAsc = true;
 let puOnExpanded = false, puOffExpanded = false;
 let trendChart, trendChart2, typeChart, typeChart2, categoryChart, categoryPieChart, supplierChart, pt10CartTrendChart, sonoASChart, sonoQtyChart, surveyMonthChart, surveyWeekChart, consultMonthChart, consultWeekChart;
@@ -552,16 +553,17 @@ function yearShift(ym,d){const[y,m]=ym.split('-').map(Number);return`${y+d}-${St
 function getMonday(d){const dt=new Date(d);const day=dt.getDay();dt.setDate(dt.getDate()-day+(day===0?-6:1));return dt}
 function dateStr(d){return d.toISOString().slice(0,10)}
 
-function getData(){if(currentTab==='전체')return[...allData,...sonoData.filter(d=>!d._isAS),...classData];if(currentTab==='클래스')return classData;if(currentTab==='턴키')return turnkeyData;if(currentTab==='PT10')return pt10Data;if(currentTab==='초음파')return sonoData.filter(d=>!d._isAS);return allData}
+function getData(){if(currentTab==='전체')return[...allData,...sonoData.filter(d=>!d._isAS),...classData];if(currentTab==='클래스')return classData;if(currentTab==='턴키')return turnkeyData;if(currentTab==='PT10')return pt10Data;if(currentTab==='초음파')return sonoData.filter(d=>!d._isAS);if(currentTab==='옴니핏')return omnifitData;return allData}
 
 async function fetchData(){
   try{
     const sheetUrl=n=>`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(n)}&headers=1&_t=${Date.now()}`;
-    const [salesR,classR,turnkeyR,pt10R,pt10MasterR,sonoR,sonoMissR,targetR,puOnR,puOffR,rebuyR,pt10PuR,surveyR]=await Promise.all([
+    const [salesR,classR,turnkeyR,pt10R,pt10MasterR,sonoR,sonoMissR,targetR,puOnR,puOffR,rebuyR,pt10PuR,surveyR,omnifitRevR,omnifitCostR]=await Promise.all([
       fetch(sheetUrl('일반기기')),fetch(sheetUrl('클래스')),fetch(sheetUrl('턴키 결제내역')),fetch(sheetUrl('PT10')),fetch(sheetUrl('PT10 마스터')),
       fetch(sheetUrl('초음파')+'&range=A7:AH'),fetch(sheetUrl('초음파누락')),fetch(TARGET_URL),
       fetch(sheetUrl('PU온라인')),fetch(sheetUrl('PU오프라인')),fetch(sheetUrl('재구매분석')),fetch(sheetUrl('PT10PU')),
-      fetch(sheetUrl('턴키 상담관리'))
+      fetch(sheetUrl('턴키 상담관리')),
+      fetch(sheetUrl('옴니핏매출')),fetch(sheetUrl('옴니핏공급가'))
     ]);
     if(!salesR.ok)throw new Error('매출 데이터 로딩 실패');
     allData=parseCSV(await salesR.text()).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['공급가']=parseNum(r['공급가']);r['수량']=parseNum(r['수량']);r['연월']=fixYm(r['연월']);r['주문일']=fixDate(r['주문일']||'');return r});
@@ -623,10 +625,26 @@ async function fetchData(){
       r['_cid']=String(r['CID']||'').trim();
       return r})}}}catch(e){console.warn('설문 에러',e)}
     try{if(targetR.ok){const tr=parseCSV(await targetR.text());const mc=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];tr.forEach(r=>{const c=r['품목']||'';if(!c)return;targetData[c]={};mc.forEach((m,i)=>{targetData[c][i+1]=parseNum(r[m])})})}}catch(e){console.warn('목표 에러',e)}
+    // 옴니핏: 매출+공급가 조인
+    try{
+      const omnifitRevArr=[],omnifitCostMap={};
+      if(omnifitRevR.ok){const t=await omnifitRevR.text();if(t.trim()){parseCSV(t).forEach(r=>{
+        const dt=String(r['paidat']||'').substring(0,10);if(!dt||!dt.match(/^\d{4}/))return;
+        const ym=fixYm(dt.substring(0,7));
+        omnifitRevArr.push({주문일:fixDate(dt),연월:ym,주문번호:r['order_number']||'',한의원명:r['billing_addr_company']||'',
+          공급업체:r['supplier_name']||'',품목코드:r['item_id']||'',품목명:r['item_name']||'',
+          수량:parseNum(r['item_quantity']),매출금액:parseNum(r['real_rev'])/1.1,공급가:0})})}}
+      if(omnifitCostR.ok){const t=await omnifitCostR.text();if(t.trim()){parseCSV(t).forEach(r=>{
+        const key=(r['order_number']||'')+'_'+(r['item_id']||'');
+        omnifitCostMap[key]=parseNum(r['cogs'])/1.1})}}
+      // 공급가 조인
+      omnifitRevArr.forEach(r=>{const key=r.주문번호+'_'+r.품목코드;if(omnifitCostMap[key])r.공급가=omnifitCostMap[key]});
+      omnifitData=omnifitRevArr;
+    }catch(e){console.warn('옴니핏 에러',e)}
     initFilters();render();
     document.getElementById('loadingMsg').style.display='none';
     document.getElementById('dashboardContent').style.display='block';
-    document.getElementById('lastUpdated').textContent=`의료기기: ${allData.length} | 초음파: ${sonoData.length} | PT10: ${pt10Data.length} | 클래스: ${classData.length} | 턴키: ${turnkeyData.length} | ${new Date().toLocaleString('ko-KR')}`;
+    document.getElementById('lastUpdated').textContent=`의료기기: ${allData.length} | 초음파: ${sonoData.length} | PT10: ${pt10Data.length} | 클래스: ${classData.length} | 턴키: ${turnkeyData.length} | 옴니핏: ${omnifitData.length} | ${new Date().toLocaleString('ko-KR')}`;
   }catch(e){document.getElementById('loadingMsg').textContent='데이터 로딩 실패: '+e.message}
 }
 
@@ -641,7 +659,7 @@ function switchTab(tab){
   document.getElementById('detailSection').style.display='none';
   document.getElementById('supplierPicker').style.display='none';
   // Update filter visibility
-  document.getElementById('typeFilterGroup').style.display=(tab==='의료기기'||tab==='PT10'||tab==='초음파')?'flex':'none';
+  document.getElementById('typeFilterGroup').style.display=(tab==='의료기기'||tab==='PT10'||tab==='초음파'||tab==='옴니핏')?'flex':'none';
   document.getElementById('categoryFilter').parentElement.style.display=(tab==='전체')?'none':'flex';
   initFilters();render();
 }
@@ -706,7 +724,7 @@ function getTargetForMonth(month){
     return total;
   }
   let total=0;
-  const cats=currentTab==='초음파'?['초음파']:currentTab==='PT10'?['PT10']:currentTab==='클래스'?CLASS_CATEGORIES:[];
+  const cats=currentTab==='초음파'?['초음파']:currentTab==='PT10'?['PT10']:currentTab==='옴니핏'?['옴니핏']:currentTab==='클래스'?CLASS_CATEGORIES:[];
   cats.forEach(c=>{if(targetData[c]&&targetData[c][m])total+=targetData[c][m]});
   return total;
 }
@@ -749,8 +767,9 @@ function updateSupplierSummary(){
 }
 
 function render(){
-  const data=getFilteredData();const isTurnkey=currentTab==='턴키';const isPT10=currentTab==='PT10';const isSono=currentTab==='초음파';const isMD=currentTab==='의료기기';const isClass=currentTab==='클래스';const isAll=currentTab==='전체';
+  const data=getFilteredData();const isTurnkey=currentTab==='턴키';const isPT10=currentTab==='PT10';const isSono=currentTab==='초음파';const isMD=currentTab==='의료기기';const isClass=currentTab==='클래스';const isAll=currentTab==='전체';const isOmnifit=currentTab==='옴니핏';
   document.getElementById('supplierChartRow').style.display=(isMD||isSono)?'':'none';
+  document.getElementById('chartRow3').style.display=(isMD)?'':'none';
   if(isAll){
     document.getElementById('trendRow').style.display='';
     document.getElementById('classTrendRow').style.display='none';
@@ -783,8 +802,8 @@ function render(){
     renderSonoRegionChart()}
   if(!isAll){renderTable(data);renderMonthlyTable(data)}
   // 클래스 전용: PU + 재구매
-  document.getElementById('detailRow').style.display=(isTurnkey||isPT10||isSono||isAll)?'none':'';
-  document.getElementById('monthlyRow').style.display=(isPT10||isAll)?'none':'';
+  document.getElementById('detailRow').style.display=(isTurnkey||isPT10||isSono||isAll||isOmnifit)?'none':'';
+  document.getElementById('monthlyRow').style.display=(isPT10||isAll||isOmnifit)?'none':'';
   ['pt10SummaryRow','pt10CartRow','pt10DioRow','pt10BuyerMonthlyRow','pt10BuyerQuarterlyRow','pt10InsightRow','pt10Summary2025Row','pt10Cart2025Row','pt10Summary2024Row','pt10Cart2024Row','pt10Summary2023Row','pt10Cart2023Row','pt10CartChartRow'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
   document.getElementById('sonoMapRow').style.display=isSono?'':'none';
   // 초음파 전용 접기 섹션 표시
@@ -801,7 +820,7 @@ function render(){
   ['navPT10Summary','navPT10CartTrend','navPT10Cart','navPT10Dio','navPT10Buyer','navPT10Insight','navPT10Y25','navPT10Y24','navPT10Y23'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
   ['navTkSurvey','navTkConsult','navTkImpact'].forEach(id=>{document.getElementById(id).style.display=isTurnkey?'':'none'});
   document.getElementById('navMonthly').style.display=(isPT10||isAll)?'none':'';
-  document.getElementById('navDetail').style.display=(isPT10||isTurnkey||isSono||isAll)?'none':'';
+  document.getElementById('navDetail').style.display=(isPT10||isTurnkey||isSono||isAll||isOmnifit)?'none':'';
   if(isPT10){renderPT10Summary();renderPT10Cart();renderPT10CartTrend();renderPT10DIO();try{renderPT10Buyers()}catch(e){console.warn('Buyers err',e)}try{renderPT10Insight()}catch(e){console.warn('Insight err',e)}}
   document.getElementById('turnkeyResultKpiRow').style.display=isTurnkey?'grid':'none';
   document.getElementById('turnkeyKpiRow').style.display=isTurnkey?'grid':'none';
@@ -973,7 +992,8 @@ function renderKPIs(){
   // 턴키/초음파: 1행에 건수 표시
   const isTK=currentTab==='턴키';
   const isSonoKpi=currentTab==='초음파';
-  const showCount=isTK||isSonoKpi;
+  const isOmnifitKpi=currentTab==='옴니핏';
+  const showCount=isTK||isSonoKpi||isOmnifitKpi;
   ['Week','Month','Qtr'].forEach(p=>{document.getElementById('kpi'+p+'CountRow').style.display=showCount?'':'none'});
   if(isTK){
     const wCids=new Set(wD.map(d=>d['CID']).filter(Boolean));
@@ -983,7 +1003,7 @@ function renderKPIs(){
     document.getElementById('kpiMonthCount').textContent='건수: '+mCids.size.toLocaleString()+'건';
     document.getElementById('kpiQtrCount').textContent='건수: '+qCids.size.toLocaleString()+'건';
   }
-  if(isSonoKpi){
+  if(isSonoKpi||isOmnifitKpi){
     document.getElementById('kpiWeekCount').textContent='건수: '+wD.length+'건';
     document.getElementById('kpiMonthCount').textContent='건수: '+mD.length+'건';
     document.getElementById('kpiQtrCount').textContent='건수: '+qD.length+'건';
@@ -1014,7 +1034,7 @@ function toggleKpiDetail(period,forceOpen){
   ['kpiWeekCard','kpiMonthCard','kpiQtrCard'].forEach(id=>{document.getElementById(id).style.outline=id===cardMap[period]?'2px solid #1a73e8':''});
   document.getElementById('kpiDetailTitle').textContent=title+' 매출 상세 ('+items.length+'건)';
   _kpiDetailSorted=[...items].sort((a,b)=>(a['주문일']||'').localeCompare(b['주문일']||''));
-  renderKpiDetailRows(isSono);
+  renderKpiDetailRows(isSono||isOmnifitKpi);
   document.getElementById('kpiDetailRow').style.display='';
 }
 function renderKpiDetailRows(isSono){
@@ -1470,7 +1490,7 @@ function clearDrill(){drillCategory=null;document.getElementById('drillFilter').
 
 // URL 해시로 탭 초기화
 const hashTab=decodeURIComponent(location.hash.slice(1));
-const validTabs=['전체','의료기기','초음파','PT10','클래스','턴키'];
+const validTabs=['전체','의료기기','초음파','PT10','클래스','턴키','옴니핏'];
 if(validTabs.includes(hashTab)){currentTab=hashTab;document.querySelectorAll('.tab[data-tab]').forEach(t=>{t.classList.toggle('active',t.dataset.tab===hashTab)})}
 function renderTurnkeyKPI(){
   const today=new Date();const curYear=today.getFullYear();
