@@ -650,6 +650,7 @@ async function fetchData(){
         const ym=fixYm(dt.substring(0,7));
         omnifitRevArr.push({주문일:fixDate(dt),연월:ym,주문번호:r['order_number']||'',한의원명:r['billing_addr_company']||'',
           공급업체:r['supplier_name']||'',품목코드:r['item_id']||'',품목명:r['item_name']||'',
+          상품명:r['product_name']||'',customer_id:r['customer_id']||'',
           수량:parseNum(r['item_quantity']),매출금액:parseNum(r['real_rev'])/1.1,공급가:0})})}}
       if(omnifitCostR.ok){const t=await omnifitCostR.text();if(t.trim()){parseCSV(t).forEach(r=>{
         const key=(r['order_number']||'')+'_'+(r['item_id']||'');
@@ -1778,8 +1779,9 @@ function renderOmnifitSummary(){
   const data=omnifitData;
   // 월별 집계
   const salesByM={},costByM={},qtyByM={},tkQtyByM={},nonTkQtyByM={};
-  const tkSet=new Set();
-  turnkeyData.forEach(d=>{const cid=d['CID']||'';const dt=d['주문일']||'';if(cid&&dt)tkSet.add(cid+'_'+dt)});
+  // 턴키 CID Set (CID만으로 매칭 — 같은 고객이 턴키 구매 이력이 있으면 턴키)
+  const tkCidSet=new Set();
+  turnkeyData.forEach(d=>{const cid=d['CID']||'';if(cid)tkCidSet.add(cid)});
 
   data.forEach(d=>{
     const ym=d['연월'];if(!ym)return;
@@ -1788,7 +1790,7 @@ function renderOmnifitSummary(){
     if(omnifitQtyInclude(d['품목명'])){
       const qty=d['수량']||0;
       qtyByM[ym]=(qtyByM[ym]||0)+qty;
-      const isTk=tkSet.has((d['customer_id']||'')+'_'+(d['주문일']||''));
+      const isTk=tkCidSet.has(d['customer_id']||'');
       if(isTk)tkQtyByM[ym]=(tkQtyByM[ym]||0)+qty;
       else nonTkQtyByM[ym]=(nonTkQtyByM[ym]||0)+qty;
     }
