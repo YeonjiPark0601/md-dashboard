@@ -1749,9 +1749,10 @@ async function renderSonoInventory(){
     const hasL322=l322New>0||l322Sample>0;
     document.getElementById('sonoInvSummaryHead').innerHTML='<th>장비명</th>'+sortedModels.map(m=>`<th class="text-right">${m}</th>`).join('')+'<th class="text-right" style="font-weight:700">합계</th>'+(hasL322?'<th class="text-right" style="border-left:2px solid #d0d0d0;">L3-22</th>':'');
     let sHtml='';
-    [{label:'신품 재고',map:newByModel,l322:l322New},{label:'출고 예정(신품)',map:outByModel,l322:0},{label:'견본 재고(전체)',map:sampleByModel,l322:l322Sample},{label:'견본 재고(판매가능)',map:sampleSellByModel,l322:0}].forEach(row=>{
+    const newAvailByModel={};sortedModels.forEach(m=>{newAvailByModel[m]=(newByModel[m]||0)-(outByModel[m]||0)});
+    [{label:'신품 재고',map:newByModel,l322:l322New},{label:'출고 예정(신품)',map:outByModel,l322:0},{label:'신품 재고(현재)',map:newAvailByModel,l322:0,style:'background:#f7f8fa;'},{label:'견본 재고(전체)',map:sampleByModel,l322:l322Sample},{label:'견본 재고(판매가능)',map:sampleSellByModel,l322:0}].forEach(row=>{
       let total=0;
-      sHtml+=`<tr><td style="font-weight:600">${row.label}</td>`;
+      sHtml+=`<tr style="${row.style||''}"><td style="font-weight:600">${row.label}</td>`;
       sortedModels.forEach(m=>{const v=row.map[m]||0;total+=v;sHtml+=`<td class="text-right">${v||'-'}</td>`});
       sHtml+=`<td class="text-right" style="font-weight:700">${total}</td>`;
       if(hasL322)sHtml+=`<td class="text-right" style="border-left:2px solid #d0d0d0;">${row.l322||'-'}</td>`;
