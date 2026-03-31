@@ -596,10 +596,10 @@ async function fetchData(){
     ]);
     if(!salesR.ok)throw new Error('매출 데이터 로딩 실패');
     allData=parseCSV(await salesR.text()).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['공급가']=parseNum(r['공급가']);r['수량']=parseNum(r['수량']);r['연월']=fixYm(r['연월']);r['주문일']=fixDate(r['주문일']||'');return r});
-    // 취소/반품 주문번호 식별: 같은 주문번호에 음수 매출이 있으면 해당 주문번호 전체를 건수에서 제외
-    const cancelledOrders=new Set();
-    allData.forEach(d=>{if(d['매출금액']<0){const on=d['주문번호']||'';if(on)cancelledOrders.add(on)}});
-    allData.forEach(d=>{d._cancelled=cancelledOrders.has(d['주문번호']||'')});
+    // 취소/반품 식별: 같은 주문번호+공급업체에 음수 매출이 있으면 해당 조합만 건수에서 제외
+    const cancelledKeys=new Set();
+    allData.forEach(d=>{if(d['매출금액']<0){const key=(d['주문번호']||'')+'_'+(d['공급업체']||'');cancelledKeys.add(key)}});
+    allData.forEach(d=>{d._cancelled=cancelledKeys.has((d['주문번호']||'')+'_'+(d['공급업체']||''))});
     try{if(classR.ok){const ct=await classR.text();if(ct.trim()){classData=parseCSV(ct).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['연월']=fixYm(r['연월']);r['주문일']=fixDate(r['주문일']||'');return r})}}}catch(e){console.warn('클래스 파싱 에러',e)}
     try{if(turnkeyR.ok){const tt=await turnkeyR.text();if(tt.trim()){
       const tkAll=parseCSV(tt).filter(r=>r['결제 일자']&&String(r['결제 일자']).trim()).map(r=>{
