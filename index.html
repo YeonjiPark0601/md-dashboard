@@ -599,7 +599,7 @@ function switchTab(tab){
   currentTab=tab;
   history.replaceState(null,null,'#'+encodeURIComponent(tab));
   document.querySelectorAll('.tab[data-tab]').forEach(t=>{t.classList.toggle('active',t.dataset.tab===tab)});
-  drillCategory=null;selectedSuppliers=[];sortCol=-1;monthlyExpanded=false;detailTableExpanded=false;sonoRegionSelectedYears=null;
+  drillCategory=null;selectedSuppliers=[];sortCol=-1;monthlyExpanded=false;detailTableExpanded=false;sonoRegionSelectedYears=null;sonoRegionSelectedGroup=null;
   document.getElementById('drillFilter').classList.remove('show');
   document.getElementById('supplierSummary').style.display='none';
   document.getElementById('detailSection').style.display='none';
@@ -1473,11 +1473,21 @@ function renderSonoCountChart(){
 }
 
 let sonoRegionChartInst=null;
-let sonoRegionSelectedYears=null; // null=auto from filter
+let sonoRegionSelectedYears=null;
+let sonoRegionSelectedGroup=null; // 선택된 권역
+const REGION_GROUPS=[
+  {group:'수도권',regions:['경기','서울','인천'],color:'#4285f4'},
+  {group:'영남권',regions:['경남','경북','대구','부산','울산'],color:'#ea4335'},
+  {group:'충청권',regions:['충남','충북','대전','세종'],color:'#fbbc04'},
+  {group:'호남권',regions:['전남','전북','광주'],color:'#34a853'},
+  {group:'강원',regions:['강원'],color:'#9334e6'},
+  {group:'제주',regions:['제주'],color:'#ff6d01'}
+];
 function renderSonoRegionChart(){
   const startYm=document.getElementById('startMonth').value||'2025-01';
   const endYm=document.getElementById('endMonth').value||'2026-12';
-  // 연도 체크박스 생성
+  const months=genMonthRange(startYm,endYm);
+  // 연도 체크박스
   const allSonoYears=[...new Set(sonoData.filter(d=>!d._isAS&&d['연월']&&d['지역']).map(d=>d['연월'].substring(0,4)))].sort();
   const filterEl=document.getElementById('sonoRegionYearFilter');
   if(filterEl&&allSonoYears.length>1){
@@ -1485,53 +1495,66 @@ function renderSonoRegionChart(){
     filterEl.innerHTML=allSonoYears.map(y=>`<label style="display:inline-flex;align-items:center;gap:2px;cursor:pointer;"><input type="checkbox" value="${y}" ${sonoRegionSelectedYears.includes(y)?'checked':''} onchange="onSonoRegionYearChange()"> ${y}년</label>`).join('');
   }
   const activeYears=sonoRegionSelectedYears||allSonoYears;
-  const filtered=sonoData.filter(d=>!d._isAS&&d['연월']&&d['연월']>=startYm&&d['연월']<=endYm&&activeYears.includes(d['연월'].substring(0,4))&&d['지역']);
-  const regionSales={},regionCount={};
-  filtered.forEach(d=>{const r=d['지역'];regionSales[r]=(regionSales[r]||0)+d['매출금액'];regionCount[r]=(regionCount[r]||0)+1});
-  const total=Object.values(regionSales).reduce((s,v)=>s+v,0);
+  const filtered=sonoData.filter(d=>!d._isAS&&d['연월']&&months.includes(d['연월'])&&activeYears.includes(d['연월'].substring(0,4))&&d['지역']);
 
-  // 권역 그룹핑 (차트용: 권역 소계 기준 정렬)
-  const regionGroups=[
-    {group:'수도권',regions:['경기','서울','인천']},
-    {group:'영남권',regions:['경남','경북','대구','부산','울산']},
-    {group:'충청권',regions:['충남','충북','대전','세종']},
-    {group:'호남권',regions:['전남','전북','광주']},
-    {group:'강원',regions:['강원']},
-    {group:'제주',regions:['제주']}
-  ];
-  const groupTotals=regionGroups.map(g=>({...g,total:g.regions.reduce((s,r)=>s+(regionSales[r]||0),0)})).sort((a,b)=>b.total-a.total);
+  // 월별 전체 합산 (매출+건수)
+  const totalByM={},totalCountByM={};
+  filtered.forEach(d=>{totalByM[d['연월']]=(totalByM[d['연월']]||0)+d['매출금액'];totalCountByM[d['연월']]=(totalCountByM[d['연월']]||0)+1});
 
-  // 차트 데이터: 권역별 소계
-  const labels=groupTotals.map(g=>g.group);
-  const values=groupTotals.map(g=>g.total);
-  const counts=groupTotals.map(g=>g.regions.reduce((s,r)=>s+(regionCount[r]||0),0));
-  const colors=['#4285f4','#34a853','#fbbc04','#ea4335','#9334e6','#ff6d01'];
+  // 월별 권역별 합산 (매출+건수)
+  const groupMap={};
+  REGION_GROUPS.forEach(g=>{groupMap[g.group]={regions:new Set(g.regions),color:g.color,byM:{},countByM:{}}});
+  filtered.forEach(d=>{const ym=d['연월'];REGION_GROUPS.forEach(g=>{if(g.regions.includes(d['지역'])){groupMap[g.group].byM[ym]=(groupMap[g.group].byM[ym]||0)+d['매출금액'];groupMap[g.group].countByM[ym]=(groupMap[g.group].countByM[ym]||0)+1}})});
+
+  // 차트 데이터
+  const datasets=[];
+  datasets.push({label:'전체',data:months.map(m=>totalByM[m]||0),backgroundColor:'#e0e0e0',borderRadius:4,order:2,
+    datalabels:{display:!sonoRegionSelectedGroup,anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#555',formatter:v=>v>0?fmtLabel(v):''}});
+  if(sonoRegionSelectedGroup){
+    const g=groupMap[sonoRegionSelectedGroup];
+    datasets.push({label:sonoRegionSelectedGroup,data:months.map(m=>g.byM[m]||0),backgroundColor:g.color,borderRadius:4,order:1,
+      datalabels:{anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',
+        formatter:(v,ctx2)=>{if(!v)return'';const t=totalByM[months[ctx2.dataIndex]]||0;const pct=t?(v/t*100).toFixed(0)+'%':'';return fmtLabel(v)+' ('+pct+')';}}});
+  }
 
   const ctx=document.getElementById('sonoRegionChart').getContext('2d');
   if(sonoRegionChartInst)sonoRegionChartInst.destroy();
-  sonoRegionChartInst=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'매출금액',data:values,backgroundColor:colors.slice(0,labels.length),borderRadius:6}]},
-    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},datalabels:{anchor:'end',align:'end',font:{size:11,weight:'600'},
-        formatter:(v,ctx2)=>{const c=counts[ctx2.dataIndex];return fmtLabel(v)+' ('+c+'건)'}},
-        tooltip:{callbacks:{label:ctx2=>{const c=counts[ctx2.dataIndex];const pct=total?(ctx2.raw/total*100).toFixed(1):'0';return ctx2.dataset.label+': '+fmt(Math.round(ctx2.raw))+' | '+c+'건 | '+pct+'%'}}}},
-      scales:{x:{ticks:{callback:v=>fmtLabel(v)},grid:{color:'#f0f0f0'}},y:{grid:{display:false}}}}});
+  sonoRegionChartInst=new Chart(ctx,{type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets},plugins:[ChartDataLabels],
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},layout:{padding:{top:20}},
+      plugins:{legend:{position:'top'},
+        tooltip:{callbacks:{label:ctx2=>{const v=ctx2.raw;const m=months[ctx2.dataIndex];const t=totalByM[m]||0;
+          const lbl=ctx2.dataset.label;
+          if(lbl==='전체'){const c=totalCountByM[m]||0;return lbl+': '+fmt(Math.round(v))+' | '+c+'건'}
+          const g=groupMap[lbl];const c=g?g.countByM[m]||0:0;const pct=t?(v/t*100).toFixed(1)+'%':'0%';
+          return lbl+': '+fmt(Math.round(v))+' | '+c+'건 | 비중 '+pct}}}},
+      scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>fmtLabel(v)},grid:{color:'#f0f0f0'}}}}});
 
-  // 테이블 (권역 그룹핑)
+  // 지역별 집계 (테이블용)
+  const regionSales={},regionCount={};
+  filtered.forEach(d=>{const r=d['지역'];regionSales[r]=(regionSales[r]||0)+d['매출금액'];regionCount[r]=(regionCount[r]||0)+1});
+  const total=Object.values(regionSales).reduce((s,v)=>s+v,0);
   const totalCount=Object.values(regionCount).reduce((s,v)=>s+v,0);
+
+  // 테이블 (권역 = 하이퍼링크)
+  const groupTotals=REGION_GROUPS.map(g=>({...g,total:g.regions.reduce((s,r)=>s+(regionSales[r]||0),0),count:g.regions.reduce((s,r)=>s+(regionCount[r]||0),0)})).sort((a,b)=>b.total-a.total);
   let regionHtml='';
   groupTotals.forEach(g=>{
     const groupRegions=g.regions.filter(r=>regionSales[r]).sort((a,b)=>(regionSales[b]||0)-(regionSales[a]||0));
     if(!groupRegions.length)return;
-    const groupSales=g.total;
-    const groupCount=g.regions.reduce((s,r)=>s+(regionCount[r]||0),0);
+    const isActive=sonoRegionSelectedGroup===g.group;
     const needSubtotal=g.regions.length>1;
     groupRegions.forEach((r,i)=>{
-      regionHtml+=`<tr><td style="font-weight:${i===0?'700':'400'};color:${i===0?'#333':'#999'}">${i===0?g.group:''}</td><td>${r}</td><td class="text-right">${Math.round(regionSales[r]).toLocaleString()}</td><td class="text-right">${regionCount[r]}</td><td class="text-right">${total?(regionSales[r]/total*100).toFixed(1)+'%':'-'}</td></tr>`;
+      const linkStyle=i===0?`font-weight:700;color:${isActive?g.color:'#1a73e8'};cursor:pointer;text-decoration:underline;`:'font-weight:400;color:#999;';
+      regionHtml+=`<tr${isActive?' style="background:#f0f4ff;"':''}><td style="${linkStyle}">${i===0?`<a href="#" onclick="selectSonoRegionGroup('${g.group}');return false;" style="${linkStyle}">${g.group}</a>`:''}</td><td>${r}</td><td class="text-right">${Math.round(regionSales[r]).toLocaleString()}</td><td class="text-right">${regionCount[r]}</td><td class="text-right">${total?(regionSales[r]/total*100).toFixed(1)+'%':'-'}</td></tr>`;
     });
-    if(needSubtotal)regionHtml+=`<tr style="font-weight:600;background:#f7f8fa;"><td>${g.group} 소계</td><td></td><td class="text-right">${Math.round(groupSales).toLocaleString()}</td><td class="text-right">${groupCount}</td><td class="text-right">${total?(groupSales/total*100).toFixed(1)+'%':'-'}</td></tr>`;
+    if(needSubtotal)regionHtml+=`<tr style="font-weight:600;background:${isActive?'#e8f0fe':'#f7f8fa'};"><td>${g.group} 소계</td><td></td><td class="text-right">${Math.round(g.total).toLocaleString()}</td><td class="text-right">${g.count}</td><td class="text-right">${total?(g.total/total*100).toFixed(1)+'%':'-'}</td></tr>`;
   });
-  regionHtml+=`<tr style="font-weight:700;background:#f0f2f5;"><td>합계</td><td></td><td class="text-right">${Math.round(total).toLocaleString()}</td><td class="text-right">${totalCount}</td><td class="text-right">100%</td></tr>`;
+  regionHtml+=`<tr style="font-weight:700;background:#f0f2f5;"><td><a href="#" onclick="selectSonoRegionGroup(null);return false;" style="color:#1a73e8;cursor:pointer;text-decoration:underline;">합계</a></td><td></td><td class="text-right">${Math.round(total).toLocaleString()}</td><td class="text-right">${totalCount}</td><td class="text-right">100%</td></tr>`;
   document.getElementById('sonoRegionBody').innerHTML=regionHtml;
+}
+function selectSonoRegionGroup(group){
+  sonoRegionSelectedGroup=(sonoRegionSelectedGroup===group)?null:group;
+  renderSonoRegionChart();
 }
 function onSonoRegionYearChange(){
   const checks=document.querySelectorAll('#sonoRegionYearFilter input[type=checkbox]');
