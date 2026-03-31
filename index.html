@@ -1540,10 +1540,7 @@ const REGION_GROUPS=[
   {group:'제주',regions:['제주'],color:'#ff6d01'}
 ];
 function renderSonoRegionChart(){
-  const startYm=document.getElementById('startMonth').value||'2025-01';
-  const endYm=document.getElementById('endMonth').value||'2026-12';
-  const months=genMonthRange(startYm,endYm);
-  // 연도 체크박스
+  // 연도 필터: 기간 필터와 독립적으로 동작
   const allSonoYears=[...new Set(sonoData.filter(d=>!d._isAS&&d['연월']&&d['지역']).map(d=>d['연월'].substring(0,4)))].sort();
   const filterEl=document.getElementById('sonoRegionYearFilter');
   if(filterEl&&allSonoYears.length>=1){
@@ -1551,7 +1548,11 @@ function renderSonoRegionChart(){
     filterEl.innerHTML=allSonoYears.map(y=>`<label style="display:inline-flex;align-items:center;gap:2px;cursor:pointer;"><input type="checkbox" value="${y}" ${sonoRegionSelectedYears.includes(y)?'checked':''} onchange="onSonoRegionYearChange()"> ${y}년</label>`).join('');
   }
   const activeYears=sonoRegionSelectedYears||allSonoYears;
-  const chartMonths=months.filter(m=>activeYears.includes(m.substring(0,4)));
+  // 선택된 연도의 1월~12월 전체 (현재 연도는 현재 월까지)
+  const now=new Date();const curY=now.getFullYear();const curM=now.getMonth()+1;
+  const chartMonths=[];
+  activeYears.forEach(y=>{const yi=parseInt(y);for(let m=1;m<=12;m++){if(yi===curY&&m>curM)break;chartMonths.push(y+'-'+String(m).padStart(2,'0'))}});
+  chartMonths.sort();
   const filtered=sonoData.filter(d=>!d._isAS&&d['연월']&&chartMonths.includes(d['연월'])&&d['지역']);
 
   // 월별 전체 합산 (매출+건수)
