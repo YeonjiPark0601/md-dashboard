@@ -458,14 +458,14 @@ tr:hover { background: #f7f9fc; }
         <table><thead><tr id="sonoInvSummaryHead"></tr></thead><tbody id="sonoInvSummaryBody"></tbody></table>
       </div>
     </div>
-    <div class="chart-row" id="sonoInventoryDetailRow" style="display:none;">
+    <div class="chart-row" id="sonoInventoryDetailRow" style="display:none;grid-template-columns:1fr 1fr;">
       <div class="table-card">
         <h3>출고 예정(신품) 리스트</h3>
         <table><thead><tr><th>병원명</th><th>장비명</th></tr></thead><tbody id="sonoOutBody"></tbody></table>
       </div>
       <div class="table-card">
         <h3>견본 재고 리스트</h3>
-        <table><thead><tr><th>장비명</th><th>S/N</th><th>판매가능시점</th></tr></thead><tbody id="sonoSampleBody"></tbody></table>
+        <table><thead><tr><th>장비명</th><th>S/N</th><th>판매가능시점</th><th>상태</th></tr></thead><tbody id="sonoSampleBody"></tbody></table>
       </div>
     </div>
   </div>
@@ -1635,16 +1635,24 @@ async function renderSonoInventory(){
     const modelOrder=['V5','V6','V7','V8','HS40','HS50','HM70 EVO','RS85 Prestige','R20'];
     const sortedModels=[...allModels].sort((a,b)=>{const ai=modelOrder.indexOf(a),bi=modelOrder.indexOf(b);return(ai<0?99:ai)-(bi<0?99:bi)});
 
-    const newByModel={},sampleByModel={},outByModel={};
+    // 판매가능 기준: 현재일 + 3개월
+    const today=new Date();const sellCutoff=new Date(today.getFullYear(),today.getMonth()+3,today.getDate());
+    const sellCutoffStr=sellCutoff.toISOString().slice(0,10);
+    samples.forEach(r=>{r._sellable=r.sellDate<=sellCutoffStr});
+    const sellableSamples=samples.filter(r=>r._sellable);
+
+    const newByModel={},sampleByModel={},sampleSellByModel={},outByModel={};
     newStock.forEach(r=>{newByModel[r.model]=(newByModel[r.model]||0)+1});
     samples.forEach(r=>{sampleByModel[r.model]=(sampleByModel[r.model]||0)+1});
+    sellableSamples.forEach(r=>{sampleSellByModel[r.model]=(sampleSellByModel[r.model]||0)+1});
     outPending.forEach(r=>{outByModel[r.model]=(outByModel[r.model]||0)+1});
 
     document.getElementById('sonoInvSummaryHead').innerHTML='<th>장비명</th>'+sortedModels.map(m=>`<th class="text-right">${m}</th>`).join('')+(miniProbeCount?'<th class="text-right">미니프로브</th>':'')+'<th class="text-right" style="font-weight:700">합계</th>';
     let sHtml='';
-    [{label:'신품 재고',map:newByModel},{label:'견본 재고',map:sampleByModel},{label:'출고 예정(신품)',map:outByModel}].forEach(row=>{
+    [{label:'신품 재고',map:newByModel},{label:'견본 재고(전체)',map:sampleByModel},{label:'견본 재고(판매가능)',map:sampleSellByModel,highlight:true},{label:'출고 예정(신품)',map:outByModel}].forEach(row=>{
       let total=0;
-      sHtml+=`<tr><td style="font-weight:600">${row.label}</td>`;
+      const bg=row.highlight?'background:#eef7ee;':'';
+      sHtml+=`<tr style="${bg}"><td style="font-weight:600">${row.label}</td>`;
       sortedModels.forEach(m=>{const v=row.map[m]||0;total+=v;sHtml+=`<td class="text-right">${v||'-'}</td>`});
       if(miniProbeCount)sHtml+=`<td class="text-right">${row.label==='신품 재고'?miniProbeCount:'-'}</td>`;
       total+=(row.label==='신품 재고'?miniProbeCount:0);
@@ -1658,7 +1666,10 @@ async function renderSonoInventory(){
 
     // === 견본 재고 리스트 (판매가능시점 오름차순) ===
     samples.sort(function(a,b){return a.sellDate.localeCompare(b.sellDate)});
-    document.getElementById('sonoSampleBody').innerHTML=samples.length>0?samples.map(r=>`<tr><td>${r.model}</td><td>${r.sn}</td><td>${r.sellDate}</td></tr>`).join(''):'<tr><td colspan="3" style="color:#999;text-align:center;">견본 재고 없음</td></tr>';
+    document.getElementById('sonoSampleBody').innerHTML=samples.length>0?samples.map(r=>{
+      const badge=r._sellable?'<span style="background:#34a853;color:#fff;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;">판매가능</span>':'<span style="background:#e0e0e0;color:#666;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;">판매불가</span>';
+      return`<tr><td>${r.model}</td><td>${r.sn}</td><td>${r.sellDate}</td><td>${badge}</td></tr>`;
+    }).join(''):'<tr><td colspan="4" style="color:#999;text-align:center;">견본 재고 없음</td></tr>';
   }catch(e){console.warn('재고 로딩 에러',e)}
 }
 
