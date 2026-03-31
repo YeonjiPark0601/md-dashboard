@@ -32,6 +32,11 @@ body { font-family: 'Segoe UI', -apple-system, sans-serif; background: #f0f2f5; 
 .side-nav a { display: block; padding: 8px 16px; font-size: 12px; color: #555; text-decoration: none; border-left: 3px solid transparent; transition: all 0.15s; }
 .side-nav a:hover { background: #f0f2f5; color: #1a73e8; }
 .side-nav a.active { border-left-color: #1a73e8; color: #1a73e8; font-weight: 600; background: #eef3ff; }
+.sono-section { margin-bottom: 4px; }
+.sono-section-header { padding: 10px 16px; background: #f7f8fa; border: 1px solid #e8e8e8; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; color: #555; user-select: none; }
+.sono-section-header:hover { background: #eef3ff; color: #1a73e8; }
+.sono-section-header .sono-arrow { display: inline-block; width: 14px; transition: transform 0.15s; }
+.sono-section.open .sono-arrow { transform: rotate(90deg); }
 .kpi-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
 .kpi-card { background: #fff; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
 .kpi-card .label { font-size: 12px; color: #888; margin-bottom: 6px; font-weight: 600; }
@@ -278,11 +283,16 @@ tr:hover { background: #f7f9fc; }
       <div class="chart-card" style="display:flex;flex-direction:column;"><h3 style="display:flex;justify-content:space-between;align-items:center;"><span>지역별 매출 상세</span><span id="sonoRegionYearFilter" style="display:flex;gap:6px;font-size:12px;font-weight:400;"></span></h3><div style="flex:1;overflow-y:auto;"><table id="sonoRegionTable"><thead><tr><th>권역</th><th>지역</th><th class="text-right">매출금액</th><th class="text-right">건수</th><th class="text-right">비중</th></tr></thead><tbody id="sonoRegionBody"></tbody></table></div></div>
     </div>
     <!-- 초음파 전용: AS 매출 + 건수 -->
-    <div class="chart-row" id="sonoASRow" style="display:none;">
-      <div class="chart-card" style="flex:2;"><h3 id="sonoASChartTitle">AS 월별 매출 & 건수</h3><canvas id="sonoASChart" height="150"></canvas></div>
-      <div class="chart-card" style="flex:1;"><h3>AS 매출 상세</h3>
-        <div id="sonoASKpi" style="margin-bottom:12px;"></div>
-        <table id="sonoASTable"><thead><tr><th>월</th><th class="text-right">매출금액</th><th class="text-right">건수</th></tr></thead><tbody id="sonoASBody"></tbody></table>
+    <div class="sono-section" id="sonoASSection" style="display:none;">
+      <div class="sono-section-header" onclick="toggleSonoSection('sonoASSection')"><span class="sono-arrow">▸</span> AS 월별 매출 & 건수</div>
+      <div class="sono-section-body" style="display:none;">
+        <div class="chart-row" id="sonoASRow">
+          <div class="chart-card" style="flex:2;"><h3 id="sonoASChartTitle">AS 월별 매출 & 건수</h3><canvas id="sonoASChart" height="150"></canvas></div>
+          <div class="chart-card" style="flex:1;"><h3>AS 매출 상세</h3>
+            <div id="sonoASKpi" style="margin-bottom:12px;"></div>
+            <table id="sonoASTable"><thead><tr><th>월</th><th class="text-right">매출금액</th><th class="text-right">건수</th></tr></thead><tbody id="sonoASBody"></tbody></table>
+          </div>
+        </div>
       </div>
     </div>
     <!-- PT10 전용: 카트리지 트렌드 -->
@@ -296,6 +306,9 @@ tr:hover { background: #f7f9fc; }
       <div class="chart-card" id="categoryPieCard"><h3>카테고리별 매출 비중</h3><canvas id="categoryPieChart" height="200"></canvas></div>
     </div>
     <div id="sec-supplier-chart"></div>
+    <div class="sono-section" id="sonoSupplierSection" style="display:none;">
+      <div class="sono-section-header" onclick="toggleSonoSection('sonoSupplierSection')"><span class="sono-arrow">▸</span> 모델별 매출</div>
+    </div>
     <div class="chart-row-full" id="supplierChartRow">
       <div class="chart-card">
         <h3 style="display:flex;justify-content:space-between;align-items:center;">
@@ -305,16 +318,24 @@ tr:hover { background: #f7f9fc; }
         <canvas id="supplierChart" height="150"></canvas>
       </div>
     </div>
-    <div class="chart-row-full" id="sonoQtyChartRow" style="display:none;">
-      <div class="chart-card">
-        <h3 style="display:flex;justify-content:space-between;align-items:center;">
-          <span>모델별 수량</span>
-          <span><button onclick="hideAllSonoQtyLegend()" style="font-size:11px;padding:3px 8px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;color:#888;margin-right:4px;">전체 선택 해제</button><button onclick="resetSonoQtyLegend()" style="font-size:11px;padding:3px 8px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;color:#888;">초기화</button></span>
-        </h3>
-        <canvas id="sonoQtyChart" height="150"></canvas>
+    <div class="sono-section" id="sonoQtySection" style="display:none;">
+      <div class="sono-section-header" onclick="toggleSonoSection('sonoQtySection')"><span class="sono-arrow">▸</span> 모델별 수량</div>
+      <div class="sono-section-body" style="display:none;">
+        <div class="chart-row-full" id="sonoQtyChartRow">
+          <div class="chart-card">
+            <h3 style="display:flex;justify-content:space-between;align-items:center;">
+              <span>모델별 수량</span>
+              <span><button onclick="hideAllSonoQtyLegend()" style="font-size:11px;padding:3px 8px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;color:#888;margin-right:4px;">전체 선택 해제</button><button onclick="resetSonoQtyLegend()" style="font-size:11px;padding:3px 8px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;color:#888;">초기화</button></span>
+            </h3>
+            <canvas id="sonoQtyChart" height="150"></canvas>
+          </div>
+        </div>
       </div>
     </div>
     <div id="sec-monthly"></div>
+    <div class="sono-section" id="sonoMonthlySection" style="display:none;">
+      <div class="sono-section-header" onclick="toggleSonoSection('sonoMonthlySection')"><span class="sono-arrow">▸</span> 월별 매출</div>
+    </div>
     <div class="chart-row-full" id="monthlyRow">
       <div class="table-card"><h3 id="monthlyTableTitle">공급처별 월별 매출</h3>
         <div style="overflow-x:auto;"><table id="monthlyTable"><thead><tr id="monthlyHead"></tr></thead><tbody id="monthlyBody"></tbody></table></div>
@@ -462,20 +483,25 @@ tr:hover { background: #f7f9fc; }
       </div>
     </div>
     <!-- 초음파 전용: 재고 현황 (페이지 하단) -->
-    <div class="chart-row-full" id="sonoInventoryRow" style="display:none;">
-      <div class="table-card">
-        <h3>재고 현황 (장비명 기준)</h3>
-        <table><thead><tr id="sonoInvSummaryHead"></tr></thead><tbody id="sonoInvSummaryBody"></tbody></table>
-      </div>
-    </div>
-    <div class="chart-row" id="sonoInventoryDetailRow" style="display:none;grid-template-columns:1fr 1fr;">
-      <div class="table-card">
-        <h3>출고 예정(신품) 리스트</h3>
-        <table><thead><tr><th>병원명</th><th>장비명</th></tr></thead><tbody id="sonoOutBody"></tbody></table>
-      </div>
-      <div class="table-card">
-        <h3>견본 재고 리스트</h3>
-        <table><thead><tr><th>장비명</th><th>S/N</th><th>판매가능시점</th><th>상태</th></tr></thead><tbody id="sonoSampleBody"></tbody></table>
+    <div class="sono-section" id="sonoInventorySection" style="display:none;">
+      <div class="sono-section-header" onclick="toggleSonoSection('sonoInventorySection')"><span class="sono-arrow">▸</span> 재고 현황</div>
+      <div class="sono-section-body" style="display:none;">
+        <div class="chart-row-full" id="sonoInventoryRow">
+          <div class="table-card">
+            <h3>재고 현황 (장비명 기준)</h3>
+            <table><thead><tr id="sonoInvSummaryHead"></tr></thead><tbody id="sonoInvSummaryBody"></tbody></table>
+          </div>
+        </div>
+        <div class="chart-row" id="sonoInventoryDetailRow" style="grid-template-columns:1fr 1fr;">
+          <div class="table-card">
+            <h3>출고 예정(신품) 리스트</h3>
+            <table><thead><tr><th>병원명</th><th>장비명</th></tr></thead><tbody id="sonoOutBody"></tbody></table>
+          </div>
+          <div class="table-card">
+            <h3>견본 재고 리스트</h3>
+            <table><thead><tr><th>장비명</th><th>S/N</th><th>판매가능시점</th><th>상태</th></tr></thead><tbody id="sonoSampleBody"></tbody></table>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -761,13 +787,14 @@ function render(){
   document.getElementById('monthlyRow').style.display=(isPT10||isAll)?'none':'';
   ['pt10SummaryRow','pt10CartRow','pt10DioRow','pt10BuyerMonthlyRow','pt10BuyerQuarterlyRow','pt10InsightRow','pt10Summary2025Row','pt10Cart2025Row','pt10Summary2024Row','pt10Cart2024Row','pt10Summary2023Row','pt10Cart2023Row','pt10CartChartRow'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
   document.getElementById('sonoMapRow').style.display=isSono?'':'none';
-  document.getElementById('sonoInventoryRow').style.display=isSono?'':'none';
-  document.getElementById('sonoInventoryDetailRow').style.display=isSono?'grid':'none';
+  // 초음파 전용 접기 섹션 표시
+  ['sonoASSection','sonoQtySection','sonoInventorySection','sonoSupplierSection','sonoMonthlySection'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.style.display=isSono?'':'none'});
+  // 초음파일 때 공용 섹션은 기본 숨김 (접기 헤더로 토글)
+  if(isSono){document.getElementById('supplierChartRow').style.display='none';document.getElementById('monthlyRow').style.display='none'}
   document.getElementById('navSonoInventory').style.display=isSono?'':'none';
   document.getElementById('navSonoMap').style.display=isSono?'':'none';
-  document.getElementById('sonoASRow').style.display=isSono?'':'none';
   document.getElementById('navSonoAS').style.display=isSono?'':'none';
-  document.getElementById('sonoQtyChartRow').style.display=isSono?'':'none';
   document.getElementById('navSonoQty').style.display=isSono?'':'none';
   ['navPT10Summary','navPT10CartTrend','navPT10Cart','navPT10Dio','navPT10Buyer','navPT10Insight','navPT10Y25','navPT10Y24','navPT10Y23'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
   ['navTkSurvey','navTkConsult','navTkImpact'].forEach(id=>{document.getElementById(id).style.display=isTurnkey?'':'none'});
@@ -1628,6 +1655,20 @@ function selectSonoRegionGroup(group){
 function toggleRegionExpand(group){
   sonoRegionExpandedGroups[group]=!sonoRegionExpandedGroups[group];
   renderSonoRegionChart();
+}
+const SONO_SECTION_TARGETS={sonoSupplierSection:'supplierChartRow',sonoMonthlySection:'monthlyRow'};
+function toggleSonoSection(id){
+  const sec=document.getElementById(id);if(!sec)return;
+  const body=sec.querySelector('.sono-section-body');
+  if(body){
+    const open=body.style.display!=='none';body.style.display=open?'none':'';
+    sec.classList.toggle('open',!open);
+  }else{
+    const targetId=SONO_SECTION_TARGETS[id];if(!targetId)return;
+    const target=document.getElementById(targetId);if(!target)return;
+    const open=target.style.display!=='none';target.style.display=open?'none':'';
+    sec.classList.toggle('open',!open);
+  }
 }
 function onSonoRegionYearChange(){
   const checks=document.querySelectorAll('#sonoRegionYearFilter input[type=checkbox]');
