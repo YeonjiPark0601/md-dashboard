@@ -494,10 +494,22 @@ tr:hover { background: #f7f9fc; }
         <div style="overflow-x:auto;"><table class="pt10-sticky"><thead><tr id="omnifitSummaryHead"></tr></thead><tbody id="omnifitSummaryBody"></tbody></table></div>
       </div>
     </div>
+    <div class="chart-row-full" id="omnifitQuarterRow" style="display:none;">
+      <div class="table-card">
+        <h3>분기별 현황</h3>
+        <div style="overflow-x:auto;"><table><thead><tr id="omnifitQuarterHead"></tr></thead><tbody id="omnifitQuarterBody"></tbody></table></div>
+      </div>
+    </div>
     <div class="chart-row-full" id="omnifitOkrRow" style="display:none;">
       <div class="table-card">
         <h3>2026 OKR 달성 현황</h3>
         <div style="overflow-x:auto;"><table><thead><tr id="omnifitOkrHead"></tr></thead><tbody id="omnifitOkrBody"></tbody></table></div>
+      </div>
+    </div>
+    <div class="chart-row-full" id="omnifitYearlyRow" style="display:none;">
+      <div class="table-card">
+        <h3>연도별 현황</h3>
+        <div style="overflow-x:auto;"><table><thead><tr id="omnifitYearlyHead"></tr></thead><tbody id="omnifitYearlyBody"></tbody></table></div>
       </div>
     </div>
     <!-- 초음파 전용: 재고 현황 (페이지 하단) -->
@@ -841,8 +853,10 @@ function render(){
   document.getElementById('navDetail').style.display=(isPT10||isTurnkey||isSono||isAll||isOmnifit)?'none':'';
   if(isPT10){renderPT10Summary();renderPT10Cart();renderPT10CartTrend();renderPT10DIO();try{renderPT10Buyers()}catch(e){console.warn('Buyers err',e)}try{renderPT10Insight()}catch(e){console.warn('Insight err',e)}}
   document.getElementById('omnifitSummaryRow').style.display=isOmnifit?'':'none';
+  document.getElementById('omnifitQuarterRow').style.display=isOmnifit?'':'none';
   document.getElementById('omnifitOkrRow').style.display=isOmnifit?'':'none';
-  if(isOmnifit){renderOmnifitSummary();renderOmnifitOkr()}
+  document.getElementById('omnifitYearlyRow').style.display=isOmnifit?'':'none';
+  if(isOmnifit){renderOmnifitSummary();renderOmnifitQuarter();renderOmnifitOkr();renderOmnifitYearly()}
   document.getElementById('turnkeyResultKpiRow').style.display=isTurnkey?'grid':'none';
   document.getElementById('turnkeyKpiRow').style.display=isTurnkey?'grid':'none';
   document.getElementById('turnkeySurveyKpiRow').style.display=isTurnkey?'grid':'none';
@@ -1857,6 +1871,47 @@ function renderOmnifitSummary(){
   }).join('');
 }
 
+function renderOmnifitQuarter(){
+  const years=['2026','2025'];
+  const qLabels=['Q1','Q2','Q3','Q4'];
+  // 연도×분기별 매출/수량 집계
+  const salesByYQ={},qtyByYQ={};
+  years.forEach(y=>{salesByYQ[y]=[0,0,0,0];qtyByYQ[y]=[0,0,0,0]});
+  omnifitData.forEach(d=>{
+    const ym=d['연월'];if(!ym)return;const y=ym.substring(0,4);if(!salesByYQ[y])return;
+    const m=parseInt(ym.substring(5,7));const qi=Math.floor((m-1)/3);
+    salesByYQ[y][qi]+=d['매출금액'];
+    if(omnifitQtyInclude(d['품목명']))qtyByYQ[y][qi]+=(d['수량']||0);
+  });
+
+  // 열: 항목 | 26 Q1~Q4 + 합계 | 25 Q1~Q4 + 합계
+  const cols=[];
+  years.forEach(y=>{
+    qLabels.forEach((q,i)=>cols.push({label:y.substring(2)+'년 '+q,yi:y,qi:i}));
+    cols.push({label:y.substring(2)+'년 합계',yi:y,qi:-1,isTotal:true});
+  });
+
+  const head=document.getElementById('omnifitQuarterHead');
+  head.innerHTML='<th style="min-width:100px;">항목</th>'+cols.map(c=>{
+    const bg=c.isTotal?'background:#f0f2f5;font-weight:700;':'';
+    return`<th class="text-right" style="${bg}">${c.label}</th>`;
+  }).join('');
+
+  function getQVal(byYQ,c){return c.isTotal?byYQ[c.yi].reduce((s,v)=>s+v,0):byYQ[c.yi][c.qi]}
+
+  const rows=[
+    {label:'매출',get:c=>getQVal(salesByYQ,c),fmt:v=>Math.round(v).toLocaleString()},
+    {label:'수량',get:c=>getQVal(qtyByYQ,c),fmt:v=>v.toLocaleString()+'대'}
+  ];
+
+  document.getElementById('omnifitQuarterBody').innerHTML=rows.map(row=>{
+    return'<tr><td style="font-weight:600;">'+row.label+'</td>'+cols.map(c=>{
+      const bg=c.isTotal?'background:#f0f2f5;font-weight:700;':'';
+      return`<td class="text-right" style="${bg}">${row.fmt(row.get(c))}</td>`;
+    }).join('')+'</tr>';
+  }).join('');
+}
+
 function renderOmnifitOkr(){
   const OMNIFIT_QTR_TARGET=[32,38,30,50]; // Q1~Q4 목표 수량
   const OMNIFIT_COST_TARGET=900000000; // 연간 공급가 목표 9억
@@ -1897,6 +1952,39 @@ function renderOmnifitOkr(){
       const style=(row.colorFn?row.colorFn(v):'')+(i===4?';background:#f0f2f5;font-weight:700':'');
       return`<td class="text-right" style="${style}">${row.fmt(v)}</td>`;
     }).join('')+'</tr>';
+  }).join('');
+}
+
+function renderOmnifitYearly(){
+  const years=['2026','2025'];
+  const tkCidSet=new Set();
+  turnkeyData.forEach(d=>{const cid=d['CID']||'';if(cid)tkCidSet.add(cid)});
+
+  const stats={};
+  years.forEach(y=>{stats[y]={sales:0,cost:0,qty:0,tkQty:0,nonTkQty:0,months:new Set()}});
+  omnifitData.forEach(d=>{
+    const ym=d['연월'];if(!ym)return;const y=ym.substring(0,4);if(!stats[y])return;
+    stats[y].sales+=d['매출금액'];stats[y].cost+=(d['공급가']||0);stats[y].months.add(ym);
+    if(omnifitQtyInclude(d['품목명'])){
+      const qty=d['수량']||0;stats[y].qty+=qty;
+      if(tkCidSet.has(d['customer_id']||''))stats[y].tkQty+=qty;else stats[y].nonTkQty+=qty;
+    }
+  });
+
+  const head=document.getElementById('omnifitYearlyHead');
+  head.innerHTML='<th style="min-width:140px;">항목</th>'+years.map(y=>`<th class="text-right">${y}년</th>`).join('');
+
+  const rows=[
+    {label:'기기 판매량',vals:years.map(y=>stats[y].qty),fmt:v=>v.toLocaleString()+'대'},
+    {label:'턴키 판매량',vals:years.map(y=>stats[y].tkQty),fmt:v=>v.toLocaleString()+'대'},
+    {label:'턴키 제외 판매량',vals:years.map(y=>stats[y].nonTkQty),fmt:v=>v.toLocaleString()+'대'},
+    {label:'월평균 매출',vals:years.map(y=>{const mc=stats[y].months.size;return mc?stats[y].sales/mc:0}),fmt:v=>fmt(Math.round(v))},
+    {label:'매출 합계',vals:years.map(y=>stats[y].sales),fmt:v=>fmt(Math.round(v))},
+    {label:'공급가 합계',vals:years.map(y=>stats[y].cost),fmt:v=>fmt(Math.round(v))}
+  ];
+
+  document.getElementById('omnifitYearlyBody').innerHTML=rows.map(row=>{
+    return'<tr><td style="font-weight:600;">'+row.label+'</td>'+row.vals.map(v=>`<td class="text-right">${row.fmt(v)}</td>`).join('')+'</tr>';
   }).join('');
 }
 
