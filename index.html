@@ -490,7 +490,7 @@ tr:hover { background: #f7f9fc; }
     <!-- 옴니핏 전용: 월별 테이블 + OKR -->
     <div class="chart-row-full" id="omnifitSummaryRow" style="display:none;">
       <div class="table-card">
-        <h3>월별 매출 / 정산가 / 수량</h3>
+        <h3>월별 현황</h3>
         <div style="overflow-x:auto;"><table class="pt10-sticky"><thead><tr id="omnifitSummaryHead"></tr></thead><tbody id="omnifitSummaryBody"></tbody></table></div>
       </div>
     </div>
@@ -1826,17 +1826,33 @@ function renderOmnifitSummary(){
     {label:'　턴키',byM:tkQtyByM,fmt:v=>v.toLocaleString(),indent:true},
     {label:'　턴키제외',byM:nonTkQtyByM,fmt:v=>v.toLocaleString(),indent:true},
     {label:'　턴키 비율',byM:null,fmt:v=>v.toFixed(1)+'%',indent:true,
-      calcFn:col=>{const t=getVal(qtyByM,col);const tk=getVal(tkQtyByM,col);return t?(tk/t*100):0}}
+      calcFn:col=>{const t=getVal(qtyByM,col);const tk=getVal(tkQtyByM,col);return t?(tk/t*100):0}},
+    {label:'YoY',byM:null,fmt:()=>'',bold:true,section:true},
+    {label:'　매출',byM:null,fmt:v=>v===null?'-':(v>0?'+':'')+v.toFixed(1)+'%',indent:true,
+      calcFn:col=>{if(col.year==='2025')return null;
+        const cur=col.isTotal?sumYear(salesByM,'2026'):(salesByM[col.key]||0);
+        const prevKey=col.isTotal?'_prev':col.key.replace('2026','2025');
+        const prev=col.isTotal?sumYear(salesByM,'2025'):(salesByM[prevKey]||0);
+        return prev?(cur-prev)/prev*100:cur?100:null},
+      colorFn:v=>v===null?'':v>=0?'color:#0d9488':'color:#ef4444'},
+    {label:'　수량',byM:null,fmt:v=>v===null?'-':(v>0?'+':'')+v.toFixed(1)+'%',indent:true,
+      calcFn:col=>{if(col.year==='2025')return null;
+        const cur=col.isTotal?sumYear(qtyByM,'2026'):(qtyByM[col.key]||0);
+        const prevKey=col.isTotal?'_prev':col.key.replace('2026','2025');
+        const prev=col.isTotal?sumYear(qtyByM,'2025'):(qtyByM[prevKey]||0);
+        return prev?(cur-prev)/prev*100:cur?100:null},
+      colorFn:v=>v===null?'':v>=0?'color:#0d9488':'color:#ef4444'}
   ];
 
   const body=document.getElementById('omnifitSummaryBody');
   body.innerHTML=rowDefs.map(row=>{
-    const style=(row.bold?'font-weight:700;':'')+(row.indent?'color:#666;font-size:12px;':'');
+    const style=(row.bold?'font-weight:700;':'')+(row.indent?'color:#666;font-size:12px;':'')+(row.section?'border-top:2px solid #d0d0d0;':'');
     return`<tr style="${style}"><td style="min-width:100px;position:sticky;left:0;background:#fff;z-index:1;font-weight:600;">${row.label}</td>`+
       cols.map(c=>{
         const v=row.calcFn?row.calcFn(c):getVal(row.byM,c);
         const bg=c.isTotal?'background:#f0f2f5;font-weight:700;':'';
-        return`<td class="text-right" style="${bg}">${row.fmt(v)}</td>`;
+        const clr=row.colorFn?row.colorFn(v):'';
+        return`<td class="text-right" style="${bg}${clr}">${row.fmt(v)}</td>`;
       }).join('')+'</tr>';
   }).join('');
 }
