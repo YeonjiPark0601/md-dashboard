@@ -596,6 +596,10 @@ async function fetchData(){
     ]);
     if(!salesR.ok)throw new Error('매출 데이터 로딩 실패');
     allData=parseCSV(await salesR.text()).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['공급가']=parseNum(r['공급가']);r['수량']=parseNum(r['수량']);r['연월']=fixYm(r['연월']);r['주문일']=fixDate(r['주문일']||'');return r});
+    // 취소/반품 주문번호 식별: 같은 주문번호에 음수 매출이 있으면 해당 주문번호 전체를 건수에서 제외
+    const cancelledOrders=new Set();
+    allData.forEach(d=>{if(d['매출금액']<0){const on=d['주문번호']||'';if(on)cancelledOrders.add(on)}});
+    allData.forEach(d=>{d._cancelled=cancelledOrders.has(d['주문번호']||'')});
     try{if(classR.ok){const ct=await classR.text();if(ct.trim()){classData=parseCSV(ct).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['연월']=fixYm(r['연월']);r['주문일']=fixDate(r['주문일']||'');return r})}}}catch(e){console.warn('클래스 파싱 에러',e)}
     try{if(turnkeyR.ok){const tt=await turnkeyR.text();if(tt.trim()){
       const tkAll=parseCSV(tt).filter(r=>r['결제 일자']&&String(r['결제 일자']).trim()).map(r=>{
@@ -1393,7 +1397,7 @@ function renderTable(data){
   else if(isClass){head.innerHTML='<th onclick="sortTable(0)">상품명</th><th onclick="sortTable(1)" class="text-right">매출금액</th><th onclick="sortTable(2)" class="text-right">건수</th>'}
   else{head.innerHTML='<th onclick="sortTable(0)">공급업체</th><th onclick="sortTable(1)" class="text-right">매출금액</th><th onclick="sortTable(2)" class="text-right">공급가</th><th onclick="sortTable(3)" class="text-right">건수</th><th onclick="sortTable(4)" class="text-right">수량</th><th onclick="sortTable(5)" class="text-right">마진율</th>'}
   const groups={};data.forEach(d=>{const k=d[nk];if(!k)return;if(!groups[k])groups[k]={name:d[nk],카테고리:d['카테고리']||'',매출금액:0,공급가:0,건수:0,수량:0};
-    groups[k].매출금액+=d['매출금액'];groups[k].공급가+=(d['공급가']||0);groups[k].건수+=1;groups[k].수량+=(d['수량']||0)});
+    groups[k].매출금액+=d['매출금액'];groups[k].공급가+=(d['공급가']||0);if(!d._cancelled)groups[k].건수+=1;groups[k].수량+=(d['수량']||0)});
   let rows=Object.values(groups).sort((a,b)=>b.매출금액-a.매출금액);
   if(selectedSuppliers.length>0)rows=rows.filter(r=>selectedSuppliers.includes(r.name));
   if(sortCol>=0){
