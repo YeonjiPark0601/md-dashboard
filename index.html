@@ -160,6 +160,7 @@ tr:hover { background: #f7f9fc; }
         <div class="main-row"><div class="value" id="kpiWeekSales">-</div><div class="rate" id="kpiWeekRate">-</div></div>
         <div class="sub-row"><span id="kpiWeekTarget">목표: -</span><span id="kpiWeekYoy"></span></div>
         <div class="sub-row" id="kpiWeekCountRow" style="display:none;"><span id="kpiWeekCount"></span></div>
+        <div class="sub-row" id="kpiWeekProfitRow" style="display:none;"><span id="kpiWeekProfit"></span></div>
         <div class="progress-bar"><div class="progress-fill" id="kpiWeekBar" style="width:0;background:#4285f4;"></div></div>
       </div>
       <div class="kpi-card" id="kpiMonthCard" style="cursor:pointer;" onclick="toggleKpiDetail('month')">
@@ -167,6 +168,7 @@ tr:hover { background: #f7f9fc; }
         <div class="main-row"><div class="value" id="kpiMonthSales">-</div><div class="rate" id="kpiMonthRate">-</div></div>
         <div class="sub-row"><span id="kpiMonthTarget">목표: -</span><span id="kpiMonthYoy"></span></div>
         <div class="sub-row" id="kpiMonthCountRow" style="display:none;"><span id="kpiMonthCount"></span></div>
+        <div class="sub-row" id="kpiMonthProfitRow" style="display:none;"><span id="kpiMonthProfit"></span></div>
         <div class="progress-bar"><div class="progress-fill" id="kpiMonthBar" style="width:0;background:#34a853;"></div></div>
       </div>
       <div class="kpi-card" id="kpiQtrCard" style="cursor:pointer;" onclick="toggleKpiDetail('quarter')">
@@ -174,6 +176,7 @@ tr:hover { background: #f7f9fc; }
         <div class="main-row"><div class="value" id="kpiQtrSales">-</div><div class="rate" id="kpiQtrRate">-</div></div>
         <div class="sub-row"><span id="kpiQtrTarget">목표: -</span><span id="kpiQtrYoy"></span></div>
         <div class="sub-row" id="kpiQtrCountRow" style="display:none;"><span id="kpiQtrCount"></span></div>
+        <div class="sub-row" id="kpiQtrProfitRow" style="display:none;"><span id="kpiQtrProfit"></span></div>
         <div class="progress-bar"><div class="progress-fill" id="kpiQtrBar" style="width:0;background:#fbbc04;"></div></div>
       </div>
     </div>
@@ -232,8 +235,9 @@ tr:hover { background: #f7f9fc; }
       <div class="kpi-card">
         <div class="label">연누적 실적</div>
         <div class="value" id="tkYearSales" style="font-size:22px;">-</div>
-        <div class="sub-row"><span id="tkYearCount">건수: -</span><span id="tkYearProfitRate">이익률: -</span></div>
-        <div class="sub-row"><span id="tkYearAchieve">달성률: -</span></div>
+        <div class="sub-row"><span id="tkYearCount">건수: -</span><span id="tkYearTarget">목표: -</span></div>
+        <div class="sub-row"><span id="tkYearAchieve">달성률: -</span><span id="tkYearProfitRate">이익률: -</span></div>
+        <div class="sub-row"><span id="tkYearProfit">매출총이익: -</span></div>
         <div class="progress-bar"><div class="progress-fill" id="tkYearBar" style="width:0;background:#4285f4;"></div></div>
       </div>
       <div class="kpi-card">
@@ -995,6 +999,7 @@ function renderKPIs(){
   const isOmnifitKpi=currentTab==='옴니핏';
   const showCount=isTK||isSonoKpi||isOmnifitKpi;
   ['Week','Month','Qtr'].forEach(p=>{document.getElementById('kpi'+p+'CountRow').style.display=showCount?'':'none'});
+  ['Week','Month','Qtr'].forEach(p=>{document.getElementById('kpi'+p+'ProfitRow').style.display=isTK?'':'none'});
   if(isTK){
     const wCids=new Set(wD.map(d=>d['CID']).filter(Boolean));
     const mCids=new Set(mD.map(d=>d['CID']).filter(Boolean));
@@ -1002,6 +1007,13 @@ function renderKPIs(){
     document.getElementById('kpiWeekCount').textContent='건수: '+wCids.size.toLocaleString()+'건';
     document.getElementById('kpiMonthCount').textContent='건수: '+mCids.size.toLocaleString()+'건';
     document.getElementById('kpiQtrCount').textContent='건수: '+qCids.size.toLocaleString()+'건';
+    // 매출총이익
+    const wProfit=wD.reduce((s,d)=>s+(d['매출총이익']||0),0);const wPR=wS?(wProfit/wS*100).toFixed(1):'0';
+    const mProfit=mD.reduce((s,d)=>s+(d['매출총이익']||0),0);const mPR=mS?(mProfit/mS*100).toFixed(1):'0';
+    const qProfit=qD.reduce((s,d)=>s+(d['매출총이익']||0),0);const qPR=qS2?(qProfit/qS2*100).toFixed(1):'0';
+    document.getElementById('kpiWeekProfit').innerHTML='이익률: '+wPR+'% · 이익: '+fmt(Math.round(wProfit));
+    document.getElementById('kpiMonthProfit').innerHTML='이익률: '+mPR+'% · 이익: '+fmt(Math.round(mProfit));
+    document.getElementById('kpiQtrProfit').innerHTML='이익률: '+qPR+'% · 이익: '+fmt(Math.round(qProfit));
   }
   if(isSonoKpi||isOmnifitKpi){
     document.getElementById('kpiWeekCount').textContent='건수: '+wD.length+'건';
@@ -1206,10 +1218,10 @@ function renderTrendChart(data){
     }
     cfg={type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets},plugins:[trendLabelPlugin],options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:25}},plugins:{legend:{position:'top'},datalabels:{display:false},
       tooltip:{callbacks:{label:ctx=>{if(ctx.dataset.yAxisID==='y1')return ctx.dataset.label+': '+ctx.raw.toFixed(1)+'%';return ctx.dataset.label+': '+fmt(ctx.raw)},afterBody:items=>{const i=items[0].dataIndex;const lines=[];
+            if(_tkProfitM[months[i]])lines.push('매출총이익: '+fmt(Math.round(_tkProfitM[months[i]])));
             const actual=items.find(it=>it.dataset.label==='올해');const sales=actual?actual.raw:0;
             const target=getTargetForMonth(months[i]);if(target&&sales)lines.push('달성률: '+(sales/target*100).toFixed(1)+'%  (목표: '+fmt(target)+')');
             if(yL[i])lines.push('YoY: '+yL[i]);
-            if(_tkProfitM[months[i]])lines.push('매출총이익: '+fmt(Math.round(_tkProfitM[months[i]])));
             return lines.join('\n')}}}},
       scales,onClick:(e,el)=>{if(el.length>0){const ym=months[el[0].index];document.getElementById('startMonth').value=ym;document.getElementById('endMonth').value=ym;render()}}}};
     if(trendChart)trendChart.destroy();
@@ -1509,8 +1521,10 @@ function renderTurnkeyKPI(){
 
   document.getElementById('tkYearSales').textContent=fmt(yearSales);
   document.getElementById('tkYearCount').textContent='건수: '+yearCids.size.toLocaleString()+'건';
+  document.getElementById('tkYearTarget').textContent='목표: '+fmt(yearTarget);
   document.getElementById('tkYearProfitRate').textContent='이익률: '+yearProfitRate.toFixed(1)+'%';
   document.getElementById('tkYearAchieve').textContent='달성률: '+yearAchieve.toFixed(1)+'%';
+  document.getElementById('tkYearProfit').textContent='매출총이익: '+fmt(Math.round(yearProfit));
   document.getElementById('tkYearBar').style.width=Math.min(yearAchieve,100)+'%';
   document.getElementById('tkYearBar').style.background=yearAchieve>=100?'#0d9488':'#4285f4';
 
