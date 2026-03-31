@@ -609,7 +609,7 @@ function switchTab(tab){
   currentTab=tab;
   history.replaceState(null,null,'#'+encodeURIComponent(tab));
   document.querySelectorAll('.tab[data-tab]').forEach(t=>{t.classList.toggle('active',t.dataset.tab===tab)});
-  drillCategory=null;selectedSuppliers=[];sortCol=-1;monthlyExpanded=false;detailTableExpanded=false;sonoRegionSelectedYears=null;sonoRegionSelectedGroup=null;
+  drillCategory=null;selectedSuppliers=[];sortCol=-1;monthlyExpanded=false;detailTableExpanded=false;sonoRegionSelectedYears=null;sonoRegionSelectedGroup=null;sonoRegionExpandedGroups={};
   document.getElementById('drillFilter').classList.remove('show');
   document.getElementById('supplierSummary').style.display='none';
   document.getElementById('detailSection').style.display='none';
@@ -1530,6 +1530,7 @@ function renderSonoCountChart(){
 let sonoRegionChartInst=null;
 let sonoRegionSelectedYears=null;
 let sonoRegionSelectedGroup=null; // 선택된 권역
+let sonoRegionExpandedGroups={}; // 권역별 펼침 상태
 const REGION_GROUPS=[
   {group:'수도권',regions:['경기','서울','인천'],color:'#4285f4'},
   {group:'영남권',regions:['경남','경북','대구','부산','울산'],color:'#ea4335'},
@@ -1569,7 +1570,7 @@ function renderSonoRegionChart(){
       datalabels:{display:false}});
     datasets.push({label:sonoRegionSelectedGroup,data:months.map(m=>g.byM[m]||0),backgroundColor:g.color+'cc',borderRadius:4,order:0,xAxisID:'x2',
       datalabels:{anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',
-        formatter:(v,ctx2)=>{if(!v)return'';const t=totalByM[months[ctx2.dataIndex]]||0;const pct=t?(v/t*100).toFixed(0)+'%':'';return fmtLabel(v)+' ('+pct+')';}}});
+        formatter:v=>v>0?fmtLabel(v):''}});
   }else{
     datasets.push({label:'전체',data:months.map(m=>totalByM[m]||0),backgroundColor:'#4285f4',borderRadius:4,order:2,
       datalabels:{anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',formatter:v=>v>0?fmtLabel(v):''}});
@@ -1593,25 +1594,37 @@ function renderSonoRegionChart(){
   const total=Object.values(regionSales).reduce((s,v)=>s+v,0);
   const totalCount=Object.values(regionCount).reduce((s,v)=>s+v,0);
 
-  // 테이블 (권역 = 하이퍼링크)
+  // 테이블 (권역 = 접기/펼치기 + 차트 연동)
   const groupTotals=REGION_GROUPS.map(g=>({...g,total:g.regions.reduce((s,r)=>s+(regionSales[r]||0),0),count:g.regions.reduce((s,r)=>s+(regionCount[r]||0),0)})).sort((a,b)=>b.total-a.total);
   let regionHtml='';
   groupTotals.forEach(g=>{
     const groupRegions=g.regions.filter(r=>regionSales[r]).sort((a,b)=>(regionSales[b]||0)-(regionSales[a]||0));
     if(!groupRegions.length)return;
     const isActive=sonoRegionSelectedGroup===g.group;
-    const needSubtotal=g.regions.length>1;
-    groupRegions.forEach((r,i)=>{
-      const linkStyle=i===0?`font-weight:700;color:${isActive?g.color:'#1a73e8'};cursor:pointer;text-decoration:underline;`:'font-weight:400;color:#999;';
-      regionHtml+=`<tr${isActive?' style="background:#f0f4ff;"':''}><td style="${linkStyle}">${i===0?`<a href="#" onclick="selectSonoRegionGroup('${g.group}');return false;" style="${linkStyle}">${g.group}</a>`:''}</td><td>${r}</td><td class="text-right">${Math.round(regionSales[r]).toLocaleString()}</td><td class="text-right">${regionCount[r]}</td><td class="text-right">${total?(regionSales[r]/total*100).toFixed(1)+'%':'-'}</td></tr>`;
-    });
-    if(needSubtotal)regionHtml+=`<tr style="font-weight:600;background:${isActive?'#e8f0fe':'#f7f8fa'};"><td>${g.group} 소계</td><td></td><td class="text-right">${Math.round(g.total).toLocaleString()}</td><td class="text-right">${g.count}</td><td class="text-right">${total?(g.total/total*100).toFixed(1)+'%':'-'}</td></tr>`;
+    const isExpanded=!!sonoRegionExpandedGroups[g.group];
+    const arrow=isExpanded?'▾':'▸';
+    const chartLink=`onclick="selectSonoRegionGroup('${g.group}');return false;"`;
+    const toggleLink=`onclick="toggleRegionExpand('${g.group}');return false;"`;
+    // 권역 헤더행 (항상 표시)
+    regionHtml+=`<tr style="cursor:pointer;${isActive?'background:#f0f4ff;':''}">`;
+    regionHtml+=`<td style="font-weight:700;"><a href="#" ${toggleLink} style="color:#333;text-decoration:none;margin-right:4px;">${arrow}</a><a href="#" ${chartLink} style="font-weight:700;color:${isActive?g.color:'#1a73e8'};text-decoration:underline;">${g.group}</a></td>`;
+    regionHtml+=`<td></td><td class="text-right" style="font-weight:600;">${Math.round(g.total).toLocaleString()}</td><td class="text-right" style="font-weight:600;">${g.count}</td><td class="text-right" style="font-weight:600;">${total?(g.total/total*100).toFixed(1)+'%':'-'}</td></tr>`;
+    // 하위 지역 (펼쳤을 때만)
+    if(isExpanded){
+      groupRegions.forEach(r=>{
+        regionHtml+=`<tr style="${isActive?'background:#f8faff;':''}"><td style="padding-left:24px;color:#999;">　</td><td>${r}</td><td class="text-right">${Math.round(regionSales[r]).toLocaleString()}</td><td class="text-right">${regionCount[r]}</td><td class="text-right">${total?(regionSales[r]/total*100).toFixed(1)+'%':'-'}</td></tr>`;
+      });
+    }
   });
   regionHtml+=`<tr style="font-weight:700;background:#f0f2f5;"><td><a href="#" onclick="selectSonoRegionGroup(null);return false;" style="color:#1a73e8;cursor:pointer;text-decoration:underline;">합계</a></td><td></td><td class="text-right">${Math.round(total).toLocaleString()}</td><td class="text-right">${totalCount}</td><td class="text-right">100%</td></tr>`;
   document.getElementById('sonoRegionBody').innerHTML=regionHtml;
 }
 function selectSonoRegionGroup(group){
   sonoRegionSelectedGroup=(sonoRegionSelectedGroup===group)?null:group;
+  renderSonoRegionChart();
+}
+function toggleRegionExpand(group){
+  sonoRegionExpandedGroups[group]=!sonoRegionExpandedGroups[group];
   renderSonoRegionChart();
 }
 function onSonoRegionYearChange(){
