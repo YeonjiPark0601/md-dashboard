@@ -1841,7 +1841,7 @@ function renderOmnifitSummary(){
     {label:'　턴키제외',byM:nonTkQtyByM,fmt:v=>v.toLocaleString(),indent:true},
     {label:'　턴키 비율',byM:null,fmt:v=>v.toFixed(1)+'%',indent:true,
       calcFn:col=>{const t=getVal(qtyByM,col);const tk=getVal(tkQtyByM,col);return t?(tk/t*100):0}},
-    {label:'YoY',byM:null,fmt:()=>'',bold:true,section:true},
+    {label:'YoY',byM:null,fmt:()=>'',bold:true,section:true,calcFn:()=>null},
     {label:'　매출',byM:null,fmt:v=>v===null?'-':(v>0?'+':'')+v.toFixed(1)+'%',indent:true,
       calcFn:col=>{if(col.year==='2025')return null;
         const cur=col.isTotal?sumYear(salesByM,'2026'):(salesByM[col.key]||0);
