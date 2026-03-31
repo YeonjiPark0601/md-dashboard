@@ -1853,25 +1853,30 @@ function renderOmnifitOkr(){
   });
   const labels=['Q1','Q2','Q3','Q4','연간'];
   const head=document.getElementById('omnifitOkrHead');
-  head.innerHTML='<th style="min-width:140px;">항목</th>'+labels.map(l=>`<th class="text-right">${l}</th>`).join('');
+  head.innerHTML='<th style="min-width:140px;">항목</th>'+labels.map((l,i)=>{
+    const bg=i===4?'background:#f0f2f5;font-weight:700;':'';
+    return`<th class="text-right" style="${bg}">${l}</th>`;
+  }).join('');
 
   const totalTargetQty=OMNIFIT_QTR_TARGET.reduce((s,v)=>s+v,0);
   const totalActualQty=qtyByQ.reduce((s,v)=>s+v,0);
   const totalActualCost=costByQ.reduce((s,v)=>s+v,0);
+  // 목표 공급가: 대수 비율로 배분
+  const qtrCostTargets=OMNIFIT_QTR_TARGET.map(t=>OMNIFIT_COST_TARGET*(t/totalTargetQty));
 
   function rateColor(v){return v>=100?'color:#0d9488;font-weight:700':v>=70?'color:#f59e0b;font-weight:600':'color:#ef4444;font-weight:600'}
   const rows=[
     {label:'목표 수량',vals:[...OMNIFIT_QTR_TARGET,totalTargetQty],fmt:v=>v.toLocaleString()+'대'},
     {label:'실제 수량',vals:[...qtyByQ,totalActualQty],fmt:v=>v.toLocaleString()+'대'},
     {label:'수량 달성률',vals:OMNIFIT_QTR_TARGET.map((t,i)=>t?(qtyByQ[i]/t*100):0).concat([totalTargetQty?(totalActualQty/totalTargetQty*100):0]),fmt:v=>v.toFixed(1)+'%',colorFn:rateColor},
-    {label:'목표 공급가',vals:[qtrCostTarget,qtrCostTarget,qtrCostTarget,qtrCostTarget,OMNIFIT_COST_TARGET],fmt:v=>fmt(Math.round(v))},
+    {label:'목표 공급가',vals:[...qtrCostTargets,OMNIFIT_COST_TARGET],fmt:v=>fmt(Math.round(v))},
     {label:'실제 공급가',vals:[...costByQ,totalActualCost],fmt:v=>fmt(Math.round(v))},
-    {label:'공급가 달성률',vals:[0,1,2,3].map(i=>qtrCostTarget?(costByQ[i]/qtrCostTarget*100):0).concat([OMNIFIT_COST_TARGET?(totalActualCost/OMNIFIT_COST_TARGET*100):0]),fmt:v=>v.toFixed(1)+'%',colorFn:rateColor}
+    {label:'공급가 달성률',vals:[0,1,2,3].map(i=>qtrCostTargets[i]?(costByQ[i]/qtrCostTargets[i]*100):0).concat([OMNIFIT_COST_TARGET?(totalActualCost/OMNIFIT_COST_TARGET*100):0]),fmt:v=>v.toFixed(1)+'%',colorFn:rateColor}
   ];
 
   document.getElementById('omnifitOkrBody').innerHTML=rows.map(row=>{
-    return'<tr><td style="font-weight:600;">'+row.label+'</td>'+row.vals.map(v=>{
-      const style=row.colorFn?row.colorFn(v):'';
+    return'<tr><td style="font-weight:600;">'+row.label+'</td>'+row.vals.map((v,i)=>{
+      const style=(row.colorFn?row.colorFn(v):'')+(i===4?';background:#f0f2f5;font-weight:700':'');
       return`<td class="text-right" style="${style}">${row.fmt(v)}</td>`;
     }).join('')+'</tr>';
   }).join('');
