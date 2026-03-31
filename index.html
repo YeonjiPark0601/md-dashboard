@@ -178,6 +178,7 @@ tr:hover { background: #f7f9fc; }
           <span onclick="toggleKpiDetail(null)" style="cursor:pointer;color:#888;font-size:12px;">닫기 ✕</span>
         </h3>
         <table><thead><tr><th>No.</th><th>계약일</th><th>한의원명</th><th>구분</th><th>장비명</th><th class="text-right">금액</th></tr></thead><tbody id="kpiDetailBody"></tbody></table>
+        <div id="kpiDetailToggle" onclick="expandKpiDetail()" style="display:none;text-align:center;padding:10px;color:#1a73e8;cursor:pointer;font-size:13px;font-weight:600;border-top:1px solid #f0f0f0;margin-top:4px;"></div>
       </div>
     </div>
     <!-- 턴키 전용 KPI 2행: 건수 + Full/Half -->
@@ -968,35 +969,42 @@ function renderKPIs(){
 }
 
 let _kpiDetailOpen=null;
+let _kpiDetailExpanded=false;
+let _kpiDetailSorted=[];
 function toggleKpiDetail(period,forceOpen){
   if(!forceOpen&&_kpiDetailOpen===period){_kpiDetailOpen=null;document.getElementById('kpiDetailRow').style.display='none';
     ['kpiWeekCard','kpiMonthCard','kpiQtrCard'].forEach(id=>{document.getElementById(id).style.outline=''});return}
   if(!period){_kpiDetailOpen=null;document.getElementById('kpiDetailRow').style.display='none';
     ['kpiWeekCard','kpiMonthCard','kpiQtrCard'].forEach(id=>{document.getElementById(id).style.outline=''});return}
-  _kpiDetailOpen=period;
+  _kpiDetailOpen=period;_kpiDetailExpanded=false;
   const d=window._kpiDetailData;if(!d)return;
   const items=period==='week'?d.week:period==='month'?d.month:d.quarter;
   const title=period==='week'?d.weekLabel:period==='month'?d.monthLabel:d.quarterLabel;
   const isSono=currentTab==='초음파';
-  // 카드 하이라이트
   const cardMap={week:'kpiWeekCard',month:'kpiMonthCard',quarter:'kpiQtrCard'};
   ['kpiWeekCard','kpiMonthCard','kpiQtrCard'].forEach(id=>{document.getElementById(id).style.outline=id===cardMap[period]?'2px solid #1a73e8':''});
   document.getElementById('kpiDetailTitle').textContent=title+' 매출 상세 ('+items.length+'건)';
-  // 정렬: 계약일 오름차순
-  const dateKey='주문일';
-  const sorted=[...items].sort((a,b)=>(a[dateKey]||'').localeCompare(b[dateKey]||''));
-  const body=document.getElementById('kpiDetailBody');
-  if(isSono){
-    body.innerHTML=sorted.map((r,i)=>`<tr><td>${i+1}</td><td>${r['주문일']||'-'}</td><td>${r['한의원명']||'-'}</td><td>${r['카테고리']||'-'}</td><td>${r['품목명']||'-'}</td><td class="text-right">${Math.round(r['매출금액']).toLocaleString()}</td></tr>`).join('');
-  }else{
-    body.innerHTML=sorted.map((r,i)=>`<tr><td>${i+1}</td><td>${r['주문일']||'-'}</td><td>${r['공급업체']||r['상품명']||'-'}</td><td>${r['구분']||r['카테고리']||'-'}</td><td>${r['카테고리']||'-'}</td><td class="text-right">${Math.round(r['매출금액']).toLocaleString()}</td></tr>`).join('');
-  }
-  if(!sorted.length)body.innerHTML='<tr><td colspan="6" style="text-align:center;color:#999;padding:20px;">데이터 없음</td></tr>';
-  // 합계행
-  if(sorted.length){const totalAmt=sorted.reduce((s,r)=>s+r['매출금액'],0);
-    body.innerHTML+=`<tr style="font-weight:700;background:#f0f2f5;"><td></td><td></td><td></td><td></td><td>합계</td><td class="text-right">${Math.round(totalAmt).toLocaleString()}</td></tr>`}
+  _kpiDetailSorted=[...items].sort((a,b)=>(a['주문일']||'').localeCompare(b['주문일']||''));
+  renderKpiDetailRows(isSono);
   document.getElementById('kpiDetailRow').style.display='';
 }
+function renderKpiDetailRows(isSono){
+  if(isSono===undefined)isSono=currentTab==='초음파';
+  const sorted=_kpiDetailSorted;const LIMIT=10;
+  const visible=_kpiDetailExpanded?sorted:sorted.slice(0,LIMIT);
+  const body=document.getElementById('kpiDetailBody');
+  const rowFn=isSono
+    ?(r,i)=>`<tr><td>${i+1}</td><td>${r['주문일']||'-'}</td><td>${r['한의원명']||'-'}</td><td>${r['카테고리']||'-'}</td><td>${r['품목명']||'-'}</td><td class="text-right">${Math.round(r['매출금액']).toLocaleString()}</td></tr>`
+    :(r,i)=>`<tr><td>${i+1}</td><td>${r['주문일']||'-'}</td><td>${r['공급업체']||r['상품명']||'-'}</td><td>${r['구분']||r['카테고리']||'-'}</td><td>${r['카테고리']||'-'}</td><td class="text-right">${Math.round(r['매출금액']).toLocaleString()}</td></tr>`;
+  body.innerHTML=visible.map(rowFn).join('');
+  if(!sorted.length)body.innerHTML='<tr><td colspan="6" style="text-align:center;color:#999;padding:20px;">데이터 없음</td></tr>';
+  if(sorted.length){const totalAmt=sorted.reduce((s,r)=>s+r['매출금액'],0);
+    body.innerHTML+=`<tr style="font-weight:700;background:#f0f2f5;"><td></td><td></td><td></td><td></td><td>합계</td><td class="text-right">${Math.round(totalAmt).toLocaleString()}</td></tr>`}
+  const toggle=document.getElementById('kpiDetailToggle');
+  if(sorted.length>LIMIT){toggle.style.display='block';toggle.textContent=_kpiDetailExpanded?'접기 ▲':`더보기 (${sorted.length-LIMIT}건) ▼`}
+  else{toggle.style.display='none'}
+}
+function expandKpiDetail(){_kpiDetailExpanded=!_kpiDetailExpanded;renderKpiDetailRows()}
 
 function genMonthRange(start,end){
   const months=[];const[sy,sm]=start.split('-').map(Number);const[ey,em]=end.split('-').map(Number);
@@ -1553,15 +1561,18 @@ function renderSonoRegionChart(){
   REGION_GROUPS.forEach(g=>{groupMap[g.group]={regions:new Set(g.regions),color:g.color,byM:{},countByM:{}}});
   filtered.forEach(d=>{const ym=d['연월'];REGION_GROUPS.forEach(g=>{if(g.regions.includes(d['지역'])){groupMap[g.group].byM[ym]=(groupMap[g.group].byM[ym]||0)+d['매출금액'];groupMap[g.group].countByM[ym]=(groupMap[g.group].countByM[ym]||0)+1}})});
 
-  // 차트 데이터
+  // 차트 데이터 — 권역 선택 시 전체(배경) 위에 권역(전경)이 완전히 겹치게
   const datasets=[];
-  datasets.push({label:'전체',data:months.map(m=>totalByM[m]||0),backgroundColor:'#e0e0e0',borderRadius:4,order:2,
-    datalabels:{display:!sonoRegionSelectedGroup,anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#555',formatter:v=>v>0?fmtLabel(v):''}});
   if(sonoRegionSelectedGroup){
     const g=groupMap[sonoRegionSelectedGroup];
-    datasets.push({label:sonoRegionSelectedGroup,data:months.map(m=>g.byM[m]||0),backgroundColor:g.color,borderRadius:4,order:1,
-      datalabels:{anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',
-        formatter:(v,ctx2)=>{if(!v)return'';const t=totalByM[months[ctx2.dataIndex]]||0;const pct=t?(v/t*100).toFixed(0)+'%':'';return fmtLabel(v)+' ('+pct+')';}}});
+    datasets.push({label:'전체',data:months.map(m=>totalByM[m]||0),backgroundColor:'#e8e8e8',borderRadius:4,order:2,stack:'bg',
+      datalabels:{anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#aaa',formatter:v=>v>0?fmtLabel(v):''}});
+    datasets.push({label:sonoRegionSelectedGroup,data:months.map(m=>g.byM[m]||0),backgroundColor:g.color+'cc',borderRadius:4,order:1,stack:'fg',
+      datalabels:{anchor:'center',align:'center',font:{size:10,weight:'bold'},color:'#fff',
+        formatter:(v,ctx2)=>{if(!v)return'';const t=totalByM[months[ctx2.dataIndex]]||0;const pct=t?(v/t*100).toFixed(0)+'%':'';return pct;}}});
+  }else{
+    datasets.push({label:'전체',data:months.map(m=>totalByM[m]||0),backgroundColor:'#4285f4',borderRadius:4,order:2,
+      datalabels:{anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',formatter:v=>v>0?fmtLabel(v):''}});
   }
 
   const ctx=document.getElementById('sonoRegionChart').getContext('2d');
@@ -1574,7 +1585,7 @@ function renderSonoRegionChart(){
           if(lbl==='전체'){const c=totalCountByM[m]||0;return lbl+': '+fmt(Math.round(v))+' | '+c+'건'}
           const g=groupMap[lbl];const c=g?g.countByM[m]||0:0;const pct=t?(v/t*100).toFixed(1)+'%':'0%';
           return lbl+': '+fmt(Math.round(v))+' | '+c+'건 | 비중 '+pct}}}},
-      scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>fmtLabel(v)},grid:{color:'#f0f0f0'}}}}});
+      scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:v=>fmtLabel(v)},grid:{color:'#f0f0f0'}}}}});
 
   // 지역별 집계 (테이블용)
   const regionSales={},regionCount={};
@@ -1672,18 +1683,19 @@ async function renderSonoInventory(){
       fetch(base+'&sheet='+encodeURIComponent('초음파BDTS')+'&range=A1:CU500')
     ]);
     function csvR(text){const lines=text.replace(/\r/g,'').split('\n').filter(l=>l.trim());return lines.map(l=>{const res=[];let cur='',q=false;for(let i=0;i<l.length;i++){if(q){if(l[i]==='"'&&l[i+1]==='"'){cur+='"';i++}else if(l[i]==='"')q=false;else cur+=l[i]}else{if(l[i]==='"')q=true;else if(l[i]===','){res.push(cur);cur=''}else cur+=l[i]}}res.push(cur);return res})}
+    function normalizeModel(m){return m.replace(/\s*\(.*?\)/g,'').trim()}
 
     // 출고 예정
     const outPending=[];
-    if(sonoR.ok){const rows=csvR(await sonoR.text());for(let i=1;i<rows.length;i++){const r=rows[i];if(r.length<8)continue;if(r[1].trim()==='상품'&&(r[7].trim()==='#N/A'||r[7].trim()==='')&&r[3].trim()&&r[3].trim()!==' ')outPending.push({hospital:r[3].trim(),model:r[6].trim()})}}
+    if(sonoR.ok){const rows=csvR(await sonoR.text());for(let i=1;i<rows.length;i++){const r=rows[i];if(r.length<8)continue;if(r[1].trim()==='상품'&&(r[7].trim()==='#N/A'||r[7].trim()==='')&&r[3].trim()&&r[3].trim()!==' ')outPending.push({hospital:r[3].trim(),model:normalizeModel(r[6].trim())})}}
 
     // 신품 재고
     const newStock=[];
-    if(selloutR.ok){const rows=csvR(await selloutR.text());for(let i=1;i<rows.length;i++){const r=rows[i];if(r.length<24)continue;if((r[11].trim()==='유통'||r[11].trim()==='증정')&&r[23].trim()===''&&r[8].trim())newStock.push({model:r[8].trim(),sn:r[10].trim(),inDate:r[2].trim()})}}
+    if(selloutR.ok){const rows=csvR(await selloutR.text());for(let i=1;i<rows.length;i++){const r=rows[i];if(r.length<24)continue;if((r[11].trim()==='유통'||r[11].trim()==='증정')&&r[23].trim()===''&&r[8].trim())newStock.push({model:normalizeModel(r[8].trim()),sn:r[10].trim(),inDate:r[2].trim()})}}
 
     // 견본 재고
     const samples=[];
-    if(sampleR.ok){const rows=csvR(await sampleR.text());for(let i=1;i<rows.length;i++){const r=rows[i];if(r.length<7)continue;if(r[0].trim()&&r[6].trim()===''&&r[5].trim()&&r[5].trim()<='2026-12-31')samples.push({model:r[0].trim(),sn:r[3].trim(),sellDate:r[5].trim()})}}
+    if(sampleR.ok){const rows=csvR(await sampleR.text());for(let i=1;i<rows.length;i++){const r=rows[i];if(r.length<7)continue;if(r[0].trim()&&r[6].trim()===''&&r[5].trim()&&r[5].trim()<='2026-12-31')samples.push({model:normalizeModel(r[0].trim()),sn:r[3].trim(),sellDate:r[5].trim()})}}
     samples.sort((a,b)=>a.sellDate.localeCompare(b.sellDate));
 
     // 미니프로브: 초음파BDTS AF열(인덱스31)=L3-22, 출고처 공백 확인
