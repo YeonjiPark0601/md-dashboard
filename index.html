@@ -1566,10 +1566,10 @@ function renderSonoRegionChart(){
   if(sonoRegionSelectedGroup){
     const g=groupMap[sonoRegionSelectedGroup];
     datasets.push({label:'전체',data:months.map(m=>totalByM[m]||0),backgroundColor:'#e8e8e8',borderRadius:4,order:1,xAxisID:'x',
-      datalabels:{anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#aaa',formatter:v=>v>0?fmtLabel(v):''}});
+      datalabels:{display:false}});
     datasets.push({label:sonoRegionSelectedGroup,data:months.map(m=>g.byM[m]||0),backgroundColor:g.color+'cc',borderRadius:4,order:0,xAxisID:'x2',
-      datalabels:{anchor:'center',align:'center',font:{size:10,weight:'bold'},color:'#fff',
-        formatter:(v,ctx2)=>{if(!v)return'';const t=totalByM[months[ctx2.dataIndex]]||0;const pct=t?(v/t*100).toFixed(0)+'%':'';return pct;}}});
+      datalabels:{anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',
+        formatter:(v,ctx2)=>{if(!v)return'';const t=totalByM[months[ctx2.dataIndex]]||0;const pct=t?(v/t*100).toFixed(0)+'%':'';return fmtLabel(v)+' ('+pct+')';}}});
   }else{
     datasets.push({label:'전체',data:months.map(m=>totalByM[m]||0),backgroundColor:'#4285f4',borderRadius:4,order:2,
       datalabels:{anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',formatter:v=>v>0?fmtLabel(v):''}});
