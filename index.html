@@ -1121,6 +1121,12 @@ function renderTrendChart(data){
   ad.forEach(d=>{if(cat&&d['카테고리']!==cat)return;if(type&&d['구분']!==type)return;if(drillCategory&&d['카테고리']!==drillCategory)return;
     const ym=d['연월'];if(!ym)return;if(months.includes(ym))tY[ym]=(tY[ym]||0)+d['매출금액'];
     const sh=yearShift(ym,1);if(months.includes(sh))pY[sh]=(pY[sh]||0)+d['매출금액']});
+  // 24년 하드코딩 (시트에 없는 전년 데이터)
+  const HC_MD_2024=[361456557,299060649,361845906,345022687,280128022,372211211,203878864,233693129,504489160,373106790,272643878,535639959];
+  const HC_CLASS_ON_2024=[71518490,59394460,158849456,79395965,56318344,115313779,120477201,279498696,90246551,55086986,77032869,133801462];
+  const HC_CLASS_OFF_2024=[41938648,101327262,45868245,44041119,42947864,32081868,66937357,-659577,29047742,38665684,27420707,41439620];
+  if(currentTab==='의료기기'&&!cat&&!type&&!drillCategory){for(let m=1;m<=12;m++){const ym='2025-'+String(m).padStart(2,'0');if(months.includes(ym)&&!pY[ym])pY[ym]=HC_MD_2024[m-1]}}
+  if(currentTab==='클래스'&&!cat&&!drillCategory){for(let m=1;m<=12;m++){const ym='2025-'+String(m).padStart(2,'0');if(months.includes(ym)&&!pY[ym])pY[ym]=HC_CLASS_ON_2024[m-1]+HC_CLASS_OFF_2024[m-1]}}
   const yL=months.map(m=>{const c=tY[m]||0,p=pY[m]||0;if(!p)return'';const pc=((c-p)/p*100).toFixed(0);return(pc>0?'+':'')+pc+'%'});
   let cfg;
   if(currentTab==='클래스'){
