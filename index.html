@@ -273,9 +273,9 @@ tr:hover { background: #f7f9fc; }
       <div class="chart-card"><h3>주별 컨설팅 진행 건수 (YoY) — 25년 1월~현재</h3><canvas id="consultWeekChart" height="80"></canvas></div>
     </div>
     <!-- 초음파 전용: 월별 계약건수 + 지역별 매출 -->
-    <div class="chart-row" id="sonoMapRow" style="display:none;grid-template-columns:3fr 2fr;">
-      <div class="chart-card"><h3>지역별 매출</h3><div style="position:relative;height:350px;"><canvas id="sonoRegionChart"></canvas></div></div>
-      <div class="chart-card"><h3 style="display:flex;justify-content:space-between;align-items:center;"><span>지역별 매출 상세</span><span id="sonoRegionYearFilter" style="display:flex;gap:6px;font-size:12px;font-weight:400;"></span></h3><table id="sonoRegionTable"><thead><tr><th>권역</th><th>지역</th><th class="text-right">매출금액</th><th class="text-right">건수</th><th class="text-right">비중</th></tr></thead><tbody id="sonoRegionBody"></tbody></table></div>
+    <div class="chart-row" id="sonoMapRow" style="display:none;grid-template-columns:1fr 1fr;align-items:stretch;">
+      <div class="chart-card" style="display:flex;flex-direction:column;"><h3>지역별 매출</h3><div style="position:relative;flex:1;min-height:300px;"><canvas id="sonoRegionChart"></canvas></div></div>
+      <div class="chart-card" style="display:flex;flex-direction:column;"><h3 style="display:flex;justify-content:space-between;align-items:center;"><span>지역별 매출 상세</span><span id="sonoRegionYearFilter" style="display:flex;gap:6px;font-size:12px;font-weight:400;"></span></h3><div style="flex:1;overflow-y:auto;"><table id="sonoRegionTable"><thead><tr><th>권역</th><th>지역</th><th class="text-right">매출금액</th><th class="text-right">건수</th><th class="text-right">비중</th></tr></thead><tbody id="sonoRegionBody"></tbody></table></div></div>
     </div>
     <!-- 초음파 전용: AS 매출 + 건수 -->
     <div class="chart-row" id="sonoASRow" style="display:none;">
