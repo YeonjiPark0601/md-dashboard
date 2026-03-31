@@ -1565,9 +1565,11 @@ function renderSonoRegionChart(){
   const datasets=[];
   if(sonoRegionSelectedGroup){
     const g=groupMap[sonoRegionSelectedGroup];
-    datasets.push({label:'전체',data:months.map(m=>totalByM[m]||0),backgroundColor:'#e8e8e8',borderRadius:4,order:2,stack:'bg',
+    datasets.push({label:'전체',data:months.map(m=>totalByM[m]||0),backgroundColor:'#e8e8e8',borderRadius:4,order:1,
+      barPercentage:0.9,categoryPercentage:0.8,
       datalabels:{anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#aaa',formatter:v=>v>0?fmtLabel(v):''}});
-    datasets.push({label:sonoRegionSelectedGroup,data:months.map(m=>g.byM[m]||0),backgroundColor:g.color+'cc',borderRadius:4,order:1,stack:'fg',
+    datasets.push({label:sonoRegionSelectedGroup,data:months.map(m=>g.byM[m]||0),backgroundColor:g.color+'cc',borderRadius:4,order:0,
+      barPercentage:0.9,categoryPercentage:0.8,
       datalabels:{anchor:'center',align:'center',font:{size:10,weight:'bold'},color:'#fff',
         formatter:(v,ctx2)=>{if(!v)return'';const t=totalByM[months[ctx2.dataIndex]]||0;const pct=t?(v/t*100).toFixed(0)+'%':'';return pct;}}});
   }else{
@@ -1585,7 +1587,7 @@ function renderSonoRegionChart(){
           if(lbl==='전체'){const c=totalCountByM[m]||0;return lbl+': '+fmt(Math.round(v))+' | '+c+'건'}
           const g=groupMap[lbl];const c=g?g.countByM[m]||0:0;const pct=t?(v/t*100).toFixed(1)+'%':'0%';
           return lbl+': '+fmt(Math.round(v))+' | '+c+'건 | 비중 '+pct}}}},
-      scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:v=>fmtLabel(v)},grid:{color:'#f0f0f0'}}}}});
+      scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>fmtLabel(v)},grid:{color:'#f0f0f0'}}}}});
 
   // 지역별 집계 (테이블용)
   const regionSales={},regionCount={};
