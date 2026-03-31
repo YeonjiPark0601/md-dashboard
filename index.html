@@ -772,7 +772,7 @@ function render(){
   ['navPT10Summary','navPT10CartTrend','navPT10Cart','navPT10Dio','navPT10Buyer','navPT10Insight','navPT10Y25','navPT10Y24','navPT10Y23'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
   ['navTkSurvey','navTkConsult','navTkImpact'].forEach(id=>{document.getElementById(id).style.display=isTurnkey?'':'none'});
   document.getElementById('navMonthly').style.display=(isPT10||isAll)?'none':'';
-  document.getElementById('navDetail').style.display=(isPT10||isTurnkey||isAll)?'none':'';
+  document.getElementById('navDetail').style.display=(isPT10||isTurnkey||isSono||isAll)?'none':'';
   if(isPT10){renderPT10Summary();renderPT10Cart();renderPT10CartTrend();renderPT10DIO();try{renderPT10Buyers()}catch(e){console.warn('Buyers err',e)}try{renderPT10Insight()}catch(e){console.warn('Insight err',e)}}
   document.getElementById('turnkeyResultKpiRow').style.display=isTurnkey?'grid':'none';
   document.getElementById('turnkeyKpiRow').style.display=isTurnkey?'grid':'none';
@@ -1716,20 +1716,15 @@ async function renderSonoInventory(){
     // L3-22: BDTS AF열(31)=Basic Name, BD열(55)=상품/견본, 계약번호 열 동적 탐색
     let l322New=0,l322Sample=0;
     if(bdtsR.ok){const bdtsText=await bdtsR.text();const rows=csvR(bdtsText);
-      console.log('BDTS rows:',rows.length,'첫행 샘플:',JSON.stringify((rows[0]||[]).slice(30,33)),'...',JSON.stringify((rows[0]||[]).slice(54,57)),'...',JSON.stringify((rows[0]||[]).slice(94,98)));
       const hdr=rows[0]||[];let afIdx=31,bdIdx=55,contIdx=96;
       for(let j=0;j<hdr.length;j++){const h=(hdr[j]||'').trim();if(h.includes('Basic Name'))afIdx=j;if(h.includes('상품/견본'))bdIdx=j;if(h.includes('계약번호')||h.includes('메디계약'))contIdx=j}
-      console.log('BDTS 인덱스: afIdx='+afIdx+', bdIdx='+bdIdx+', contIdx='+contIdx);
-      let l322Total=0;
       for(let i=1;i<rows.length;i++){const r=rows[i];if(r.length<=afIdx)continue;
         const af=r[afIdx]?.trim()||'';
-        if(af==='L3-22'){l322Total++;
+        if(af==='L3-22'){
           const contract=contIdx<r.length?(r[contIdx]?.trim()||''):'';
           const kind=bdIdx<r.length?(r[bdIdx]?.trim()||''):'';
-          const noContract=!contract||contract===''||contract.startsWith('#');
-          if(l322Total<=5)console.log('L3-22 row'+i+': contract=['+contract+'] kind=['+kind+'] noContract='+noContract);
-          if(noContract){if(kind.includes('견본'))l322Sample++;else l322New++}}}
-      console.log('L3-22 결과: 전체발견='+l322Total+', 신품='+l322New+', 견본='+l322Sample)}
+          const noContract=!contract||contract.startsWith('#');
+          if(noContract){if(kind.includes('견본'))l322Sample++;else l322New++}}}}
 
     // === 요약 테이블 ===
     const allModels=new Set();
