@@ -1551,7 +1551,8 @@ function renderSonoRegionChart(){
     filterEl.innerHTML=allSonoYears.map(y=>`<label style="display:inline-flex;align-items:center;gap:2px;cursor:pointer;"><input type="checkbox" value="${y}" ${sonoRegionSelectedYears.includes(y)?'checked':''} onchange="onSonoRegionYearChange()"> ${y}년</label>`).join('');
   }
   const activeYears=sonoRegionSelectedYears||allSonoYears;
-  const filtered=sonoData.filter(d=>!d._isAS&&d['연월']&&months.includes(d['연월'])&&activeYears.includes(d['연월'].substring(0,4))&&d['지역']);
+  const chartMonths=months.filter(m=>activeYears.includes(m.substring(0,4)));
+  const filtered=sonoData.filter(d=>!d._isAS&&d['연월']&&chartMonths.includes(d['연월'])&&d['지역']);
 
   // 월별 전체 합산 (매출+건수)
   const totalByM={},totalCountByM={};
@@ -1566,22 +1567,22 @@ function renderSonoRegionChart(){
   const datasets=[];
   if(sonoRegionSelectedGroup){
     const g=groupMap[sonoRegionSelectedGroup];
-    datasets.push({label:'전체',data:months.map(m=>totalByM[m]||0),backgroundColor:'#e8e8e8',borderRadius:4,order:1,xAxisID:'x',
+    datasets.push({label:'전체',data:chartMonths.map(m=>totalByM[m]||0),backgroundColor:'#e8e8e8',borderRadius:4,order:1,xAxisID:'x',
       datalabels:{display:false}});
-    datasets.push({label:sonoRegionSelectedGroup,data:months.map(m=>g.byM[m]||0),backgroundColor:g.color+'cc',borderRadius:4,order:0,xAxisID:'x2',
+    datasets.push({label:sonoRegionSelectedGroup,data:chartMonths.map(m=>g.byM[m]||0),backgroundColor:g.color+'cc',borderRadius:4,order:0,xAxisID:'x2',
       datalabels:{anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',
         formatter:v=>v>0?fmtLabel(v):''}});
   }else{
-    datasets.push({label:'전체',data:months.map(m=>totalByM[m]||0),backgroundColor:'#4285f4',borderRadius:4,order:2,
+    datasets.push({label:'전체',data:chartMonths.map(m=>totalByM[m]||0),backgroundColor:'#4285f4',borderRadius:4,order:2,
       datalabels:{anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',formatter:v=>v>0?fmtLabel(v):''}});
   }
 
   const ctx=document.getElementById('sonoRegionChart').getContext('2d');
   if(sonoRegionChartInst)sonoRegionChartInst.destroy();
-  sonoRegionChartInst=new Chart(ctx,{type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets},plugins:[ChartDataLabels],
+  sonoRegionChartInst=new Chart(ctx,{type:'bar',data:{labels:chartMonths.map(m=>m.substring(2)),datasets},plugins:[ChartDataLabels],
     options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},layout:{padding:{top:20}},
       plugins:{legend:{position:'top'},
-        tooltip:{callbacks:{label:ctx2=>{const v=ctx2.raw;const m=months[ctx2.dataIndex];const t=totalByM[m]||0;
+        tooltip:{callbacks:{label:ctx2=>{const v=ctx2.raw;const m=chartMonths[ctx2.dataIndex];const t=totalByM[m]||0;
           const lbl=ctx2.dataset.label;
           if(lbl==='전체'){const c=totalCountByM[m]||0;return lbl+': '+fmt(Math.round(v))+' | '+c+'건'}
           const g=groupMap[lbl];const c=g?g.countByM[m]||0:0;const pct=t?(v/t*100).toFixed(1)+'%':'0%';
