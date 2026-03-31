@@ -1836,6 +1836,8 @@ function renderOmnifitSummary(){
   const rowDefs=[
     {label:'매출',byM:salesByM,fmt:v=>Math.round(v).toLocaleString()},
     {label:'정산가',byM:costByM,fmt:v=>Math.round(v).toLocaleString()},
+    {label:'마진율',byM:null,fmt:v=>v===null?'-':v.toFixed(1)+'%',indent:true,
+      calcFn:col=>{const s=getVal(salesByM,col);const c=getVal(costByM,col);return s?((s-c)/s*100):null}},
     {label:'수량',byM:qtyByM,fmt:v=>v.toLocaleString(),bold:true},
     {label:'　턴키',byM:tkQtyByM,fmt:v=>v.toLocaleString(),indent:true},
     {label:'　턴키제외',byM:nonTkQtyByM,fmt:v=>v.toLocaleString(),indent:true},
