@@ -1695,7 +1695,7 @@ async function renderSonoInventory(){
       fetch(base+'&sheet='+encodeURIComponent('초음파')+'&range=A3:H500'),
       fetch(base+'&sheet='+encodeURIComponent('초음파셀아웃')+'&range=A1:X500'),
       fetch(base+'&sheet='+encodeURIComponent('초음파견본')+'&range=A1:H200'),
-      fetch(base+'&sheet='+encodeURIComponent('초음파BDTS')+'&range=A2:CU500')
+      fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('초음파BDTS')}&range=A3:CU500&_t=${Date.now()}`)
     ]);
     function csvR(text){const lines=text.replace(/\r/g,'').split('\n').filter(l=>l.trim());return lines.map(l=>{const res=[];let cur='',q=false;for(let i=0;i<l.length;i++){if(q){if(l[i]==='"'&&l[i+1]==='"'){cur+='"';i++}else if(l[i]==='"')q=false;else cur+=l[i]}else{if(l[i]==='"')q=true;else if(l[i]===','){res.push(cur);cur=''}else cur+=l[i]}}res.push(cur);return res})}
     function normalizeModel(m){return m.replace(/\s*\(.*?\)/g,'').trim()}
