@@ -283,9 +283,9 @@ tr:hover { background: #f7f9fc; }
       <div class="chart-card" style="display:flex;flex-direction:column;"><h3 style="display:flex;justify-content:space-between;align-items:center;"><span>지역별 매출 상세</span><span id="sonoRegionYearFilter" style="display:flex;gap:6px;font-size:12px;font-weight:400;"></span></h3><div style="flex:1;overflow-y:auto;"><table id="sonoRegionTable"><thead><tr><th>권역</th><th>지역</th><th class="text-right">매출금액</th><th class="text-right">건수</th><th class="text-right">비중</th></tr></thead><tbody id="sonoRegionBody"></tbody></table></div></div>
     </div>
     <!-- 초음파 전용: AS 매출 + 건수 -->
-    <div class="sono-section" id="sonoASSection" style="display:none;">
-      <div class="sono-section-header" onclick="toggleSonoSection('sonoASSection')"><span class="sono-arrow">▸</span> AS 월별 매출 & 건수</div>
-      <div class="sono-section-body" style="display:none;">
+    <div class="sono-section open" id="sonoASSection" style="display:none;">
+      <div class="sono-section-header" onclick="toggleSonoSection('sonoASSection')"><span class="sono-arrow">▾</span> AS 월별 매출 & 건수</div>
+      <div class="sono-section-body">
         <div class="chart-row" id="sonoASRow">
           <div class="chart-card" style="flex:2;"><h3 id="sonoASChartTitle">AS 월별 매출 & 건수</h3><canvas id="sonoASChart" height="150"></canvas></div>
           <div class="chart-card" style="flex:1;"><h3>AS 매출 상세</h3>
@@ -306,8 +306,8 @@ tr:hover { background: #f7f9fc; }
       <div class="chart-card" id="categoryPieCard"><h3>카테고리별 매출 비중</h3><canvas id="categoryPieChart" height="200"></canvas></div>
     </div>
     <div id="sec-supplier-chart"></div>
-    <div class="sono-section" id="sonoSupplierSection" style="display:none;">
-      <div class="sono-section-header" onclick="toggleSonoSection('sonoSupplierSection')"><span class="sono-arrow">▸</span> 모델별 매출</div>
+    <div class="sono-section open" id="sonoSupplierSection" style="display:none;">
+      <div class="sono-section-header" onclick="toggleSonoSection('sonoSupplierSection')"><span class="sono-arrow">▾</span> 모델별 매출</div>
     </div>
     <div class="chart-row-full" id="supplierChartRow">
       <div class="chart-card">
@@ -318,9 +318,9 @@ tr:hover { background: #f7f9fc; }
         <canvas id="supplierChart" height="150"></canvas>
       </div>
     </div>
-    <div class="sono-section" id="sonoQtySection" style="display:none;">
-      <div class="sono-section-header" onclick="toggleSonoSection('sonoQtySection')"><span class="sono-arrow">▸</span> 모델별 수량</div>
-      <div class="sono-section-body" style="display:none;">
+    <div class="sono-section open" id="sonoQtySection" style="display:none;">
+      <div class="sono-section-header" onclick="toggleSonoSection('sonoQtySection')"><span class="sono-arrow">▾</span> 모델별 수량</div>
+      <div class="sono-section-body">
         <div class="chart-row-full" id="sonoQtyChartRow">
           <div class="chart-card">
             <h3 style="display:flex;justify-content:space-between;align-items:center;">
@@ -333,8 +333,8 @@ tr:hover { background: #f7f9fc; }
       </div>
     </div>
     <div id="sec-monthly"></div>
-    <div class="sono-section" id="sonoMonthlySection" style="display:none;">
-      <div class="sono-section-header" onclick="toggleSonoSection('sonoMonthlySection')"><span class="sono-arrow">▸</span> 월별 매출</div>
+    <div class="sono-section open" id="sonoMonthlySection" style="display:none;">
+      <div class="sono-section-header" onclick="toggleSonoSection('sonoMonthlySection')"><span class="sono-arrow">▾</span> 월별 매출</div>
     </div>
     <div class="chart-row-full" id="monthlyRow">
       <div class="table-card"><h3 id="monthlyTableTitle">공급처별 월별 매출</h3>
@@ -483,9 +483,9 @@ tr:hover { background: #f7f9fc; }
       </div>
     </div>
     <!-- 초음파 전용: 재고 현황 (페이지 하단) -->
-    <div class="sono-section" id="sonoInventorySection" style="display:none;">
-      <div class="sono-section-header" onclick="toggleSonoSection('sonoInventorySection')"><span class="sono-arrow">▸</span> 재고 현황</div>
-      <div class="sono-section-body" style="display:none;">
+    <div class="sono-section open" id="sonoInventorySection" style="display:none;">
+      <div class="sono-section-header" onclick="toggleSonoSection('sonoInventorySection')"><span class="sono-arrow">▾</span> 재고 현황</div>
+      <div class="sono-section-body">
         <div class="chart-row-full" id="sonoInventoryRow">
           <div class="table-card">
             <h3>재고 현황 (장비명 기준)</h3>
@@ -791,7 +791,9 @@ function render(){
   ['sonoASSection','sonoQtySection','sonoInventorySection','sonoSupplierSection','sonoMonthlySection'].forEach(id=>{
     const el=document.getElementById(id);if(el)el.style.display=isSono?'':'none'});
   // 초음파일 때 공용 섹션은 기본 숨김 (접기 헤더로 토글)
-  if(isSono){document.getElementById('supplierChartRow').style.display='none';document.getElementById('monthlyRow').style.display='none'}
+  if(isSono){document.getElementById('supplierChartRow').style.display='';document.getElementById('monthlyRow').style.display='';
+    // 기본 펼침 상태
+    document.querySelectorAll('.sono-section').forEach(s=>{s.classList.add('open');const b=s.querySelector('.sono-section-body');if(b)b.style.display=''})}
   document.getElementById('navSonoInventory').style.display=isSono?'':'none';
   document.getElementById('navSonoMap').style.display=isSono?'':'none';
   document.getElementById('navSonoAS').style.display=isSono?'':'none';
