@@ -1546,8 +1546,8 @@ function renderSonoRegionChart(){
   // 연도 체크박스
   const allSonoYears=[...new Set(sonoData.filter(d=>!d._isAS&&d['연월']&&d['지역']).map(d=>d['연월'].substring(0,4)))].sort();
   const filterEl=document.getElementById('sonoRegionYearFilter');
-  if(filterEl&&allSonoYears.length>1){
-    if(!sonoRegionSelectedYears)sonoRegionSelectedYears=allSonoYears.filter(y=>y>=startYm.substring(0,4)&&y<=endYm.substring(0,4));
+  if(filterEl&&allSonoYears.length>=1){
+    if(!sonoRegionSelectedYears)sonoRegionSelectedYears=[...allSonoYears];
     filterEl.innerHTML=allSonoYears.map(y=>`<label style="display:inline-flex;align-items:center;gap:2px;cursor:pointer;"><input type="checkbox" value="${y}" ${sonoRegionSelectedYears.includes(y)?'checked':''} onchange="onSonoRegionYearChange()"> ${y}년</label>`).join('');
   }
   const activeYears=sonoRegionSelectedYears||allSonoYears;
