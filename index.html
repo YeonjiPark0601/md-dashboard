@@ -651,10 +651,10 @@ async function fetchData(){
         omnifitRevArr.push({주문일:fixDate(dt),연월:ym,주문번호:r['order_number']||'',한의원명:r['billing_addr_company']||'',
           공급업체:r['supplier_name']||'',품목코드:r['item_id']||'',품목명:r['item_name']||'',
           상품명:r['product_name']||'',customer_id:r['customer_id']||'',
-          수량:parseNum(r['item_quantity']),매출금액:parseNum(r['real_rev'])/1.1,공급가:0})})}}
+          수량:parseNum(r['item_quantity']),매출금액:parseNum(r['real_rev']),공급가:0})})}}
       if(omnifitCostR.ok){const t=await omnifitCostR.text();if(t.trim()){parseCSV(t).forEach(r=>{
         const key=(r['order_number']||'')+'_'+(r['item_id']||'');
-        omnifitCostMap[key]=parseNum(r['cogs'])/1.1})}}
+        omnifitCostMap[key]=parseNum(r['cogs'])})}}
       // 공급가 조인
       omnifitRevArr.forEach(r=>{const key=r.주문번호+'_'+r.품목코드;if(omnifitCostMap[key])r.공급가=omnifitCostMap[key]});
       omnifitData=omnifitRevArr;
