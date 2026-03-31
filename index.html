@@ -1695,7 +1695,7 @@ async function renderSonoInventory(){
       fetch(base+'&sheet='+encodeURIComponent('초음파')+'&range=A3:H500'),
       fetch(base+'&sheet='+encodeURIComponent('초음파셀아웃')+'&range=A1:X500'),
       fetch(base+'&sheet='+encodeURIComponent('초음파견본')+'&range=A1:H200'),
-      fetch(base+'&sheet='+encodeURIComponent('초음파BDTS')+'&range=A1:CU500')
+      fetch(base+'&sheet='+encodeURIComponent('초음파BDTS')+'&range=A2:CU500')
     ]);
     function csvR(text){const lines=text.replace(/\r/g,'').split('\n').filter(l=>l.trim());return lines.map(l=>{const res=[];let cur='',q=false;for(let i=0;i<l.length;i++){if(q){if(l[i]==='"'&&l[i+1]==='"'){cur+='"';i++}else if(l[i]==='"')q=false;else cur+=l[i]}else{if(l[i]==='"')q=true;else if(l[i]===','){res.push(cur);cur=''}else cur+=l[i]}}res.push(cur);return res})}
     function normalizeModel(m){return m.replace(/\s*\(.*?\)/g,'').trim()}
@@ -1717,7 +1717,7 @@ async function renderSonoInventory(){
     let l322New=0,l322Sample=0;
     if(bdtsR.ok){const rows=csvR(await bdtsR.text());
       const hdr=rows[0]||[];let afIdx=31,bdIdx=55,contIdx=96; // CS열=96
-      for(let j=0;j<hdr.length;j++){const h=(hdr[j]||'').trim();if(h.includes('Basic Name'))afIdx=j;if(h.includes('상품/견본'))bdIdx=j;if(h.includes('계약번호'))contIdx=j}
+      for(let j=0;j<hdr.length;j++){const h=(hdr[j]||'').trim();if(h.includes('Basic Name'))afIdx=j;if(h.includes('상품/견본'))bdIdx=j;if(h.includes('계약번호')||h.includes('메디계약'))contIdx=j}
       for(let i=1;i<rows.length;i++){const r=rows[i];if(r.length<=afIdx)continue;
         const af=r[afIdx]?.trim()||'';
         const contract=contIdx<r.length?(r[contIdx]?.trim()||''):'';
