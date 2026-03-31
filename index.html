@@ -1565,11 +1565,9 @@ function renderSonoRegionChart(){
   const datasets=[];
   if(sonoRegionSelectedGroup){
     const g=groupMap[sonoRegionSelectedGroup];
-    datasets.push({label:'전체',data:months.map(m=>totalByM[m]||0),backgroundColor:'#e8e8e8',borderRadius:4,order:1,
-      barPercentage:0.9,categoryPercentage:0.8,
+    datasets.push({label:'전체',data:months.map(m=>totalByM[m]||0),backgroundColor:'#e8e8e8',borderRadius:4,order:1,xAxisID:'x',
       datalabels:{anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#aaa',formatter:v=>v>0?fmtLabel(v):''}});
-    datasets.push({label:sonoRegionSelectedGroup,data:months.map(m=>g.byM[m]||0),backgroundColor:g.color+'cc',borderRadius:4,order:0,
-      barPercentage:0.9,categoryPercentage:0.8,
+    datasets.push({label:sonoRegionSelectedGroup,data:months.map(m=>g.byM[m]||0),backgroundColor:g.color+'cc',borderRadius:4,order:0,xAxisID:'x2',
       datalabels:{anchor:'center',align:'center',font:{size:10,weight:'bold'},color:'#fff',
         formatter:(v,ctx2)=>{if(!v)return'';const t=totalByM[months[ctx2.dataIndex]]||0;const pct=t?(v/t*100).toFixed(0)+'%':'';return pct;}}});
   }else{
@@ -1587,7 +1585,7 @@ function renderSonoRegionChart(){
           if(lbl==='전체'){const c=totalCountByM[m]||0;return lbl+': '+fmt(Math.round(v))+' | '+c+'건'}
           const g=groupMap[lbl];const c=g?g.countByM[m]||0:0;const pct=t?(v/t*100).toFixed(1)+'%':'0%';
           return lbl+': '+fmt(Math.round(v))+' | '+c+'건 | 비중 '+pct}}}},
-      scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>fmtLabel(v)},grid:{color:'#f0f0f0'}}}}});
+      scales:{x:{grid:{display:false}},x2:{display:false,offset:true},y:{ticks:{callback:v=>fmtLabel(v)},grid:{color:'#f0f0f0'}}}}});
 
   // 지역별 집계 (테이블용)
   const regionSales={},regionCount={};
@@ -1703,16 +1701,13 @@ async function renderSonoInventory(){
     // L3-22: BDTS AF열(31)=Basic Name, BD열(55)=상품/견본, 계약번호 열 동적 탐색
     let l322New=0,l322Sample=0;
     if(bdtsR.ok){const rows=csvR(await bdtsR.text());
-      const hdr=rows[0]||[];let afIdx=31,bdIdx=55,contIdx=-1;
-      for(let j=0;j<hdr.length;j++){const h=(hdr[j]||'').trim();if(h.includes('Basic Name'))afIdx=j;if(h.includes('상품/견본'))bdIdx=j;if(h.includes('계약번호')||h.includes('Contract')||h==='KRUS')contIdx=j}
-      console.log('BDTS L3-22 탐색: afIdx='+afIdx+', bdIdx='+bdIdx+', contIdx='+contIdx+', rows='+rows.length);
-      for(let i=1;i<rows.length;i++){const r=rows[i];if(r.length<=Math.max(afIdx,bdIdx))continue;
+      const hdr=rows[0]||[];let afIdx=31,bdIdx=55,contIdx=96; // CS열=96
+      for(let j=0;j<hdr.length;j++){const h=(hdr[j]||'').trim();if(h.includes('Basic Name'))afIdx=j;if(h.includes('상품/견본'))bdIdx=j;if(h.includes('계약번호'))contIdx=j}
+      for(let i=1;i<rows.length;i++){const r=rows[i];if(r.length<=afIdx)continue;
         const af=r[afIdx]?.trim()||'';
-        // 계약번호 열 못 찾으면 계약번호 조건 무시 (기존 동작 유지)
-        const contract=contIdx>=0?(r[contIdx]?.trim()||''):'';
-        const kind=r[bdIdx]?.trim()||'';
-        if(af==='L3-22'&&contract===''){if(kind==='견본')l322Sample++;else l322New++}}
-      console.log('L3-22 결과: 신품='+l322New+', 견본='+l322Sample)}
+        const contract=contIdx<r.length?(r[contIdx]?.trim()||''):'';
+        const kind=bdIdx<r.length?(r[bdIdx]?.trim()||''):'';
+        if(af==='L3-22'&&contract===''){if(kind==='견본')l322Sample++;else l322New++}}}
 
     // === 요약 테이블 ===
     const allModels=new Set();
