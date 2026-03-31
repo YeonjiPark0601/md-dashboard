@@ -149,26 +149,35 @@ tr:hover { background: #f7f9fc; }
   <div class="loading" id="loadingMsg">Google Sheets에서 데이터를 불러오는 중...</div>
   <div id="dashboardContent" style="display:none;">
     <div id="sec-kpi" class="kpi-row">
-      <div class="kpi-card">
+      <div class="kpi-card" id="kpiWeekCard" style="cursor:pointer;" onclick="toggleKpiDetail('week')">
         <div class="label" style="display:flex;justify-content:space-between;">이번 주 매출 (월~일)<span id="kpiWeekDates" style="font-weight:400;color:#aaa;"></span></div>
         <div class="main-row"><div class="value" id="kpiWeekSales">-</div><div class="rate" id="kpiWeekRate">-</div></div>
         <div class="sub-row"><span id="kpiWeekTarget">목표: -</span><span id="kpiWeekYoy"></span></div>
         <div class="sub-row" id="kpiWeekCountRow" style="display:none;"><span id="kpiWeekCount"></span></div>
         <div class="progress-bar"><div class="progress-fill" id="kpiWeekBar" style="width:0;background:#4285f4;"></div></div>
       </div>
-      <div class="kpi-card">
+      <div class="kpi-card" id="kpiMonthCard" style="cursor:pointer;" onclick="toggleKpiDetail('month')">
         <div class="label">이번 달 매출</div>
         <div class="main-row"><div class="value" id="kpiMonthSales">-</div><div class="rate" id="kpiMonthRate">-</div></div>
         <div class="sub-row"><span id="kpiMonthTarget">목표: -</span><span id="kpiMonthYoy"></span></div>
         <div class="sub-row" id="kpiMonthCountRow" style="display:none;"><span id="kpiMonthCount"></span></div>
         <div class="progress-bar"><div class="progress-fill" id="kpiMonthBar" style="width:0;background:#34a853;"></div></div>
       </div>
-      <div class="kpi-card">
+      <div class="kpi-card" id="kpiQtrCard" style="cursor:pointer;" onclick="toggleKpiDetail('quarter')">
         <div class="label">이번 분기 매출</div>
         <div class="main-row"><div class="value" id="kpiQtrSales">-</div><div class="rate" id="kpiQtrRate">-</div></div>
         <div class="sub-row"><span id="kpiQtrTarget">목표: -</span><span id="kpiQtrYoy"></span></div>
         <div class="sub-row" id="kpiQtrCountRow" style="display:none;"><span id="kpiQtrCount"></span></div>
         <div class="progress-bar"><div class="progress-fill" id="kpiQtrBar" style="width:0;background:#fbbc04;"></div></div>
+      </div>
+    </div>
+    <div id="kpiDetailRow" class="chart-row-full" style="display:none;">
+      <div class="table-card">
+        <h3 style="display:flex;justify-content:space-between;align-items:center;">
+          <span id="kpiDetailTitle">-</span>
+          <span onclick="toggleKpiDetail(null)" style="cursor:pointer;color:#888;font-size:12px;">닫기 ✕</span>
+        </h3>
+        <table><thead><tr><th>No.</th><th>계약일</th><th>한의원명</th><th>구분</th><th>장비명</th><th class="text-right">금액</th></tr></thead><tbody id="kpiDetailBody"></tbody></table>
       </div>
     </div>
     <!-- 턴키 전용 KPI 2행: 건수 + Full/Half -->
@@ -949,6 +958,44 @@ function renderKPIs(){
     document.getElementById('kpiMonthCount').textContent='건수: '+mD.length+'건';
     document.getElementById('kpiQtrCount').textContent='건수: '+qD.length+'건';
   }
+  // KPI 상세 리스트용 데이터 저장
+  window._kpiDetailData={week:wD,month:mD,quarter:qD,
+    weekLabel:`이번 주 (${mondayStr.slice(5)} ~ ${sundayStr.slice(5)})`,
+    monthLabel:`이번 달 (${curMonth})`,
+    quarterLabel:`이번 분기 (${qMs[0].slice(5)}~${qMs[2].slice(5)}월)`};
+  // 열려있으면 갱신
+  if(window._kpiDetailOpen)toggleKpiDetail(window._kpiDetailOpen,true);
+}
+
+let _kpiDetailOpen=null;
+function toggleKpiDetail(period,forceOpen){
+  if(!forceOpen&&_kpiDetailOpen===period){_kpiDetailOpen=null;document.getElementById('kpiDetailRow').style.display='none';
+    ['kpiWeekCard','kpiMonthCard','kpiQtrCard'].forEach(id=>{document.getElementById(id).style.outline=''});return}
+  if(!period){_kpiDetailOpen=null;document.getElementById('kpiDetailRow').style.display='none';
+    ['kpiWeekCard','kpiMonthCard','kpiQtrCard'].forEach(id=>{document.getElementById(id).style.outline=''});return}
+  _kpiDetailOpen=period;
+  const d=window._kpiDetailData;if(!d)return;
+  const items=period==='week'?d.week:period==='month'?d.month:d.quarter;
+  const title=period==='week'?d.weekLabel:period==='month'?d.monthLabel:d.quarterLabel;
+  const isSono=currentTab==='초음파';
+  // 카드 하이라이트
+  const cardMap={week:'kpiWeekCard',month:'kpiMonthCard',quarter:'kpiQtrCard'};
+  ['kpiWeekCard','kpiMonthCard','kpiQtrCard'].forEach(id=>{document.getElementById(id).style.outline=id===cardMap[period]?'2px solid #1a73e8':''});
+  document.getElementById('kpiDetailTitle').textContent=title+' 매출 상세 ('+items.length+'건)';
+  // 정렬: 계약일 오름차순
+  const dateKey='주문일';
+  const sorted=[...items].sort((a,b)=>(a[dateKey]||'').localeCompare(b[dateKey]||''));
+  const body=document.getElementById('kpiDetailBody');
+  if(isSono){
+    body.innerHTML=sorted.map((r,i)=>`<tr><td>${i+1}</td><td>${r['주문일']||'-'}</td><td>${r['한의원명']||'-'}</td><td>${r['카테고리']||'-'}</td><td>${r['품목명']||'-'}</td><td class="text-right">${Math.round(r['매출금액']).toLocaleString()}</td></tr>`).join('');
+  }else{
+    body.innerHTML=sorted.map((r,i)=>`<tr><td>${i+1}</td><td>${r['주문일']||'-'}</td><td>${r['공급업체']||r['상품명']||'-'}</td><td>${r['구분']||r['카테고리']||'-'}</td><td>${r['카테고리']||'-'}</td><td class="text-right">${Math.round(r['매출금액']).toLocaleString()}</td></tr>`).join('');
+  }
+  if(!sorted.length)body.innerHTML='<tr><td colspan="6" style="text-align:center;color:#999;padding:20px;">데이터 없음</td></tr>';
+  // 합계행
+  if(sorted.length){const totalAmt=sorted.reduce((s,r)=>s+r['매출금액'],0);
+    body.innerHTML+=`<tr style="font-weight:700;background:#f0f2f5;"><td></td><td></td><td></td><td></td><td>합계</td><td class="text-right">${Math.round(totalAmt).toLocaleString()}</td></tr>`}
+  document.getElementById('kpiDetailRow').style.display='';
 }
 
 function genMonthRange(start,end){
