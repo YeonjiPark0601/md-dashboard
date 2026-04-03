@@ -491,7 +491,7 @@ async function fetchInventoryData() {
       } res.push(cur); return res;
     });
   }
-  function norm(m) { return m.replace(/\s*\(.*?\)/g, '').trim(); }
+  function norm(m) { let n = m.replace(/\s*\(.*?\)/g, '').trim(); if (/^HM70\s*EVO$/i.test(n)) n = 'HM70Evo'; if (/^RS85\s*Prestige$/i.test(n)) n = 'RS85'; return n; }
   const pIdx = n => PRODUCTS.findIndex(p => p.name === n);
   try {
     const [sonoR, selloutR, sampleR] = await Promise.all([
