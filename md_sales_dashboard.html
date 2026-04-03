@@ -1462,6 +1462,7 @@ function renderSonoCountChart(){
 }
 
 function renderTurnkeyRegion(){
+  console.log('renderTurnkeyRegion called, turnkeyCidMap size:', Object.keys(turnkeyCidMap).length, 'turnkeyData 2026:', turnkeyData.filter(d=>d['연월']&&d['연월'].startsWith('2026')).length);
   const td26=turnkeyData.filter(d=>d['연월']&&d['연월'].startsWith('2026'));
   const regionSales={},regionCount={};
   const cidCounted={};
