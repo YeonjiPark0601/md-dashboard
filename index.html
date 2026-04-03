@@ -708,8 +708,8 @@ function initFilters(){
 
   if(months.length){
     const now=new Date();const curYm=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
-    document.getElementById('startMonth').value=(currentTab==='초음파'&&months.includes('2025-01'))?'2025-01':months[0];
-    document.getElementById('endMonth').value=months.includes(curYm)?curYm:months[months.length-1];
+    document.getElementById('startMonth').value=months.includes('2025-01')?'2025-01':months[0];
+    document.getElementById('endMonth').value=curYm;
   }
   const catSel=document.getElementById('categoryFilter');catSel.innerHTML='<option value="">전체</option>';
   categories.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;catSel.appendChild(o)});
