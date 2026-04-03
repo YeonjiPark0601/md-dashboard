@@ -1232,7 +1232,10 @@ function renderTrendChart(data){
             label:ctx=>{const v=ctx.raw;return ctx.dataset.label+': '+fmt(Math.round(v))},
             afterBody:items=>{if(!items.length)return'';const mi=items[0].dataIndex+1;
               const s26=yearSales['2026'][mi]||0;const s25=yearSales['2025'][mi]||0;
-              const lines=[];if(s26&&s25){const yoy=((s26-s25)/s25*100).toFixed(1);lines.push('당월 YoY: '+(yoy>0?'+':'')+yoy+'%')}
+              const lines=['─── 당월 매출 ───'];
+              lines.push("26년 당월: "+fmt(Math.round(s26)));
+              lines.push("25년 당월: "+fmt(Math.round(s25)));
+              if(s26&&s25){const yoy=((s26-s25)/s25*100).toFixed(1);lines.push('당월 YoY: '+(yoy>0?'+':'')+yoy+'%')}
               const t=targetByM[mi];if(t&&s26)lines.push('당월 달성률: '+(s26/t*100).toFixed(1)+'%');
               return lines.join('\n')}}}},
         scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>fmtLabel(v)},grid:{color:'#f0f0f0'}}}}};
