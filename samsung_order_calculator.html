@@ -497,7 +497,7 @@ async function fetchInventoryData() {
     const [sonoR, selloutR, sampleR] = await Promise.all([
       fetch(base + '&sheet=' + encodeURIComponent('초음파') + '&range=A3:H500'),
       fetch(base + '&sheet=' + encodeURIComponent('초음파셀아웃') + '&range=A1:X500'),
-      fetch(base + '&sheet=' + encodeURIComponent('초음파견본') + '&range=A1:H200'),
+      fetch(base + '&sheet=' + encodeURIComponent('초음파견본') + '&range=A1:K200'),
     ]);
     // 출고 예정 (신품)
     const outByModel = {};
@@ -507,7 +507,7 @@ async function fetchInventoryData() {
     if (selloutR.ok) { const rows = csvR(await selloutR.text()); for (let i = 1; i < rows.length; i++) { const r = rows[i]; if (r.length < 24) continue; if ((r[11].trim() === '유통' || r[11].trim() === '증정') && r[23].trim() === '' && r[8].trim()) { const m = norm(r[8].trim()); newByModel[m] = (newByModel[m] || 0) + 1; } } }
     // 견본 재고 (대시보드 견본 재고(전체)와 동일 조건: 모델 있고, 미판매(G열 빈값), 판매가능시점(F열) 존재 & <=2026-12-31)
     const sampleByModel = {};
-    if (sampleR.ok) { const rows = csvR(await sampleR.text()); for (let i = 1; i < rows.length; i++) { const r = rows[i]; if (r.length < 7) continue; const m = r[0].trim(); const sold = r[6].trim(); const sellDate = r[5].trim(); if (m && sold === '' && sellDate && sellDate <= '2026-12-31') { const nm = norm(m); sampleByModel[nm] = (sampleByModel[nm] || 0) + 1; } } }
+    if (sampleR.ok) { const rows = csvR(await sampleR.text()); for (let i = 1; i < rows.length; i++) { const r = rows[i]; if (r.length < 7) continue; const m = r[0].trim(); const sold = r[6].trim(); const sellDate = r[5].trim(); const kCol = r[10] ? r[10].trim() : ''; if (m && sold === '' && kCol === '' && sellDate && sellDate <= '2026-12-31') { const nm = norm(m); sampleByModel[nm] = (sampleByModel[nm] || 0) + 1; } } }
     // 배열에 반영
     PRODUCTS.forEach((p, i) => {
       const nw = newByModel[p.name] || 0;

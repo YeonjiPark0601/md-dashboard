@@ -2076,7 +2076,7 @@ async function renderSonoInventory(){
     const [sonoR,selloutR,sampleR,bdtsR]=await Promise.all([
       fetch(base+'&sheet='+encodeURIComponent('초음파')+'&range=A3:H500'),
       fetch(base+'&sheet='+encodeURIComponent('초음파셀아웃')+'&range=A1:X500'),
-      fetch(base+'&sheet='+encodeURIComponent('초음파견본')+'&range=A1:H200'),
+      fetch(base+'&sheet='+encodeURIComponent('초음파견본')+'&range=A1:K200'),
       fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('초음파BDTS')}&range=A3:CU3000&_t=${Date.now()}`)
     ]);
     function csvR(text){const lines=text.replace(/\r/g,'').split('\n').filter(l=>l.trim());return lines.map(l=>{const res=[];let cur='',q=false;for(let i=0;i<l.length;i++){if(q){if(l[i]==='"'&&l[i+1]==='"'){cur+='"';i++}else if(l[i]==='"')q=false;else cur+=l[i]}else{if(l[i]==='"')q=true;else if(l[i]===','){res.push(cur);cur=''}else cur+=l[i]}}res.push(cur);return res})}
@@ -2092,7 +2092,7 @@ async function renderSonoInventory(){
 
     // 견본 재고
     const samples=[];
-    if(sampleR.ok){const rows=csvR(await sampleR.text());for(let i=1;i<rows.length;i++){const r=rows[i];if(r.length<7)continue;if(r[0].trim()&&r[6].trim()===''&&r[5].trim()&&r[5].trim()<='2026-12-31')samples.push({model:normalizeModel(r[0].trim()),sn:r[3].trim(),sellDate:r[5].trim()})}}
+    if(sampleR.ok){const rows=csvR(await sampleR.text());for(let i=1;i<rows.length;i++){const r=rows[i];if(r.length<7)continue;if(r[0].trim()&&r[6].trim()===''&&(!r[10]||r[10].trim()==='')&&r[5].trim()&&r[5].trim()<='2026-12-31')samples.push({model:normalizeModel(r[0].trim()),sn:r[3].trim(),sellDate:r[5].trim()})}}
     samples.sort((a,b)=>a.sellDate.localeCompare(b.sellDate));
 
     // L3-22: BDTS AF열(31)=Basic Name, BD열(55)=상품/견본, 계약번호 열 동적 탐색
