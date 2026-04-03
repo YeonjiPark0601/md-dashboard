@@ -302,10 +302,6 @@ tr:hover { background: #f7f9fc; }
         <canvas id="sonoQtyChart" height="150"></canvas>
       </div>
     </div>
-    <!-- 턴키 전용: 지역별 매출 상세 -->
-    <div class="chart-row-full" id="turnkeyRegionRow" style="display:none;">
-      <div class="table-card"><h3>26년 지역별 매출 상세</h3><table><thead><tr><th>권역</th><th>지역</th><th class="text-right">매출금액</th><th class="text-right">건수</th><th class="text-right">비중</th></tr></thead><tbody id="tkRegionBody"><tr><td colspan="5" style="text-align:center;color:#999;">데이터 로딩중...</td></tr></tbody></table></div>
-    </div>
     <div id="sec-monthly"></div>
     <div class="chart-row-full" id="monthlyRow">
       <div class="table-card"><h3 id="monthlyTableTitle">공급처별 월별 매출</h3>
@@ -447,6 +443,10 @@ tr:hover { background: #f7f9fc; }
         <div style="overflow-x:auto;"><table id="profitMarginTable"><thead><tr id="profitMarginHead"></tr></thead><tbody id="profitMarginBody"></tbody></table></div>
       </div>
     </div>
+    <!-- 턴키 전용: 지역별 매출 상세 -->
+    <div class="chart-row-full" id="turnkeyRegionRow" style="display:none;">
+      <div class="table-card"><h3>26년 지역별 매출 상세</h3><table><thead><tr><th>권역</th><th>지역</th><th class="text-right">매출금액</th><th class="text-right">건수</th><th class="text-right">비중</th></tr></thead><tbody id="tkRegionBody"></tbody></table></div>
+    </div>
     <div class="chart-row-full" id="turnkeyConsultImpactRow" style="display:none;">
       <div class="table-card">
         <h3>컨설팅 기여도 분석</h3>
@@ -523,11 +523,11 @@ function getData(){if(currentTab==='전체')return[...allData,...sonoData.filter
 async function fetchData(){
   try{
     const sheetUrl=n=>`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(n)}&headers=1&_t=${Date.now()}`;
-    const [salesR,classR,turnkeyR,pt10R,pt10MasterR,sonoR,sonoMissR,targetR,puOnR,puOffR,rebuyR,pt10PuR,surveyR,tkCidR]=await Promise.all([
+    const [salesR,classR,turnkeyR,pt10R,pt10MasterR,sonoR,sonoMissR,targetR,puOnR,puOffR,rebuyR,pt10PuR,surveyR]=await Promise.all([
       fetch(sheetUrl('일반기기')),fetch(sheetUrl('클래스')),fetch(sheetUrl('턴키 결제내역')),fetch(sheetUrl('PT10')),fetch(sheetUrl('PT10 마스터')),
       fetch(sheetUrl('초음파')+'&range=A7:AH'),fetch(sheetUrl('초음파누락')),fetch(TARGET_URL),
       fetch(sheetUrl('PU온라인')),fetch(sheetUrl('PU오프라인')),fetch(sheetUrl('재구매분석')),fetch(sheetUrl('PT10PU')),
-      fetch(sheetUrl('턴키 상담관리')),fetch(sheetUrl('턴키CID'))
+      fetch(sheetUrl('턴키 상담관리'))
     ]);
     if(!salesR.ok)throw new Error('매출 데이터 로딩 실패');
     allData=parseCSV(await salesR.text()).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['공급가']=parseNum(r['공급가']);r['수량']=parseNum(r['수량']);r['연월']=fixYm(r['연월']);r['주문일']=fixDate(r['주문일']||'');return r});
@@ -588,13 +588,18 @@ async function fetchData(){
       r['_result']=String(r['결과']||'').trim();
       r['_cid']=String(r['CID']||'').trim();
       return r})}}}catch(e){console.warn('설문 에러',e)}
-    try{if(tkCidR.ok){const t=await tkCidR.text();if(t.trim()){const addrToRegion=a=>{if(!a)return'';if(a.startsWith('서울'))return'서울';if(a.startsWith('인천'))return'인천';if(a.startsWith('대전'))return'대전';if(a.startsWith('대구'))return'대구';if(a.startsWith('광주'))return'광주';if(a.startsWith('부산'))return'부산';if(a.startsWith('울산'))return'울산';if(a.startsWith('세종'))return'세종';if(a.startsWith('경기'))return'경기';if(a.startsWith('강원'))return'강원';if(a.startsWith('충청북')||a.startsWith('충북'))return'충북';if(a.startsWith('충청남')||a.startsWith('충남'))return'충남';if(a.startsWith('전라북')||a.startsWith('전북'))return'전북';if(a.startsWith('전라남')||a.startsWith('전남'))return'전남';if(a.startsWith('경상북')||a.startsWith('경북'))return'경북';if(a.startsWith('경상남')||a.startsWith('경남'))return'경남';if(a.startsWith('제주'))return'제주';return''};parseCSV(t).forEach(r=>{const cid=(r['customer_id']||'').trim();const addr=(r['shipping_addr_rd']||'').trim();if(cid&&addr)turnkeyCidMap[cid]=addrToRegion(addr)})}}}catch(e){console.warn('턴키CID 에러',e)}
     try{if(targetR.ok){const tr=parseCSV(await targetR.text());const mc=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];tr.forEach(r=>{const c=r['품목']||'';if(!c)return;targetData[c]={};mc.forEach((m,i)=>{targetData[c][i+1]=parseNum(r[m])})})}}catch(e){console.warn('목표 에러',e)}
     initFilters();render();
     document.getElementById('loadingMsg').style.display='none';
     document.getElementById('dashboardContent').style.display='block';
     document.getElementById('lastUpdated').textContent=`의료기기: ${allData.length} | 초음파: ${sonoData.length} | PT10: ${pt10Data.length} | 클래스: ${classData.length} | 턴키: ${turnkeyData.length} | ${new Date().toLocaleString('ko-KR')}`;
   }catch(e){document.getElementById('loadingMsg').textContent='데이터 로딩 실패: '+e.message}
+  // 턴키CID 별도 로드 (메인 로딩 차단 방지)
+  try{const sheetUrl2=n=>`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(n)}&headers=1&_t=${Date.now()}`;
+    const tkCidR=await fetch(sheetUrl2('턴키CID'));
+    if(tkCidR.ok){const t=await tkCidR.text();if(t.trim()){const addrToRegion=a=>{if(!a)return'';if(a.startsWith('서울'))return'서울';if(a.startsWith('인천'))return'인천';if(a.startsWith('대전'))return'대전';if(a.startsWith('대구'))return'대구';if(a.startsWith('광주'))return'광주';if(a.startsWith('부산'))return'부산';if(a.startsWith('울산'))return'울산';if(a.startsWith('세종'))return'세종';if(a.startsWith('경기'))return'경기';if(a.startsWith('강원'))return'강원';if(a.startsWith('충청북')||a.startsWith('충북'))return'충북';if(a.startsWith('충청남')||a.startsWith('충남'))return'충남';if(a.startsWith('전라북')||a.startsWith('전북'))return'전북';if(a.startsWith('전라남')||a.startsWith('전남'))return'전남';if(a.startsWith('경상북')||a.startsWith('경북'))return'경북';if(a.startsWith('경상남')||a.startsWith('경남'))return'경남';if(a.startsWith('제주'))return'제주';return''};
+      parseCSV(t).forEach(r=>{const cid=(r['customer_id']||'').trim();const addr=(r['shipping_addr_rd']||'').trim();if(cid&&addr)turnkeyCidMap[cid]=addrToRegion(addr)})}}
+  }catch(e){console.warn('턴키CID 에러',e)}
 }
 
 function switchTab(tab){
@@ -778,11 +783,6 @@ function render(){
   document.getElementById('turnkeyConsultWeekRow').style.display=isTurnkey?'':'none';
   document.getElementById('turnkeyRegionRow').style.display=isTurnkey?'':'none';
   document.getElementById('navTkRegion').style.display=isTurnkey?'':'none';
-  // 턴키: 상품별 월별 매출을 매출총이익률 하단으로 이동
-  const monthlyRowEl=document.getElementById('monthlyRow');const secMonthlyEl=document.getElementById('sec-monthly');
-  const profitMarginRowEl=document.getElementById('profitMarginRow');
-  if(isTurnkey){profitMarginRowEl.after(monthlyRowEl);profitMarginRowEl.after(secMonthlyEl)}
-  else{document.getElementById('turnkeyRegionRow').after(secMonthlyEl);secMonthlyEl.after(monthlyRowEl)}
   if(isTurnkey){renderTurnkeyKPI();renderProfitMargin();try{renderTurnkeyRegion()}catch(e){console.warn('턴키 지역별 에러',e)}try{renderTurnkeySurvey()}catch(e){console.warn('설문 렌더 에러',e)}try{renderConsultImpact()}catch(e){console.warn('기여도 에러',e)}}
   const isClassOnly=currentTab==='클래스';
   document.getElementById('puRow').style.display=isClassOnly?'grid':'none';
@@ -1464,15 +1464,14 @@ function renderSonoCountChart(){
 function renderTurnkeyRegion(){
   const mapSize=Object.keys(turnkeyCidMap).length;
   const td26=turnkeyData.filter(d=>d['연월']&&d['연월'].startsWith('2026'));
-  if(!td26.length||!mapSize){document.getElementById('tkRegionBody').innerHTML=`<tr><td colspan="5" style="text-align:center;color:#e8453c;">CID맵: ${mapSize}건 / 턴키2026: ${td26.length}건 — 데이터 부족</td></tr>`;return}
-  const regionSales={},regionCount={};
-  const cidCounted={};
-  td26.forEach(d=>{const cid=d['CID']||'';const region=turnkeyCidMap[cid];if(!region)return;regionSales[region]=(regionSales[region]||0)+d['매출금액'];if(!cidCounted[cid+'_'+d['연월']]){cidCounted[cid+'_'+d['연월']]=true}regionCount[region]=(regionCount[region]||0)+1});
-  // CID 기준 건수로 변경: 같은 CID는 1건
-  const cidByRegion={};td26.forEach(d=>{const cid=d['CID']||'';const region=turnkeyCidMap[cid];if(!region)return;if(!cidByRegion[region])cidByRegion[region]=new Set();cidByRegion[region].add(cid)});
-  const regionCidCount={};Object.entries(cidByRegion).forEach(([r,s])=>{regionCidCount[r]=s.size});
+  if(!td26.length||!mapSize){document.getElementById('tkRegionBody').innerHTML=`<tr><td colspan="5" style="text-align:center;color:#999;">CID맵: ${mapSize}건 / 턴키2026: ${td26.length}건</td></tr>`;return}
+  const regionSales={},regionKeyCount={};
+  td26.forEach(d=>{const cid=d['CID']||'';const region=turnkeyCidMap[cid];if(!region)return;regionSales[region]=(regionSales[region]||0)+d['매출금액']});
+  // 건수: key 기준 유니크 카운트
+  const keyByRegion={};td26.forEach(d=>{const cid=d['CID']||'';const key=d['key']||'';const region=turnkeyCidMap[cid];if(!region||!key)return;if(!keyByRegion[region])keyByRegion[region]=new Set();keyByRegion[region].add(key)});
+  Object.entries(keyByRegion).forEach(([r,s])=>{regionKeyCount[r]=s.size});
   const total=Object.values(regionSales).reduce((s,v)=>s+v,0);
-  const totalCount=Object.values(regionCidCount).reduce((s,v)=>s+v,0);
+  const totalCount=Object.values(regionKeyCount).reduce((s,v)=>s+v,0);
   const regionGroups=[
     {group:'수도권',regions:['경기','서울','인천']},
     {group:'영남권',regions:['경남','경북','대구','부산','울산']},
@@ -1486,10 +1485,10 @@ function renderTurnkeyRegion(){
     const groupRegions=g.regions.filter(r=>regionSales[r]).sort((a,b)=>(regionSales[b]||0)-(regionSales[a]||0));
     if(!groupRegions.length)return;
     const groupSales=groupRegions.reduce((s,r)=>s+(regionSales[r]||0),0);
-    const groupCount=groupRegions.reduce((s,r)=>s+(regionCidCount[r]||0),0);
+    const groupCount=groupRegions.reduce((s,r)=>s+(regionKeyCount[r]||0),0);
     const needSubtotal=g.regions.length>1;
     groupRegions.forEach((r,i)=>{
-      html+=`<tr><td style="font-weight:${i===0?'700':'400'};color:${i===0?'#333':'#999'}">${i===0?g.group:''}</td><td>${r}</td><td class="text-right">${Math.round(regionSales[r]).toLocaleString()}</td><td class="text-right">${regionCidCount[r]||0}</td><td class="text-right">${total?(regionSales[r]/total*100).toFixed(1)+'%':'-'}</td></tr>`;
+      html+=`<tr><td style="font-weight:${i===0?'700':'400'};color:${i===0?'#333':'#999'}">${i===0?g.group:''}</td><td>${r}</td><td class="text-right">${Math.round(regionSales[r]).toLocaleString()}</td><td class="text-right">${regionKeyCount[r]||0}</td><td class="text-right">${total?(regionSales[r]/total*100).toFixed(1)+'%':'-'}</td></tr>`;
     });
     if(needSubtotal)html+=`<tr style="font-weight:600;background:#f7f8fa;"><td>${g.group} 소계</td><td></td><td class="text-right">${Math.round(groupSales).toLocaleString()}</td><td class="text-right">${groupCount}</td><td class="text-right">${total?(groupSales/total*100).toFixed(1)+'%':'-'}</td></tr>`;
   });
