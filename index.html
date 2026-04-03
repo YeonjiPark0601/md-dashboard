@@ -1586,7 +1586,7 @@ function renderTurnkeyRegion(){
   // 연도 체크박스 렌더
   const allYears=[...new Set(turnkeyData.map(d=>(d['연월']||'').substring(0,4)).filter(y=>y>='2023'))].sort();
   const chkEl=document.getElementById('tkYearChecks');
-  chkEl.innerHTML=allYears.map(y=>`<label style="display:flex;align-items:center;gap:3px;cursor:pointer;"><input type="checkbox" ${_tkRegionYears.includes(y)?'checked':''} onchange="toggleTkRegionYear('${y}')" style="cursor:pointer;">${y.substring(2)}</label>`).join('');
+  chkEl.innerHTML=allYears.map(y=>`<label style="display:flex;align-items:center;gap:3px;cursor:pointer;"><input type="checkbox" ${_tkRegionYears.includes(y)?'checked':''} onchange="toggleTkRegionYear('${y}')" style="cursor:pointer;">${y}년</label>`).join('');
   // 선택된 연도 필터
   const filtered=turnkeyData.filter(d=>{const ym=d['연월']||'';return _tkRegionYears.some(y=>ym.startsWith(y))});
   const mapSize=Object.keys(turnkeyCidMap).length;
