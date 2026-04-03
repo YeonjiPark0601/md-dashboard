@@ -1623,7 +1623,6 @@ function showTkSubRegion(region){
   html+=`<tr style="font-weight:700;background:#f0f2f5;"><td>합계</td><td class="text-right">${Math.round(total).toLocaleString()}</td><td class="text-right">${sorted.reduce((s,[sub])=>s+(subKeys[sub]?subKeys[sub].size:0),0)}</td><td class="text-right">100%</td></tr>`;
   document.getElementById('tkSubRegionBody').innerHTML=html;
   document.getElementById('turnkeySubRegionRow').style.display='';
-  document.getElementById('turnkeySubRegionRow').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 function renderTurnkeyKPI(){
