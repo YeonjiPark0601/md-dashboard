@@ -486,6 +486,9 @@ tr:hover { background: #f7f9fc; }
     <div class="chart-row-full" id="turnkeyRegionRow" style="display:none;">
       <div class="table-card"><h3>26년 지역별 매출 상세</h3><table><thead><tr><th>권역</th><th>지역</th><th class="text-right">매출금액</th><th class="text-right">건수</th><th class="text-right">비중</th></tr></thead><tbody id="tkRegionBody"></tbody></table></div>
     </div>
+    <div class="chart-row-full" id="turnkeySubRegionRow" style="display:none;">
+      <div class="table-card"><h3 id="tkSubRegionTitle">구/시별 매출 상세</h3><table><thead><tr><th>구/시</th><th class="text-right">매출금액</th><th class="text-right">건수</th><th class="text-right">비중</th></tr></thead><tbody id="tkSubRegionBody"></tbody></table></div>
+    </div>
     <div class="chart-row-full" id="turnkeyConsultImpactRow" style="display:none;">
       <div class="table-card">
         <h3>컨설팅 기여도 분석</h3>
@@ -682,8 +685,8 @@ async function fetchData(){
     }catch(e){console.warn('옴니핏 에러',e)}
     // 턴키CID 로드
     try{const tkCidR=await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('턴키CID')}&headers=1&_t=${Date.now()}`);
-      if(tkCidR.ok){const t=await tkCidR.text();if(t.trim()){const addrToRegion=a=>{if(!a)return'';const w=a.split(/\s/)[0];const m=[['서울','서울'],['부산','부산'],['대구','대구'],['인천','인천'],['광주','광주'],['대전','대전'],['울산','울산'],['세종','세종'],['경기','경기'],['강원','강원'],['충북','충북'],['충청북','충북'],['충남','충남'],['충청남','충남'],['전북','전북'],['전라북','전북'],['전남','전남'],['전라남','전남'],['경북','경북'],['경상북','경북'],['경남','경남'],['경상남','경남'],['제주','제주']];for(const[k,v]of m)if(w.includes(k))return v;return''};
-        parseCSV(t).forEach(r=>{const cid=(r['customer_id']||'').trim();const addr=(r['shipping_addr_rd']||'').trim();if(cid&&addr)turnkeyCidMap[cid]=addrToRegion(addr)})}}}catch(e){console.warn('턴키CID 에러',e)}
+      if(tkCidR.ok){const t=await tkCidR.text();if(t.trim()){const parseAddr=a=>{if(!a)return null;const parts=a.split(/\s+/);const w=parts[0];const m=[['서울','서울'],['부산','부산'],['대구','대구'],['인천','인천'],['광주','광주'],['대전','대전'],['울산','울산'],['세종','세종'],['경기','경기'],['강원','강원'],['충북','충북'],['충청북','충북'],['충남','충남'],['충청남','충남'],['전북','전북'],['전라북','전북'],['전남','전남'],['전라남','전남'],['경북','경북'],['경상북','경북'],['경남','경남'],['경상남','경남'],['제주','제주']];let region='';for(const[k,v]of m){if(w.includes(k)){region=v;break}}if(!region)return null;const sub=parts[1]||'';return{region,sub}};
+        parseCSV(t).forEach(r=>{const cid=(r['customer_id']||'').trim();const addr=(r['shipping_addr_rd']||'').trim();if(cid&&addr){const p=parseAddr(addr);if(p)turnkeyCidMap[cid]=p}})}}}catch(e){console.warn('턴키CID 에러',e)}
     initFilters();render();
     document.getElementById('loadingMsg').style.display='none';
     document.getElementById('dashboardContent').style.display='block';
@@ -883,6 +886,7 @@ function render(){
   document.getElementById('turnkeyConsultMonthRow').style.display=isTurnkey?'':'none';
   document.getElementById('turnkeyConsultWeekRow').style.display=isTurnkey?'':'none';
   document.getElementById('turnkeyRegionRow').style.display=isTurnkey?'':'none';
+  document.getElementById('turnkeySubRegionRow').style.display='none';
   document.getElementById('navTkRegion').style.display=isTurnkey?'':'none';
   if(isTurnkey){renderTurnkeyKPI();renderProfitMargin();try{renderTurnkeyRegion()}catch(e){console.warn('턴키 지역별 에러',e)}try{renderTurnkeySurvey()}catch(e){console.warn('설문 렌더 에러',e)}try{renderConsultImpact()}catch(e){console.warn('기여도 에러',e)}}
   const isClassOnly=currentTab==='클래스';
@@ -1573,8 +1577,8 @@ function renderTurnkeyRegion(){
   const mapSize=Object.keys(turnkeyCidMap).length;
   if(!td26.length||!mapSize){document.getElementById('tkRegionBody').innerHTML=`<tr><td colspan="5" style="text-align:center;color:#999;">데이터 없음</td></tr>`;return}
   const regionSales={},regionKeyCount={};
-  td26.forEach(d=>{const cid=d['CID']||'';const region=turnkeyCidMap[cid];if(!region)return;regionSales[region]=(regionSales[region]||0)+d['매출금액']});
-  const keyByRegion={};td26.forEach(d=>{const cid=d['CID']||'';const key=d['key']||'';const region=turnkeyCidMap[cid];if(!region||!key)return;if(!keyByRegion[region])keyByRegion[region]=new Set();keyByRegion[region].add(key)});
+  td26.forEach(d=>{const cid=d['CID']||'';const info=turnkeyCidMap[cid];if(!info)return;regionSales[info.region]=(regionSales[info.region]||0)+d['매출금액']});
+  const keyByRegion={};td26.forEach(d=>{const cid=d['CID']||'';const key=d['key']||'';const info=turnkeyCidMap[cid];if(!info||!key)return;if(!keyByRegion[info.region])keyByRegion[info.region]=new Set();keyByRegion[info.region].add(key)});
   Object.entries(keyByRegion).forEach(([r,s])=>{regionKeyCount[r]=s.size});
   const total=Object.values(regionSales).reduce((s,v)=>s+v,0);
   const totalCount=Object.values(regionKeyCount).reduce((s,v)=>s+v,0);
@@ -1594,12 +1598,32 @@ function renderTurnkeyRegion(){
     const groupCount=groupRegions.reduce((s,r)=>s+(regionKeyCount[r]||0),0);
     const needSubtotal=g.regions.length>1;
     groupRegions.forEach((r,i)=>{
-      html+=`<tr><td style="font-weight:${i===0?'700':'400'};color:${i===0?'#333':'#999'}">${i===0?g.group:''}</td><td>${r}</td><td class="text-right">${Math.round(regionSales[r]).toLocaleString()}</td><td class="text-right">${regionKeyCount[r]||0}</td><td class="text-right">${total?(regionSales[r]/total*100).toFixed(1)+'%':'-'}</td></tr>`;
+      html+=`<tr><td style="font-weight:${i===0?'700':'400'};color:${i===0?'#333':'#999'}">${i===0?g.group:''}</td><td><a href="javascript:void(0)" onclick="showTkSubRegion('${r}')" style="color:#1a73e8;text-decoration:underline;cursor:pointer;">${r}</a></td><td class="text-right">${Math.round(regionSales[r]).toLocaleString()}</td><td class="text-right">${regionKeyCount[r]||0}</td><td class="text-right">${total?(regionSales[r]/total*100).toFixed(1)+'%':'-'}</td></tr>`;
     });
     if(needSubtotal)html+=`<tr style="font-weight:600;background:#f7f8fa;"><td>${g.group} 소계</td><td></td><td class="text-right">${Math.round(groupSales).toLocaleString()}</td><td class="text-right">${groupCount}</td><td class="text-right">${total?(groupSales/total*100).toFixed(1)+'%':'-'}</td></tr>`;
   });
   html+=`<tr style="font-weight:700;background:#f0f2f5;"><td>합계</td><td></td><td class="text-right">${Math.round(total).toLocaleString()}</td><td class="text-right">${totalCount}</td><td class="text-right">100%</td></tr>`;
   document.getElementById('tkRegionBody').innerHTML=html;
+  document.getElementById('turnkeySubRegionRow').style.display='none';
+}
+function showTkSubRegion(region){
+  const metros=new Set(['서울','부산','대구','인천','광주','대전','울산','세종']);
+  const label=metros.has(region)?region+' 구별 매출':region+' 시별 매출';
+  document.getElementById('tkSubRegionTitle').textContent=label;
+  const td26=turnkeyData.filter(d=>d['연월']&&d['연월'].startsWith('2026'));
+  const subSales={},subKeys={};
+  td26.forEach(d=>{const cid=d['CID']||'';const info=turnkeyCidMap[cid];if(!info||info.region!==region)return;const sub=info.sub||'기타';subSales[sub]=(subSales[sub]||0)+d['매출금액'];const key=d['key']||'';if(key){if(!subKeys[sub])subKeys[sub]=new Set();subKeys[sub].add(key)}});
+  const total=Object.values(subSales).reduce((s,v)=>s+v,0);
+  const sorted=Object.entries(subSales).sort((a,b)=>b[1]-a[1]);
+  let html='';
+  sorted.forEach(([sub,sales])=>{
+    const count=subKeys[sub]?subKeys[sub].size:0;
+    html+=`<tr><td>${sub}</td><td class="text-right">${Math.round(sales).toLocaleString()}</td><td class="text-right">${count}</td><td class="text-right">${total?(sales/total*100).toFixed(1)+'%':'-'}</td></tr>`;
+  });
+  html+=`<tr style="font-weight:700;background:#f0f2f5;"><td>합계</td><td class="text-right">${Math.round(total).toLocaleString()}</td><td class="text-right">${sorted.reduce((s,[sub])=>s+(subKeys[sub]?subKeys[sub].size:0),0)}</td><td class="text-right">100%</td></tr>`;
+  document.getElementById('tkSubRegionBody').innerHTML=html;
+  document.getElementById('turnkeySubRegionRow').style.display='';
+  document.getElementById('turnkeySubRegionRow').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 function renderTurnkeyKPI(){
