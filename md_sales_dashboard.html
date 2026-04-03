@@ -304,7 +304,7 @@ tr:hover { background: #f7f9fc; }
     </div>
     <!-- 턴키 전용: 지역별 매출 상세 -->
     <div class="chart-row-full" id="turnkeyRegionRow" style="display:none;">
-      <div class="table-card"><h3>26년 지역별 매출 상세</h3><table><thead><tr><th>권역</th><th>지역</th><th class="text-right">매출금액</th><th class="text-right">건수</th><th class="text-right">비중</th></tr></thead><tbody id="tkRegionBody"></tbody></table></div>
+      <div class="table-card"><h3>26년 지역별 매출 상세</h3><table><thead><tr><th>권역</th><th>지역</th><th class="text-right">매출금액</th><th class="text-right">건수</th><th class="text-right">비중</th></tr></thead><tbody id="tkRegionBody"><tr><td colspan="5" style="text-align:center;color:#999;">데이터 로딩중...</td></tr></tbody></table></div>
     </div>
     <div id="sec-monthly"></div>
     <div class="chart-row-full" id="monthlyRow">
@@ -1462,8 +1462,9 @@ function renderSonoCountChart(){
 }
 
 function renderTurnkeyRegion(){
-  console.log('renderTurnkeyRegion called, turnkeyCidMap size:', Object.keys(turnkeyCidMap).length, 'turnkeyData 2026:', turnkeyData.filter(d=>d['연월']&&d['연월'].startsWith('2026')).length);
+  const mapSize=Object.keys(turnkeyCidMap).length;
   const td26=turnkeyData.filter(d=>d['연월']&&d['연월'].startsWith('2026'));
+  if(!td26.length||!mapSize){document.getElementById('tkRegionBody').innerHTML=`<tr><td colspan="5" style="text-align:center;color:#e8453c;">CID맵: ${mapSize}건 / 턴키2026: ${td26.length}건 — 데이터 부족</td></tr>`;return}
   const regionSales={},regionCount={};
   const cidCounted={};
   td26.forEach(d=>{const cid=d['CID']||'';const region=turnkeyCidMap[cid];if(!region)return;regionSales[region]=(regionSales[region]||0)+d['매출금액'];if(!cidCounted[cid+'_'+d['연월']]){cidCounted[cid+'_'+d['연월']]=true}regionCount[region]=(regionCount[region]||0)+1});
