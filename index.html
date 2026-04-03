@@ -484,7 +484,7 @@ tr:hover { background: #f7f9fc; }
     </div>
     <!-- 턴키 전용: 지역별 매출 상세 -->
     <div class="chart-row-full" id="turnkeyRegionRow" style="display:none;">
-      <div class="table-card"><h3>26년 지역별 매출 상세</h3><table><thead><tr><th>권역</th><th>지역</th><th class="text-right">매출금액</th><th class="text-right">건수</th><th class="text-right">비중</th></tr></thead><tbody id="tkRegionBody"></tbody></table></div>
+      <div class="table-card"><h3 style="display:flex;align-items:center;gap:12px;">지역별 매출 상세 <span id="tkYearChecks" style="font-size:12px;font-weight:400;display:flex;gap:8px;"></span></h3><div id="tkUnmatchedMsg" style="display:none;font-size:12px;color:#e8453c;margin-bottom:8px;"></div><table><thead><tr><th>권역</th><th>지역</th><th class="text-right">매출금액</th><th class="text-right">건수</th><th class="text-right">비중</th></tr></thead><tbody id="tkRegionBody"></tbody></table></div>
     </div>
     <div class="chart-row-full" id="turnkeySubRegionRow" style="display:none;">
       <div class="table-card"><h3 id="tkSubRegionTitle">구/시별 매출 상세</h3><table><thead><tr><th>구/시</th><th class="text-right">매출금액</th><th class="text-right">건수</th><th class="text-right">비중</th></tr></thead><tbody id="tkSubRegionBody"></tbody></table></div>
@@ -1581,16 +1581,27 @@ function clearDrill(){drillCategory=null;document.getElementById('drillFilter').
 const hashTab=decodeURIComponent(location.hash.slice(1));
 const validTabs=['전체','의료기기','초음파','PT10','클래스','턴키','옴니핏'];
 if(validTabs.includes(hashTab)){currentTab=hashTab;document.querySelectorAll('.tab[data-tab]').forEach(t=>{t.classList.toggle('active',t.dataset.tab===hashTab)})}
+let _tkRegionYears=['2026'];
 function renderTurnkeyRegion(){
-  const td26=turnkeyData.filter(d=>d['연월']&&d['연월'].startsWith('2026'));
+  // 연도 체크박스 렌더
+  const allYears=[...new Set(turnkeyData.map(d=>(d['연월']||'').substring(0,4)).filter(y=>y>='2023'))].sort();
+  const chkEl=document.getElementById('tkYearChecks');
+  chkEl.innerHTML=allYears.map(y=>`<label style="display:flex;align-items:center;gap:3px;cursor:pointer;"><input type="checkbox" ${_tkRegionYears.includes(y)?'checked':''} onchange="toggleTkRegionYear('${y}')" style="cursor:pointer;">${y.substring(2)}</label>`).join('');
+  // 선택된 연도 필터
+  const filtered=turnkeyData.filter(d=>{const ym=d['연월']||'';return _tkRegionYears.some(y=>ym.startsWith(y))});
   const mapSize=Object.keys(turnkeyCidMap).length;
-  if(!td26.length||!mapSize){document.getElementById('tkRegionBody').innerHTML=`<tr><td colspan="5" style="text-align:center;color:#999;">데이터 없음</td></tr>`;return}
+  if(!filtered.length||!mapSize){document.getElementById('tkRegionBody').innerHTML=`<tr><td colspan="5" style="text-align:center;color:#999;">데이터 없음</td></tr>`;document.getElementById('tkUnmatchedMsg').style.display='none';return}
   const regionSales={},regionKeyCount={};
-  td26.forEach(d=>{const cid=d['CID']||'';const info=turnkeyCidMap[cid];if(!info)return;regionSales[info.region]=(regionSales[info.region]||0)+d['매출금액']});
-  const keyByRegion={};td26.forEach(d=>{const cid=d['CID']||'';const key=d['key']||'';const info=turnkeyCidMap[cid];if(!info||!key)return;if(!keyByRegion[info.region])keyByRegion[info.region]=new Set();keyByRegion[info.region].add(key)});
+  let unmatchedSales=0,unmatchedKeys=new Set();
+  filtered.forEach(d=>{const cid=d['CID']||'';const info=turnkeyCidMap[cid];if(!info){unmatchedSales+=d['매출금액'];const key=d['key']||'';if(key)unmatchedKeys.add(key);return}regionSales[info.region]=(regionSales[info.region]||0)+d['매출금액']});
+  const keyByRegion={};filtered.forEach(d=>{const cid=d['CID']||'';const key=d['key']||'';const info=turnkeyCidMap[cid];if(!info||!key)return;if(!keyByRegion[info.region])keyByRegion[info.region]=new Set();keyByRegion[info.region].add(key)});
   Object.entries(keyByRegion).forEach(([r,s])=>{regionKeyCount[r]=s.size});
   const total=Object.values(regionSales).reduce((s,v)=>s+v,0);
   const totalCount=Object.values(regionKeyCount).reduce((s,v)=>s+v,0);
+  // 미확인건 표시
+  const umEl=document.getElementById('tkUnmatchedMsg');
+  if(unmatchedKeys.size>0){umEl.textContent=`⚠ 주소 미확인: ${unmatchedKeys.size}건 / ${Math.round(unmatchedSales).toLocaleString()}원`;umEl.style.display=''}
+  else{umEl.style.display='none'}
   const regionGroups=[
     {group:'수도권',regions:['경기','서울','인천']},
     {group:'영남권',regions:['경남','경북','대구','부산','울산']},
@@ -1615,13 +1626,14 @@ function renderTurnkeyRegion(){
   document.getElementById('tkRegionBody').innerHTML=html;
   document.getElementById('turnkeySubRegionRow').style.display='none';
 }
+function toggleTkRegionYear(y){if(_tkRegionYears.includes(y))_tkRegionYears=_tkRegionYears.filter(v=>v!==y);else _tkRegionYears.push(y);renderTurnkeyRegion()}
 function showTkSubRegion(region){
   const metros=new Set(['서울','부산','대구','인천','광주','대전','울산','세종']);
   const label=metros.has(region)?region+' 구별 매출':region+' 시별 매출';
   document.getElementById('tkSubRegionTitle').textContent=label;
-  const td26=turnkeyData.filter(d=>d['연월']&&d['연월'].startsWith('2026'));
+  const filtered=turnkeyData.filter(d=>{const ym=d['연월']||'';return _tkRegionYears.some(y=>ym.startsWith(y))});
   const subSales={},subKeys={};
-  td26.forEach(d=>{const cid=d['CID']||'';const info=turnkeyCidMap[cid];if(!info||info.region!==region)return;const sub=info.sub||'기타';subSales[sub]=(subSales[sub]||0)+d['매출금액'];const key=d['key']||'';if(key){if(!subKeys[sub])subKeys[sub]=new Set();subKeys[sub].add(key)}});
+  filtered.forEach(d=>{const cid=d['CID']||'';const info=turnkeyCidMap[cid];if(!info||info.region!==region)return;const sub=info.sub||'기타';subSales[sub]=(subSales[sub]||0)+d['매출금액'];const key=d['key']||'';if(key){if(!subKeys[sub])subKeys[sub]=new Set();subKeys[sub].add(key)}});
   const total=Object.values(subSales).reduce((s,v)=>s+v,0);
   const sorted=Object.entries(subSales).sort((a,b)=>b[1]-a[1]);
   let html='';
