@@ -408,7 +408,6 @@
   </div>
 </div>
 
-<iframe name="_saveFrame" style="display:none"></iframe>
 <div class="modal-overlay" id="recModal" onclick="if(event.target===this)closeRecommend()">
   <div class="modal" id="recContent"></div>
 </div>
@@ -956,20 +955,13 @@ function saveState() {
       options: options.map(o => ({ model: o.model, name: o.name, cost: o.cost, qty: o.qty })),
       savedAt: new Date().toISOString(),
     };
-    // Google Apps Script는 POST 시 302 리다이렉트 → fetch가 GET으로 변환되는 문제
-    // form submit 방식으로 우회
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = SAVE_URL;
-    form.target = '_saveFrame';
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = 'payload';
-    input.value = JSON.stringify(state);
-    form.appendChild(input);
-    document.body.appendChild(form);
-    form.submit();
-    form.remove();
+    // GAS POST는 302를 반환하지만 서버에서 처리는 완료됨 → redirect:'manual'로 302 무시
+    fetch(SAVE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: 'payload=' + encodeURIComponent(JSON.stringify(state)),
+      redirect: 'manual',
+    }).catch(() => {}); // 302 opaque redirect는 무시 (저장은 이미 완료)
     console.log('발주 수량 저장됨', state);
   }, 800);
 }
