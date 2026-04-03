@@ -645,12 +645,12 @@ const options = [];
 
 function addOption(model = '', name = '', cost = 0, qty = 1) {
   options.push({ model, name, cost, qty });
-  render();
+  render(); saveState();
 }
 
 function removeOption(idx) {
   options.splice(idx, 1);
-  render();
+  render(); saveState();
 }
 
 function selectOptionModel(idx, model) {
@@ -667,7 +667,7 @@ function selectOptionModel(idx, model) {
       options[idx].cost = 0;
     }
   }
-  render();
+  render(); saveState();
 }
 
 function selectOptionName(idx, name) {
@@ -675,7 +675,7 @@ function selectOptionName(idx, name) {
   const items = OPT_CATALOG[options[idx].model] || [];
   const found = items.find(it => it.name === name);
   if (found) options[idx].cost = found.cost;
-  render();
+  render(); saveState();
 }
 
 function updateOption(idx, field, val) {
@@ -684,7 +684,7 @@ function updateOption(idx, field, val) {
   } else {
     options[idx][field] = val;
   }
-  render();
+  render(); saveState();
 }
 
 function fmt(n) { return Math.round(n).toLocaleString('ko-KR'); }
@@ -939,12 +939,48 @@ function setQty(type, idx, val) {
   if (type === 'product') productQty[idx] = v;
   else if (type === 'demo') demoQty[idx] = v;
   render();
+  saveState();
 }
 
-render();
+// === 발주 수량 저장/로드 (Google Apps Script) ===
+const SAVE_URL = 'https://script.google.com/macros/s/AKfycbxGfbkyBmty7A4-Uba1jxeli64uVa3bTlbRPGI4hzS05qBzPzv8mgmwYb167WUbvI6_/exec';
+let _saveTimer = null;
 
-// 재고 실시간 로드 후 리렌더
-fetchInventoryData().then(() => render());
+function saveState() {
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(() => {
+    const state = {
+      productQty: [...productQty],
+      demoQty: [...demoQty],
+      options: options.map(o => ({ model: o.model, name: o.name, cost: o.cost, qty: o.qty })),
+      savedAt: new Date().toISOString(),
+    };
+    fetch(SAVE_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(state) });
+    console.log('발주 수량 저장됨', state);
+  }, 800); // 입력 후 0.8초 뒤 저장 (연속 입력 시 디바운스)
+}
+
+async function loadState() {
+  try {
+    const r = await fetch(SAVE_URL + '?_t=' + Date.now());
+    const state = await r.json();
+    if (!state || !state.productQty) return false;
+    state.productQty.forEach((v, i) => { if (i < productQty.length) productQty[i] = v; });
+    state.demoQty.forEach((v, i) => { if (i < demoQty.length) demoQty[i] = v; });
+    if (state.options && state.options.length > 0) {
+      options.length = 0;
+      state.options.forEach(o => options.push({ model: o.model, name: o.name, cost: o.cost, qty: o.qty }));
+    }
+    console.log('발주 수량 로드됨', state);
+    return true;
+  } catch (e) { console.warn('발주 수량 로드 실패:', e); return false; }
+}
+
+// 초기 로드: 저장된 수량 → 재고 실시간 → 렌더
+loadState().then(() => {
+  render();
+  return fetchInventoryData();
+}).then(() => render());
 
 // 구글시트에서 월별 목표 실시간 로드
 function parseCSVRow(row) {
@@ -1365,7 +1401,7 @@ function applyScenario(idx) {
   });
 
   closeRecommend();
-  render();
+  render(); saveState();
 }
 
 function closeRecommend() {
@@ -1376,7 +1412,7 @@ function resetAll() {
   productQty.fill(0);
   demoQty.fill(0);
   options.length = 0;
-  render();
+  render(); saveState();
 }
 </script>
 </body>
