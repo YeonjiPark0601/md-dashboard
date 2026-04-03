@@ -408,6 +408,7 @@
   </div>
 </div>
 
+<iframe name="_saveFrame" style="display:none"></iframe>
 <div class="modal-overlay" id="recModal" onclick="if(event.target===this)closeRecommend()">
   <div class="modal" id="recContent"></div>
 </div>
@@ -955,9 +956,22 @@ function saveState() {
       options: options.map(o => ({ model: o.model, name: o.name, cost: o.cost, qty: o.qty })),
       savedAt: new Date().toISOString(),
     };
-    fetch(SAVE_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(state) });
+    // Google Apps Script는 POST 시 302 리다이렉트 → fetch가 GET으로 변환되는 문제
+    // form submit 방식으로 우회
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = SAVE_URL;
+    form.target = '_saveFrame';
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'payload';
+    input.value = JSON.stringify(state);
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
+    form.remove();
     console.log('발주 수량 저장됨', state);
-  }, 800); // 입력 후 0.8초 뒤 저장 (연속 입력 시 디바운스)
+  }, 800);
 }
 
 async function loadState() {
