@@ -911,7 +911,8 @@ function render(){
   const _pmRow=document.getElementById('profitMarginRow');
   const _smEl=document.getElementById('sec-monthly');
   const _mRow=document.getElementById('monthlyRow');
-  if(isTurnkey){_cwRow.after(_rgRow);_rgRow.after(_srRow);_srRow.after(document.getElementById('sec-profitMargin'));document.getElementById('sec-profitMargin').after(_pmRow);_pmRow.after(_smEl);_smEl.after(_mRow)}
+  const _cqRow=document.getElementById('turnkeyConsultQtrRow');
+  if(isTurnkey){_cwRow.after(_cqRow);_cqRow.after(_rgRow);_rgRow.after(_srRow);_srRow.after(document.getElementById('sec-profitMargin'));document.getElementById('sec-profitMargin').after(_pmRow);_pmRow.after(_smEl);_smEl.after(_mRow)}
   else{const _smSec=document.getElementById('sonoMonthlySection');_smSec.before(_smEl);_smEl.after(_smSec);_smSec.after(_mRow)}
   if(isTurnkey){renderTurnkeyKPI();renderProfitMargin();try{renderTurnkeyRegion()}catch(e){console.warn('턴키 지역별 에러',e)}try{renderTurnkeySurvey()}catch(e){console.warn('설문 렌더 에러',e)}try{renderConsultImpact()}catch(e){console.warn('기여도 에러',e)}}
   const isClassOnly=currentTab==='클래스';
