@@ -453,6 +453,12 @@ tr:hover { background: #f7f9fc; }
         <div id="pt10InsightContent" style="font-size:13px;line-height:1.8;"></div>
       </div>
     </div>
+    <div class="chart-row-full" id="pt10RetentionRow" style="display:none;">
+      <div class="table-card">
+        <h3 id="pt10RetentionTitle">이번달 리텐션 대상 한의원</h3>
+        <div id="pt10RetentionContent" style="font-size:13px;"></div>
+      </div>
+    </div>
     <div class="chart-row-full" id="pt10Summary2025Row" style="display:none;">
       <div class="table-card"><h3>25년 월별 수량 / 매출</h3>
         <div style="overflow-x:auto;"><table class="pt10-sticky"><thead><tr id="pt10Summary2025Head"></tr></thead><tbody id="pt10Summary2025Body"></tbody></table></div>
@@ -864,7 +870,7 @@ function render(){
   // 클래스 전용: PU + 재구매
   document.getElementById('detailRow').style.display=(isTurnkey||isPT10||isSono||isAll||isOmnifit)?'none':'';
   document.getElementById('monthlyRow').style.display=(isPT10||isAll||isOmnifit)?'none':'';
-  ['pt10SummaryRow','pt10CartRow','pt10DioRow','pt10BuyerMonthlyRow','pt10BuyerQuarterlyRow','pt10InsightRow','pt10Summary2025Row','pt10Cart2025Row','pt10Summary2024Row','pt10Cart2024Row','pt10Summary2023Row','pt10Cart2023Row','pt10CartChartRow'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
+  ['pt10SummaryRow','pt10CartRow','pt10DioRow','pt10BuyerMonthlyRow','pt10BuyerQuarterlyRow','pt10InsightRow','pt10RetentionRow','pt10Summary2025Row','pt10Cart2025Row','pt10Summary2024Row','pt10Cart2024Row','pt10Summary2023Row','pt10Cart2023Row','pt10CartChartRow'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
   document.getElementById('sonoMapRow').style.display=isSono?'':'none';
   // 초음파 전용 접기 섹션 표시
   ['sonoASSection','sonoQtySection','sonoInventorySection','sonoSupplierSection','sonoMonthlySection'].forEach(id=>{
@@ -881,7 +887,7 @@ function render(){
   ['navTkSurvey','navTkConsult','navTkImpact'].forEach(id=>{document.getElementById(id).style.display=isTurnkey?'':'none'});
   document.getElementById('navMonthly').style.display=(isPT10||isAll)?'none':'';
   document.getElementById('navDetail').style.display=(isPT10||isTurnkey||isSono||isAll||isOmnifit)?'none':'';
-  if(isPT10){renderPT10Summary();renderPT10Cart();renderPT10CartTrend();renderPT10DIO();try{renderPT10Buyers()}catch(e){console.warn('Buyers err',e)}try{renderPT10Insight()}catch(e){console.warn('Insight err',e)}}
+  if(isPT10){renderPT10Summary();renderPT10Cart();renderPT10CartTrend();renderPT10DIO();try{renderPT10Buyers()}catch(e){console.warn('Buyers err',e)}try{renderPT10Insight()}catch(e){console.warn('Insight err',e)}try{renderPT10Retention()}catch(e){console.warn('Retention err',e)}}
   document.getElementById('omnifitSummaryRow').style.display=isOmnifit?'':'none';
   document.getElementById('omnifitQuarterRow').style.display=isOmnifit?'':'none';
   document.getElementById('omnifitOkrRow').style.display=isOmnifit?'':'none';
@@ -2645,7 +2651,7 @@ function downloadBuyerExcel(){
   XLSX.writeFile(wb,`카트리지_주문_${start||'all'}~${end||'all'}.xlsx`);
 }
 
-// PT10 카트리지 구매자 인사이트 자동 생성
+// PT10 카트리지 구매자 인사이트 — 데이터 기반 동적 생성
 function renderPT10Insight(){
   const start=document.getElementById('startMonth').value;
   const end=document.getElementById('endMonth').value;
@@ -2655,179 +2661,251 @@ function renderPT10Insight(){
     if(start&&ym<start)return false;if(end&&ym>end)return false;
     return true;
   });
-  if(!cartData.length){document.getElementById('pt10InsightContent').innerHTML='<p style="color:#999">데이터 없음</p>';return;}
+  if(!cartData.length){document.getElementById('pt10InsightContent').innerHTML='<p style="color:#999">데이터 없음</p>';return}
+  const fmtS=v=>{if(v>=1e8)return(v/1e8).toFixed(2)+'억';if(v>=1e4)return Math.round(v/1e4).toLocaleString()+'만';return Math.round(v).toLocaleString()+'원'};
+  const cs='padding:8px 12px;vertical-align:top;border-bottom:1px solid #eee;line-height:1.7;font-size:13px;';
 
-  // 한의원별 집계
+  // === 기본 집계 ===
   const buyers={};
   cartData.forEach(r=>{
-    const name=r['한의원명']||'(미상)';const ym=r['연월'];
-    if(!buyers[name])buyers[name]={qty:0,sales:0,months:new Set()};
-    buyers[name].qty+=(r['수량']||0);
-    buyers[name].sales+=(r['매출금액']||0);
-    buyers[name].months.add(ym);
+    const name=r['한의원명']||'(미상)';const ym=r['연월'];const det=r['상세']||'기타';
+    if(!buyers[name])buyers[name]={qty:0,sales:0,months:new Set(),details:{},firstYm:ym};
+    buyers[name].qty+=(r['수량']||0);buyers[name].sales+=(r['매출금액']||0);buyers[name].months.add(ym);
+    buyers[name].details[det]=(buyers[name].details[det]||0)+(r['수량']||0);
+    if(ym<buyers[name].firstYm)buyers[name].firstYm=ym;
   });
   const sorted=Object.entries(buyers).sort((a,b)=>b[1].sales-a[1].sales);
   const total=sorted.length;
   const totalSales=sorted.reduce((s,[,v])=>s+v.sales,0);
   const totalQty=sorted.reduce((s,[,v])=>s+v.qty,0);
 
-  // 티어 분류
-  const top20n=Math.max(1,Math.floor(total*0.2));
-  const mid40n=Math.max(1,Math.floor(total*0.4));
-  const top20=sorted.slice(0,top20n);
-  const mid40=sorted.slice(top20n,top20n+mid40n);
-  const bottom=sorted.slice(top20n+mid40n);
-  const tierData=[
-    {label:'상위 20%',data:top20},
-    {label:'중위 40%',data:mid40},
-    {label:'하위 40%',data:bottom}
-  ];
+  // 티어
+  const t20n=Math.max(1,Math.floor(total*0.2));const m40n=Math.max(1,Math.floor(total*0.4));
+  const top20=sorted.slice(0,t20n);const mid40=sorted.slice(t20n,t20n+m40n);const bottom=sorted.slice(t20n+m40n);
+  const topSales=top20.reduce((s,[,v])=>s+v.sales,0);
+  const topAvg=top20.length?top20.reduce((s,[,v])=>s+v.qty,0)/top20.length:0;
+  const midAvg=mid40.length?mid40.reduce((s,[,v])=>s+v.qty,0)/mid40.length:0;
+  const topConc=totalSales?(topSales/totalSales*100):0;
 
-  // 구매 빈도 분석
-  const freqDist={};
-  sorted.forEach(([,v])=>{const m=v.months.size;freqDist[m]=(freqDist[m]||0)+1;});
-  const oneTimers=freqDist[1]||0;
-  const lowFreq=Object.entries(freqDist).filter(([m])=>parseInt(m)<=3).reduce((s,[,c])=>s+c,0);
-
-  // 전년 비교 (필터 기간의 전년도)
-  let churnInfo='';
-  if(start&&end){
-    const sy=parseInt(start.substring(0,4)),sm=parseInt(start.substring(5));
-    const ey=parseInt(end.substring(0,4)),em=parseInt(end.substring(5));
-    const prevStart=`${sy-1}-${String(sm).padStart(2,'0')}`;
-    const prevEnd=`${ey-1}-${String(em).padStart(2,'0')}`;
-    const prevBuyers=new Set();
-    pt10Data.forEach(d=>{
-      if(d['구분']!=='카트리지')return;
-      const ym=d['연월'];if(!ym)return;
-      if(ym>=prevStart&&ym<=prevEnd)prevBuyers.add(d['한의원명']||'');
-    });
-    const curBuyers=new Set(sorted.map(([n])=>n));
-    const churned=[...prevBuyers].filter(n=>!curBuyers.has(n));
-    const newBuyers=[...curBuyers].filter(n=>!prevBuyers.has(n));
-    if(prevBuyers.size>0){
-      churnInfo=`<tr><td style="color:#e53935;font-weight:600">전년 동기 대비 이탈</td><td><strong>${churned.length}곳</strong> (전년 ${prevBuyers.size}곳 중 ${prevBuyers.size>0?(churned.length/prevBuyers.size*100).toFixed(1):0}%)</td></tr>
-      <tr><td style="color:#43a047;font-weight:600">신규 유입</td><td><strong>${newBuyers.length}곳</strong></td></tr>`;
-    }
-  }
-
-  // 평균 구매량 by 티어
-  const fmtSales=v=>{if(v>=100000000)return(v/100000000).toFixed(2)+'억';if(v>=10000)return Math.round(v/10000).toLocaleString()+'만';return Math.round(v).toLocaleString()+'원';};
-
-  let html=`
-  <table style="width:100%;border-collapse:collapse;margin-bottom:16px;">
-    <thead><tr style="background:#f7f8fa;"><th style="text-align:left;padding:6px 10px;">구분</th><th style="text-align:right;padding:6px 10px;">한의원수</th><th style="text-align:right;padding:6px 10px;">매출</th><th style="text-align:right;padding:6px 10px;">비중</th><th style="text-align:right;padding:6px 10px;">원당 평균 수량</th></tr></thead>
-    <tbody>`;
-  tierData.forEach(t=>{
-    const cnt=t.data.length;
-    const sales=t.data.reduce((s,[,v])=>s+v.sales,0);
-    const qty=t.data.reduce((s,[,v])=>s+v.qty,0);
-    const avgQty=cnt>0?(qty/cnt).toFixed(1):'-';
-    const pct=totalSales>0?(sales/totalSales*100).toFixed(1):'0';
-    html+=`<tr><td style="padding:4px 10px;font-weight:600">${t.label}</td><td style="text-align:right;padding:4px 10px">${cnt}곳</td><td style="text-align:right;padding:4px 10px">${fmtSales(sales)}</td><td style="text-align:right;padding:4px 10px">${pct}%</td><td style="text-align:right;padding:4px 10px">${avgQty}개</td></tr>`;
-  });
-  html+=`<tr style="font-weight:700;border-top:2px solid #333;"><td style="padding:4px 10px">합계</td><td style="text-align:right;padding:4px 10px">${total}곳</td><td style="text-align:right;padding:4px 10px">${fmtSales(totalSales)}</td><td style="text-align:right;padding:4px 10px">100%</td><td style="text-align:right;padding:4px 10px">${(totalQty/total).toFixed(1)}개</td></tr>`;
-  html+=`</tbody></table>`;
-
-  // 핵심 인사이트
-  html+=`<table style="width:100%;border-collapse:collapse;margin-bottom:16px;">
-    <thead><tr style="background:#f7f8fa;"><th style="text-align:left;padding:6px 10px;" colspan="2">핵심 인사이트</th></tr></thead>
-    <tbody>
-      <tr><td style="padding:4px 10px;width:200px;font-weight:600">1회 구매 후 이탈</td><td>${oneTimers}곳 (${(oneTimers/total*100).toFixed(1)}%)</td></tr>
-      <tr><td style="padding:4px 10px;font-weight:600">3개월 이하 구매</td><td>${lowFreq}곳 (${(lowFreq/total*100).toFixed(1)}%) — 정기 구매 전환 핵심 타겟</td></tr>
-      ${churnInfo}
-    </tbody></table>`;
-
-  // 전략 추천 — 데이터 기반 상세 분석
-  const topAvg=top20.length>0?top20.reduce((s,[,v])=>s+v.qty,0)/top20.length:0;
-  const midAvg=mid40.length>0?mid40.reduce((s,[,v])=>s+v.qty,0)/mid40.length:0;
-  const targetMidQty=Math.round(topAvg*0.5);
-
-  // 상위 5곳 한의원명 (인터뷰/강의 후보)
-  const top5Names=sorted.slice(0,5).map(([n,v])=>`${n} (${v.qty}개, ${(v.months.size)}개월 연속)`);
-  // 연속 구매월 가장 긴 TOP 3
-  const loyalTop=sorted.filter(([,v])=>v.months.size>=6).slice(0,3).map(([n,v])=>`${n} (${v.months.size}개월)`);
-
-  // 한의원별 카트리지 상세 분석 (어떤 카트리지 쓰는지)
-  const buyerDetails={};// {한의원: {상세: qty}}
-  cartData.forEach(r=>{
-    const name=r['한의원명']||'(미상)';const det=r['상세']||'기타';
-    if(!buyerDetails[name])buyerDetails[name]={};
-    buyerDetails[name][det]=(buyerDetails[name][det]||0)+(r['수량']||0);
-  });
-  // 전체 상세 품목 목록
+  // 구매 빈도
+  const oneTimers=sorted.filter(([,v])=>v.months.size===1).length;
+  const oneTimerPct=total?(oneTimers/total*100):0;
+  const regularBuyers=sorted.filter(([,v])=>v.months.size>=4);
   const allDetails=[...new Set(cartData.map(d=>d['상세']).filter(Boolean))].sort();
-  // 중위권 중 1~2종만 쓰는 한의원 (교차 판매 타겟)
-  const crossSellTargets=mid40.filter(([name])=>{
-    const dets=buyerDetails[name]||{};
-    return Object.keys(dets).length<=2;
-  });
-  // 중위권에서 가장 안 쓰는 상세 품목
-  const midDetailUsage={};
-  allDetails.forEach(d=>{midDetailUsage[d]=0;});
-  mid40.forEach(([name])=>{
-    const dets=buyerDetails[name]||{};
-    Object.keys(dets).forEach(d=>{midDetailUsage[d]=(midDetailUsage[d]||0)+1;});
-  });
-  const underusedDetails=allDetails.filter(d=>midDetailUsage[d]<mid40.length*0.3).slice(0,3);
 
-  // 하위권 분석: 어떤 상세에서 첫 구매 많은지
-  const bottomFirstPurchase={};
-  bottom.forEach(([name])=>{
-    const dets=buyerDetails[name]||{};
-    Object.entries(dets).forEach(([d,q])=>{bottomFirstPurchase[d]=(bottomFirstPurchase[d]||0)+1;});
-  });
-  const bottomPopularDetail=Object.entries(bottomFirstPurchase).sort((a,b)=>b[1]-a[1]).slice(0,2);
+  // 월별 매출/구매자수 트렌드
+  const monthlyBuyers={},monthlySales={};
+  cartData.forEach(r=>{const ym=r['연월'];if(!ym)return;monthlySales[ym]=(monthlySales[ym]||0)+r['매출금액'];if(!monthlyBuyers[ym])monthlyBuyers[ym]=new Set();monthlyBuyers[ym].add(r['한의원명']||'')});
+  const sortedMonths=Object.keys(monthlySales).sort();
+  const recentM=sortedMonths.slice(-3);const earlyM=sortedMonths.slice(0,3);
 
-  // 이탈 한의원 중 매출 상위 (윈백 우선순위)
-  let churnTopList='';
+  // 전년 비교
+  let churned=[],newBuyers=[],prevBuyers=new Set(),prevBuyerSales={};
   if(start&&end){
     const sy=parseInt(start.substring(0,4)),sm=parseInt(start.substring(5));
     const ey=parseInt(end.substring(0,4)),em=parseInt(end.substring(5));
-    const prevStart=`${sy-1}-${String(sm).padStart(2,'0')}`;
-    const prevEnd=`${ey-1}-${String(em).padStart(2,'0')}`;
-    const prevBuyerSales={};
-    pt10Data.forEach(d=>{
-      if(d['구분']!=='카트리지')return;
-      const ym=d['연월'];if(!ym||ym<prevStart||ym>prevEnd)return;
-      const n=d['한의원명']||'';
-      prevBuyerSales[n]=(prevBuyerSales[n]||0)+(d['매출금액']||0);
-    });
+    const ps=`${sy-1}-${String(sm).padStart(2,'0')}`,pe=`${ey-1}-${String(em).padStart(2,'0')}`;
+    pt10Data.forEach(d=>{if(d['구분']!=='카트리지')return;const ym=d['연월'];if(!ym||ym<ps||ym>pe)return;const n=d['한의원명']||'';prevBuyers.add(n);prevBuyerSales[n]=(prevBuyerSales[n]||0)+d['매출금액']});
     const curNames=new Set(sorted.map(([n])=>n));
-    const churnedWithSales=Object.entries(prevBuyerSales).filter(([n])=>!curNames.has(n)).sort((a,b)=>b[1]-a[1]).slice(0,5);
-    if(churnedWithSales.length>0){
-      churnTopList=churnedWithSales.map(([n,s])=>`${n} (${fmtSales(s)})`).join(', ');
-    }
+    churned=[...prevBuyers].filter(n=>!curNames.has(n));
+    newBuyers=[...curNames].filter(n=>!prevBuyers.has(n));
+  }
+  const churnRate=prevBuyers.size?(churned.length/prevBuyers.size*100):0;
+  const churnedTop=churned.map(n=>[n,prevBuyerSales[n]||0]).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const prevTotalSales=Object.values(prevBuyerSales).reduce((s,v)=>s+v,0);
+  const salesGrowth=prevTotalSales?((totalSales-prevTotalSales)/prevTotalSales*100):0;
+
+  // 상세 품목별 분석
+  const detailSales={},detailQty={},detailBuyers={};
+  cartData.forEach(r=>{const d=r['상세']||'기타';detailSales[d]=(detailSales[d]||0)+r['매출금액'];detailQty[d]=(detailQty[d]||0)+(r['수량']||0);if(!detailBuyers[d])detailBuyers[d]=new Set();detailBuyers[d].add(r['한의원명']||'')});
+  const detailRank=Object.entries(detailSales).sort((a,b)=>b[1]-a[1]);
+  const topDetail=detailRank[0];const bottomDetail=detailRank[detailRank.length-1];
+
+  // 교차판매: 1~2종만 쓰는 중위권
+  const crossSellTargets=mid40.filter(([n,v])=>Object.keys(v.details).length<=2);
+  const crossSellPct=mid40.length?(crossSellTargets.length/mid40.length*100):0;
+
+  // 최근 3개월 트렌드
+  const recentSales=recentM.reduce((s,m)=>s+(monthlySales[m]||0),0);
+  const earlySales=earlyM.reduce((s,m)=>s+(monthlySales[m]||0),0);
+  const trendDir=earlySales?(((recentSales-earlySales)/earlySales)*100):0;
+
+  // === 티어 요약 테이블 (고정) ===
+  let html=`<table style="width:100%;border-collapse:collapse;margin-bottom:16px;">
+    <thead><tr style="background:#f7f8fa;"><th style="text-align:left;padding:6px 10px;">구분</th><th style="text-align:right;padding:6px 10px;">한의원수</th><th style="text-align:right;padding:6px 10px;">매출</th><th style="text-align:right;padding:6px 10px;">비중</th><th style="text-align:right;padding:6px 10px;">원당 평균 수량</th></tr></thead><tbody>`;
+  [{l:'상위 20%',d:top20},{l:'중위 40%',d:mid40},{l:'하위 40%',d:bottom}].forEach(t=>{
+    const cnt=t.d.length;const sales=t.d.reduce((s,[,v])=>s+v.sales,0);const qty=t.d.reduce((s,[,v])=>s+v.qty,0);
+    html+=`<tr><td style="padding:4px 10px;font-weight:600">${t.l}</td><td style="text-align:right;padding:4px 10px">${cnt}곳</td><td style="text-align:right;padding:4px 10px">${fmtS(sales)}</td><td style="text-align:right;padding:4px 10px">${totalSales?(sales/totalSales*100).toFixed(1):'0'}%</td><td style="text-align:right;padding:4px 10px">${cnt?(qty/cnt).toFixed(1):'-'}개</td></tr>`;
+  });
+  html+=`<tr style="font-weight:700;border-top:2px solid #333;"><td style="padding:4px 10px">합계</td><td style="text-align:right;padding:4px 10px">${total}곳</td><td style="text-align:right;padding:4px 10px">${fmtS(totalSales)}</td><td style="text-align:right;padding:4px 10px">100%</td><td style="text-align:right;padding:4px 10px">${(totalQty/total).toFixed(1)}개</td></tr></tbody></table>`;
+
+  // === 동적 인사이트 생성 ===
+  const insights=[];
+
+  // 1) 매출 성장/하락
+  if(prevTotalSales>0){
+    if(salesGrowth>10)insights.push({icon:'📈',color:'#34a853',title:'매출 성장세',body:`전년 동기 대비 <strong>+${salesGrowth.toFixed(1)}%</strong> 성장 (${fmtS(prevTotalSales)} → ${fmtS(totalSales)}). 구매자 수 ${prevBuyers.size}곳 → ${total}곳 (${newBuyers.length>churned.length?'순증':'순감'} ${Math.abs(newBuyers.length-churned.length)}곳). 현재 성장 드라이버를 파악하고 확대 적용할 타이밍.`});
+    else if(salesGrowth<-10)insights.push({icon:'📉',color:'#e53935',title:'매출 역성장 경고',body:`전년 동기 대비 <strong>${salesGrowth.toFixed(1)}%</strong> 하락 (${fmtS(prevTotalSales)} → ${fmtS(totalSales)}). ${churned.length>newBuyers.length?'이탈('+churned.length+'곳)이 신규('+newBuyers.length+'곳)를 초과 — 기존 고객 리텐션이 급선무.':'구매자 수는 유지되나 객단가 하락 추정 — 업셀링/교차판매 강화 필요.'}`});
+    else insights.push({icon:'➡️',color:'#666',title:'매출 보합',body:`전년 동기 대비 <strong>${salesGrowth>0?'+':''}${salesGrowth.toFixed(1)}%</strong>로 유사한 수준 유지. 신규 ${newBuyers.length}곳 vs 이탈 ${churned.length}곳.`});
   }
 
-  const cellStyle='padding:8px 10px;vertical-align:top;border-bottom:1px solid #eee;';
-  html+=`<table style="width:100%;border-collapse:collapse;">
-    <thead><tr style="background:#f7f8fa;"><th style="text-align:left;padding:8px 10px;width:100px;">전략</th><th style="text-align:left;padding:8px 10px;width:160px;">대상</th><th style="text-align:left;padding:8px 10px;">상세 액션</th></tr></thead>
-    <tbody>
-      <tr>
-        <td style="${cellStyle}font-weight:600;color:#1a73e8" rowspan="3">상위권<br>활용</td>
-        <td style="${cellStyle}" rowspan="3">TOP ${top20n}곳<br><span style="font-size:11px;color:#888">원당 평균 ${topAvg.toFixed(0)}개</span></td>
-        <td style="${cellStyle}"><strong>인터뷰 소싱 후보 (TOP 5)</strong><br><span style="font-size:12px">${top5Names.join('<br>')}</span></td>
-      </tr>
-      <tr><td style="${cellStyle}"><strong>강의/세미나 소싱</strong><br><span style="font-size:12px">${loyalTop.length>0?'장기 충성 고객: '+loyalTop.join(', '):'장기 구매자 중 교육 의향 확인 필요'}<br>주제 예시: "PT10 활용 실전 노하우", "혈액검사 기반 환자 관리 프로토콜"</span></td></tr>
-      <tr><td style="${cellStyle}"><strong>레퍼런스 콘텐츠</strong><br><span style="font-size:12px">인터뷰 결과 → 뷰티스트림 아티클 / 카카오톡 콘텐츠로 중위·하위권에 배포</span></td></tr>
-      <tr>
-        <td style="${cellStyle}font-weight:600;color:#fb8c00" rowspan="3">중위권<br>확대</td>
-        <td style="${cellStyle}" rowspan="3">${mid40.length}곳<br><span style="font-size:11px;color:#888">원당 ${midAvg.toFixed(1)}개 → 목표 ${targetMidQty}개</span></td>
-        <td style="${cellStyle}"><strong>교차 판매 타겟</strong><br><span style="font-size:12px">1~2종만 사용 중: ${crossSellTargets.length}곳 (${mid40.length>0?(crossSellTargets.length/mid40.length*100).toFixed(0):0}%)<br>${underusedDetails.length>0?'사용률 낮은 품목: <strong>'+underusedDetails.join(', ')+'</strong> → 추가 제안 우선순위':'전 품목 고르게 사용 중'}</span></td>
-      </tr>
-      <tr><td style="${cellStyle}"><strong>벤치마크 마케팅</strong><br><span style="font-size:12px">"같은 규모 한의원 상위 20%는 월 ${(topAvg/(sorted[0]?.[1].months.size||1)).toFixed(0)}개 사용" → 비교 데이터 카카오 알림톡 발송</span></td></tr>
-      <tr><td style="${cellStyle}"><strong>번들/정기배송 제안</strong><br><span style="font-size:12px">월 ${Math.round(midAvg/Math.max(...sorted.map(([,v])=>v.months.size),1)*3)}~${Math.round(midAvg/Math.max(...sorted.map(([,v])=>v.months.size),1)*5)}개 정기배송 시 할인 → 구매 주기 안정화</span></td></tr>
-      <tr>
-        <td style="${cellStyle}font-weight:600;color:#e53935" rowspan="3">하위권<br>전환</td>
-        <td style="${cellStyle}" rowspan="3">${bottom.length}곳<br><span style="font-size:11px;color:#888">${oneTimers}곳 1회성 (${(oneTimers/Math.max(bottom.length,1)*100).toFixed(0)}%)</span></td>
-        <td style="${cellStyle}"><strong>온보딩 자동화</strong><br><span style="font-size:12px">첫 구매 품목 ${bottomPopularDetail.map(([d,c])=>d+' ('+c+'곳)').join(', ')||'-'} 중심<br>구매 후 2주 내 활용 가이드 + 환자 설명 자료 발송 (카카오 알림톡)</span></td>
-      </tr>
-      <tr><td style="${cellStyle}"><strong>재구매 인센티브</strong><br><span style="font-size:12px">1회 구매 ${oneTimers}곳 → 구매 30일 후 2회차 10% 할인 쿠폰 자동 발송<br>예상 전환율 15~20% 적용 시 ${Math.round(oneTimers*0.175)}곳 추가 확보</span></td></tr>
-      <tr><td style="${cellStyle}"><strong>윈백 캠페인 (이탈 복귀)</strong><br><span style="font-size:12px">${churnTopList?'우선 연락 대상: '+churnTopList:'전년 데이터 비교 시 이탈 한의원 확인 가능 (기간 필터 조정)'}<br>3개월 미구매 한의원에 "복귀 혜택" 제안 (무료 체험 키트 or 할인)</span></td></tr>
-    </tbody></table>`;
+  // 2) 이탈 경고
+  if(churnRate>25&&churned.length>=3){
+    const lostSales=churnedTop.reduce((s,[,v])=>s+v,0);
+    insights.push({icon:'🚨',color:'#e53935',title:`이탈률 ${churnRate.toFixed(0)}% — 윈백 시급`,body:`전년 구매자 ${prevBuyers.size}곳 중 <strong>${churned.length}곳 이탈</strong> (전년 매출 ${fmtS(lostSales)} 유실).<br>윈백 우선 대상: ${churnedTop.map(([n,s])=>`<strong>${n}</strong>(${fmtS(s)})`).join(', ')}<br>→ 이탈 사유 파악 후 맞춤 복귀 제안 (할인/무료체험) 필요.`});
+  }else if(churnRate>0&&churnRate<=25&&churned.length>0){
+    insights.push({icon:'⚠️',color:'#fb8c00',title:`이탈 ${churned.length}곳 (${churnRate.toFixed(0)}%)`,body:`관리 가능한 수준. ${churnedTop.length>0?'매출 상위 이탈: '+churnedTop.slice(0,3).map(([n,s])=>n+'('+fmtS(s)+')').join(', ')+' — 개별 연락 권장.':''}`});
+  }
 
+  // 3) 신규 유입 분석
+  if(newBuyers.length>=5){
+    const newBuyerData=newBuyers.map(n=>[n,buyers[n]]).filter(([,v])=>v).sort((a,b)=>b[1].sales-a[1].sales);
+    const newSales=newBuyerData.reduce((s,[,v])=>s+v.sales,0);
+    const newAvgQty=newBuyerData.length?newBuyerData.reduce((s,[,v])=>s+v.qty,0)/newBuyerData.length:0;
+    insights.push({icon:'🆕',color:'#34a853',title:`신규 ${newBuyers.length}곳 유입 (${fmtS(newSales)})`,body:`신규 고객 평균 구매량 ${newAvgQty.toFixed(1)}개. ${newAvgQty<midAvg?'기존 중위권 평균('+midAvg.toFixed(1)+'개)보다 낮음 — 초기 온보딩 강화로 구매량 끌어올려야 함.':'기존 중위권과 유사한 구매 패턴 — 정기 구매 전환에 집중.'}<br>TOP 신규: ${newBuyerData.slice(0,3).map(([n,v])=>n+'('+v.qty+'개)').join(', ')}`});
+  }
+
+  // 4) 1회성 구매 이탈
+  if(oneTimerPct>30){
+    insights.push({icon:'🔄',color:'#e53935',title:`1회 구매 후 미재구매 ${oneTimers}곳 (${oneTimerPct.toFixed(0)}%)`,body:`전체의 ${oneTimerPct.toFixed(0)}%가 1회 구매 후 이탈 — <strong>재구매 전환이 최대 과제</strong>.<br>→ 구매 2주 후 활용 가이드 자동 발송, 30일 후 재구매 할인 쿠폰 제안 시 전환율 15~20% 기대 (약 ${Math.round(oneTimers*0.175)}곳 추가 확보 가능).`});
+  }else if(oneTimerPct>15){
+    insights.push({icon:'🔄',color:'#fb8c00',title:`1회성 구매 ${oneTimers}곳 (${oneTimerPct.toFixed(0)}%)`,body:`보통 수준이나 개선 여지 있음. 첫 구매 후 리마인드 자동화 검토.`});
+  }
+
+  // 5) 매출 집중도
+  if(topConc>80){
+    insights.push({icon:'⚖️',color:'#e53935',title:`상위 20%에 매출 ${topConc.toFixed(0)}% 집중`,body:`소수 고객 의존도가 매우 높음. TOP 5: ${top20.slice(0,5).map(([n,v])=>n+'('+fmtS(v.sales)+')').join(', ')}.<br>→ 이들의 이탈 시 매출 타격 심각. 중위권 ${mid40.length}곳 육성이 리스크 분산의 핵심.`});
+  }else if(topConc>65){
+    insights.push({icon:'⚖️',color:'#fb8c00',title:`상위 20% 매출 비중 ${topConc.toFixed(0)}%`,body:`적정 수준이나 중위권 확대로 안정성 강화 가능. 중위권 원당 평균 ${midAvg.toFixed(1)}개 → 상위권 수준(${topAvg.toFixed(0)}개)의 50%인 ${Math.round(topAvg*0.5)}개 달성 목표.`});
+  }
+
+  // 6) 교차판매 기회
+  if(crossSellPct>40&&crossSellTargets.length>=3){
+    const underused=allDetails.filter(d=>{let cnt=0;mid40.forEach(([n])=>{if(buyers[n]?.details[d])cnt++});return cnt<mid40.length*0.3}).slice(0,3);
+    insights.push({icon:'🛒',color:'#1a73e8',title:`교차판매 기회 — 중위권 ${crossSellTargets.length}곳이 1~2종만 사용`,body:`중위권의 <strong>${crossSellPct.toFixed(0)}%</strong>가 카트리지 1~2종만 구매 중 (전체 ${allDetails.length}종 중).<br>${underused.length?'침투율 낮은 품목: <strong>'+underused.join(', ')+'</strong> → 샘플 제공 or 번들 할인으로 교차 구매 유도.':'전 품목 침투율 양호.'}<br>교차판매 1종 추가 시 원당 매출 약 ${Math.round(midAvg/Math.max(Object.keys(mid40[0]?.[1]?.details||{}).length,1)*100)/100}개 증가 기대.`});
+  }
+
+  // 7) 트렌드 변화 (조회 기간 내)
+  if(sortedMonths.length>=4){
+    const recentAvgBuyers=recentM.reduce((s,m)=>s+(monthlyBuyers[m]?.size||0),0)/recentM.length;
+    const earlyAvgBuyers=earlyM.reduce((s,m)=>s+(monthlyBuyers[m]?.size||0),0)/earlyM.length;
+    if(trendDir>20)insights.push({icon:'🔥',color:'#34a853',title:'기간 내 상승 추세',body:`초반 3개월 평균 ${fmtS(Math.round(earlySales/3))}/월 → 최근 3개월 ${fmtS(Math.round(recentSales/3))}/월 (<strong>+${trendDir.toFixed(0)}%</strong>). 구매자 수도 ${earlyAvgBuyers.toFixed(0)}곳 → ${recentAvgBuyers.toFixed(0)}곳. 성장 모멘텀 유지 전략 필요.`});
+    else if(trendDir<-20)insights.push({icon:'🧊',color:'#e53935',title:'기간 내 하락 추세',body:`초반 3개월 평균 ${fmtS(Math.round(earlySales/3))}/월 → 최근 3개월 ${fmtS(Math.round(recentSales/3))}/월 (<strong>${trendDir.toFixed(0)}%</strong>). 구매자 수 ${earlyAvgBuyers.toFixed(0)}곳 → ${recentAvgBuyers.toFixed(0)}곳. ${recentAvgBuyers<earlyAvgBuyers?'구매자 이탈이 원인 — 리텐션 강화 시급.':'구매자 수 유지되나 객단가 하락 — 업셀링 필요.'}`});
+  }
+
+  // 8) 충성 고객 활용
+  if(regularBuyers.length>=3){
+    const loyalTop3=regularBuyers.slice(0,3);
+    insights.push({icon:'👑',color:'#9334e6',title:`충성 고객 ${regularBuyers.length}곳 (4개월+ 연속 구매)`,body:`장기 구매 고객 활용 방안:<br>• 인터뷰/사례 콘텐츠 소싱: ${loyalTop3.map(([n,v])=>n+'('+v.months.size+'개월, '+v.qty+'개)').join(', ')}<br>• 이들의 평균 사용 품목 수 ${(regularBuyers.reduce((s,[,v])=>s+Object.keys(v.details).length,0)/regularBuyers.length).toFixed(1)}종 — 신규/하위권에 벤치마크로 제시 가능.`});
+  }
+
+  // 9) 품목별 인사이트
+  if(detailRank.length>=2){
+    const topD=detailRank[0];const topDPct=totalSales?(topD[1]/totalSales*100):0;
+    if(topDPct>50)insights.push({icon:'📦',color:'#fb8c00',title:`"${topD[0]}" 매출 비중 ${topDPct.toFixed(0)}% — 품목 편중`,body:`${detailRank.length}종 중 "${topD[0]}"에 과도하게 집중. ${bottomDetail?'최하위 "'+bottomDetail[0]+'" ('+fmtS(bottomDetail[1])+')는 인지도 부족 가능성.':''}<br>→ 하위 품목 프로모션 or 번들 전략으로 포트폴리오 다변화.`});
+  }
+
+  // === 인사이트 렌더링 ===
+  if(insights.length){
+    html+=`<div style="display:flex;flex-direction:column;gap:12px;margin-top:8px;">`;
+    insights.forEach(ins=>{
+      html+=`<div style="border-left:4px solid ${ins.color};padding:12px 16px;background:#fafbfc;border-radius:0 8px 8px 0;">
+        <div style="font-weight:700;font-size:14px;margin-bottom:6px;">${ins.icon} ${ins.title}</div>
+        <div style="font-size:13px;line-height:1.8;color:#333;">${ins.body}</div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }else{
+    html+=`<p style="color:#999;text-align:center;padding:20px;">조회 기간의 데이터가 충분하지 않아 인사이트를 생성할 수 없습니다.</p>`;
+  }
   document.getElementById('pt10InsightContent').innerHTML=html;
+}
+
+function renderPT10Retention(){
+  const now=new Date();
+  const curYm=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const titleEl=document.getElementById('pt10RetentionTitle');
+  titleEl.textContent=`${curYm.substring(2)} 리텐션 대상 한의원`;
+  const fmtS=v=>{if(v>=1e8)return(v/1e8).toFixed(2)+'억';if(v>=1e4)return Math.round(v/1e4).toLocaleString()+'만';return Math.round(v).toLocaleString()+'원'};
+
+  // 전체 카트리지 구매 이력
+  const cartAll=pt10Data.filter(d=>d['구분']==='카트리지'&&d['연월']);
+  const buyerHistory={};// {한의원: {months:Set, lastYm, totalQty, totalSales, details:{}}}
+  cartAll.forEach(r=>{
+    const name=r['한의원명']||'(미상)';const ym=r['연월'];
+    if(!buyerHistory[name])buyerHistory[name]={months:new Set(),lastYm:'',totalQty:0,totalSales:0,details:{}};
+    const b=buyerHistory[name];b.months.add(ym);b.totalQty+=(r['수량']||0);b.totalSales+=(r['매출금액']||0);
+    if(ym>b.lastYm)b.lastYm=ym;
+    const det=r['상세']||'기타';b.details[det]=(b.details[det]||0)+(r['수량']||0);
+  });
+
+  // 리텐션 대상 분류
+  const targets=[];
+  const allMonths=[...new Set(cartAll.map(d=>d['연월']))].sort();
+  // 이번달 기준 1~3개월 전
+  function monthsAgo(n){const d=new Date(now.getFullYear(),now.getMonth()-n,1);return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`}
+  const m1=monthsAgo(1),m2=monthsAgo(2),m3=monthsAgo(3);
+
+  Object.entries(buyerHistory).forEach(([name,b])=>{
+    const monthArr=[...b.months].sort();
+    const lastYm=b.lastYm;
+    const monthsSinceLast=allMonths.filter(m=>m>lastYm&&m<=curYm).length;
+    const totalMonths=b.months.size;
+    const detailList=Object.entries(b.details).sort((a,b)=>b[1]-a[1]).map(([d,q])=>d+'('+q+')').join(', ');
+
+    // 1) 이탈 위험: 2~3개월 미구매 + 이전 2개월 이상 구매 이력
+    if(monthsSinceLast>=2&&monthsSinceLast<=4&&totalMonths>=2){
+      targets.push({name,type:'이탈 위험',color:'#e53935',reason:`최종 구매 ${lastYm} (${monthsSinceLast}개월 전), 총 ${totalMonths}개월 구매 이력`,sales:b.totalSales,qty:b.totalQty,details:detailList,priority:monthsSinceLast===2?1:2});
+    }
+    // 2) 구매 감소: 이번달 또는 직전달에 구매했지만 최근 수량 감소
+    else if(b.months.has(m1)||b.months.has(curYm)){
+      const recent3=cartAll.filter(r=>r['한의원명']===name&&r['연월']>=m3&&r['연월']<=curYm);
+      const prev3=cartAll.filter(r=>r['한의원명']===name&&r['연월']>=monthsAgo(6)&&r['연월']<m3);
+      if(prev3.length>0){
+        const recentQty=recent3.reduce((s,r)=>s+(r['수량']||0),0);
+        const prevQty=prev3.reduce((s,r)=>s+(r['수량']||0),0);
+        const prevMonths=new Set(prev3.map(r=>r['연월'])).size;const recentMonths=new Set(recent3.map(r=>r['연월'])).size;
+        const prevAvg=prevMonths?prevQty/prevMonths:0;const recentAvg=recentMonths?recentQty/recentMonths:0;
+        if(prevAvg>0&&recentAvg<prevAvg*0.5&&prevQty>=5){
+          targets.push({name,type:'구매 감소',color:'#fb8c00',reason:`최근 3개월 평균 ${recentAvg.toFixed(1)}개/월 ← 이전 평균 ${prevAvg.toFixed(1)}개/월 (${((recentAvg-prevAvg)/prevAvg*100).toFixed(0)}%)`,sales:b.totalSales,qty:b.totalQty,details:detailList,priority:3});
+        }
+      }
+    }
+    // 3) 1회 구매 후 미재구매 (최근 2개월 내 첫 구매)
+    if(totalMonths===1&&(lastYm===m1||lastYm===m2)){
+      targets.push({name,type:'첫 구매 후 미재구매',color:'#9334e6',reason:`${lastYm} 첫 구매 ${b.totalQty}개 (${fmtS(b.totalSales)}) — 재구매 유도 필요`,sales:b.totalSales,qty:b.totalQty,details:detailList,priority:4});
+    }
+  });
+
+  targets.sort((a,b)=>a.priority-b.priority||b.sales-a.sales);
+
+  if(!targets.length){
+    document.getElementById('pt10RetentionContent').innerHTML='<p style="color:#999;text-align:center;padding:16px;">이번달 기준 리텐션 대상 없음</p>';return;
+  }
+
+  let html=`<div style="margin-bottom:8px;font-size:12px;color:#666;">※ 이번달(${curYm}) 기준, 전체 카트리지 구매 이력에서 자동 분석</div>`;
+  // 유형별 카운트 요약
+  const typeCounts={};targets.forEach(t=>{typeCounts[t.type]=(typeCounts[t.type]||0)+1});
+  html+=`<div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;">`;
+  Object.entries(typeCounts).forEach(([type,cnt])=>{
+    const t=targets.find(t=>t.type===type);
+    html+=`<div style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;background:${t.color}15;color:${t.color};border:1px solid ${t.color}30;">${type} ${cnt}곳</div>`;
+  });
+  html+=`</div>`;
+
+  html+=`<table style="width:100%;border-collapse:collapse;"><thead><tr style="background:#f7f8fa;">
+    <th style="text-align:left;padding:6px 10px;">유형</th>
+    <th style="text-align:left;padding:6px 10px;">한의원명</th>
+    <th style="text-align:left;padding:6px 10px;">사유</th>
+    <th style="text-align:right;padding:6px 10px;">누적 매출</th>
+    <th style="text-align:right;padding:6px 10px;">누적 수량</th>
+    <th style="text-align:left;padding:6px 10px;">구매 품목</th>
+  </tr></thead><tbody>`;
+  targets.forEach(t=>{
+    html+=`<tr><td style="padding:5px 10px;"><span style="color:${t.color};font-weight:600;font-size:12px;">${t.type}</span></td><td style="padding:5px 10px;font-weight:600;">${t.name}</td><td style="padding:5px 10px;font-size:12px;">${t.reason}</td><td style="padding:5px 10px;text-align:right;">${fmtS(t.sales)}</td><td style="padding:5px 10px;text-align:right;">${t.qty}개</td><td style="padding:5px 10px;font-size:11px;color:#666;">${t.details}</td></tr>`;
+  });
+  html+=`</tbody></table>`;
+  document.getElementById('pt10RetentionContent').innerHTML=html;
 }
 
 function renderProfitMargin(){
