@@ -2846,19 +2846,36 @@ function renderPT10Retention(){
   function monthsAgo(n){const d=new Date(now.getFullYear(),now.getMonth()-n,1);return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`}
   const m1=monthsAgo(1),m2=monthsAgo(2),m3=monthsAgo(3);
 
+  // 월 차이 계산 함수
+  function ymDiff(a,b){const[ay,am]=a.split('-').map(Number);const[by,bm]=b.split('-').map(Number);return(by-ay)*12+(bm-am)}
+
   Object.entries(buyerHistory).forEach(([name,b])=>{
     const monthArr=[...b.months].sort();
     const lastYm=b.lastYm;
-    const monthsSinceLast=allMonths.filter(m=>m>lastYm&&m<=curYm).length;
+    const sinceLast=ymDiff(lastYm,curYm);
     const totalMonths=b.months.size;
     const detailList=Object.entries(b.details).sort((a,b)=>b[1]-a[1]).map(([d,q])=>d+'('+q+')').join(', ');
 
-    // 1) 이탈 위험: 2~3개월 미구매 + 이전 2개월 이상 구매 이력
-    if(monthsSinceLast>=2&&monthsSinceLast<=4&&totalMonths>=2){
-      targets.push({name,type:'이탈 위험',color:'#e53935',reason:`최종 구매 ${lastYm} (${monthsSinceLast}개월 전), 총 ${totalMonths}개월 구매 이력`,sales:b.totalSales,qty:b.totalQty,details:detailList,priority:monthsSinceLast===2?1:2});
+    // 1) 이탈 위험: 개별 구매 주기 기반
+    //    평균 구매 간격(개월) 계산 → 간격의 1.5배 이상 미구매 시 이탈 위험
+    if(totalMonths>=2){
+      // 구매월 간 간격 계산
+      const gaps=[];
+      for(let i=1;i<monthArr.length;i++){gaps.push(ymDiff(monthArr[i-1],monthArr[i]))}
+      const avgGap=gaps.length?gaps.reduce((s,g)=>s+g,0)/gaps.length:0;
+      const cycle=Math.max(Math.round(avgGap),1);
+      const threshold=Math.max(Math.ceil(cycle*1.5),2);// 주기의 1.5배, 최소 2개월
+
+      if(sinceLast>=threshold&&sinceLast<=threshold+3){
+        const overdue=sinceLast-cycle;
+        targets.push({name,type:'이탈 위험',color:'#e53935',
+          reason:`평균 구매 주기 <strong>${cycle}개월</strong>, 마지막 구매 ${lastYm} (<strong>${sinceLast}개월 경과</strong>, ${overdue}개월 초과)`,
+          sales:b.totalSales,qty:b.totalQty,details:detailList,cycle,priority:1});
+      }
     }
+
     // 2) 구매 감소: 이번달 또는 직전달에 구매했지만 최근 수량 감소
-    else if(b.months.has(m1)||b.months.has(curYm)){
+    if(!targets.find(t=>t.name===name)&&(b.months.has(m1)||b.months.has(curYm))){
       const recent3=cartAll.filter(r=>r['한의원명']===name&&r['연월']>=m3&&r['연월']<=curYm);
       const prev3=cartAll.filter(r=>r['한의원명']===name&&r['연월']>=monthsAgo(6)&&r['연월']<m3);
       if(prev3.length>0){
@@ -2872,7 +2889,7 @@ function renderPT10Retention(){
       }
     }
     // 3) 1회 구매 후 미재구매 (최근 2개월 내 첫 구매)
-    if(totalMonths===1&&(lastYm===m1||lastYm===m2)){
+    if(!targets.find(t=>t.name===name)&&totalMonths===1&&(lastYm===m1||lastYm===m2)){
       targets.push({name,type:'첫 구매 후 미재구매',color:'#9334e6',reason:`${lastYm} 첫 구매 ${b.totalQty}개 (${fmtS(b.totalSales)}) — 재구매 유도 필요`,sales:b.totalSales,qty:b.totalQty,details:detailList,priority:4});
     }
   });
