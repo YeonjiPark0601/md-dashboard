@@ -2901,12 +2901,13 @@ function renderPT10Retention(){
   }
 
   let html=`<div style="margin-bottom:8px;font-size:12px;color:#666;">※ 이번달(${curYm}) 기준, 전체 카트리지 구매 이력에서 자동 분석</div>`;
-  // 유형별 카운트 요약
+  // 유형별 카운트 요약 (클릭 필터)
   const typeCounts={};targets.forEach(t=>{typeCounts[t.type]=(typeCounts[t.type]||0)+1});
-  html+=`<div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;">`;
+  html+=`<div id="retentionFilterBar" style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">`;
+  html+=`<div class="retention-filter active" data-filter="all" onclick="filterRetention('all')" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;background:#333;color:#fff;cursor:pointer;">전체 ${targets.length}곳</div>`;
   Object.entries(typeCounts).forEach(([type,cnt])=>{
     const t=targets.find(t=>t.type===type);
-    html+=`<div style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;background:${t.color}15;color:${t.color};border:1px solid ${t.color}30;">${type} ${cnt}곳</div>`;
+    html+=`<div class="retention-filter" data-filter="${type}" onclick="filterRetention('${type}')" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;background:${t.color}15;color:${t.color};border:1px solid ${t.color}30;cursor:pointer;">${type} ${cnt}곳</div>`;
   });
   html+=`</div>`;
 
@@ -2920,7 +2921,7 @@ function renderPT10Retention(){
     <th style="text-align:left;padding:6px 10px;">구매 품목</th>
   </tr></thead><tbody>`;
   targets.forEach((t,i)=>{
-    const hidden=i>=SHOW_LIMIT?'class="pt10-retention-hidden" style="display:none;"':'';
+    const hidden=i>=SHOW_LIMIT?'class="pt10-retention-row pt10-retention-hidden" data-type="'+t.type+'" style="display:none;"':'class="pt10-retention-row" data-type="'+t.type+'"';
     html+=`<tr ${hidden}><td style="padding:5px 10px;"><span style="color:${t.color};font-weight:600;font-size:12px;">${t.type}</span></td><td style="padding:5px 10px;font-weight:600;">${t.name}</td><td style="padding:5px 10px;font-size:12px;">${t.reason}</td><td style="padding:5px 10px;text-align:right;">${fmtS(t.sales)}</td><td style="padding:5px 10px;text-align:right;">${t.qty}개</td><td style="padding:5px 10px;font-size:11px;color:#666;">${t.details}</td></tr>`;
   });
   html+=`</tbody></table>`;
@@ -2930,12 +2931,26 @@ function renderPT10Retention(){
   document.getElementById('pt10RetentionContent').innerHTML=html;
 }
 
-let _retentionExpanded=false;
+let _retentionExpanded=false,_retentionFilter='all';
 function toggleRetentionList(){
   _retentionExpanded=!_retentionExpanded;
-  document.querySelectorAll('.pt10-retention-hidden').forEach(el=>{el.style.display=_retentionExpanded?'':'none'});
+  document.querySelectorAll('.pt10-retention-hidden').forEach(el=>{
+    if(_retentionFilter==='all'||el.dataset.type===_retentionFilter)el.style.display=_retentionExpanded?'':'none';
+  });
   const tog=document.getElementById('pt10RetentionToggle');
   if(tog)tog.textContent=_retentionExpanded?'접기':'+ 더보기';
+}
+function filterRetention(type){
+  _retentionFilter=type;_retentionExpanded=true;
+  document.querySelectorAll('.retention-filter').forEach(el=>{
+    const isActive=el.dataset.filter===type;
+    if(isActive){el.style.background=type==='all'?'#333':el.style.borderColor||'#333';el.style.color='#fff'}
+    else{el.style.color=el.dataset.filter==='all'?'#333':'';el.style.background=el.dataset.filter==='all'?'#f0f0f0':''}
+  });
+  document.querySelectorAll('.pt10-retention-row').forEach(el=>{
+    el.style.display=(type==='all'||el.dataset.type===type)?'':'none';
+  });
+  const tog=document.getElementById('pt10RetentionToggle');if(tog)tog.style.display='none';
 }
 
 function renderProfitMargin(){
