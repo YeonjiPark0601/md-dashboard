@@ -2893,6 +2893,7 @@ function renderPT10Retention(){
   });
   html+=`</div>`;
 
+  const SHOW_LIMIT=20;
   html+=`<table style="width:100%;border-collapse:collapse;"><thead><tr style="background:#f7f8fa;">
     <th style="text-align:left;padding:6px 10px;">유형</th>
     <th style="text-align:left;padding:6px 10px;">한의원명</th>
@@ -2901,11 +2902,23 @@ function renderPT10Retention(){
     <th style="text-align:right;padding:6px 10px;">누적 수량</th>
     <th style="text-align:left;padding:6px 10px;">구매 품목</th>
   </tr></thead><tbody>`;
-  targets.forEach(t=>{
-    html+=`<tr><td style="padding:5px 10px;"><span style="color:${t.color};font-weight:600;font-size:12px;">${t.type}</span></td><td style="padding:5px 10px;font-weight:600;">${t.name}</td><td style="padding:5px 10px;font-size:12px;">${t.reason}</td><td style="padding:5px 10px;text-align:right;">${fmtS(t.sales)}</td><td style="padding:5px 10px;text-align:right;">${t.qty}개</td><td style="padding:5px 10px;font-size:11px;color:#666;">${t.details}</td></tr>`;
+  targets.forEach((t,i)=>{
+    const hidden=i>=SHOW_LIMIT?'class="pt10-retention-hidden" style="display:none;"':'';
+    html+=`<tr ${hidden}><td style="padding:5px 10px;"><span style="color:${t.color};font-weight:600;font-size:12px;">${t.type}</span></td><td style="padding:5px 10px;font-weight:600;">${t.name}</td><td style="padding:5px 10px;font-size:12px;">${t.reason}</td><td style="padding:5px 10px;text-align:right;">${fmtS(t.sales)}</td><td style="padding:5px 10px;text-align:right;">${t.qty}개</td><td style="padding:5px 10px;font-size:11px;color:#666;">${t.details}</td></tr>`;
   });
   html+=`</tbody></table>`;
+  if(targets.length>SHOW_LIMIT){
+    html+=`<div id="pt10RetentionToggle" onclick="toggleRetentionList()" style="text-align:center;padding:10px;color:#1a73e8;cursor:pointer;font-size:13px;font-weight:600;border-top:1px solid #f0f0f0;margin-top:4px;">+ ${targets.length-SHOW_LIMIT}곳 더보기</div>`;
+  }
   document.getElementById('pt10RetentionContent').innerHTML=html;
+}
+
+let _retentionExpanded=false;
+function toggleRetentionList(){
+  _retentionExpanded=!_retentionExpanded;
+  document.querySelectorAll('.pt10-retention-hidden').forEach(el=>{el.style.display=_retentionExpanded?'':'none'});
+  const tog=document.getElementById('pt10RetentionToggle');
+  if(tog)tog.textContent=_retentionExpanded?'접기':'+ 더보기';
 }
 
 function renderProfitMargin(){
