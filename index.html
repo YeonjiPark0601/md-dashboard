@@ -2941,16 +2941,26 @@ function toggleRetentionList(){
   if(tog)tog.textContent=_retentionExpanded?'접기':'+ 더보기';
 }
 function filterRetention(type){
-  _retentionFilter=type;_retentionExpanded=true;
+  _retentionFilter=type;
   document.querySelectorAll('.retention-filter').forEach(el=>{
     const isActive=el.dataset.filter===type;
     if(isActive){el.style.background=type==='all'?'#333':el.style.borderColor||'#333';el.style.color='#fff'}
     else{el.style.color=el.dataset.filter==='all'?'#333':'';el.style.background=el.dataset.filter==='all'?'#f0f0f0':''}
   });
+  let visibleCount=0;
   document.querySelectorAll('.pt10-retention-row').forEach(el=>{
-    el.style.display=(type==='all'||el.dataset.type===type)?'':'none';
+    const match=type==='all'||el.dataset.type===type;
+    if(match){visibleCount++;el.style.display=''}else{el.style.display='none'}
   });
-  const tog=document.getElementById('pt10RetentionToggle');if(tog)tog.style.display='none';
+  // 필터 적용 시 더보기 토글 숨김 (전체 표시), 전체로 돌아오면 더보기 복원
+  const tog=document.getElementById('pt10RetentionToggle');
+  if(tog){
+    if(type==='all'&&!_retentionExpanded){
+      document.querySelectorAll('.pt10-retention-hidden').forEach(el=>{el.style.display='none'});
+      tog.style.display='';tog.textContent='+ 더보기';
+    }else if(type!=='all'){tog.style.display='none'}
+    else{tog.style.display='';tog.textContent='접기'}
+  }
 }
 
 function renderProfitMargin(){
