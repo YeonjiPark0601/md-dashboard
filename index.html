@@ -2460,12 +2460,23 @@ const DIO_PRODUCTS=[
 
 async function renderPT10DIO(){
   try{
+    const dioSheetUrl=n=>`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(n)}&headers=1&_t=${Date.now()}`;
     const [invR,salesR]=await Promise.all([
-      fetch(`https://redash.datastream.co.kr/api/queries/3951/results.json?api_key=${DIO_API_KEY}`),
-      fetch(`https://redash.datastream.co.kr/api/queries/3952/results.json?api_key=${DIO_API_KEY}`)
+      fetch(dioSheetUrl('DIO재고')),
+      fetch(dioSheetUrl('DIO판매'))
     ]);
-    const invData=(await invR.json()).query_result.data.rows;
-    const salesData=(await salesR.json()).query_result.data.rows;
+    const invCsv=await invR.text();
+    const salesCsv=await salesR.text();
+    function parseCsvRows(csv){
+      const lines=csv.trim().split('\n');if(lines.length<2)return[];
+      const hdr=lines[0].split(',').map(h=>h.replace(/^"|"$/g,'').trim());
+      return lines.slice(1).map(line=>{
+        const vals=line.match(/(".*?"|[^,]*)/g)||[];
+        const obj={};hdr.forEach((h,i)=>{let v=(vals[i]||'').replace(/^"|"$/g,'').trim();obj[h]=isNaN(v)||v===''?v:Number(v);});return obj;
+      });
+    }
+    const invData=parseCsvRows(invCsv);
+    const salesData=parseCsvRows(salesCsv);
 
     const invMap={};invData.forEach(r=>{invMap[r.item_id]=r.current_quantity||0});
     // 판매 데이터: item_id별 월별 수량 + 최신 이름
