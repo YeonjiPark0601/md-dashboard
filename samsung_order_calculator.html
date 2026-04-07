@@ -8,22 +8,29 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     min-height: 100vh;
-    background: #0f172a;
-    font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
-    color: #e2e8f0;
-    padding: 32px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    background: #f0f2f5;
+    font-family: 'Segoe UI', -apple-system, sans-serif;
+    color: #333;
   }
-  .container { width: 100%; max-width: 920px; }
+  .page-header {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    color: #fff; padding: 16px 30px; display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .page-header-left { display: flex; align-items: center; gap: 12px; }
+  .home-btn {
+    color: #fff; text-decoration: none; font-size: 18px; padding: 4px 8px;
+    border-radius: 6px; background: rgba(255,255,255,.1); display: flex; align-items: center;
+  }
+  .home-btn:hover { background: rgba(255,255,255,.2); }
+  .page-header h1 { font-size: 20px; font-weight: 600; color: #fff; }
+  .page-header .subtitle { font-size: 12px; color: #8899aa; margin: 0; }
+  .container { width: 100%; max-width: 960px; margin: 0 auto; padding: 20px 30px; }
 
-  h1 { font-size: 22px; font-weight: 700; color: #38bdf8; margin-bottom: 4px; }
-  .subtitle { font-size: 13px; color: #64748b; margin-bottom: 24px; }
   .month-badge {
     display: inline-block;
-    background: #38bdf8;
-    color: #0f172a;
+    background: #1a73e8;
+    color: #fff;
     font-weight: 700;
     font-size: 13px;
     padding: 3px 10px;
@@ -36,77 +43,78 @@
   .cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-    gap: 10px;
+    gap: 12px;
     margin-bottom: 20px;
   }
   .card {
-    background: #1e293b;
-    border-radius: 10px;
-    padding: 14px 16px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px 18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
   }
-  .card .label { font-size: 11px; color: #64748b; margin-bottom: 2px; }
-  .card .val { font-size: 20px; font-weight: 700; }
-  .card .val.blue { color: #38bdf8; }
-  .card .val.green { color: #4ade80; }
-  .card .val.orange { color: #fb923c; }
-  .card .val.red { color: #f87171; }
-  .card .sub { font-size: 11px; color: #64748b; margin-top: 2px; }
+  .card .label { font-size: 12px; color: #888; margin-bottom: 4px; font-weight: 600; }
+  .card .val { font-size: 20px; font-weight: 700; color: #1a1a2e; }
+  .card .val.blue { color: #1a73e8; }
+  .card .val.green { color: #0d9488; }
+  .card .val.orange { color: #e65100; }
+  .card .val.red { color: #c62828; }
+  .card .sub { font-size: 11px; color: #888; margin-top: 2px; }
 
   /* Table */
   .table-wrap {
-    background: #1e293b;
+    background: #fff;
     border-radius: 12px;
     overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
   }
-  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
   thead th {
-    background: #334155;
-    color: #94a3b8;
+    background: #f7f8fa;
+    color: #555;
     font-weight: 600;
     padding: 10px 12px;
     text-align: center;
     font-size: 12px;
   }
   thead th:first-child { text-align: left; }
-  /* Two-row header */
-  .th-group { border-bottom: 2px solid #475569; }
-  .th-product { color: #38bdf8; }
-  .th-demo { color: #a78bfa; }
-  .col-sep { border-left: 2px solid #334155; }
+  .th-group { border-bottom: 2px solid #e0e0e0; }
+  .th-product { color: #1a73e8; }
+  .th-demo { color: #7c3aed; }
+  .col-sep { border-left: 2px solid #e8e8e8; }
 
   tbody td {
-    padding: 10px 12px;
+    padding: 8px 12px;
     text-align: center;
-    border-bottom: 1px solid #0f172a;
+    border-bottom: 1px solid #f0f0f0;
   }
-  tbody tr { background: #1e293b; transition: background 0.1s; }
-  tbody tr:hover { background: #263348; }
+  tbody tr { background: #fff; transition: background 0.1s; }
+  tbody tr:hover { background: #f7f9fc; }
   tbody td:first-child {
     text-align: left;
     font-weight: 700;
-    color: #e2e8f0;
-    font-size: 15px;
+    color: #1a1a2e;
+    font-size: 14px;
   }
-  .price-cell { color: #64748b; font-size: 12px; }
-  .stock-cell { color: #facc15; font-size: 15px; font-weight: 600; }
-  .amount-cell { font-size: 13px; color: #94a3b8; }
-  .amount-cell.has-value { color: #cbd5e1; }
+  .price-cell { color: #888; font-size: 12px; }
+  .stock-cell { color: #b45309; font-size: 14px; font-weight: 600; }
+  .amount-cell { font-size: 13px; color: #999; }
+  .amount-cell.has-value { color: #555; }
 
   /* Sum row */
   .row-sum td {
-    background: #162032 !important;
+    background: #f7f8fa !important;
     font-weight: 700;
-    color: #cbd5e1;
-    border-top: 2px solid #334155;
-    font-size: 14px;
+    color: #333;
+    border-top: 2px solid #e0e0e0;
+    font-size: 13px;
   }
 
   input[type="number"] {
     width: 56px;
-    background: #0f172a;
-    border: 1px solid #334155;
+    background: #fff;
+    border: 1px solid #d0d0d0;
     border-radius: 8px;
-    color: #e2e8f0;
+    color: #333;
     padding: 8px 6px;
     text-align: center;
     font-size: 15px;
@@ -116,37 +124,37 @@
   }
   input[type="number"]::-webkit-outer-spin-button,
   input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
-  input[type="number"]:focus { outline: none; border-color: #38bdf8; background: #1a2744; box-shadow: 0 0 0 3px rgba(56,189,248,0.15); }
-  input.demo-input:focus { border-color: #a78bfa; box-shadow: 0 0 0 3px rgba(167,139,250,0.15); }
+  input[type="number"]:focus { outline: none; border-color: #1a73e8; background: #f0f7ff; box-shadow: 0 0 0 3px rgba(26,115,232,0.12); }
+  input.demo-input:focus { border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124,58,237,0.12); }
 
-  .total-row-label { color: #94a3b8 !important; font-size: 13px !important; }
+  .total-row-label { color: #888 !important; font-size: 13px !important; }
 
   /* Option section */
   .section-title {
     font-size: 14px;
     font-weight: 700;
-    color: #94a3b8;
+    color: #555;
     margin: 24px 0 10px;
     padding-left: 10px;
-    border-left: 3px solid #fb923c;
+    border-left: 3px solid #e65100;
   }
   input[type="text"] {
-    background: #0f172a;
-    border: 1px solid #334155;
+    background: #fff;
+    border: 1px solid #d0d0d0;
     border-radius: 8px;
-    color: #e2e8f0;
+    color: #333;
     padding: 8px 8px;
     font-size: 13px;
     font-family: inherit;
     width: 100%;
   }
-  input[type="text"]:focus { outline: none; border-color: #fb923c; background: #1a2744; box-shadow: 0 0 0 3px rgba(251,146,60,0.15); }
-  input[type="text"]::placeholder { color: #475569; }
+  input[type="text"]:focus { outline: none; border-color: #e65100; background: #fff8f0; box-shadow: 0 0 0 3px rgba(230,81,0,0.1); }
+  input[type="text"]::placeholder { color: #bbb; }
   .opt-select {
-    background: #0f172a;
-    border: 1px solid #334155;
+    background: #fff;
+    border: 1px solid #d0d0d0;
     border-radius: 8px;
-    color: #e2e8f0;
+    color: #333;
     padding: 8px 8px;
     font-size: 13px;
     font-family: inherit;
@@ -154,8 +162,7 @@
     cursor: pointer;
     appearance: auto;
   }
-  .opt-select:focus { outline: none; border-color: #fb923c; background: #1a2744; box-shadow: 0 0 0 3px rgba(251,146,60,0.15); }
-  .opt-select option { background: #1e293b; color: #e2e8f0; }
+  .opt-select:focus { outline: none; border-color: #e65100; background: #fff8f0; box-shadow: 0 0 0 3px rgba(230,81,0,0.1); }
   .opt-name { min-width: 100px; }
   .opt-cost { min-width: 100px; }
   .btn-add, .btn-del {
@@ -168,44 +175,43 @@
     transition: all 0.15s;
   }
   .btn-add {
-    background: #334155;
-    color: #94a3b8;
+    background: #e8e8e8;
+    color: #555;
     margin-top: 10px;
   }
-  .btn-add:hover { background: #475569; color: #e2e8f0; }
+  .btn-add:hover { background: #d0d0d0; color: #333; }
   .btn-del {
     background: transparent;
-    color: #64748b;
+    color: #999;
     padding: 4px 8px;
     font-size: 16px;
   }
-  .btn-del:hover { color: #f87171; }
-  .th-option { color: #fb923c; }
-  .th-lastyear { color: #64748b; }
-  .lastyear-cell { font-size: 12px; color: #64748b; }
+  .btn-del:hover { color: #c62828; }
+  .th-option { color: #e65100; }
+  .th-lastyear { color: #888; }
+  .lastyear-cell { font-size: 12px; color: #888; }
 
   /* Recommend button */
   .btn-recommend {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    background: #1a73e8;
     color: #fff;
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
     padding: 10px 20px;
     font-size: 14px;
     font-weight: 700;
     cursor: pointer;
     font-family: inherit;
     transition: all 0.15s;
-    margin-bottom: 20px;
   }
-  .btn-recommend:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(99,102,241,0.4); }
+  .btn-recommend:hover { background: #1557b0; box-shadow: 0 4px 12px rgba(26,115,232,0.3); }
 
   /* Modal */
   .modal-overlay {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0,0,0,0.4);
     z-index: 100;
     align-items: center;
     justify-content: center;
@@ -213,28 +219,28 @@
   }
   .modal-overlay.open { display: flex; }
   .modal {
-    background: #1e293b;
+    background: #fff;
     border-radius: 16px;
     padding: 28px;
     max-width: 720px;
     width: 100%;
     max-height: 85vh;
     overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
   }
-  .modal h2 { font-size: 18px; color: #a78bfa; margin-bottom: 4px; }
-  .modal .modal-sub { font-size: 12px; color: #64748b; margin-bottom: 16px; }
+  .modal h2 { font-size: 18px; color: #1a1a2e; margin-bottom: 4px; }
+  .modal .modal-sub { font-size: 12px; color: #888; margin-bottom: 16px; }
   .modal table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 16px; }
-  .modal thead th { background: #334155; color: #94a3b8; font-weight: 600; padding: 8px 10px; text-align: center; font-size: 12px; }
+  .modal thead th { background: #f7f8fa; color: #555; font-weight: 600; padding: 8px 10px; text-align: center; font-size: 12px; }
   .modal thead th:first-child { text-align: left; }
-  .modal tbody td { padding: 8px 10px; text-align: center; border-bottom: 1px solid #0f172a; }
+  .modal tbody td { padding: 8px 10px; text-align: center; border-bottom: 1px solid #f0f0f0; }
   .modal tbody td:first-child { text-align: left; font-weight: 600; }
-  .modal .row-sum td { background: #162032; font-weight: 700; border-top: 2px solid #475569; }
-  .modal .section-label { font-size: 13px; font-weight: 700; color: #94a3b8; margin: 12px 0 6px; padding-left: 8px; border-left: 3px solid #8b5cf6; }
-  .modal .insight { font-size: 12px; color: #94a3b8; line-height: 1.6; margin-bottom: 12px; padding: 10px; background: #0f172a; border-radius: 8px; }
-  .modal .insight strong { color: #e2e8f0; }
+  .modal .row-sum td { background: #f7f8fa; font-weight: 700; border-top: 2px solid #e0e0e0; }
+  .modal .section-label { font-size: 13px; font-weight: 700; color: #555; margin: 12px 0 6px; padding-left: 8px; border-left: 3px solid #1a73e8; }
+  .modal .insight { font-size: 12px; color: #666; line-height: 1.6; margin-bottom: 12px; padding: 10px; background: #f7f8fa; border-radius: 8px; }
+  .modal .insight strong { color: #333; }
   .btn-apply {
-    background: #6366f1;
+    background: #1a73e8;
     color: #fff;
     border: none;
     border-radius: 8px;
@@ -245,10 +251,10 @@
     font-family: inherit;
     margin-right: 8px;
   }
-  .btn-apply:hover { background: #818cf8; }
+  .btn-apply:hover { background: #1557b0; }
   .btn-close-modal {
-    background: #334155;
-    color: #94a3b8;
+    background: #e8e8e8;
+    color: #555;
     border: none;
     border-radius: 8px;
     padding: 10px 24px;
@@ -257,28 +263,34 @@
     cursor: pointer;
     font-family: inherit;
   }
-  .btn-close-modal:hover { background: #475569; color: #e2e8f0; }
+  .btn-close-modal:hover { background: #d0d0d0; color: #333; }
 
   @media (max-width: 600px) {
-    body { padding: 16px; }
-    h1 { font-size: 18px; }
+    .container { padding: 12px 16px; }
+    .page-header { padding: 12px 16px; }
+    .page-header h1 { font-size: 18px; }
     .cards { grid-template-columns: 1fr 1fr; }
     input[type="number"] { width: 46px; padding: 6px 4px; font-size: 14px; }
-    table { font-size: 13px; }
+    table { font-size: 12px; }
   }
 </style>
 </head>
 <body>
 
-<div class="container">
-  <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:4px;">
+<div class="page-header">
+  <div class="page-header-left">
+    <a class="home-btn" href="home.html" title="홈으로">&#8962;</a>
     <div>
-      <h1 style="margin-bottom:4px"><a href="home.html" style="color:#fff;text-decoration:none;font-size:18px;padding:4px 8px;border-radius:6px;background:rgba(255,255,255,.15);margin-right:8px;" title="홈으로">&#8962;</a>삼성메디슨 발주 계산기 <span class="month-badge" id="monthBadge">3월</span></h1>
-      <p class="subtitle" style="margin-bottom:0">월 목표: 433,333,333원 (VAT 별도) | 연간 목표: 52억</p>
+      <h1>삼성메디슨 발주 계산기 <span class="month-badge" id="monthBadge">3월</span></h1>
+      <p class="subtitle">월 목표: 433,333,333원 (VAT 별도) | 연간 목표: 52억</p>
     </div>
-    <button class="btn-recommend" onclick="showRecommend()">추천 발주 보기</button>
-    <button class="btn-recommend" style="background:linear-gradient(135deg,#475569,#64748b);margin-left:8px" onclick="resetAll()">초기화</button>
   </div>
+  <div style="display:flex;gap:8px;">
+    <button class="btn-recommend" onclick="showRecommend()">추천 발주 보기</button>
+    <button class="btn-recommend" style="background:#555" onclick="resetAll()">초기화</button>
+  </div>
+</div>
+<div class="container">
 
   <div class="cards">
     <div class="card">
@@ -287,11 +299,11 @@
     </div>
     <div class="card">
       <div class="label">견본 발주 (VAT별도)</div>
-      <div class="val" id="cardDemo" style="color:#a78bfa">0</div>
+      <div class="val" id="cardDemo" style="color:#7c3aed">0</div>
     </div>
     <div class="card">
       <div class="label">옵션 발주 (VAT별도)</div>
-      <div class="val" id="cardOption" style="color:#fb923c">0</div>
+      <div class="val" id="cardOption" style="color:#e65100">0</div>
     </div>
     <div class="card">
       <div class="label">총 발주 (VAT별도)</div>
@@ -324,13 +336,13 @@
           <th colspan="2" class="col-sep th-lastyear">작년 동월</th>
         </tr>
         <tr>
-          <th class="th-product col-sep" style="color:#facc15;font-size:11px">신품재고</th>
-          <th class="th-product" style="color:#fb923c;font-size:11px">출고예정</th>
-          <th class="th-product" style="color:#4ade80;font-size:11px;font-weight:700">현재</th>
+          <th class="th-product col-sep" style="color:#b45309;font-size:11px">신품재고</th>
+          <th class="th-product" style="color:#e65100;font-size:11px">출고예정</th>
+          <th class="th-product" style="color:#0d9488;font-size:11px;font-weight:700">현재</th>
           <th class="th-product">발주</th>
-          <th class="th-product" style="color:#38bdf8;font-size:11px">발주후</th>
+          <th class="th-product" style="color:#1a73e8;font-size:11px">발주후</th>
           <th class="th-product">금액</th>
-          <th class="th-demo col-sep" style="color:#facc15">재고</th>
+          <th class="th-demo col-sep" style="color:#b45309">재고</th>
           <th class="th-demo">수량</th>
           <th class="th-demo">금액</th>
           <th class="th-lastyear col-sep">수량</th>
@@ -370,24 +382,24 @@
     </div>
     <div class="card">
       <div class="label">상품 수량</div>
-      <div class="val" style="color:#38bdf8" id="cardProductQty">0</div>
+      <div class="val" style="color:#1a73e8" id="cardProductQty">0</div>
     </div>
     <div class="card">
       <div class="label">견본 수량</div>
-      <div class="val" style="color:#a78bfa" id="cardDemoQty">0</div>
+      <div class="val" style="color:#7c3aed" id="cardDemoQty">0</div>
     </div>
   </div>
   <div class="cards" style="grid-template-columns: 1fr 1fr; margin-bottom: 0;">
-    <div class="card" style="border:1px solid #334155">
+    <div class="card" style="border:1px solid #e0e0e0">
       <div class="label">견본 연간 한도 (26년)</div>
       <div style="display:flex; align-items:baseline; gap:8px">
-        <div class="val" style="color:#a78bfa" id="cardDemoLimit">0 / 39</div>
+        <div class="val" style="color:#7c3aed" id="cardDemoLimit">0 / 39</div>
       </div>
       <div class="sub" id="cardDemoLimitSub"></div>
     </div>
-    <div class="card" style="border:1px solid #334155">
+    <div class="card" style="border:1px solid #e0e0e0">
       <div class="label">이번달 발주 후 잔여</div>
-      <div class="val" id="cardDemoRemain" style="color:#4ade80">0</div>
+      <div class="val" id="cardDemoRemain" style="color:#0d9488">0</div>
       <div class="sub" id="cardDemoRemainSub"></div>
     </div>
   </div>
@@ -749,7 +761,7 @@ function renderOptions() {
     sumTr.innerHTML = `
       <td class="total-row-label" colspan="3">옵션 합계</td>
       <td>${options.reduce((s, o) => s + o.qty, 0)}</td>
-      <td style="color:#fb923c">${fmt(sumAmt)}</td>
+      <td style="color:#e65100">${fmt(sumAmt)}</td>
       <td></td>
     `;
     tbody.appendChild(sumTr);
@@ -789,11 +801,11 @@ function render() {
       <td>${p.name}</td>
       <td class="price-cell">${fmt(p.cost)}</td>
       <td class="col-sep stock-cell">${ps || '-'}</td>
-      <td style="color:#fb923c;font-weight:600;font-size:15px">${psOut || '-'}</td>
-      <td style="color:#4ade80;font-weight:700;font-size:15px">${psAvail || '-'}</td>
+      <td style="color:#e65100;font-weight:600;font-size:15px">${psOut || '-'}</td>
+      <td style="color:#0d9488;font-weight:700;font-size:15px">${psAvail || '-'}</td>
       <td><input type="number" min="0" max="99" value="${pq}"
         onchange="setQty('product',${i},this.value)" onfocus="this.select()"></td>
-      <td style="color:#38bdf8;font-weight:700;font-size:15px">${psAvail + pq}</td>
+      <td style="color:#1a73e8;font-weight:700;font-size:15px">${psAvail + pq}</td>
       <td class="amount-cell ${pAmt ? 'has-value' : ''}">${pAmt ? fmt(pAmt) : '-'}</td>
       <td class="col-sep stock-cell">${ds || '-'}</td>
       <td><input type="number" min="0" max="99" value="${dq}" class="demo-input"
@@ -819,16 +831,16 @@ function render() {
   sumTr.innerHTML = `
     <td class="total-row-label">기기 합계</td>
     <td></td>
-    <td class="col-sep" style="color:#facc15">${sumPStock}</td>
-    <td style="color:#fb923c">${sumPStockOut}</td>
-    <td style="color:#4ade80;font-weight:700">${sumPStockAvail}</td>
-    <td style="color:#38bdf8">${sumProductQty}</td>
-    <td style="color:#38bdf8;font-weight:700">${sumPStockAvail + sumProductQty}</td>
-    <td style="color:#38bdf8">${fmt(sumProductAmt)}</td>
-    <td class="col-sep" style="color:#facc15">${sumDStock}</td>
-    <td style="color:#a78bfa">${sumDemoQty}</td>
-    <td style="color:#a78bfa">${fmt(sumDemoAmt)}</td>
-    <td class="col-sep" style="color:#4ade80">${fmt(sumTotal)}</td>
+    <td class="col-sep" style="color:#b45309">${sumPStock}</td>
+    <td style="color:#e65100">${sumPStockOut}</td>
+    <td style="color:#0d9488;font-weight:700">${sumPStockAvail}</td>
+    <td style="color:#1a73e8">${sumProductQty}</td>
+    <td style="color:#1a73e8;font-weight:700">${sumPStockAvail + sumProductQty}</td>
+    <td style="color:#1a73e8">${fmt(sumProductAmt)}</td>
+    <td class="col-sep" style="color:#b45309">${sumDStock}</td>
+    <td style="color:#7c3aed">${sumDemoQty}</td>
+    <td style="color:#7c3aed">${fmt(sumDemoAmt)}</td>
+    <td class="col-sep" style="color:#0d9488">${fmt(sumTotal)}</td>
     <td class="col-sep lastyear-cell" style="font-weight:700">${sumLastYearQty}</td>
     <td class="lastyear-cell" style="font-weight:700">${fmt(sumLastYearAmt)}</td>
   `;
@@ -1018,7 +1030,7 @@ fetch(SHEET_CSV_URL + '&_t=' + Date.now(), { redirect: 'follow' })
         document.querySelector('.subtitle').textContent =
           '월 목표: ' + MONTHLY_TARGET.toLocaleString('ko-KR') + '원 (VAT 별도) | 연간 목표: ' +
           (MONTHLY_TARGET * 12 / 100000000).toFixed(0) + '억';
-        document.querySelector('.subtitle').style.color = '#94a3b8';
+        document.querySelector('.subtitle').style.color = '#8899aa';
         render();
       }
     }
@@ -1284,7 +1296,7 @@ function showRecommend() {
     <strong>⚠ 분기 최소 기준선</strong><br>
     작년 ${qIdx + 1}Q 합계: <strong>${fmt(lastYearQTotal)}</strong><br>
     올해 기 발주: ${fmt(qPastTotal)}<br>
-    <strong style="color:#fb923c">→ 이번달 최소 ${fmt(minThisMonth)} 이상 발주 필요</strong>
+    <strong style="color:#e65100">→ 이번달 최소 ${fmt(minThisMonth)} 이상 발주 필요</strong>
   </div>`;
 
   // 추이 분석 인사이트
@@ -1321,8 +1333,8 @@ function showRecommend() {
 
   if (stockHigh.length || stockLow.length) {
     html += `<div class="insight">
-      ${stockLow.length ? '<strong style="color:#f87171">재고 부족:</strong> ' + stockLow.join(', ') + ' (1대 이하 → 발주 증량 권고)<br>' : ''}
-      ${stockHigh.length ? '<strong style="color:#fbbf24">재고 과다:</strong> ' + stockHigh.join(', ') + ' (3대 이상 → 발주 감량 반영)' : ''}
+      ${stockLow.length ? '<strong style="color:#dc2626">재고 부족:</strong> ' + stockLow.join(', ') + ' (1대 이하 → 발주 증량 권고)<br>' : ''}
+      ${stockHigh.length ? '<strong style="color:#b45309">재고 과다:</strong> ' + stockHigh.join(', ') + ' (3대 이상 → 발주 감량 반영)' : ''}
     </div>`;
   }
 
@@ -1344,16 +1356,16 @@ function showRecommend() {
       const tColor = p.trend === 'up' ? '#4ade80' : p.trend === 'down' ? '#f87171' : '#94a3b8';
       html += `<tr>
         <td>${p.name}</td>
-        <td style="color:#facc15">${p.stock}대</td>
+        <td style="color:#b45309">${p.stock}대</td>
         <td>${p.expectedSales ? p.expectedSales.toFixed(1) : '-'}</td>
         <td style="color:${tColor}">${tIcon}</td>
-        <td style="color:#38bdf8">${p.qty || '-'}</td>
-        <td style="color:#a78bfa">${d.qty || '-'}</td>
+        <td style="color:#1a73e8">${p.qty || '-'}</td>
+        <td style="color:#7c3aed">${d.qty || '-'}</td>
         <td>${fmt(equipAmt)}</td>
       </tr>`;
     });
     html += `<tr class="row-sum">
-      <td>기기 소계</td><td></td><td></td><td></td><td style="color:#38bdf8">${sumP}</td><td style="color:#a78bfa">${sumD}</td>
+      <td>기기 소계</td><td></td><td></td><td></td><td style="color:#1a73e8">${sumP}</td><td style="color:#7c3aed">${sumD}</td>
       <td>${fmt(sumEquipAmt)}</td>
     </tr></tbody></table>`;
 
@@ -1363,13 +1375,13 @@ function showRecommend() {
       s.recOptions.forEach(o => {
         html += `<tr><td>${o.model}</td><td>${o.name}</td><td>${o.qty}</td><td>${fmt(o.cost * o.qty)}</td></tr>`;
       });
-      html += `<tr class="row-sum"><td colspan="3">옵션 소계</td><td style="color:#fb923c">${fmt(s.totalOptAmt)}</td></tr>`;
+      html += `<tr class="row-sum"><td colspan="3">옵션 소계</td><td style="color:#e65100">${fmt(s.totalOptAmt)}</td></tr>`;
       html += `</tbody></table>`;
     }
 
     // 작년 대비 표시 추가
     const lyColor = s.lyRate >= 100 ? '#4ade80' : '#f87171';
-    const boostNote = s.boostInfo ? `<br><span style="color:#fbbf24">📌 작년 보장 증량: ${s.boostInfo.join(', ')}</span>` : '';
+    const boostNote = s.boostInfo ? `<br><span style="color:#b45309">📌 작년 보장 증량: ${s.boostInfo.join(', ')}</span>` : '';
 
     html += `<div class="insight" style="margin-top:4px">
       <strong>총 발주:</strong> ${fmt(s.totalAmt)}

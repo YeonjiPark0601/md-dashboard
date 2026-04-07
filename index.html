@@ -1280,7 +1280,7 @@ function renderTrendChart(data){
         plugins:{legend:{position:'top',labels:{font:{size:11}}},datalabels:{display:false},
           tooltip:{callbacks:{
             label:ctx=>{const v=ctx.raw;return ctx.dataset.label+': '+fmt(Math.round(v))},
-            afterBody:items=>{if(!items.length)return'';const mi=items[0].dataIndex+1;
+            afterBody:items=>{if(!items||!items.length)return'';const mi=items[0].dataIndex+1;
               const s26=yearSales['2026'][mi]||0;const s25=yearSales['2025'][mi]||0;
               const lines=['─── 당월 매출 ───'];
               lines.push("26년 당월: "+fmt(Math.round(s26)));
