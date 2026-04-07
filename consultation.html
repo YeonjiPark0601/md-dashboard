@@ -7,704 +7,426 @@
 <style>
 /* ===== RESET & BASE ===== */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #f0f2f5; color: #333; min-height: 100vh;
-  font-size: 14px;
-}
+body { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; background: #f0f2f5; color: #333; }
 
-/* ===== HEADER ===== */
-.header {
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
-  color: #fff; padding: 28px 40px 24px;
-  display: flex; align-items: center; gap: 20px;
-}
-.header-back {
-  color: #8899aa; text-decoration: none; font-size: 13px;
-  display: flex; align-items: center; gap: 6px;
-  padding: 6px 12px; border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.15);
-  transition: all 0.2s; white-space: nowrap;
-}
-.header-back:hover { background: rgba(255,255,255,0.1); color: #fff; }
-.header-title { flex: 1; }
-.header-title h1 { font-size: 22px; font-weight: 700; }
-.header-title p { font-size: 13px; color: #8899aa; margin-top: 4px; }
-.header-actions { display: flex; gap: 10px; align-items: center; }
+/* ===== STICKY TOP ===== */
+.sticky-top { position: sticky; top: 0; z-index: 100; }
+.header { background: linear-gradient(135deg, #1a1a2e, #16213e); color: #fff; padding: 16px 30px; display: flex; justify-content: space-between; align-items: center; }
+.header h1 { font-size: 20px; font-weight: 600; }
+.tabs { background: #fff; display: flex; border-bottom: 2px solid #e0e0e0; padding: 0 30px; }
+.tab { padding: 12px 24px; font-size: 14px; font-weight: 600; color: #888; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+.tab:hover { color: #555; }
+.tab.active { color: #1a73e8; border-bottom-color: #1a73e8; }
+.filters { background: #fff; padding: 12px 30px; border-bottom: 1px solid #e0e0e0; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
+.filter-group { display: flex; align-items: center; gap: 6px; }
+.filter-group label { font-size: 13px; font-weight: 600; color: #555; }
+.filter-group select, .filter-group input { padding: 5px 10px; border: 1px solid #d0d0d0; border-radius: 6px; font-size: 13px; background: #fff; }
+.count-badge { margin-left: auto; padding: 5px 14px; background: #e8f0fe; border-radius: 16px; font-size: 12px; font-weight: 600; color: #1967d2; white-space: nowrap; }
 
-/* ===== MAIN CONTAINER ===== */
-.container {
-  max-width: 1500px; margin: 0 auto; padding: 28px 32px 60px;
-}
+/* ===== CONTAINER ===== */
+.container { max-width: 1400px; margin: 0 auto; padding: 20px; }
 
-/* ===== TABS ===== */
-.tab-bar {
-  display: flex; gap: 0; margin-bottom: 24px;
-  background: #fff; border-radius: 10px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  padding: 6px; width: fit-content;
-}
-.tab-btn {
-  padding: 10px 24px; border: none; background: transparent;
-  border-radius: 7px; cursor: pointer; font-size: 14px; font-weight: 600;
-  color: #888; transition: all 0.2s;
-}
-.tab-btn.active {
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
-  color: #fff;
-}
-.tab-btn:hover:not(.active) { background: #f0f2f5; color: #555; }
-.tab-panel { display: none; }
-.tab-panel.active { display: block; }
+/* ===== KPI CARDS ===== */
+.kpi-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
+.kpi-row-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-bottom: 20px; }
+.kpi-card { background: #fff; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.kpi-card .label { font-size: 12px; color: #888; margin-bottom: 6px; font-weight: 600; }
+.kpi-card .value { font-size: 26px; font-weight: 700; color: #1a1a2e; }
+.kpi-card .sub-row { display: flex; justify-content: space-between; font-size: 12px; color: #888; margin-top: 6px; }
 
-/* ===== CARDS ===== */
-.card {
-  background: #fff; border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  margin-bottom: 20px;
-}
-.card-header {
-  padding: 18px 24px; border-bottom: 1px solid #f0f2f5;
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 12px;
-}
-.card-header h2 {
-  font-size: 15px; font-weight: 700; color: #1a1a2e;
-  display: flex; align-items: center; gap: 8px;
-}
-.card-body { padding: 24px; }
+/* ===== CHART CARDS ===== */
+.chart-row { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 20px; }
+.chart-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.chart-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.chart-card h3 { font-size: 14px; font-weight: 600; color: #555; margin-bottom: 12px; }
 
-/* ===== FORM TOGGLE ===== */
-.form-toggle-btn {
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 16px; border: 1px solid #1a1a2e; border-radius: 8px;
-  background: transparent; cursor: pointer; font-size: 13px; font-weight: 600;
-  color: #1a1a2e; transition: all 0.2s;
-}
-.form-toggle-btn:hover { background: #1a1a2e; color: #fff; }
-.form-toggle-btn .toggle-icon { transition: transform 0.2s; }
-.form-toggle-btn.open .toggle-icon { transform: rotate(180deg); }
+/* ===== TABLE CARDS ===== */
+.table-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); overflow-x: auto; margin-bottom: 20px; }
+.table-card h3 { font-size: 14px; font-weight: 600; color: #555; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { background: #f7f8fa; padding: 10px 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; white-space: nowrap; }
+td { padding: 8px 12px; border-bottom: 1px solid #f0f0f0; white-space: nowrap; }
+tr:hover { background: #f7f9fc; }
+th.sortable { cursor: pointer; user-select: none; }
+th.sortable:hover { background: #eef0f4; }
+.text-right { text-align: right; }
 
-/* ===== FORM ===== */
-.form-section { display: none; }
+/* ===== COLOR CONVENTIONS ===== */
+.up { color: #0d9488; }
+.down { color: #e53e3e; }
+
+/* ===== STAGE BADGES ===== */
+.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.badge-bo0 { background: #f3f4f6; color: #4b5563; }
+.badge-bo1 { background: #fef3c7; color: #92400e; }
+.badge-bo2 { background: #ede9fe; color: #5b21b6; }
+.badge-win { background: #d1fae5; color: #065f46; }
+.badge-drop { background: #fee2e2; color: #991b1b; }
+
+/* ===== FORM CARD ===== */
+.form-card { background: #fff; border-radius: 12px; padding: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 20px; overflow: hidden; }
+.form-card-header { padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f0f0f0; }
+.form-card-header h3 { font-size: 14px; font-weight: 600; color: #555; }
+.form-toggle-btn { padding: 6px 14px; border: 1px solid #1a73e8; border-radius: 6px; background: transparent; cursor: pointer; font-size: 13px; font-weight: 600; color: #1a73e8; transition: all 0.2s; }
+.form-toggle-btn:hover { background: #1a73e8; color: #fff; }
+.form-section { display: none; padding: 20px; }
 .form-section.open { display: block; }
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px 20px;
-  margin-bottom: 20px;
-}
+.form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 16px; margin-bottom: 16px; }
 .form-grid .col-wide { grid-column: span 2; }
-.form-group { display: flex; flex-direction: column; gap: 6px; }
-.form-group label {
-  font-size: 12px; font-weight: 600; color: #666;
-  display: flex; align-items: center; gap: 4px;
-}
-.form-group label .required { color: #e53e3e; }
-.form-group input,
-.form-group select,
-.form-group textarea {
-  padding: 9px 12px; border: 1px solid #e2e8f0; border-radius: 8px;
-  font-size: 13px; font-family: inherit; color: #333;
-  background: #fafbfc; transition: border-color 0.2s, box-shadow 0.2s;
-  outline: none;
-}
-.form-group textarea { resize: vertical; min-height: 72px; }
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-  border-color: #1a73e8; box-shadow: 0 0 0 3px rgba(26,115,232,0.1);
-  background: #fff;
-}
-.form-group input.error,
-.form-group select.error { border-color: #e53e3e; }
-.checkbox-group {
-  display: flex; align-items: center; gap: 8px;
-  padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px;
-  background: #fafbfc; cursor: pointer;
-}
-.checkbox-group input[type="checkbox"] {
-  width: 16px; height: 16px; cursor: pointer;
-  padding: 0; border: none; background: transparent;
-  box-shadow: none;
-}
-.checkbox-group span { font-size: 13px; color: #555; }
-.form-actions {
-  display: flex; gap: 10px; justify-content: flex-end;
-  padding-top: 16px; border-top: 1px solid #f0f2f5;
-}
-.btn {
-  padding: 10px 24px; border-radius: 8px; border: none;
-  cursor: pointer; font-size: 13px; font-weight: 600;
-  transition: all 0.2s;
-}
-.btn-primary {
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
-  color: #fff;
-}
-.btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
-.btn-secondary {
-  background: #f0f2f5; color: #555; border: 1px solid #e2e8f0;
-}
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group label { font-size: 12px; font-weight: 600; color: #666; }
+.form-group label .req { color: #e53e3e; }
+.form-group input, .form-group select, .form-group textarea { padding: 7px 10px; border: 1px solid #d0d0d0; border-radius: 6px; font-size: 13px; background: #fff; font-family: inherit; outline: none; }
+.form-group textarea { resize: vertical; min-height: 60px; }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #1a73e8; box-shadow: 0 0 0 2px rgba(26,115,232,0.12); }
+.form-group input.error { border-color: #e53e3e; }
+.checkbox-wrap { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid #d0d0d0; border-radius: 6px; background: #fff; }
+.checkbox-wrap input[type="checkbox"] { width: 16px; height: 16px; }
+.checkbox-wrap span { font-size: 13px; color: #555; }
+.form-actions { display: flex; gap: 10px; justify-content: flex-end; padding-top: 14px; border-top: 1px solid #f0f0f0; }
+.btn { padding: 8px 20px; border-radius: 6px; border: none; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.2s; }
+.btn-primary { background: linear-gradient(135deg, #1a1a2e, #16213e); color: #fff; }
+.btn-primary:hover { opacity: 0.9; }
+.btn-secondary { background: #f0f2f5; color: #555; border: 1px solid #d0d0d0; }
 .btn-secondary:hover { background: #e2e8f0; }
-.btn-sm {
-  padding: 5px 12px; font-size: 12px; border-radius: 6px;
-}
+.btn-sm { padding: 4px 10px; font-size: 12px; border-radius: 5px; }
 .btn-edit { background: #e8f0fe; color: #1a73e8; border: none; cursor: pointer; }
 .btn-edit:hover { background: #c5d8fc; }
 .btn-delete { background: #fef2f2; color: #e53e3e; border: none; cursor: pointer; }
 .btn-delete:hover { background: #fecaca; }
 
-/* ===== SEARCH / FILTER BAR ===== */
-.filter-bar {
-  display: flex; gap: 12px; align-items: center;
-  flex-wrap: wrap; margin-bottom: 16px;
-}
-.search-wrap {
-  position: relative; flex: 1; min-width: 200px;
-}
-.search-wrap input {
-  width: 100%; padding: 9px 36px 9px 12px;
-  border: 1px solid #e2e8f0; border-radius: 8px;
-  font-size: 13px; background: #fafbfc; outline: none;
-  transition: border-color 0.2s;
-}
-.search-wrap input:focus { border-color: #1a73e8; background: #fff; }
-.search-wrap .search-icon {
-  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
-  color: #aaa; font-size: 14px; pointer-events: none;
-}
-.filter-select {
-  padding: 9px 12px; border: 1px solid #e2e8f0; border-radius: 8px;
-  font-size: 13px; background: #fafbfc; color: #333;
-  outline: none; cursor: pointer;
-}
-.filter-select:focus { border-color: #1a73e8; }
-.count-badge {
-  padding: 6px 14px; background: #f0f2f5; border-radius: 20px;
-  font-size: 12px; font-weight: 600; color: #666; white-space: nowrap;
-}
-
-/* ===== TABLE ===== */
-.table-wrap { overflow-x: auto; }
-table {
-  width: 100%; border-collapse: collapse; font-size: 13px;
-  min-width: 1200px;
-}
-thead th {
-  padding: 10px 12px; text-align: left;
-  background: #f8fafc; border-bottom: 2px solid #e2e8f0;
-  font-size: 12px; font-weight: 700; color: #666;
-  white-space: nowrap; position: sticky; top: 0; z-index: 1;
-  cursor: pointer; user-select: none;
-}
-thead th:hover { background: #eef2f7; color: #1a1a2e; }
-thead th .sort-icon { margin-left: 4px; opacity: 0.4; }
-thead th.sort-asc .sort-icon, thead th.sort-desc .sort-icon { opacity: 1; }
-tbody tr { border-bottom: 1px solid #f0f2f5; }
-tbody tr:nth-child(even) { background: #fafbfc; }
-tbody tr:hover { background: #f0f4ff; }
-tbody td { padding: 10px 12px; vertical-align: middle; }
-.td-truncate {
-  max-width: 200px; white-space: nowrap; overflow: hidden;
-  text-overflow: ellipsis;
-}
-.td-actions { white-space: nowrap; display: flex; gap: 6px; }
-
-/* ===== STAGE BADGES ===== */
-.badge {
-  display: inline-block; padding: 3px 10px; border-radius: 20px;
-  font-size: 11px; font-weight: 700; white-space: nowrap;
-}
-.badge-done    { background: #d1fae5; color: #065f46; }
-.badge-pending { background: #fef3c7; color: #92400e; }
-.badge-drop    { background: #fee2e2; color: #991b1b; }
-.badge-follow  { background: #dbeafe; color: #1e40af; }
-.badge-demo    { background: #ede9fe; color: #5b21b6; }
-.badge-turnkey { background: #ffedd5; color: #9a3412; }
-.badge-etc     { background: #f3f4f6; color: #4b5563; }
+/* ===== TD HELPERS ===== */
+.td-truncate { max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.td-actions { white-space: nowrap; display: flex; gap: 5px; }
 
 /* ===== PAGINATION ===== */
-.pagination {
-  display: flex; justify-content: center; align-items: center;
-  gap: 6px; margin-top: 20px;
-}
-.page-btn {
-  width: 34px; height: 34px; border-radius: 8px; border: 1px solid #e2e8f0;
-  background: #fff; cursor: pointer; font-size: 13px; font-weight: 600;
-  color: #555; transition: all 0.15s;
-  display: flex; align-items: center; justify-content: center;
-}
+.pagination { display: flex; justify-content: center; align-items: center; gap: 4px; margin-top: 16px; }
+.page-btn { width: 32px; height: 32px; border-radius: 6px; border: 1px solid #d0d0d0; background: #fff; cursor: pointer; font-size: 13px; font-weight: 600; color: #555; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
 .page-btn:hover { background: #f0f2f5; }
-.page-btn.active {
-  background: #1a1a2e; color: #fff; border-color: #1a1a2e;
-}
-.page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-
-/* ===== DASHBOARD ===== */
-.stat-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 16px; margin-bottom: 24px;
-}
-.stat-card {
-  background: #fff; border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  padding: 20px 22px;
-}
-.stat-card .label { font-size: 12px; color: #888; font-weight: 600; margin-bottom: 8px; }
-.stat-card .value { font-size: 28px; font-weight: 800; color: #1a1a2e; }
-.stat-card .sub { font-size: 12px; color: #aaa; margin-top: 4px; }
-.stat-card.accent-green .value { color: #0d9488; }
-.stat-card.accent-blue .value { color: #1a73e8; }
-.stat-card.accent-amber .value { color: #d97706; }
-
-.chart-grid {
-  display: grid; grid-template-columns: repeat(2, 1fr);
-  gap: 20px; margin-bottom: 20px;
-}
-@media (max-width: 900px) { .chart-grid { grid-template-columns: 1fr; } }
-
-.chart-card {
-  background: #fff; border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  padding: 20px 24px;
-}
-.chart-card h3 {
-  font-size: 14px; font-weight: 700; color: #1a1a2e;
-  margin-bottom: 20px;
-}
-.chart-card.full { grid-column: span 2; }
-
-/* CSS Bar Charts */
-.bar-chart { display: flex; flex-direction: column; gap: 12px; }
-.bar-row {
-  display: grid; grid-template-columns: 120px 1fr 50px;
-  align-items: center; gap: 10px;
-}
-.bar-row.narrow { grid-template-columns: 90px 1fr 40px; }
-.bar-label { font-size: 12px; color: #555; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.bar-track { background: #f0f2f5; border-radius: 4px; height: 22px; position: relative; overflow: hidden; }
-.bar-fill {
-  height: 100%; border-radius: 4px;
-  transition: width 0.5s ease;
-  min-width: 2px;
-  display: flex; align-items: center; padding-left: 6px;
-}
-.bar-fill span { font-size: 11px; font-weight: 600; color: #fff; white-space: nowrap; }
-.bar-count { font-size: 12px; font-weight: 700; color: #555; text-align: right; }
-
-/* Bar colors */
-.bar-blue    { background: #3b82f6; }
-.bar-green   { background: #10b981; }
-.bar-amber   { background: #f59e0b; }
-.bar-red     { background: #ef4444; }
-.bar-purple  { background: #8b5cf6; }
-.bar-orange  { background: #f97316; }
-.bar-gray    { background: #9ca3af; }
-.bar-teal    { background: #14b8a6; }
-.bar-indigo  { background: #6366f1; }
-.bar-pink    { background: #ec4899; }
-
-/* Rep table */
-.rep-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.rep-table th {
-  padding: 9px 12px; background: #f8fafc;
-  border-bottom: 2px solid #e2e8f0;
-  font-size: 12px; font-weight: 700; color: #666;
-  text-align: center;
-}
-.rep-table th:first-child { text-align: left; }
-.rep-table td {
-  padding: 9px 12px; border-bottom: 1px solid #f0f2f5; text-align: center;
-}
-.rep-table td:first-child { text-align: left; font-weight: 600; }
-.rep-table tr:hover td { background: #f0f4ff; }
+.page-btn.active { background: #1a1a2e; color: #fff; border-color: #1a1a2e; }
+.page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
 /* ===== TOAST ===== */
-.toast {
-  position: fixed; bottom: 28px; right: 28px;
-  background: #1a1a2e; color: #fff;
-  padding: 14px 22px; border-radius: 10px;
-  font-size: 13px; font-weight: 600;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-  z-index: 9999; opacity: 0; transform: translateY(12px);
-  transition: all 0.25s ease; pointer-events: none;
-}
+.toast { position: fixed; bottom: 24px; right: 24px; background: #1a1a2e; color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 16px rgba(0,0,0,0.2); z-index: 9999; opacity: 0; transform: translateY(10px); transition: all 0.25s; pointer-events: none; }
 .toast.show { opacity: 1; transform: translateY(0); }
 .toast.success { background: #065f46; }
 .toast.error { background: #991b1b; }
 
 /* ===== MODAL ===== */
-.modal-backdrop {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.4);
-  z-index: 9000; display: none; align-items: center; justify-content: center;
-}
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 9000; display: none; align-items: center; justify-content: center; }
 .modal-backdrop.open { display: flex; }
-.modal {
-  background: #fff; border-radius: 14px;
-  padding: 28px; max-width: 380px; width: 90%;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
-}
-.modal h3 { font-size: 16px; font-weight: 700; margin-bottom: 10px; }
-.modal p { font-size: 14px; color: #555; margin-bottom: 24px; line-height: 1.5; }
+.modal { background: #fff; border-radius: 12px; padding: 24px; max-width: 380px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.25); }
+.modal h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+.modal p { font-size: 14px; color: #555; margin-bottom: 20px; line-height: 1.5; }
 .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
 
 /* ===== EMPTY STATE ===== */
-.empty-state {
-  text-align: center; padding: 60px 20px; color: #bbb;
-}
-.empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+.empty-state { text-align: center; padding: 48px 20px; color: #bbb; }
 .empty-state p { font-size: 14px; }
 
+/* ===== BAR CHART (CSS) ===== */
+.bar-chart { display: flex; flex-direction: column; gap: 10px; }
+.bar-row { display: grid; grid-template-columns: 80px 1fr 50px; align-items: center; gap: 8px; }
+.bar-label { font-size: 12px; color: #555; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar-track { background: #f0f2f5; border-radius: 4px; height: 22px; position: relative; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 4px; transition: width 0.4s; min-width: 2px; display: flex; align-items: center; padding-left: 6px; }
+.bar-fill span { font-size: 11px; font-weight: 600; color: #fff; white-space: nowrap; }
+.bar-count { font-size: 12px; font-weight: 700; color: #555; text-align: right; }
+.bar-gray { background: #9ca3af; }
+.bar-amber { background: #f59e0b; }
+.bar-purple { background: #8b5cf6; }
+.bar-green { background: #10b981; }
+.bar-red { background: #ef4444; }
+.bar-blue { background: #3b82f6; }
+.bar-teal { background: #14b8a6; }
+.bar-indigo { background: #6366f1; }
+.bar-pink { background: #ec4899; }
+.bar-orange { background: #f97316; }
+
+/* ===== DASHBOARD MINI TABLE ===== */
+.mini-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.mini-table th { background: #f7f8fa; padding: 8px 10px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; }
+.mini-table td { padding: 8px 10px; border-bottom: 1px solid #f0f0f0; }
+.mini-table tr:hover { background: #f7f9fc; }
+
+/* ===== TAB PANELS ===== */
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
 /* ===== RESPONSIVE ===== */
-@media (max-width: 768px) {
-  .container { padding: 16px; }
-  .header { padding: 18px 20px; }
+@media (max-width: 1100px) {
+  .kpi-row-6 { grid-template-columns: repeat(3, 1fr); }
+  .chart-row-3 { grid-template-columns: 1fr; }
+}
+@media (max-width: 900px) {
+  .kpi-row { grid-template-columns: 1fr; }
+  .kpi-row-6 { grid-template-columns: repeat(2, 1fr); }
+  .chart-row { grid-template-columns: 1fr; }
+  .chart-row-3 { grid-template-columns: 1fr; }
+  .filters { flex-direction: column; align-items: flex-start; }
+  .tabs { overflow-x: auto; }
   .form-grid { grid-template-columns: 1fr 1fr; }
   .form-grid .col-wide { grid-column: span 2; }
-  .chart-grid { grid-template-columns: 1fr; }
-  .chart-card.full { grid-column: span 1; }
-  .bar-row { grid-template-columns: 80px 1fr 36px; }
+  .container { padding: 12px; }
 }
 </style>
 </head>
 <body>
 
-<!-- ===== HEADER ===== -->
-<div class="header">
-  <a class="header-back" href="home.html">← 홈</a>
-  <div class="header-title">
-    <h1>📋 상담 관리</h1>
-    <p>의료기기 영업 상담 등록 및 현황 관리</p>
+<!-- ===== STICKY TOP ===== -->
+<div class="sticky-top">
+  <div class="header">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <a href="home.html" style="color:#fff;text-decoration:none;font-size:18px;padding:4px 8px;border-radius:6px;background:rgba(255,255,255,.1);display:flex;align-items:center;" title="홈으로">&#8962;</a>
+      <h1>상담 관리</h1>
+    </div>
+  </div>
+  <div class="tabs" id="tabBar">
+    <div class="tab active" data-tab="tab-reg" onclick="switchTab('tab-reg')">상담 등록/조회</div>
+    <div class="tab" data-tab="tab-dash" onclick="switchTab('tab-dash')">현황 대시보드</div>
+  </div>
+  <div class="filters" id="filterBar">
+    <div class="filter-group">
+      <label>검색</label>
+      <input type="text" id="searchInput" placeholder="고객/한의원/물품/담당자/전화..." oninput="applyFilters()" style="width:200px;">
+    </div>
+    <div class="filter-group">
+      <label>Stage</label>
+      <select id="stageFilter" onchange="applyFilters()">
+        <option value="">전체</option>
+        <option value="BO-0">BO-0</option>
+        <option value="BO-1">BO-1</option>
+        <option value="BO-2">BO-2</option>
+        <option value="WIN">WIN</option>
+        <option value="Drop">Drop</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>인입경로</label>
+      <select id="sourceFilter" onchange="applyFilters()">
+        <option value="">전체</option>
+        <option>아웃바운드</option>
+        <option>자체행사</option>
+        <option>외부행사</option>
+        <option>강의</option>
+        <option>상담신청</option>
+        <option>1:1문의(CX포함)</option>
+        <option>소개건</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>영업담당자</label>
+      <select id="repFilter" onchange="applyFilters()">
+        <option value="">전체</option>
+      </select>
+    </div>
+    <span class="count-badge" id="totalCount">0건</span>
   </div>
 </div>
 
-<!-- ===== MAIN ===== -->
+<!-- ===== TAB 1: 등록/조회 ===== -->
+<div id="tab-reg" class="tab-panel active">
 <div class="container">
-  <!-- Tab Bar -->
-  <div class="tab-bar">
-    <button class="tab-btn active" onclick="switchTab('tab-reg')">상담 등록/조회</button>
-    <button class="tab-btn" onclick="switchTab('tab-dash')">현황 대시보드</button>
+
+  <!-- Registration Form -->
+  <div class="form-card">
+    <div class="form-card-header">
+      <h3>상담 등록</h3>
+      <button class="form-toggle-btn" id="formToggleBtn" onclick="toggleForm()">+ 새 상담 등록</button>
+    </div>
+    <div id="formSection" class="form-section">
+      <form id="consultForm" onsubmit="submitForm(event)">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>인입시점</label>
+            <input type="date" id="f_date" name="date">
+          </div>
+          <div class="form-group">
+            <label>인입경로</label>
+            <select id="f_source" name="source">
+              <option value="">-- 선택 --</option>
+              <option>아웃바운드</option>
+              <option>자체행사</option>
+              <option>외부행사</option>
+              <option>강의</option>
+              <option>상담신청</option>
+              <option>1:1문의(CX포함)</option>
+              <option>소개건</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>수신동의</label>
+            <label class="checkbox-wrap">
+              <input type="checkbox" id="f_consent" name="consent">
+              <span>마케팅/영업 연락 동의</span>
+            </label>
+          </div>
+          <div class="form-group">
+            <label>고객명 <span class="req">*</span></label>
+            <input type="text" id="f_customer" name="customer" placeholder="고객 이름">
+          </div>
+          <div class="form-group">
+            <label>고객 CID</label>
+            <input type="text" id="f_cid" name="cid" placeholder="CID">
+          </div>
+          <div class="form-group">
+            <label>전화번호</label>
+            <input type="text" id="f_phone" name="phone" placeholder="010-0000-0000">
+          </div>
+          <div class="form-group">
+            <label>한의원명</label>
+            <input type="text" id="f_clinic" name="clinic" placeholder="한의원/병원명">
+          </div>
+          <div class="form-group">
+            <label>지역</label>
+            <input type="text" id="f_region" name="region" placeholder="예: 서울 강남">
+          </div>
+          <div class="form-group col-wide">
+            <label>상담물품</label>
+            <textarea id="f_product" name="product" placeholder="상담한 의료기기 또는 물품명"></textarea>
+          </div>
+          <div class="form-group">
+            <label>수량</label>
+            <input type="number" id="f_qty" name="qty" min="0" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label>견적가</label>
+            <input type="text" id="f_price" name="price" placeholder="예: 3,500,000">
+          </div>
+          <div class="form-group">
+            <label>유선상담자</label>
+            <input type="text" id="f_caller" name="caller" placeholder="담당자명">
+          </div>
+          <div class="form-group">
+            <label>구매예정일</label>
+            <input type="date" id="f_buyDate" name="buyDate">
+          </div>
+          <div class="form-group">
+            <label>영업담당자</label>
+            <input type="text" id="f_rep" name="rep" placeholder="담당 영업사원">
+          </div>
+          <div class="form-group">
+            <label>Stage</label>
+            <select id="f_stage" name="stage">
+              <option value="BO-0" selected>BO-0</option>
+              <option value="BO-1">BO-1</option>
+              <option value="BO-2">BO-2</option>
+              <option value="WIN">WIN</option>
+              <option value="Drop">Drop</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>영업현황</label>
+            <select id="f_status" name="status">
+              <option value="">-- 선택 --</option>
+              <option>유선상담</option>
+              <option>방문데모</option>
+              <option>센터데모</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>데모일정</label>
+            <input type="date" id="f_demoDate" name="demoDate">
+          </div>
+        </div>
+        <input type="hidden" id="f_editId">
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="resetForm()">초기화</button>
+          <button type="submit" class="btn btn-primary" id="submitBtn">등록</button>
+        </div>
+      </form>
+    </div>
   </div>
 
-  <!-- ===== TAB 1: 등록/조회 ===== -->
-  <div id="tab-reg" class="tab-panel active">
-
-    <!-- Registration Card -->
-    <div class="card">
-      <div class="card-header">
-        <h2>📝 상담 등록</h2>
-        <button class="form-toggle-btn" id="formToggleBtn" onclick="toggleForm()">
-          <span>+ 새 상담 등록</span>
-          <span class="toggle-icon">▼</span>
-        </button>
-      </div>
-
-      <div id="formSection" class="form-section">
-        <div class="card-body">
-          <form id="consultForm" onsubmit="submitForm(event)">
-            <div class="form-grid">
-
-              <!-- 1. 인입시점 -->
-              <div class="form-group">
-                <label>인입시점</label>
-                <input type="date" id="f_date" name="date">
-              </div>
-
-              <!-- 2. 인입경로 -->
-              <div class="form-group">
-                <label>인입경로</label>
-                <select id="f_source" name="source">
-                  <option value="">-- 선택 --</option>
-                  <option>아웃바운드</option>
-                  <option>자체행사</option>
-                  <option>외부행사</option>
-                  <option>강의</option>
-                  <option>상담신청</option>
-                  <option>1:1문의(CX포함)</option>
-                  <option>소개건</option>
-                </select>
-              </div>
-
-              <!-- 3. 수신동의 -->
-              <div class="form-group">
-                <label>수신동의</label>
-                <label class="checkbox-group">
-                  <input type="checkbox" id="f_consent" name="consent">
-                  <span>마케팅/영업 연락 동의</span>
-                </label>
-              </div>
-
-              <!-- 4. 고객명 -->
-              <div class="form-group">
-                <label>고객명 <span class="required">*</span></label>
-                <input type="text" id="f_customer" name="customer" placeholder="고객 이름">
-              </div>
-
-              <!-- 5. 고객 CID -->
-              <div class="form-group">
-                <label>고객 CID</label>
-                <input type="text" id="f_cid" name="cid" placeholder="CID">
-              </div>
-
-              <!-- 6. 전화번호 -->
-              <div class="form-group">
-                <label>전화번호</label>
-                <input type="text" id="f_phone" name="phone" placeholder="010-0000-0000">
-              </div>
-
-              <!-- 7. 한의원명 -->
-              <div class="form-group">
-                <label>한의원명</label>
-                <input type="text" id="f_clinic" name="clinic" placeholder="한의원/병원명">
-              </div>
-
-              <!-- 8. 지역 -->
-              <div class="form-group">
-                <label>지역</label>
-                <input type="text" id="f_region" name="region" placeholder="예: 서울 강남">
-              </div>
-
-              <!-- 9. 상담물품 (wide) -->
-              <div class="form-group col-wide">
-                <label>상담물품</label>
-                <textarea id="f_product" name="product" placeholder="상담한 의료기기 또는 물품명을 입력하세요"></textarea>
-              </div>
-
-              <!-- 10. 수량 -->
-              <div class="form-group">
-                <label>수량</label>
-                <input type="number" id="f_qty" name="qty" min="0" placeholder="0">
-              </div>
-
-              <!-- 11. 견적가 -->
-              <div class="form-group">
-                <label>견적가</label>
-                <input type="text" id="f_price" name="price" placeholder="예: 3,500,000">
-              </div>
-
-              <!-- 12. 유선상담자 -->
-              <div class="form-group">
-                <label>유선상담자</label>
-                <input type="text" id="f_caller" name="caller" placeholder="담당자명">
-              </div>
-
-              <!-- 13. 구매예정일 -->
-              <div class="form-group">
-                <label>구매예정일</label>
-                <input type="date" id="f_buyDate" name="buyDate">
-              </div>
-
-              <!-- 14. 영업담당자 -->
-              <div class="form-group">
-                <label>영업담당자</label>
-                <input type="text" id="f_rep" name="rep" placeholder="담당 영업사원">
-              </div>
-
-              <!-- 15. Stage -->
-              <div class="form-group">
-                <label>Stage</label>
-                <select id="f_stage" name="stage">
-                  <option value="Pending" selected>Pending</option>
-                  <option value="Done">Done</option>
-                  <option value="Drop">Drop</option>
-                  <option value="Follow">Follow</option>
-                  <option value="Demo">Demo</option>
-                  <option value="Turn-key">Turn-key</option>
-                  <option value="기타">기타</option>
-                </select>
-              </div>
-
-              <!-- 16. 영업현황 -->
-              <div class="form-group">
-                <label>영업현황</label>
-                <select id="f_status" name="status">
-                  <option value="">-- 선택 --</option>
-                  <option>유선상담</option>
-                  <option>방문데모</option>
-                  <option>센터데모</option>
-                </select>
-              </div>
-
-              <!-- 17. 데모일정 -->
-              <div class="form-group">
-                <label>데모일정</label>
-                <input type="date" id="f_demoDate" name="demoDate">
-              </div>
-
-            </div>
-
-            <!-- hidden edit id -->
-            <input type="hidden" id="f_editId">
-
-            <div class="form-actions">
-              <button type="button" class="btn btn-secondary" onclick="resetForm()">초기화</button>
-              <button type="submit" class="btn btn-primary" id="submitBtn">등록</button>
-            </div>
-          </form>
-        </div>
-      </div>
+  <!-- Data Table -->
+  <div class="table-card">
+    <div style="overflow-x:auto;">
+      <table id="consultTable">
+        <thead>
+          <tr>
+            <th class="sortable" onclick="sortBy('date')" data-col="date">인입시점 <span class="sort-icon">↕</span></th>
+            <th class="sortable" onclick="sortBy('source')" data-col="source">인입경로 <span class="sort-icon">↕</span></th>
+            <th class="sortable" onclick="sortBy('customer')" data-col="customer">고객명 <span class="sort-icon">↕</span></th>
+            <th class="sortable" onclick="sortBy('clinic')" data-col="clinic">한의원명 <span class="sort-icon">↕</span></th>
+            <th class="sortable" onclick="sortBy('region')" data-col="region">지역 <span class="sort-icon">↕</span></th>
+            <th>상담물품</th>
+            <th class="sortable" onclick="sortBy('qty')" data-col="qty">수량 <span class="sort-icon">↕</span></th>
+            <th>견적가</th>
+            <th class="sortable" onclick="sortBy('stage')" data-col="stage">Stage <span class="sort-icon">↕</span></th>
+            <th>영업현황</th>
+            <th class="sortable" onclick="sortBy('rep')" data-col="rep">영업담당 <span class="sort-icon">↕</span></th>
+            <th class="sortable" onclick="sortBy('buyDate')" data-col="buyDate">구매예정일 <span class="sort-icon">↕</span></th>
+            <th class="sortable" onclick="sortBy('demoDate')" data-col="demoDate">데모일정 <span class="sort-icon">↕</span></th>
+            <th>액션</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
     </div>
-
-    <!-- Table Card -->
-    <div class="card">
-      <div class="card-header">
-        <h2>🔍 상담 조회</h2>
-        <span id="totalCount" class="count-badge">0건</span>
-      </div>
-      <div class="card-body">
-        <!-- Filter Bar -->
-        <div class="filter-bar">
-          <div class="search-wrap">
-            <input type="text" id="searchInput" placeholder="고객명, 한의원명, 상담물품 등 검색..." oninput="applyFilters()">
-            <span class="search-icon">🔍</span>
-          </div>
-          <select class="filter-select" id="stageFilter" onchange="applyFilters()">
-            <option value="">전체 Stage</option>
-            <option value="Done">Done</option>
-            <option value="Pending">Pending</option>
-            <option value="Drop">Drop</option>
-            <option value="Follow">Follow</option>
-            <option value="Demo">Demo</option>
-            <option value="Turn-key">Turn-key</option>
-            <option value="기타">기타</option>
-          </select>
-          <select class="filter-select" id="sourceFilter" onchange="applyFilters()">
-            <option value="">전체 인입경로</option>
-            <option>아웃바운드</option>
-            <option>자체행사</option>
-            <option>외부행사</option>
-            <option>강의</option>
-            <option>상담신청</option>
-            <option>1:1문의(CX포함)</option>
-            <option>소개건</option>
-          </select>
-        </div>
-
-        <!-- Table -->
-        <div class="table-wrap">
-          <table id="consultTable">
-            <thead>
-              <tr>
-                <th onclick="sortBy('date')" data-col="date">인입시점 <span class="sort-icon">↕</span></th>
-                <th onclick="sortBy('source')" data-col="source">인입경로 <span class="sort-icon">↕</span></th>
-                <th onclick="sortBy('customer')" data-col="customer">고객명 <span class="sort-icon">↕</span></th>
-                <th onclick="sortBy('clinic')" data-col="clinic">한의원명 <span class="sort-icon">↕</span></th>
-                <th onclick="sortBy('region')" data-col="region">지역 <span class="sort-icon">↕</span></th>
-                <th>상담물품</th>
-                <th onclick="sortBy('qty')" data-col="qty">수량 <span class="sort-icon">↕</span></th>
-                <th>견적가</th>
-                <th onclick="sortBy('stage')" data-col="stage">Stage <span class="sort-icon">↕</span></th>
-                <th>영업현황</th>
-                <th onclick="sortBy('rep')" data-col="rep">영업담당 <span class="sort-icon">↕</span></th>
-                <th onclick="sortBy('buyDate')" data-col="buyDate">구매예정일 <span class="sort-icon">↕</span></th>
-                <th onclick="sortBy('demoDate')" data-col="demoDate">데모일정 <span class="sort-icon">↕</span></th>
-                <th>액션</th>
-              </tr>
-            </thead>
-            <tbody id="tableBody">
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Empty state -->
-        <div id="emptyState" class="empty-state" style="display:none;">
-          <div class="icon">📋</div>
-          <p>등록된 상담 데이터가 없습니다.<br>상단의 '새 상담 등록' 버튼으로 추가하세요.</p>
-        </div>
-
-        <!-- Pagination -->
-        <div id="paginationWrap" class="pagination"></div>
-      </div>
+    <div id="emptyState" class="empty-state" style="display:none;">
+      <p>등록된 상담 데이터가 없습니다.<br>상단의 '새 상담 등록' 버튼으로 추가하세요.</p>
     </div>
+    <div id="paginationWrap" class="pagination"></div>
+  </div>
 
-  </div><!-- /tab-reg -->
+</div>
+</div><!-- /tab-reg -->
 
-  <!-- ===== TAB 2: 대시보드 ===== -->
-  <div id="tab-dash" class="tab-panel">
+<!-- ===== TAB 2: 현황 대시보드 ===== -->
+<div id="tab-dash" class="tab-panel">
+<div class="container">
 
-    <!-- Stat Cards -->
-    <div class="stat-cards" id="statCards">
-      <div class="stat-card">
-        <div class="label">전체 상담 건수</div>
-        <div class="value" id="stat-total">0</div>
-        <div class="sub">누적 등록 건수</div>
-      </div>
-      <div class="stat-card accent-blue">
-        <div class="label">이번 달 신규 인입</div>
-        <div class="value" id="stat-month">0</div>
-        <div class="sub" id="stat-month-label">이번 달</div>
-      </div>
-      <div class="stat-card accent-amber">
-        <div class="label">진행 중 (Active)</div>
-        <div class="value" id="stat-active">0</div>
-        <div class="sub">Pending + Follow + Demo</div>
-      </div>
-      <div class="stat-card accent-green">
-        <div class="label">계약 완료 (Done)</div>
-        <div class="value" id="stat-done">0</div>
-        <div class="sub" id="stat-done-pct">전체의 0%</div>
-      </div>
+  <!-- Section 1: KPI 요약 -->
+  <div class="kpi-row-6" id="dashKpi"></div>
+
+  <!-- Section 2: Pipeline / Conversion / Drop -->
+  <div class="chart-row-3" id="dashRow2">
+    <div class="chart-card">
+      <h3>BO Stage 파이프라인</h3>
+      <div class="bar-chart" id="chartPipeline"></div>
     </div>
-
-    <!-- Charts Row 1 -->
-    <div class="chart-grid">
-      <!-- Stage 분포 -->
-      <div class="chart-card">
-        <h3>Stage별 분포</h3>
-        <div class="bar-chart" id="chart-stage"></div>
-      </div>
-
-      <!-- 인입경로 분포 -->
-      <div class="chart-card">
-        <h3>인입경로별 분포</h3>
-        <div class="bar-chart" id="chart-source"></div>
-      </div>
+    <div class="chart-card">
+      <h3>단계별 전환율</h3>
+      <div id="chartConversion"></div>
     </div>
-
-    <!-- 월별 추이 (full width) -->
-    <div class="chart-grid">
-      <div class="chart-card full">
-        <h3>월별 인입 추이 (최근 12개월)</h3>
-        <div class="bar-chart" id="chart-monthly" style="gap:8px;"></div>
-      </div>
+    <div class="chart-card">
+      <h3>Drop / 미결제 분석</h3>
+      <div id="chartDrop"></div>
     </div>
+  </div>
 
-    <!-- 영업담당자별 현황 -->
-    <div class="card">
-      <div class="card-header">
-        <h2>👤 영업담당자별 현황</h2>
-      </div>
-      <div class="card-body">
-        <div style="overflow-x:auto;">
-          <table class="rep-table" id="repTable">
-            <thead>
-              <tr>
-                <th>담당자</th>
-                <th>전체</th>
-                <th>Done</th>
-                <th>Pending</th>
-                <th>Follow</th>
-                <th>Demo</th>
-                <th>Drop</th>
-                <th>Turn-key</th>
-                <th>기타</th>
-              </tr>
-            </thead>
-            <tbody id="repTableBody"></tbody>
-          </table>
-        </div>
-        <div id="repEmptyState" class="empty-state" style="display:none;">
-          <div class="icon">👤</div>
-          <p>영업담당자 데이터가 없습니다.</p>
-        </div>
-      </div>
-    </div>
+  <!-- Section 3: 리드타임 분석 -->
+  <div class="table-card" id="sectionLeadtime">
+    <h3>리드타임 분석</h3>
+    <div id="leadtimeContent"></div>
+  </div>
 
-  </div><!-- /tab-dash -->
+  <!-- Section 4: 코호트 뷰 -->
+  <div class="table-card" id="sectionCohort">
+    <h3>코호트 뷰 (최근 8주)</h3>
+    <div id="cohortContent"></div>
+  </div>
 
-</div><!-- /container -->
+  <!-- Section 5: 영업 활동 뷰 -->
+  <div class="table-card" id="sectionActivity">
+    <h3>영업 활동 뷰 (최근 8주)</h3>
+    <div id="activityContent"></div>
+  </div>
+
+  <!-- Section 6: 담당자별 실적 -->
+  <div class="table-card" id="sectionRep">
+    <h3>담당자별 실적</h3>
+    <div id="repContent"></div>
+  </div>
+
+  <!-- Section 7: 제조사별 상담 건수 -->
+  <div class="table-card" id="sectionMfr">
+    <h3>제조사별 상담 건수 (Top 10)</h3>
+    <div id="mfrContent"></div>
+  </div>
+
+</div>
+</div><!-- /tab-dash -->
 
 <!-- ===== TOAST ===== -->
 <div class="toast" id="toast"></div>
@@ -716,7 +438,7 @@ tbody td { padding: 10px 12px; vertical-align: middle; }
     <p>이 상담 데이터를 삭제하시겠습니까?<br>삭제 후에는 복구할 수 없습니다.</p>
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="closeModal()">취소</button>
-      <button class="btn btn-primary" id="confirmDeleteBtn" style="background: #991b1b;">삭제</button>
+      <button class="btn btn-primary" id="confirmDeleteBtn" style="background:#991b1b;">삭제</button>
     </div>
   </div>
 </div>
@@ -729,11 +451,8 @@ tbody td { padding: 10px 12px; vertical-align: middle; }
 const LS_KEY = 'md_consultations';
 
 function loadData() {
-  try {
-    return JSON.parse(localStorage.getItem(LS_KEY) || '[]');
-  } catch (e) {
-    return [];
-  }
+  try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]'); }
+  catch (e) { console.error('loadData error', e); return []; }
 }
 
 function saveData(data) {
@@ -743,71 +462,50 @@ function saveData(data) {
 // ============================================================
 // UTILS
 // ============================================================
-function today() {
-  return new Date().toISOString().slice(0, 10);
-}
-
-function formatDate(d) {
-  if (!d) return '';
-  return d;
-}
-
-function getStageBadgeClass(stage) {
-  const map = {
-    'Done': 'badge-done',
-    'Pending': 'badge-pending',
-    'Drop': 'badge-drop',
-    'Follow': 'badge-follow',
-    'Demo': 'badge-demo',
-    'Turn-key': 'badge-turnkey',
-    '기타': 'badge-etc',
-  };
-  return map[stage] || 'badge-etc';
-}
-
-function getBarColorClass(stage) {
-  const map = {
-    'Done': 'bar-green',
-    'Pending': 'bar-amber',
-    'Drop': 'bar-red',
-    'Follow': 'bar-blue',
-    'Demo': 'bar-purple',
-    'Turn-key': 'bar-orange',
-    '기타': 'bar-gray',
-  };
-  return map[stage] || 'bar-gray';
-}
-
-function getSourceColorClass(idx) {
-  const colors = ['bar-teal', 'bar-blue', 'bar-indigo', 'bar-purple', 'bar-pink', 'bar-orange', 'bar-amber'];
-  return colors[idx % colors.length];
-}
-
-function showToast(msg, type = 'success') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast ' + type + ' show';
-  setTimeout(() => { t.className = 'toast'; }, 2800);
-}
+function today() { return new Date().toISOString().slice(0, 10); }
 
 function escHtml(s) {
   if (!s && s !== 0) return '';
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function parsePrice(s) {
+  if (!s) return 0;
+  return parseFloat(String(s).replace(/[^0-9.-]/g, '')) || 0;
+}
+
+function fmtNum(n) {
+  return n.toLocaleString('ko-KR');
+}
+
+function fmtPct(n, digits) {
+  digits = digits !== undefined ? digits : 1;
+  return n.toFixed(digits) + '%';
+}
+
+function getStageBadgeClass(stage) {
+  var map = { 'BO-0':'badge-bo0', 'BO-1':'badge-bo1', 'BO-2':'badge-bo2', 'WIN':'badge-win', 'Drop':'badge-drop' };
+  return map[stage] || 'badge-bo0';
+}
+
+function showToast(msg, type) {
+  type = type || 'success';
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type + ' show';
+  setTimeout(function(){ t.className = 'toast'; }, 2800);
 }
 
 // ============================================================
 // TAB SWITCHING
 // ============================================================
 function switchTab(tabId) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
   document.getElementById(tabId).classList.add('active');
-  const idx = tabId === 'tab-reg' ? 0 : 1;
-  document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+  document.querySelector('.tab[data-tab="'+tabId+'"]').classList.add('active');
+  // Show/hide filter bar
+  document.getElementById('filterBar').style.display = tabId === 'tab-reg' ? '' : 'none';
   if (tabId === 'tab-dash') renderDashboard();
 }
 
@@ -815,17 +513,15 @@ function switchTab(tabId) {
 // FORM TOGGLE
 // ============================================================
 function toggleForm() {
-  const section = document.getElementById('formSection');
-  const btn = document.getElementById('formToggleBtn');
-  const isOpen = section.classList.toggle('open');
-  btn.classList.toggle('open', isOpen);
+  var section = document.getElementById('formSection');
+  var isOpen = section.classList.toggle('open');
+  document.getElementById('formToggleBtn').textContent = isOpen ? '- 닫기' : '+ 새 상담 등록';
 }
 
 function openForm() {
-  const section = document.getElementById('formSection');
-  const btn = document.getElementById('formToggleBtn');
+  var section = document.getElementById('formSection');
   section.classList.add('open');
-  btn.classList.add('open');
+  document.getElementById('formToggleBtn').textContent = '- 닫기';
 }
 
 // ============================================================
@@ -834,10 +530,10 @@ function openForm() {
 function resetForm() {
   document.getElementById('consultForm').reset();
   document.getElementById('f_date').value = today();
+  document.getElementById('f_stage').value = 'BO-0';
   document.getElementById('f_editId').value = '';
   document.getElementById('submitBtn').textContent = '등록';
-  // remove error states
-  document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+  document.querySelectorAll('.error').forEach(function(el){ el.classList.remove('error'); });
 }
 
 function getFormData() {
@@ -858,7 +554,7 @@ function getFormData() {
     rep:      document.getElementById('f_rep').value.trim(),
     stage:    document.getElementById('f_stage').value,
     status:   document.getElementById('f_status').value,
-    demoDate: document.getElementById('f_demoDate').value,
+    demoDate: document.getElementById('f_demoDate').value
   };
 }
 
@@ -877,7 +573,7 @@ function populateForm(record) {
   document.getElementById('f_caller').value   = record.caller || '';
   document.getElementById('f_buyDate').value  = record.buyDate || '';
   document.getElementById('f_rep').value      = record.rep || '';
-  document.getElementById('f_stage').value    = record.stage || 'Pending';
+  document.getElementById('f_stage').value    = record.stage || 'BO-0';
   document.getElementById('f_status').value   = record.status || '';
   document.getElementById('f_demoDate').value = record.demoDate || '';
   document.getElementById('f_editId').value   = record.id;
@@ -887,54 +583,62 @@ function populateForm(record) {
 }
 
 function validateForm(data) {
-  let valid = true;
-  const customerEl = document.getElementById('f_customer');
-  if (!data.customer) {
-    customerEl.classList.add('error');
-    valid = false;
-  } else {
-    customerEl.classList.remove('error');
-  }
+  var valid = true;
+  var el = document.getElementById('f_customer');
+  if (!data.customer) { el.classList.add('error'); valid = false; }
+  else { el.classList.remove('error'); }
   return valid;
 }
 
 function submitForm(e) {
   e.preventDefault();
-  const data = getFormData();
-  if (!validateForm(data)) {
-    showToast('고객명은 필수 입력 항목입니다.', 'error');
-    return;
-  }
-  const allData = loadData();
-  const editId = document.getElementById('f_editId').value;
-
+  var data = getFormData();
+  if (!validateForm(data)) { showToast('고객명은 필수 입력 항목입니다.', 'error'); return; }
+  var allData = loadData();
+  var editId = document.getElementById('f_editId').value;
   if (editId) {
-    // Edit mode
-    const idx = allData.findIndex(r => r.id === editId);
+    var idx = allData.findIndex(function(r){ return r.id === editId; });
     if (idx !== -1) {
-      allData[idx] = { ...allData[idx], ...data };
+      allData[idx] = Object.assign({}, allData[idx], data);
       saveData(allData);
       showToast('상담 정보가 수정되었습니다.');
     }
   } else {
-    // New record
-    const record = { id: Date.now().toString(), createdAt: new Date().toISOString(), ...data };
+    var record = Object.assign({ id: Date.now().toString(), createdAt: new Date().toISOString() }, data);
     allData.push(record);
     saveData(allData);
     showToast('상담이 등록되었습니다.');
   }
-
   resetForm();
+  populateRepFilter();
   applyFilters();
 }
 
 // ============================================================
 // TABLE STATE
 // ============================================================
-let sortCol = 'date';
-let sortDir = 'desc';
-let currentPage = 1;
-const PAGE_SIZE = 50;
+var sortCol = 'date';
+var sortDir = 'desc';
+var currentPage = 1;
+var PAGE_SIZE = 50;
+
+// ============================================================
+// REP FILTER POPULATION
+// ============================================================
+function populateRepFilter() {
+  var data = loadData();
+  var reps = {};
+  data.forEach(function(r){ if (r.rep) reps[r.rep] = true; });
+  var sel = document.getElementById('repFilter');
+  var cur = sel.value;
+  sel.innerHTML = '<option value="">전체</option>';
+  Object.keys(reps).sort().forEach(function(rep){
+    var opt = document.createElement('option');
+    opt.value = rep; opt.textContent = rep;
+    sel.appendChild(opt);
+  });
+  sel.value = cur;
+}
 
 // ============================================================
 // FILTER & RENDER TABLE
@@ -945,25 +649,25 @@ function applyFilters() {
 }
 
 function getFilteredData() {
-  const q = (document.getElementById('searchInput').value || '').toLowerCase().trim();
-  const stageF = document.getElementById('stageFilter').value;
-  const sourceF = document.getElementById('sourceFilter').value;
-  let data = loadData();
+  var q = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+  var stageF = document.getElementById('stageFilter').value;
+  var sourceF = document.getElementById('sourceFilter').value;
+  var repF = document.getElementById('repFilter').value;
+  var data = loadData();
 
   if (q) {
-    data = data.filter(r => {
-      return [r.customer, r.clinic, r.product, r.rep, r.caller, r.phone,
-              r.region, r.cid, r.price, r.source, r.status]
-        .some(v => v && String(v).toLowerCase().includes(q));
+    data = data.filter(function(r){
+      return [r.customer, r.clinic, r.product, r.rep, r.caller, r.phone, r.region, r.cid, r.price, r.source, r.status]
+        .some(function(v){ return v && String(v).toLowerCase().indexOf(q) !== -1; });
     });
   }
-  if (stageF) data = data.filter(r => r.stage === stageF);
-  if (sourceF) data = data.filter(r => r.source === sourceF);
+  if (stageF) data = data.filter(function(r){ return r.stage === stageF; });
+  if (sourceF) data = data.filter(function(r){ return r.source === sourceF; });
+  if (repF) data = data.filter(function(r){ return r.rep === repF; });
 
-  // sort
-  data.sort((a, b) => {
-    let va = a[sortCol] || '';
-    let vb = b[sortCol] || '';
+  data.sort(function(a, b){
+    var va = a[sortCol] || '';
+    var vb = b[sortCol] || '';
     if (sortCol === 'qty') { va = parseFloat(va) || 0; vb = parseFloat(vb) || 0; }
     if (va < vb) return sortDir === 'asc' ? -1 : 1;
     if (va > vb) return sortDir === 'asc' ? 1 : -1;
@@ -974,15 +678,15 @@ function getFilteredData() {
 }
 
 function renderTable() {
-  const data = getFilteredData();
-  const total = data.length;
-  document.getElementById('totalCount').textContent = `${total}건`;
+  var data = getFilteredData();
+  var total = data.length;
+  document.getElementById('totalCount').textContent = total + '건';
 
-  const start = (currentPage - 1) * PAGE_SIZE;
-  const pageData = data.slice(start, start + PAGE_SIZE);
+  var start = (currentPage - 1) * PAGE_SIZE;
+  var pageData = data.slice(start, start + PAGE_SIZE);
 
-  const tbody = document.getElementById('tableBody');
-  const empty = document.getElementById('emptyState');
+  var tbody = document.getElementById('tableBody');
+  var empty = document.getElementById('emptyState');
 
   if (data.length === 0) {
     tbody.innerHTML = '';
@@ -992,39 +696,37 @@ function renderTable() {
   }
   empty.style.display = 'none';
 
-  tbody.innerHTML = pageData.map(r => `
-    <tr>
-      <td>${escHtml(r.date)}</td>
-      <td>${escHtml(r.source)}</td>
-      <td><strong>${escHtml(r.customer)}</strong></td>
-      <td>${escHtml(r.clinic)}</td>
-      <td>${escHtml(r.region)}</td>
-      <td class="td-truncate" title="${escHtml(r.product)}">${escHtml(r.product)}</td>
-      <td style="text-align:right;">${r.qty !== '' && r.qty !== null && r.qty !== undefined ? escHtml(r.qty) : ''}</td>
-      <td>${escHtml(r.price)}</td>
-      <td><span class="badge ${getStageBadgeClass(r.stage)}">${escHtml(r.stage)}</span></td>
-      <td>${escHtml(r.status)}</td>
-      <td>${escHtml(r.rep)}</td>
-      <td>${escHtml(r.buyDate)}</td>
-      <td>${escHtml(r.demoDate)}</td>
-      <td>
-        <div class="td-actions">
-          <button class="btn btn-sm btn-edit" onclick="editRecord('${r.id}')">수정</button>
-          <button class="btn btn-sm btn-delete" onclick="confirmDelete('${r.id}')">삭제</button>
-        </div>
-      </td>
-    </tr>
-  `).join('');
+  tbody.innerHTML = pageData.map(function(r){
+    return '<tr>' +
+      '<td>' + escHtml(r.date) + '</td>' +
+      '<td>' + escHtml(r.source) + '</td>' +
+      '<td><strong>' + escHtml(r.customer) + '</strong></td>' +
+      '<td>' + escHtml(r.clinic) + '</td>' +
+      '<td>' + escHtml(r.region) + '</td>' +
+      '<td class="td-truncate" title="' + escHtml(r.product) + '">' + escHtml(r.product) + '</td>' +
+      '<td style="text-align:right;">' + (r.qty !== '' && r.qty != null ? escHtml(r.qty) : '') + '</td>' +
+      '<td>' + escHtml(r.price) + '</td>' +
+      '<td><span class="badge ' + getStageBadgeClass(r.stage) + '">' + escHtml(r.stage) + '</span></td>' +
+      '<td>' + escHtml(r.status) + '</td>' +
+      '<td>' + escHtml(r.rep) + '</td>' +
+      '<td>' + escHtml(r.buyDate) + '</td>' +
+      '<td>' + escHtml(r.demoDate) + '</td>' +
+      '<td><div class="td-actions">' +
+        '<button class="btn btn-sm btn-edit" onclick="editRecord(\'' + r.id + '\')">수정</button>' +
+        '<button class="btn btn-sm btn-delete" onclick="confirmDelete(\'' + r.id + '\')">삭제</button>' +
+      '</div></td>' +
+    '</tr>';
+  }).join('');
 
   // Sort indicators
-  document.querySelectorAll('thead th[data-col]').forEach(th => {
-    th.classList.remove('sort-asc', 'sort-desc');
-    const icon = th.querySelector('.sort-icon');
+  document.querySelectorAll('th.sortable[data-col]').forEach(function(th){
+    th.classList.remove('sort-asc','sort-desc');
+    var icon = th.querySelector('.sort-icon');
     if (th.dataset.col === sortCol) {
       th.classList.add(sortDir === 'asc' ? 'sort-asc' : 'sort-desc');
-      if (icon) icon.textContent = sortDir === 'asc' ? '↑' : '↓';
+      if (icon) icon.textContent = sortDir === 'asc' ? String.fromCharCode(8593) : String.fromCharCode(8595);
     } else {
-      if (icon) icon.textContent = '↕';
+      if (icon) icon.textContent = String.fromCharCode(8597);
     }
   });
 
@@ -1032,47 +734,39 @@ function renderTable() {
 }
 
 function sortBy(col) {
-  if (sortCol === col) {
-    sortDir = sortDir === 'asc' ? 'desc' : 'asc';
-  } else {
-    sortCol = col;
-    sortDir = col === 'date' ? 'desc' : 'asc';
-  }
+  if (sortCol === col) { sortDir = sortDir === 'asc' ? 'desc' : 'asc'; }
+  else { sortCol = col; sortDir = col === 'date' ? 'desc' : 'asc'; }
   renderTable();
 }
 
 function renderPagination(total) {
-  const pages = Math.ceil(total / PAGE_SIZE);
-  const wrap = document.getElementById('paginationWrap');
+  var pages = Math.ceil(total / PAGE_SIZE);
+  var wrap = document.getElementById('paginationWrap');
   if (pages <= 1) { wrap.innerHTML = ''; return; }
-
-  let html = '';
-  html += `<button class="page-btn" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>‹</button>`;
-
-  const maxShow = 7;
-  let start = Math.max(1, currentPage - Math.floor(maxShow / 2));
-  let end = Math.min(pages, start + maxShow - 1);
-  if (end - start < maxShow - 1) start = Math.max(1, end - maxShow + 1);
-
-  if (start > 1) {
-    html += `<button class="page-btn" onclick="goPage(1)">1</button>`;
-    if (start > 2) html += `<span style="color:#aaa;padding:0 4px;">…</span>`;
+  var html = '';
+  html += '<button class="page-btn" onclick="goPage(' + (currentPage-1) + ')" ' + (currentPage===1?'disabled':'') + '>' + String.fromCharCode(8249) + '</button>';
+  var maxShow = 7;
+  var s = Math.max(1, currentPage - Math.floor(maxShow/2));
+  var e = Math.min(pages, s + maxShow - 1);
+  if (e - s < maxShow - 1) s = Math.max(1, e - maxShow + 1);
+  if (s > 1) {
+    html += '<button class="page-btn" onclick="goPage(1)">1</button>';
+    if (s > 2) html += '<span style="color:#aaa;padding:0 4px;">...</span>';
   }
-  for (let i = start; i <= end; i++) {
-    html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
+  for (var i = s; i <= e; i++) {
+    html += '<button class="page-btn ' + (i===currentPage?'active':'') + '" onclick="goPage('+i+')">'+i+'</button>';
   }
-  if (end < pages) {
-    if (end < pages - 1) html += `<span style="color:#aaa;padding:0 4px;">…</span>`;
-    html += `<button class="page-btn" onclick="goPage(${pages})">${pages}</button>`;
+  if (e < pages) {
+    if (e < pages-1) html += '<span style="color:#aaa;padding:0 4px;">...</span>';
+    html += '<button class="page-btn" onclick="goPage('+pages+')">'+pages+'</button>';
   }
-
-  html += `<button class="page-btn" onclick="goPage(${currentPage + 1})" ${currentPage === pages ? 'disabled' : ''}>›</button>`;
+  html += '<button class="page-btn" onclick="goPage(' + (currentPage+1) + ')" ' + (currentPage===pages?'disabled':'') + '>' + String.fromCharCode(8250) + '</button>';
   wrap.innerHTML = html;
 }
 
 function goPage(p) {
-  const data = getFilteredData();
-  const pages = Math.ceil(data.length / PAGE_SIZE);
+  var data = getFilteredData();
+  var pages = Math.ceil(data.length / PAGE_SIZE);
   if (p < 1 || p > pages) return;
   currentPage = p;
   renderTable();
@@ -1082,13 +776,13 @@ function goPage(p) {
 // EDIT / DELETE
 // ============================================================
 function editRecord(id) {
-  const data = loadData();
-  const record = data.find(r => r.id === id);
+  var data = loadData();
+  var record = data.find(function(r){ return r.id === id; });
   if (!record) return;
   populateForm(record);
 }
 
-let pendingDeleteId = null;
+var pendingDeleteId = null;
 
 function confirmDelete(id) {
   pendingDeleteId = id;
@@ -1100,153 +794,381 @@ function closeModal() {
   document.getElementById('confirmModal').classList.remove('open');
 }
 
-document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+document.getElementById('confirmDeleteBtn').addEventListener('click', function(){
   if (!pendingDeleteId) return;
-  let data = loadData();
-  data = data.filter(r => r.id !== pendingDeleteId);
+  var data = loadData().filter(function(r){ return r.id !== pendingDeleteId; });
   saveData(data);
   closeModal();
   showToast('삭제되었습니다.');
+  populateRepFilter();
   applyFilters();
 });
 
-// Close modal on backdrop click
-document.getElementById('confirmModal').addEventListener('click', function(e) {
+document.getElementById('confirmModal').addEventListener('click', function(e){
   if (e.target === this) closeModal();
 });
+
+// ============================================================
+// ISO WEEK HELPERS (Monday-start)
+// ============================================================
+function getISOWeek(dateStr) {
+  var d = new Date(dateStr + 'T00:00:00');
+  d.setHours(0,0,0,0);
+  d.setDate(d.getDate() + 3 - (d.getDay() + 6) % 7);
+  var week1 = new Date(d.getFullYear(), 0, 4);
+  week1.setDate(week1.getDate() + 3 - (week1.getDay() + 6) % 7);
+  var wn = 1 + Math.round(((d - week1) / 86400000) / 7);
+  return { year: d.getFullYear(), week: wn };
+}
+
+function getWeekMonday(year, week) {
+  var jan4 = new Date(year, 0, 4);
+  var dayOfWeek = jan4.getDay() || 7;
+  var mon = new Date(jan4);
+  mon.setDate(jan4.getDate() - (dayOfWeek - 1) + (week - 1) * 7);
+  return mon;
+}
+
+function fmtDate(d) {
+  var mm = String(d.getMonth()+1).padStart(2,'0');
+  var dd = String(d.getDate()).padStart(2,'0');
+  return d.getFullYear() + '-' + mm + '-' + dd;
+}
+
+function daysBetween(d1, d2) {
+  var a = new Date(d1 + 'T00:00:00');
+  var b = new Date(d2 + 'T00:00:00');
+  return Math.round((b - a) / 86400000);
+}
 
 // ============================================================
 // DASHBOARD
 // ============================================================
 function renderDashboard() {
-  const data = loadData();
-  const now = new Date();
-  const thisYM = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  var data = loadData();
+  var total = data.length;
 
-  // Stat cards
-  const total = data.length;
-  const thisMonth = data.filter(r => r.date && r.date.startsWith(thisYM)).length;
-  const active = data.filter(r => ['Pending', 'Follow', 'Demo'].includes(r.stage)).length;
-  const done = data.filter(r => r.stage === 'Done').length;
-  const donePct = total > 0 ? Math.round((done / total) * 100) : 0;
+  var cntBO2 = data.filter(function(r){ return r.stage === 'BO-2'; }).length;
+  var cntWIN = data.filter(function(r){ return r.stage === 'WIN'; }).length;
+  var winRevenue = 0;
+  data.forEach(function(r){ if (r.stage === 'WIN') winRevenue += parsePrice(r.price); });
+  var cntDrop = data.filter(function(r){ return r.stage === 'Drop'; }).length;
+  var convRate = total > 0 ? (cntWIN / total * 100) : 0;
 
-  document.getElementById('stat-total').textContent = total;
-  document.getElementById('stat-month').textContent = thisMonth;
-  document.getElementById('stat-month-label').textContent =
-    `${now.getFullYear()}년 ${now.getMonth() + 1}월`;
-  document.getElementById('stat-active').textContent = active;
-  document.getElementById('stat-done').textContent = done;
-  document.getElementById('stat-done-pct').textContent = `전체의 ${donePct}%`;
+  // KPI cards
+  document.getElementById('dashKpi').innerHTML =
+    kpiCard('총 상담건수', fmtNum(total), '누적 등록') +
+    kpiCard('데모 건수', fmtNum(cntBO2), 'Stage=BO-2') +
+    kpiCard('WIN(결제)', fmtNum(cntWIN), 'Stage=WIN') +
+    kpiCard('WIN 매출(원)', fmtNum(winRevenue), 'WIN 견적가 합계') +
+    kpiCard('Drop 건수', fmtNum(cntDrop), '') +
+    kpiCard('전환율(인입->WIN)', fmtPct(convRate), 'WIN / 전체');
 
-  // Stage chart
-  const stages = ['Done', 'Pending', 'Follow', 'Demo', 'Drop', 'Turn-key', '기타'];
-  const stageCounts = stages.map(s => ({ label: s, count: data.filter(r => r.stage === s).length }));
-  const maxStage = Math.max(...stageCounts.map(s => s.count), 1);
+  // Section 2: Pipeline
+  renderPipeline(data, total);
+  renderConversion(data, total);
+  renderDropAnalysis(data, total);
 
-  document.getElementById('chart-stage').innerHTML = stageCounts
-    .filter(s => s.count > 0 || data.length === 0)
-    .map(s => `
-      <div class="bar-row">
-        <div class="bar-label">${escHtml(s.label)}</div>
-        <div class="bar-track">
-          <div class="bar-fill ${getBarColorClass(s.label)}" style="width:${Math.max(2, (s.count / maxStage) * 100)}%">
-            <span>${s.count > 0 ? s.count + '건' : ''}</span>
-          </div>
-        </div>
-        <div class="bar-count">${s.count}</div>
-      </div>
-    `).join('') || '<div style="color:#aaa;font-size:13px;">데이터 없음</div>';
+  // Section 3: Leadtime
+  renderLeadtime(data);
 
-  // Source chart
-  const sources = ['아웃바운드', '자체행사', '외부행사', '강의', '상담신청', '1:1문의(CX포함)', '소개건'];
-  const sourceCounts = sources.map(s => ({
-    label: s,
-    count: data.filter(r => r.source === s).length
-  })).filter(s => s.count > 0);
-  const otherSource = data.filter(r => !sources.includes(r.source) && r.source).length;
-  if (otherSource > 0) sourceCounts.push({ label: '기타', count: otherSource });
-  sourceCounts.sort((a, b) => b.count - a.count);
-  const maxSource = Math.max(...sourceCounts.map(s => s.count), 1);
+  // Section 4: Cohort
+  renderCohort(data);
 
-  document.getElementById('chart-source').innerHTML = sourceCounts.length > 0
-    ? sourceCounts.map((s, i) => `
-      <div class="bar-row">
-        <div class="bar-label" title="${escHtml(s.label)}">${escHtml(s.label)}</div>
-        <div class="bar-track">
-          <div class="bar-fill ${getSourceColorClass(i)}" style="width:${Math.max(2, (s.count / maxSource) * 100)}%">
-            <span>${s.count > 0 ? s.count + '건' : ''}</span>
-          </div>
-        </div>
-        <div class="bar-count">${s.count}</div>
-      </div>
-    `).join('')
-    : '<div style="color:#aaa;font-size:13px;">데이터 없음</div>';
+  // Section 5: Activity
+  renderActivity(data);
 
-  // Monthly chart (last 12 months)
-  const months = [];
-  for (let i = 11; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-    const label = `${d.getFullYear() % 100}.${String(d.getMonth() + 1).padStart(2, '0')}`;
-    months.push({ ym, label, count: data.filter(r => r.date && r.date.startsWith(ym)).length });
-  }
-  const maxMonth = Math.max(...months.map(m => m.count), 1);
+  // Section 6: Rep
+  renderRepTable(data);
 
-  document.getElementById('chart-monthly').innerHTML = months.map(m => `
-    <div class="bar-row narrow">
-      <div class="bar-label">${m.label}</div>
-      <div class="bar-track">
-        <div class="bar-fill bar-indigo" style="width:${Math.max(m.count > 0 ? 2 : 0, (m.count / maxMonth) * 100)}%">
-          <span>${m.count > 0 ? m.count + '건' : ''}</span>
-        </div>
-      </div>
-      <div class="bar-count">${m.count}</div>
-    </div>
-  `).join('');
+  // Section 7: Manufacturer
+  renderMfrChart(data);
+}
 
-  // Rep table
-  const reps = {};
-  data.forEach(r => {
-    const rep = r.rep || '(미지정)';
-    if (!reps[rep]) reps[rep] = { total: 0, Done: 0, Pending: 0, Follow: 0, Demo: 0, Drop: 0, 'Turn-key': 0, '기타': 0 };
-    reps[rep].total++;
-    reps[rep][r.stage] = (reps[rep][r.stage] || 0) + 1;
+function kpiCard(label, value, sub) {
+  return '<div class="kpi-card">' +
+    '<div class="label">' + escHtml(label) + '</div>' +
+    '<div class="value">' + escHtml(value) + '</div>' +
+    (sub ? '<div class="sub-row"><span>' + escHtml(sub) + '</span></div>' : '') +
+  '</div>';
+}
+
+// --- Pipeline ---
+function renderPipeline(data, total) {
+  var stages = ['BO-0','BO-1','BO-2','WIN'];
+  var barColors = { 'BO-0':'bar-gray', 'BO-1':'bar-amber', 'BO-2':'bar-purple', 'WIN':'bar-green' };
+  var counts = stages.map(function(s){ return { label:s, count: data.filter(function(r){return r.stage===s;}).length }; });
+  var mx = Math.max.apply(null, counts.map(function(c){return c.count;})) || 1;
+
+  document.getElementById('chartPipeline').innerHTML = counts.map(function(c){
+    var pct = total > 0 ? fmtPct(c.count/total*100) : '0%';
+    return '<div class="bar-row">' +
+      '<div class="bar-label">' + c.label + '</div>' +
+      '<div class="bar-track"><div class="bar-fill ' + barColors[c.label] + '" style="width:' + Math.max(2,c.count/mx*100) + '%"><span>' + c.count + '</span></div></div>' +
+      '<div class="bar-count">' + pct + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// --- Conversion ---
+function renderConversion(data, total) {
+  var cBO1p = data.filter(function(r){ return ['BO-1','BO-2','WIN'].indexOf(r.stage) !== -1; }).length;
+  var cBO2p = data.filter(function(r){ return ['BO-2','WIN'].indexOf(r.stage) !== -1; }).length;
+  var cWIN = data.filter(function(r){ return r.stage === 'WIN'; }).length;
+
+  var rows = [
+    { label: '인입 -> 상담(BO-1+)', num: cBO1p, den: total },
+    { label: '상담 -> 데모(BO-2)', num: cBO2p, den: cBO1p },
+    { label: '데모 -> 결제(WIN)', num: cWIN, den: cBO2p },
+    { label: '전체 인입 -> 결제', num: cWIN, den: total }
+  ];
+
+  var html = '<table class="mini-table"><thead><tr><th>구간</th><th style="text-align:right;">건수</th><th style="text-align:right;">전환율</th></tr></thead><tbody>';
+  rows.forEach(function(r){
+    var rate = r.den > 0 ? fmtPct(r.num / r.den * 100) : '-';
+    html += '<tr><td>' + r.label + '</td><td style="text-align:right;">' + r.num + ' / ' + r.den + '</td><td style="text-align:right;font-weight:700;">' + rate + '</td></tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('chartConversion').innerHTML = html;
+}
+
+// --- Drop Analysis ---
+function renderDropAnalysis(data, total) {
+  var cntDrop = data.filter(function(r){ return r.stage === 'Drop'; }).length;
+  var dropRate = total > 0 ? fmtPct(cntDrop / total * 100) : '-';
+  var cntBO2 = data.filter(function(r){ return r.stage === 'BO-2'; }).length;
+
+  var html = '<table class="mini-table"><tbody>' +
+    '<tr><td style="font-weight:600;">Drop 건수</td><td style="text-align:right;font-weight:700;color:#e53e3e;">' + cntDrop + '</td></tr>' +
+    '<tr><td style="font-weight:600;">Drop 비율</td><td style="text-align:right;">' + dropRate + '</td></tr>' +
+    '<tr><td style="font-weight:600;">데모 후 미결제 (BO-2)</td><td style="text-align:right;color:#5b21b6;font-weight:700;">' + cntBO2 + '</td></tr>' +
+  '</tbody></table>';
+  document.getElementById('chartDrop').innerHTML = html;
+}
+
+// --- Leadtime ---
+function renderLeadtime(data) {
+  var inToWin = [];
+  var inToDemo = [];
+  var demoToWin = [];
+
+  data.forEach(function(r){
+    if (r.stage === 'WIN' && r.date && r.buyDate) {
+      var d = daysBetween(r.date, r.buyDate);
+      if (d >= 0) inToWin.push(d);
+    }
+    if (r.demoDate && r.date) {
+      var d2 = daysBetween(r.date, r.demoDate);
+      if (d2 >= 0) inToDemo.push(d2);
+    }
+    if (r.stage === 'WIN' && r.demoDate && r.buyDate) {
+      var d3 = daysBetween(r.demoDate, r.buyDate);
+      if (d3 >= 0) demoToWin.push(d3);
+    }
   });
 
-  const repKeys = Object.keys(reps).sort((a, b) => reps[b].total - reps[a].total);
-  const repBody = document.getElementById('repTableBody');
-  const repEmpty = document.getElementById('repEmptyState');
+  function stats(arr) {
+    if (arr.length === 0) return { avg:'-', min:'-', max:'-' };
+    var sum = arr.reduce(function(a,b){return a+b;},0);
+    return { avg: (sum/arr.length).toFixed(1)+'일', min: Math.min.apply(null,arr)+'일', max: Math.max.apply(null,arr)+'일' };
+  }
 
-  if (repKeys.length === 0) {
-    repBody.innerHTML = '';
-    repEmpty.style.display = 'block';
+  var metrics = [
+    { label:'인입 -> 구매 (WIN)', data: stats(inToWin), n: inToWin.length },
+    { label:'인입 -> 데모', data: stats(inToDemo), n: inToDemo.length },
+    { label:'데모 -> 구매 (WIN)', data: stats(demoToWin), n: demoToWin.length }
+  ];
+
+  var html = '<table class="mini-table"><thead><tr><th>구간</th><th style="text-align:right;">건수</th><th style="text-align:right;">평균</th><th style="text-align:right;">최소</th><th style="text-align:right;">최대</th></tr></thead><tbody>';
+  metrics.forEach(function(m){
+    html += '<tr><td style="font-weight:600;">' + m.label + '</td><td style="text-align:right;">' + m.n + '</td><td style="text-align:right;">' + m.data.avg + '</td><td style="text-align:right;">' + m.data.min + '</td><td style="text-align:right;">' + m.data.max + '</td></tr>';
+  });
+  html += '</tbody></table>';
+  if (inToWin.length === 0 && inToDemo.length === 0 && demoToWin.length === 0) {
+    html = '<div class="empty-state"><p>리드타임 데이터가 부족합니다.</p></div>';
+  }
+  document.getElementById('leadtimeContent').innerHTML = html;
+}
+
+// --- Cohort ---
+function renderCohort(data) {
+  // Group by ISO week of 인입시점
+  var weekMap = {};
+  data.forEach(function(r){
+    if (!r.date) return;
+    var w = getISOWeek(r.date);
+    var key = w.year + '-W' + String(w.week).padStart(2,'0');
+    if (!weekMap[key]) weekMap[key] = { year:w.year, week:w.week, records:[] };
+    weekMap[key].records.push(r);
+  });
+
+  var keys = Object.keys(weekMap).sort().slice(-8);
+  if (keys.length === 0) {
+    document.getElementById('cohortContent').innerHTML = '<div class="empty-state"><p>데이터가 부족합니다.</p></div>';
     return;
   }
-  repEmpty.style.display = 'none';
 
-  repBody.innerHTML = repKeys.map(rep => {
-    const d = reps[rep];
-    return `<tr>
-      <td>${escHtml(rep)}</td>
-      <td><strong>${d.total}</strong></td>
-      <td><span style="color:#065f46;">${d['Done'] || 0}</span></td>
-      <td><span style="color:#92400e;">${d['Pending'] || 0}</span></td>
-      <td><span style="color:#1e40af;">${d['Follow'] || 0}</span></td>
-      <td><span style="color:#5b21b6;">${d['Demo'] || 0}</span></td>
-      <td><span style="color:#991b1b;">${d['Drop'] || 0}</span></td>
-      <td><span style="color:#9a3412;">${d['Turn-key'] || 0}</span></td>
-      <td><span style="color:#4b5563;">${d['기타'] || 0}</span></td>
-    </tr>`;
-  }).join('');
+  var html = '<table class="mini-table"><thead><tr><th>주차</th><th>시작일</th><th>종료일</th><th style="text-align:right;">인입건</th><th style="text-align:right;">데모전환</th><th style="text-align:right;">WIN전환</th><th style="text-align:right;">데모전환율</th><th style="text-align:right;">WIN전환율</th><th style="text-align:right;">Drop</th><th style="text-align:right;">Drop율</th></tr></thead><tbody>';
+  keys.forEach(function(key){
+    var wk = weekMap[key];
+    var mon = getWeekMonday(wk.year, wk.week);
+    var sun = new Date(mon); sun.setDate(mon.getDate()+6);
+    var recs = wk.records;
+    var cnt = recs.length;
+    var demo = recs.filter(function(r){ return ['BO-2','WIN'].indexOf(r.stage) !== -1; }).length;
+    var win = recs.filter(function(r){ return r.stage === 'WIN'; }).length;
+    var drop = recs.filter(function(r){ return r.stage === 'Drop'; }).length;
+    html += '<tr>' +
+      '<td style="font-weight:600;">W' + String(wk.week).padStart(2,'0') + '</td>' +
+      '<td>' + fmtDate(mon) + '</td><td>' + fmtDate(sun) + '</td>' +
+      '<td style="text-align:right;">' + cnt + '</td>' +
+      '<td style="text-align:right;">' + demo + '</td>' +
+      '<td style="text-align:right;">' + win + '</td>' +
+      '<td style="text-align:right;">' + (cnt>0?fmtPct(demo/cnt*100):'-') + '</td>' +
+      '<td style="text-align:right;">' + (cnt>0?fmtPct(win/cnt*100):'-') + '</td>' +
+      '<td style="text-align:right;">' + drop + '</td>' +
+      '<td style="text-align:right;">' + (cnt>0?fmtPct(drop/cnt*100):'-') + '</td>' +
+    '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('cohortContent').innerHTML = html;
+}
+
+// --- Activity ---
+function renderActivity(data) {
+  // Group by ISO week of 데모일정 or 구매예정일
+  var weekMap = {};
+  data.forEach(function(r){
+    var dates = [];
+    if (r.demoDate) dates.push(r.demoDate);
+    if (r.buyDate && r.stage === 'WIN') dates.push(r.buyDate);
+    dates.forEach(function(dt){
+      var w = getISOWeek(dt);
+      var key = w.year + '-W' + String(w.week).padStart(2,'0');
+      if (!weekMap[key]) weekMap[key] = { year:w.year, week:w.week, demos:[], wins:[] };
+    });
+    if (r.demoDate) {
+      var w1 = getISOWeek(r.demoDate);
+      var k1 = w1.year + '-W' + String(w1.week).padStart(2,'0');
+      weekMap[k1].demos.push(r);
+    }
+    if (r.buyDate && r.stage === 'WIN') {
+      var w2 = getISOWeek(r.buyDate);
+      var k2 = w2.year + '-W' + String(w2.week).padStart(2,'0');
+      weekMap[k2].wins.push(r);
+    }
+  });
+
+  var keys = Object.keys(weekMap).sort().slice(-8);
+  if (keys.length === 0) {
+    document.getElementById('activityContent').innerHTML = '<div class="empty-state"><p>데이터가 부족합니다.</p></div>';
+    return;
+  }
+
+  var html = '<table class="mini-table"><thead><tr><th>주차</th><th>시작일</th><th>종료일</th><th style="text-align:right;">데모건수</th><th style="text-align:right;">결제건수(WIN)</th><th style="text-align:right;">결제금액</th></tr></thead><tbody>';
+  keys.forEach(function(key){
+    var wk = weekMap[key];
+    var mon = getWeekMonday(wk.year, wk.week);
+    var sun = new Date(mon); sun.setDate(mon.getDate()+6);
+    var revenue = 0;
+    wk.wins.forEach(function(r){ revenue += parsePrice(r.price); });
+    html += '<tr>' +
+      '<td style="font-weight:600;">W' + String(wk.week).padStart(2,'0') + '</td>' +
+      '<td>' + fmtDate(mon) + '</td><td>' + fmtDate(sun) + '</td>' +
+      '<td style="text-align:right;">' + wk.demos.length + '</td>' +
+      '<td style="text-align:right;">' + wk.wins.length + '</td>' +
+      '<td style="text-align:right;">' + fmtNum(revenue) + '</td>' +
+    '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('activityContent').innerHTML = html;
+}
+
+// --- Rep Table ---
+function renderRepTable(data) {
+  var reps = {};
+  data.forEach(function(r){
+    var rep = r.rep || '(미지정)';
+    if (!reps[rep]) reps[rep] = { total:0, demo:0, win:0, revenue:0 };
+    reps[rep].total++;
+    if (['BO-2','WIN'].indexOf(r.stage) !== -1) reps[rep].demo++;
+    if (r.stage === 'WIN') { reps[rep].win++; reps[rep].revenue += parsePrice(r.price); }
+  });
+
+  var keys = Object.keys(reps).sort(function(a,b){ return reps[b].total - reps[a].total; });
+  if (keys.length === 0) {
+    document.getElementById('repContent').innerHTML = '<div class="empty-state"><p>데이터가 부족합니다.</p></div>';
+    return;
+  }
+
+  var html = '<table class="mini-table"><thead><tr><th>담당자</th><th style="text-align:right;">상담건수</th><th style="text-align:right;">데모건수</th><th style="text-align:right;">WIN건수</th><th style="text-align:right;">WIN매출(원)</th><th style="text-align:right;">전환율</th></tr></thead><tbody>';
+  keys.forEach(function(rep){
+    var d = reps[rep];
+    var rate = d.total > 0 ? fmtPct(d.win / d.total * 100) : '-';
+    html += '<tr>' +
+      '<td style="font-weight:600;">' + escHtml(rep) + '</td>' +
+      '<td style="text-align:right;">' + d.total + '</td>' +
+      '<td style="text-align:right;">' + d.demo + '</td>' +
+      '<td style="text-align:right;color:#065f46;font-weight:700;">' + d.win + '</td>' +
+      '<td style="text-align:right;">' + fmtNum(d.revenue) + '</td>' +
+      '<td style="text-align:right;">' + rate + '</td>' +
+    '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('repContent').innerHTML = html;
+}
+
+// --- Manufacturer Chart ---
+function renderMfrChart(data) {
+  var MFR_KEYWORDS = [
+    '인바디','영일엠','스트라텍','HCK','원효','굿플','리메드','필립스',
+    '한일','메가메디칼','이카이로','썸텍','알피니언','마인드레이','대요메디',
+    '아큐닉','코랩','옴니핏','카리스'
+  ];
+
+  var counts = {};
+  MFR_KEYWORDS.forEach(function(k){ counts[k] = 0; });
+
+  data.forEach(function(r){
+    if (!r.product) return;
+    var p = r.product;
+    MFR_KEYWORDS.forEach(function(k){
+      if (p.indexOf(k) !== -1) counts[k]++;
+    });
+  });
+
+  var sorted = MFR_KEYWORDS
+    .filter(function(k){ return counts[k] > 0; })
+    .sort(function(a,b){ return counts[b] - counts[a]; })
+    .slice(0, 10);
+
+  if (sorted.length === 0) {
+    document.getElementById('mfrContent').innerHTML = '<div class="empty-state"><p>제조사 키워드가 포함된 데이터가 없습니다.</p></div>';
+    return;
+  }
+
+  var mx = counts[sorted[0]] || 1;
+  var barColors = ['bar-blue','bar-teal','bar-indigo','bar-purple','bar-green','bar-amber','bar-orange','bar-pink','bar-red','bar-gray'];
+
+  var html = '<div class="bar-chart">';
+  sorted.forEach(function(k, i){
+    var pct = data.length > 0 ? fmtPct(counts[k] / data.length * 100) : '0%';
+    html += '<div class="bar-row">' +
+      '<div class="bar-label">' + escHtml(k) + '</div>' +
+      '<div class="bar-track"><div class="bar-fill ' + barColors[i % barColors.length] + '" style="width:' + Math.max(2, counts[k]/mx*100) + '%"><span>' + counts[k] + '</span></div></div>' +
+      '<div class="bar-count">' + pct + '</div>' +
+    '</div>';
+  });
+  html += '</div>';
+  document.getElementById('mfrContent').innerHTML = html;
 }
 
 // ============================================================
 // INIT
 // ============================================================
 function init() {
-  // Set today's date as default
   document.getElementById('f_date').value = today();
-  // Initial table render
+  populateRepFilter();
   renderTable();
 }
 
