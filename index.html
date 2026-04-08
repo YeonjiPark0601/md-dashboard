@@ -576,6 +576,7 @@ Chart.defaults.plugins.tooltip.yAlign='top';
 let currentTab = '의료기기';
 let allData = [], classData = [], turnkeyData = [], pt10Data = [], pt10Master = {}, sonoData = [], puOnData = [], puOffData = [], rebuyData = [], targetData = {}, pt10PuData = [], turnkeySurveyData = [], omnifitData = [], turnkeyCidMap = {};
 let drillCategory = null, selectedSuppliers = [], sortCol = -1, sortAsc = true;
+let equipMaster = {}; // 품목ID → 장비여부('O'/'X') 매핑
 let puOnExpanded = false, puOffExpanded = false;
 let trendChart, trendChart2, typeChart, typeChart2, categoryChart, categoryPieChart, supplierChart, pt10CartTrendChart, sonoASChart, sonoQtyChart, surveyMonthChart, surveyWeekChart, surveyQtrChart, consultMonthChart, consultWeekChart, consultQtrChart, weeklyTrendChart;
 
@@ -613,15 +614,17 @@ function getData(){if(currentTab==='전체')return[...allData,...sonoData.filter
 async function fetchData(){
   try{
     const sheetUrl=n=>`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(n)}&headers=1&_t=${Date.now()}`;
-    const [salesR,classR,turnkeyR,pt10R,pt10MasterR,sonoR,sonoMissR,targetR,puOnR,puOffR,rebuyR,pt10PuR,surveyR,omnifitRevR,omnifitCostR]=await Promise.all([
+    const [salesR,classR,turnkeyR,pt10R,pt10MasterR,sonoR,sonoMissR,targetR,puOnR,puOffR,rebuyR,pt10PuR,surveyR,omnifitRevR,omnifitCostR,equipMasterR]=await Promise.all([
       fetch(sheetUrl('일반기기')),fetch(sheetUrl('클래스')),fetch(sheetUrl('턴키 결제내역')),fetch(sheetUrl('PT10')),fetch(sheetUrl('PT10 마스터')),
       fetch(sheetUrl('초음파')+'&range=A7:AH'),fetch(sheetUrl('초음파누락')),fetch(TARGET_URL),
       fetch(sheetUrl('PU온라인')),fetch(sheetUrl('PU오프라인')),fetch(sheetUrl('재구매분석')),fetch(sheetUrl('PT10PU')),
       fetch(sheetUrl('턴키 상담관리')),
-      fetch(sheetUrl('옴니핏매출')),fetch(sheetUrl('옴니핏공급가'))
+      fetch(sheetUrl('옴니핏매출')),fetch(sheetUrl('옴니핏공급가')),
+      fetch(sheetUrl('기기 마스터'))
     ]);
     if(!salesR.ok)throw new Error('매출 데이터 로딩 실패');
     allData=parseCSV(await salesR.text()).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['공급가']=parseNum(r['공급가']);r['수량']=parseNum(r['수량']);r['연월']=fixYm(r['연월']);r['주문일']=fixDate(r['주문일']||'');return r});
+    try{if(equipMasterR.ok){const t=await equipMasterR.text();if(t.trim()){equipMaster={};parseCSV(t).forEach(r=>{const id=r['품목ID']||'';if(id)equipMaster[id]=r['장비여부']||''})}}}catch(e){console.warn('기기마스터 파싱 에러',e)}
     // 취소/반품 식별: 같은 주문번호+공급업체에 음수 매출이 있으면 해당 조합만 건수에서 제외
     const cancelledKeys=new Set();
     allData.forEach(d=>{if(d['매출금액']<0){const key=(d['주문번호']||'')+'_'+(d['공급업체']||'');cancelledKeys.add(key)}});
@@ -1510,13 +1513,14 @@ function renderTable(data){
   const head=document.getElementById('supplierHead');
   if(currentTab==='클래스'){head.innerHTML='<th onclick="sortTable(0)">카테고리</th><th onclick="sortTable(1)">상품명</th><th onclick="sortTable(2)" class="text-right">매출금액</th><th onclick="sortTable(3)" class="text-right">건수</th>'}
   else if(isClass){head.innerHTML='<th onclick="sortTable(0)">상품명</th><th onclick="sortTable(1)" class="text-right">매출금액</th><th onclick="sortTable(2)" class="text-right">건수</th>'}
-  else{head.innerHTML='<th onclick="sortTable(0)">공급업체</th><th onclick="sortTable(1)" class="text-right">매출금액</th><th onclick="sortTable(2)" class="text-right">공급가</th><th onclick="sortTable(3)" class="text-right">건수</th><th onclick="sortTable(4)" class="text-right">수량</th><th onclick="sortTable(5)" class="text-right">마진율</th>'}
-  const groups={};data.forEach(d=>{const k=d[nk];if(!k)return;if(!groups[k])groups[k]={name:d[nk],카테고리:d['카테고리']||'',매출금액:0,공급가:0,건수:0,수량:0};
-    groups[k].매출금액+=d['매출금액'];groups[k].공급가+=(d['공급가']||0);if(!d._cancelled)groups[k].건수+=1;groups[k].수량+=(d['수량']||0)});
+  else{head.innerHTML='<th onclick="sortTable(0)">공급업체</th><th onclick="sortTable(1)" class="text-right">매출금액</th><th onclick="sortTable(2)" class="text-right">공급가</th><th onclick="sortTable(3)" class="text-right">건수</th><th onclick="sortTable(4)" class="text-right">수량</th><th onclick="sortTable(5)" class="text-right">기기 수량</th><th onclick="sortTable(6)" class="text-right">마진율</th>'}
+  const groups={};data.forEach(d=>{const k=d[nk];if(!k)return;if(!groups[k])groups[k]={name:d[nk],카테고리:d['카테고리']||'',매출금액:0,공급가:0,건수:0,수량:0,기기수량:0};
+    groups[k].매출금액+=d['매출금액'];groups[k].공급가+=(d['공급가']||0);if(!d._cancelled)groups[k].건수+=1;groups[k].수량+=(d['수량']||0);
+    if(equipMaster[d['품목번호']]&&equipMaster[d['품목번호']]==='O')groups[k].기기수량+=(d['수량']||0)});
   let rows=Object.values(groups).sort((a,b)=>b.매출금액-a.매출금액);
   if(selectedSuppliers.length>0)rows=rows.filter(r=>selectedSuppliers.includes(r.name));
   if(sortCol>=0){
-    const ks=currentTab==='클래스'?['카테고리','name','매출금액','건수']:isClass?['name','매출금액','건수']:['name','매출금액','공급가','건수','수량','margin'];
+    const ks=currentTab==='클래스'?['카테고리','name','매출금액','건수']:isClass?['name','매출금액','건수']:['name','매출금액','공급가','건수','수량','기기수량','margin'];
     rows.sort((a,b)=>{let va,vb;const k=ks[sortCol];
       if(k==='margin'){va=a.매출금액?(a.매출금액-a.공급가)/a.매출금액:0;vb=b.매출금액?(b.매출금액-b.공급가)/b.매출금액:0}
       else{va=a[k];vb=b[k]}
@@ -1532,7 +1536,7 @@ function renderTable(data){
     if(currentTab==='클래스')return`<tr><td>${r.카테고리}</td><td><a href="#" onclick="showDetail('${esc}');return false;" style="color:#1a73e8;text-decoration:underline;cursor:pointer;">${r.name}</a></td><td class="text-right">${Math.round(r.매출금액).toLocaleString()}</td><td class="text-right">${r.건수.toLocaleString()}</td></tr>`;
     if(isClass)return`<tr><td><a href="#" onclick="showDetail('${esc}');return false;" style="color:#1a73e8;text-decoration:underline;cursor:pointer;">${r.name}</a></td><td class="text-right">${Math.round(r.매출금액).toLocaleString()}</td><td class="text-right">${r.건수.toLocaleString()}</td></tr>`;
     const mg=r.매출금액?((r.매출금액-r.공급가)/r.매출금액*100).toFixed(1):'-';
-    return`<tr><td><a href="#" onclick="showDetail('${esc}');return false;" style="color:#1a73e8;text-decoration:underline;cursor:pointer;">${r.name}</a></td><td class="text-right">${Math.round(r.매출금액).toLocaleString()}</td><td class="text-right">${Math.round(r.공급가).toLocaleString()}</td><td class="text-right">${r.건수.toLocaleString()}</td><td class="text-right">${r.수량.toLocaleString()}</td><td class="text-right">${mg}%</td></tr>`}).join('');
+    return`<tr><td><a href="#" onclick="showDetail('${esc}');return false;" style="color:#1a73e8;text-decoration:underline;cursor:pointer;">${r.name}</a></td><td class="text-right">${Math.round(r.매출금액).toLocaleString()}</td><td class="text-right">${Math.round(r.공급가).toLocaleString()}</td><td class="text-right">${r.건수.toLocaleString()}</td><td class="text-right">${r.수량.toLocaleString()}</td><td class="text-right">${r.기기수량.toLocaleString()}</td><td class="text-right">${mg}%</td></tr>`}).join('');
 
   const toggleEl=document.getElementById('detailTableToggle');
   if(needToggle){toggleEl.style.display='block';toggleEl.textContent=detailTableExpanded?'접기 ▲':`더보기 (${rows.length-LIMIT}개) ▼`}
