@@ -1647,7 +1647,10 @@ function showDetail(name){
     });
     // 옴니핏 스타일 피벗 테이블 생성
     function pivotTable(periodType){
-      const periods=Object.keys(totalByPeriod[periodType]).sort().reverse();
+      // 연도 내림차순, 연도 안에서는 오름차순 (26-01,26-02...26-04, 25-01...25-12)
+      const allPeriods=Object.keys(totalByPeriod[periodType]).sort();
+      const yrs=[...new Set(allPeriods.map(p=>p.substring(0,4)))].sort().reverse();
+      const periods=[];yrs.forEach(y=>allPeriods.filter(p=>p.startsWith(y)).forEach(p=>periods.push(p)));
       const thStyle='padding:4px 8px;font-size:11px;';
       const tdStyle='padding:3px 8px;font-size:12px;';
       const stickyStyle='position:sticky;left:0;background:#fff;z-index:2;min-width:80px;';
