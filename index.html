@@ -2471,8 +2471,10 @@ async function renderPT10DIO(){
       const lines=csv.trim().split('\n');if(lines.length<2)return[];
       const hdr=lines[0].split(',').map(h=>h.replace(/^"|"$/g,'').trim());
       return lines.slice(1).map(line=>{
-        const vals=line.match(/(".*?"|[^,]*)/g)||[];
-        const obj={};hdr.forEach((h,i)=>{let v=(vals[i]||'').replace(/^"|"$/g,'').trim();obj[h]=isNaN(v)||v===''?v:Number(v);});return obj;
+        const vals=[];let cur='',inQ=false;
+        for(const ch of line){if(ch==='"'){inQ=!inQ;continue;}if(ch===','&&!inQ){vals.push(cur.trim());cur='';continue;}cur+=ch;}
+        vals.push(cur.trim());
+        const obj={};hdr.forEach((h,i)=>{let v=(vals[i]||'').trim();obj[h]=isNaN(v)||v===''?v:Number(v);});return obj;
       });
     }
     const invData=parseCsvRows(invCsv);
