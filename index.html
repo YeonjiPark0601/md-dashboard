@@ -1669,9 +1669,9 @@ function showDetail(name){
           body+=`<tr style="border-bottom:2px solid #e8e8e8;"><td style="${tdStyle}${stickyStyle}"></td><td style="${tdStyle}${sticky2Style}">수량</td><td class="text-right" style="${tdStyle}background:#f0f2f5;font-weight:700;">${gTotalQ.toLocaleString()}</td>${periods.map(p=>`<td class="text-right" style="${tdStyle}">${gd[p]?gd[p].qty.toLocaleString():'-'}</td>`).join('')}</tr>`;
         });
       }else{
-        // 기기수량 없는 업체: 수량만
+        // 기기수량 없는 업체: 매출만
         const tObj=totalByPeriod[periodType];
-        body+=`<tr><td style="${tdStyle}${stickyStyle}font-weight:700;">수량</td><td style="${tdStyle}${sticky2Style}"></td><td class="text-right" style="${tdStyle}background:#f0f2f5;font-weight:700;">${totalQty.toLocaleString()}</td>${periods.map(p=>`<td class="text-right" style="${tdStyle}">${tObj[p]?tObj[p].qty.toLocaleString():'-'}</td>`).join('')}</tr>`;
+        body+=`<tr><td style="${tdStyle}${stickyStyle}font-weight:700;">매출</td><td style="${tdStyle}${sticky2Style}"></td><td class="text-right" style="${tdStyle}background:#f0f2f5;font-weight:700;">${Math.round(totalSales).toLocaleString()}</td>${periods.map(p=>`<td class="text-right" style="${tdStyle}">${tObj[p]?Math.round(tObj[p].sales).toLocaleString():'-'}</td>`).join('')}</tr>`;
       }
       return`<div style="overflow-x:auto;"><table class="pt10-sticky" style="width:100%;white-space:nowrap;font-size:12px;"><thead><tr style="background:#f5f5f5;">${head}</tr></thead><tbody>${body}</tbody></table></div>`;
     }
@@ -1684,7 +1684,7 @@ function showDetail(name){
         <div style="background:#f0f4ff;border-radius:8px;padding:10px 16px;flex:1;min-width:120px;text-align:center;"><div style="font-size:11px;color:#888;">마진율</div><div style="font-size:16px;font-weight:700;color:#1a1a2e;">${mg}%</div></div>
       </div>`:`
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;">
-        <div style="background:#f0f4ff;border-radius:8px;padding:10px 16px;min-width:120px;text-align:center;"><div style="font-size:11px;color:#888;">수량</div><div style="font-size:16px;font-weight:700;color:#1a1a2e;">${totalQty.toLocaleString()}</div></div>
+        <div style="background:#f0f4ff;border-radius:8px;padding:10px 16px;min-width:120px;text-align:center;"><div style="font-size:11px;color:#888;">매출</div><div style="font-size:16px;font-weight:700;color:#1a1a2e;">${Math.round(totalSales).toLocaleString()}</div></div>
       </div>`;
     summaryArea.innerHTML=`
       ${summaryCards}
