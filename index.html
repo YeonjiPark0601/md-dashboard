@@ -1647,31 +1647,47 @@ function showDetail(name){
     });
     // 옴니핏 스타일 피벗 테이블 생성
     function pivotTable(periodType){
-      const periods=Object.keys(totalByPeriod[periodType]).sort();
+      const periods=Object.keys(totalByPeriod[periodType]).sort().reverse();
       const thStyle='padding:4px 8px;font-size:11px;';
       const tdStyle='padding:3px 8px;font-size:12px;';
       const stickyStyle='position:sticky;left:0;background:#fff;z-index:2;min-width:80px;';
       const sticky2Style='position:sticky;left:80px;background:#fff;z-index:2;min-width:60px;';
-      let head=`<th style="${thStyle}${stickyStyle}">항목</th><th style="${thStyle}${sticky2Style}">구분</th><th class="text-right" style="${thStyle}background:#f0f2f5;font-weight:700;">합계</th>`+
+      const totBg='background:#f0f2f5;font-weight:700;';
+      // 연도별 합계 열 구성 (월별/분기별만)
+      const years=periodType!=='year'?[...new Set(periods.map(p=>p.split('-')[0].split('Q')[0]))].sort().reverse():[];
+      // 헤더: 항목 | 구분 | [연도합계들] | 기간들...
+      let head=`<th style="${thStyle}${stickyStyle}">항목</th><th style="${thStyle}${sticky2Style}">구분</th>`+
+        years.map(y=>`<th class="text-right" style="${thStyle}${totBg}">${y}년</th>`).join('')+
         periods.map(p=>`<th class="text-right" style="${thStyle}">${p.length>4?p.slice(2):p}</th>`).join('');
+      // 연도별 합계 계산 헬퍼
+      function yearSum(byPeriodObj,yr,field){
+        return periods.filter(p=>p.startsWith(yr)).reduce((s,p)=>{const v=byPeriodObj[p];return s+(v?v[field]:0)},0);
+      }
       let body='';
-      // 전체 합계 행
       if(hasEquip){
         const tObj=totalByPeriod[periodType];
-        body+=`<tr style="font-weight:700;background:#eef3ff;"><td style="${tdStyle}${stickyStyle}font-weight:700;">전체</td><td style="${tdStyle}${sticky2Style}">매출</td><td class="text-right" style="${tdStyle}background:#f0f2f5;font-weight:700;">${Math.round(totalSales).toLocaleString()}</td>${periods.map(p=>`<td class="text-right" style="${tdStyle}">${tObj[p]?Math.round(tObj[p].sales).toLocaleString():'-'}</td>`).join('')}</tr>`;
-        body+=`<tr style="font-weight:700;background:#eef3ff;"><td style="${tdStyle}${stickyStyle}"></td><td style="${tdStyle}${sticky2Style}">수량</td><td class="text-right" style="${tdStyle}background:#f0f2f5;font-weight:700;">${totalQty.toLocaleString()}</td>${periods.map(p=>`<td class="text-right" style="${tdStyle}">${tObj[p]?tObj[p].qty.toLocaleString():'-'}</td>`).join('')}</tr>`;
+        // 전체 연도합계 행
+        body+=`<tr style="font-weight:700;background:#eef3ff;"><td style="${tdStyle}${stickyStyle}font-weight:700;">전체</td><td style="${tdStyle}${sticky2Style}">매출</td>`+
+          years.map(y=>`<td class="text-right" style="${tdStyle}${totBg}">${Math.round(yearSum(tObj,y,'sales')).toLocaleString()}</td>`).join('')+
+          periods.map(p=>`<td class="text-right" style="${tdStyle}">${tObj[p]?Math.round(tObj[p].sales).toLocaleString():'-'}</td>`).join('')+`</tr>`;
+        body+=`<tr style="font-weight:700;background:#eef3ff;"><td style="${tdStyle}${stickyStyle}"></td><td style="${tdStyle}${sticky2Style}">수량</td>`+
+          years.map(y=>`<td class="text-right" style="${tdStyle}${totBg}">${yearSum(tObj,y,'qty').toLocaleString()}</td>`).join('')+
+          periods.map(p=>`<td class="text-right" style="${tdStyle}">${tObj[p]?tObj[p].qty.toLocaleString():'-'}</td>`).join('')+`</tr>`;
         // 구분별 행
         gubunList.forEach(g=>{
           const gd=gubunByPeriod[periodType][g]||{};
-          const gTotalS=Object.values(gd).reduce((s,v)=>s+v.sales,0);
-          const gTotalQ=Object.values(gd).reduce((s,v)=>s+v.qty,0);
-          body+=`<tr><td style="${tdStyle}${stickyStyle}font-weight:600;">${g}</td><td style="${tdStyle}${sticky2Style}">매출</td><td class="text-right" style="${tdStyle}background:#f0f2f5;font-weight:700;">${Math.round(gTotalS).toLocaleString()}</td>${periods.map(p=>`<td class="text-right" style="${tdStyle}">${gd[p]?Math.round(gd[p].sales).toLocaleString():'-'}</td>`).join('')}</tr>`;
-          body+=`<tr style="border-bottom:2px solid #e8e8e8;"><td style="${tdStyle}${stickyStyle}"></td><td style="${tdStyle}${sticky2Style}">수량</td><td class="text-right" style="${tdStyle}background:#f0f2f5;font-weight:700;">${gTotalQ.toLocaleString()}</td>${periods.map(p=>`<td class="text-right" style="${tdStyle}">${gd[p]?gd[p].qty.toLocaleString():'-'}</td>`).join('')}</tr>`;
+          body+=`<tr><td style="${tdStyle}${stickyStyle}font-weight:600;">${g}</td><td style="${tdStyle}${sticky2Style}">매출</td>`+
+            years.map(y=>`<td class="text-right" style="${tdStyle}${totBg}">${Math.round(yearSum(gd,y,'sales')).toLocaleString()}</td>`).join('')+
+            periods.map(p=>`<td class="text-right" style="${tdStyle}">${gd[p]?Math.round(gd[p].sales).toLocaleString():'-'}</td>`).join('')+`</tr>`;
+          body+=`<tr style="border-bottom:2px solid #e8e8e8;"><td style="${tdStyle}${stickyStyle}"></td><td style="${tdStyle}${sticky2Style}">수량</td>`+
+            years.map(y=>`<td class="text-right" style="${tdStyle}${totBg}">${yearSum(gd,y,'qty').toLocaleString()}</td>`).join('')+
+            periods.map(p=>`<td class="text-right" style="${tdStyle}">${gd[p]?gd[p].qty.toLocaleString():'-'}</td>`).join('')+`</tr>`;
         });
       }else{
-        // 기기수량 없는 업체: 매출만
         const tObj=totalByPeriod[periodType];
-        body+=`<tr><td style="${tdStyle}${stickyStyle}font-weight:700;">매출</td><td style="${tdStyle}${sticky2Style}"></td><td class="text-right" style="${tdStyle}background:#f0f2f5;font-weight:700;">${Math.round(totalSales).toLocaleString()}</td>${periods.map(p=>`<td class="text-right" style="${tdStyle}">${tObj[p]?Math.round(tObj[p].sales).toLocaleString():'-'}</td>`).join('')}</tr>`;
+        body+=`<tr><td style="${tdStyle}${stickyStyle}font-weight:700;">매출</td><td style="${tdStyle}${sticky2Style}"></td>`+
+          years.map(y=>`<td class="text-right" style="${tdStyle}${totBg}">${Math.round(yearSum(tObj,y,'sales')).toLocaleString()}</td>`).join('')+
+          periods.map(p=>`<td class="text-right" style="${tdStyle}">${tObj[p]?Math.round(tObj[p].sales).toLocaleString():'-'}</td>`).join('')+`</tr>`;
       }
       return`<div style="overflow-x:auto;"><table class="pt10-sticky" style="width:100%;white-space:nowrap;font-size:12px;"><thead><tr style="background:#f5f5f5;">${head}</tr></thead><tbody>${body}</tbody></table></div>`;
     }
