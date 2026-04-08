@@ -1647,50 +1647,51 @@ function showDetail(name){
     });
     // 옴니핏 스타일 피벗 테이블 생성
     function pivotTable(periodType){
-      // 연도 내림차순, 연도 안에서는 오름차순 (26-01,26-02...26-04, 25-01...25-12)
       const allPeriods=Object.keys(totalByPeriod[periodType]).sort();
       const yrs=[...new Set(allPeriods.map(p=>p.substring(0,4)))].sort().reverse();
-      const periods=[];yrs.forEach(y=>allPeriods.filter(p=>p.startsWith(y)).forEach(p=>periods.push(p)));
       const thStyle='padding:4px 8px;font-size:11px;';
       const tdStyle='padding:3px 8px;font-size:12px;';
       const stickyStyle='position:sticky;left:0;background:#fff;z-index:2;min-width:80px;';
       const sticky2Style='position:sticky;left:80px;background:#fff;z-index:2;min-width:60px;';
       const totBg='background:#f0f2f5;font-weight:700;';
-      // 연도별 합계 열 구성 (월별/분기별만)
-      const years=periodType!=='year'?[...new Set(periods.map(p=>p.split('-')[0].split('Q')[0]))].sort().reverse():[];
-      // 헤더: 항목 | 구분 | [연도합계들] | 기간들...
-      let head=`<th style="${thStyle}${stickyStyle}">항목</th><th style="${thStyle}${sticky2Style}">구분</th>`+
-        years.map(y=>`<th class="text-right" style="${thStyle}${totBg}">${y}년</th>`).join('')+
-        periods.map(p=>`<th class="text-right" style="${thStyle}">${p.length>4?p.slice(2):p}</th>`).join('');
-      // 연도별 합계 계산 헬퍼
+      // 열 구성: [2026년합계, 26-01, 26-02, ..., 2025년합계, 25-01, ...] (월별/분기별)
+      // 연도별 탭은 합계 열 없이 연도만
+      const cols=[];
+      if(periodType==='year'){
+        yrs.forEach(y=>cols.push({key:y,label:y,isTotal:false,year:y}));
+      }else{
+        yrs.forEach(y=>{
+          cols.push({key:'_yr_'+y,label:y+'년',isTotal:true,year:y});
+          allPeriods.filter(p=>p.startsWith(y)).forEach(p=>cols.push({key:p,label:p.slice(2),isTotal:false,year:y}));
+        });
+      }
       function yearSum(byPeriodObj,yr,field){
-        return periods.filter(p=>p.startsWith(yr)).reduce((s,p)=>{const v=byPeriodObj[p];return s+(v?v[field]:0)},0);
+        return allPeriods.filter(p=>p.startsWith(yr)).reduce((s,p)=>{const v=byPeriodObj[p];return s+(v?v[field]:0)},0);
+      }
+      function colVal(byPeriodObj,col,field){
+        return col.isTotal?yearSum(byPeriodObj,col.year,field):(byPeriodObj[col.key]?byPeriodObj[col.key][field]:0);
+      }
+      function fmtSales(v){return v?Math.round(v).toLocaleString():'-'}
+      function fmtQty(v){return v?v.toLocaleString():'-'}
+      // 헤더
+      let head=`<th style="${thStyle}${stickyStyle}">항목</th><th style="${thStyle}${sticky2Style}">구분</th>`+
+        cols.map(c=>`<th class="text-right" style="${thStyle}${c.isTotal?totBg:''}">${c.label}</th>`).join('');
+      function rowCells(byPeriodObj,field,fmt){
+        return cols.map(c=>`<td class="text-right" style="${tdStyle}${c.isTotal?totBg:''}">${fmt(colVal(byPeriodObj,c,field))}</td>`).join('');
       }
       let body='';
       if(hasEquip){
         const tObj=totalByPeriod[periodType];
-        // 전체 연도합계 행
-        body+=`<tr style="font-weight:700;background:#eef3ff;"><td style="${tdStyle}${stickyStyle}font-weight:700;">전체</td><td style="${tdStyle}${sticky2Style}">매출</td>`+
-          years.map(y=>`<td class="text-right" style="${tdStyle}${totBg}">${Math.round(yearSum(tObj,y,'sales')).toLocaleString()}</td>`).join('')+
-          periods.map(p=>`<td class="text-right" style="${tdStyle}">${tObj[p]?Math.round(tObj[p].sales).toLocaleString():'-'}</td>`).join('')+`</tr>`;
-        body+=`<tr style="font-weight:700;background:#eef3ff;"><td style="${tdStyle}${stickyStyle}"></td><td style="${tdStyle}${sticky2Style}">수량</td>`+
-          years.map(y=>`<td class="text-right" style="${tdStyle}${totBg}">${yearSum(tObj,y,'qty').toLocaleString()}</td>`).join('')+
-          periods.map(p=>`<td class="text-right" style="${tdStyle}">${tObj[p]?tObj[p].qty.toLocaleString():'-'}</td>`).join('')+`</tr>`;
-        // 구분별 행
+        body+=`<tr style="font-weight:700;background:#eef3ff;"><td style="${tdStyle}${stickyStyle}font-weight:700;">전체</td><td style="${tdStyle}${sticky2Style}">매출</td>${rowCells(tObj,'sales',fmtSales)}</tr>`;
+        body+=`<tr style="font-weight:700;background:#eef3ff;"><td style="${tdStyle}${stickyStyle}"></td><td style="${tdStyle}${sticky2Style}">수량</td>${rowCells(tObj,'qty',fmtQty)}</tr>`;
         gubunList.forEach(g=>{
           const gd=gubunByPeriod[periodType][g]||{};
-          body+=`<tr><td style="${tdStyle}${stickyStyle}font-weight:600;">${g}</td><td style="${tdStyle}${sticky2Style}">매출</td>`+
-            years.map(y=>`<td class="text-right" style="${tdStyle}${totBg}">${Math.round(yearSum(gd,y,'sales')).toLocaleString()}</td>`).join('')+
-            periods.map(p=>`<td class="text-right" style="${tdStyle}">${gd[p]?Math.round(gd[p].sales).toLocaleString():'-'}</td>`).join('')+`</tr>`;
-          body+=`<tr style="border-bottom:2px solid #e8e8e8;"><td style="${tdStyle}${stickyStyle}"></td><td style="${tdStyle}${sticky2Style}">수량</td>`+
-            years.map(y=>`<td class="text-right" style="${tdStyle}${totBg}">${yearSum(gd,y,'qty').toLocaleString()}</td>`).join('')+
-            periods.map(p=>`<td class="text-right" style="${tdStyle}">${gd[p]?gd[p].qty.toLocaleString():'-'}</td>`).join('')+`</tr>`;
+          body+=`<tr><td style="${tdStyle}${stickyStyle}font-weight:600;">${g}</td><td style="${tdStyle}${sticky2Style}">매출</td>${rowCells(gd,'sales',fmtSales)}</tr>`;
+          body+=`<tr style="border-bottom:2px solid #e8e8e8;"><td style="${tdStyle}${stickyStyle}"></td><td style="${tdStyle}${sticky2Style}">수량</td>${rowCells(gd,'qty',fmtQty)}</tr>`;
         });
       }else{
         const tObj=totalByPeriod[periodType];
-        body+=`<tr><td style="${tdStyle}${stickyStyle}font-weight:700;">매출</td><td style="${tdStyle}${sticky2Style}"></td>`+
-          years.map(y=>`<td class="text-right" style="${tdStyle}${totBg}">${Math.round(yearSum(tObj,y,'sales')).toLocaleString()}</td>`).join('')+
-          periods.map(p=>`<td class="text-right" style="${tdStyle}">${tObj[p]?Math.round(tObj[p].sales).toLocaleString():'-'}</td>`).join('')+`</tr>`;
+        body+=`<tr><td style="${tdStyle}${stickyStyle}font-weight:700;">매출</td><td style="${tdStyle}${sticky2Style}"></td>${rowCells(tObj,'sales',fmtSales)}</tr>`;
       }
       return`<div style="overflow-x:auto;"><table class="pt10-sticky" style="width:100%;white-space:nowrap;font-size:12px;"><thead><tr style="background:#f5f5f5;">${head}</tr></thead><tbody>${body}</tbody></table></div>`;
     }
@@ -1730,7 +1731,6 @@ function showDetail(name){
   if(allRows.length>DLIMIT){toggleEl.style.display='block';toggleEl.textContent=`더보기 (${allRows.length-DLIMIT}건) ▼`}
   else{toggleEl.style.display='none'}
   document.getElementById('detailSection').style.display='block';
-  document.getElementById('detailSection').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function switchDetailPeriod(type){
   const fn=window._detPeriodPivot;if(!fn)return;
