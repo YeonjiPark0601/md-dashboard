@@ -391,6 +391,7 @@ tr:hover { background: #f7f9fc; }
             <span id="detailTitle">-</span>
             <span onclick="closeDetail()" style="float:right;cursor:pointer;color:#888;font-size:12px;">닫기 ✕</span>
           </h3>
+          <div id="detailSummaryArea" style="margin-bottom:16px;"></div>
           <div style="overflow-x:auto;"><table style="width:100%;white-space:nowrap;"><thead><tr id="detailHead"></tr></thead><tbody id="detailBody"></tbody></table></div>
           <div id="detailToggle" onclick="toggleDetailList()" style="display:none;text-align:center;padding:10px;color:#1a73e8;cursor:pointer;font-size:13px;font-weight:600;border-top:1px solid #f0f0f0;margin-top:4px;"></div>
         </div>
@@ -707,7 +708,7 @@ async function fetchData(){
     // 턴키CID 로드
     try{const tkCidR=await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('턴키CID')}&headers=1&_t=${Date.now()}`);
       if(tkCidR.ok){const t=await tkCidR.text();if(t.trim()){const parseAddr=a=>{if(!a)return null;const parts=a.split(/\s+/);const w=parts[0];const m=[['서울','서울'],['부산','부산'],['대구','대구'],['인천','인천'],['광주','광주'],['대전','대전'],['울산','울산'],['세종','세종'],['경기','경기'],['강원','강원'],['충북','충북'],['충청북','충북'],['충남','충남'],['충청남','충남'],['전북','전북'],['전라북','전북'],['전남','전남'],['전라남','전남'],['경북','경북'],['경상북','경북'],['경남','경남'],['경상남','경남'],['제주','제주']];let region='';for(const[k,v]of m){if(w.includes(k)){region=v;break}}if(!region)return null;const sub=parts[1]||'';return{region,sub}};
-        parseCSV(t).forEach(r=>{const cid=(r['customer_id']||'').trim();const addr=(r['shipping_addr_rd']||'').trim();if(cid&&addr){const p=parseAddr(addr);if(p)turnkeyCidMap[cid]=p}})}}}catch(e){console.warn('턴키CID 에러',e)}
+        parseCSV(t).forEach(r=>{const cid=(r['customer_id']||r['cid']||'').trim();const addr=(r['shipping_addr_rd']||'').trim();if(cid&&addr){const p=parseAddr(addr);if(p)turnkeyCidMap[cid]=p}})}}}catch(e){console.warn('턴키CID 에러',e)}
     initFilters();render();
     document.getElementById('loadingMsg').style.display='none';
     document.getElementById('dashboardContent').style.display='block';
@@ -1607,8 +1608,69 @@ function showDetail(name){
   const nk=currentTab==='의료기기'?'공급업체':currentTab==='초음파'?'품목명':'상품명';const isClass=currentTab!=='의료기기';
   const data=getFilteredData().filter(d=>d[nk]===name);
   data.sort((a,b)=>(b['주문일']||'').localeCompare(a['주문일']||''));
-  const detailCount=data.filter(d=>!d._cancelled).length;
-  document.getElementById('detailTitle').textContent=`${name} 매출 상세 (${detailCount}건)`;
+  document.getElementById('detailTitle').textContent=`${name}`;
+  // === 기간별 매출 요약 (의료기기 탭) ===
+  const summaryArea=document.getElementById('detailSummaryArea');
+  if(!isClass&&currentTab==='의료기기'){
+    const hasEquip=data.some(d=>{const ids=(d['품목번호']||'').split('|||');return ids.some(id=>equipMaster[id]==='O')});
+    // 기간별 집계
+    const byMonth={},byQtr={},byYear={};
+    data.forEach(d=>{
+      const ym=d['연월']||'';const amt=d['매출금액']||0;const cost=d['공급가']||0;const qty=d['수량']||0;
+      if(ym){
+        if(!byMonth[ym])byMonth[ym]={sales:0,cost:0,qty:0};byMonth[ym].sales+=amt;byMonth[ym].cost+=cost;byMonth[ym].qty+=qty;
+        const [y,m]=ym.split('-');const q=y+'-Q'+Math.ceil(parseInt(m)/3);
+        if(!byQtr[q])byQtr[q]={sales:0,cost:0,qty:0};byQtr[q].sales+=amt;byQtr[q].cost+=cost;byQtr[q].qty+=qty;
+        if(!byYear[y])byYear[y]={sales:0,cost:0,qty:0};byYear[y].sales+=amt;byYear[y].cost+=cost;byYear[y].qty+=qty;
+      }
+    });
+    const totalSales=data.reduce((s,d)=>s+(d['매출금액']||0),0);
+    const totalCost=data.reduce((s,d)=>s+(d['공급가']||0),0);
+    const totalQty=data.reduce((s,d)=>s+(d['수량']||0),0);
+    const mg=totalSales?((totalSales-totalCost)/totalSales*100).toFixed(1):'-';
+    // 구분별 내역 (기기수량 있는 업체만)
+    let gubunHtml='';
+    if(hasEquip){
+      const byGubun={};
+      data.forEach(d=>{const g=d['구분']||'기타';if(!byGubun[g])byGubun[g]={sales:0,qty:0};byGubun[g].sales+=(d['매출금액']||0);byGubun[g].qty+=(d['수량']||0)});
+      const gubunRows=Object.entries(byGubun).sort((a,b)=>b[1].sales-a[1].sales);
+      gubunHtml=`<div style="flex:1;min-width:240px;"><div style="font-weight:600;font-size:12px;color:#888;margin-bottom:6px;">구분별 내역</div><table style="width:100%;font-size:12px;"><thead><tr style="background:#f5f5f5;"><th style="padding:4px 8px;text-align:left;">구분</th><th style="padding:4px 8px;text-align:right;">수량</th><th style="padding:4px 8px;text-align:right;">매출</th></tr></thead><tbody>${gubunRows.map(([g,v])=>`<tr><td style="padding:3px 8px;">${g}</td><td style="padding:3px 8px;text-align:right;">${v.qty.toLocaleString()}</td><td style="padding:3px 8px;text-align:right;">${Math.round(v.sales).toLocaleString()}</td></tr>`).join('')}</tbody></table></div>`;
+    }
+    // 기간별 테이블 생성 함수
+    function periodTable(obj,label){
+      const keys=Object.keys(obj).sort();
+      if(hasEquip){
+        return`<table style="width:100%;font-size:12px;"><thead><tr style="background:#f5f5f5;"><th style="padding:4px 8px;text-align:left;">${label}</th><th style="padding:4px 8px;text-align:right;">매출</th><th style="padding:4px 8px;text-align:right;">공급가</th><th style="padding:4px 8px;text-align:right;">수량</th></tr></thead><tbody>${keys.map(k=>`<tr><td style="padding:3px 8px;">${k}</td><td style="padding:3px 8px;text-align:right;">${Math.round(obj[k].sales).toLocaleString()}</td><td style="padding:3px 8px;text-align:right;">${Math.round(obj[k].cost).toLocaleString()}</td><td style="padding:3px 8px;text-align:right;">${obj[k].qty.toLocaleString()}</td></tr>`).join('')}<tr style="font-weight:700;border-top:2px solid #ddd;"><td style="padding:3px 8px;">합계</td><td style="padding:3px 8px;text-align:right;">${Math.round(totalSales).toLocaleString()}</td><td style="padding:3px 8px;text-align:right;">${Math.round(totalCost).toLocaleString()}</td><td style="padding:3px 8px;text-align:right;">${totalQty.toLocaleString()}</td></tr></tbody></table>`;
+      }
+      return`<table style="width:100%;font-size:12px;"><thead><tr style="background:#f5f5f5;"><th style="padding:4px 8px;text-align:left;">${label}</th><th style="padding:4px 8px;text-align:right;">수량</th></tr></thead><tbody>${keys.map(k=>`<tr><td style="padding:3px 8px;">${k}</td><td style="padding:3px 8px;text-align:right;">${obj[k].qty.toLocaleString()}</td></tr>`).join('')}<tr style="font-weight:700;border-top:2px solid #ddd;"><td style="padding:3px 8px;">합계</td><td style="padding:3px 8px;text-align:right;">${totalQty.toLocaleString()}</td></tr></tbody></table>`;
+    }
+    // 요약 카드
+    const summaryCards=hasEquip?`
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;">
+        <div style="background:#f0f4ff;border-radius:8px;padding:10px 16px;flex:1;min-width:120px;text-align:center;"><div style="font-size:11px;color:#888;">매출</div><div style="font-size:16px;font-weight:700;color:#1a1a2e;">${Math.round(totalSales).toLocaleString()}</div></div>
+        <div style="background:#f0f4ff;border-radius:8px;padding:10px 16px;flex:1;min-width:120px;text-align:center;"><div style="font-size:11px;color:#888;">공급가</div><div style="font-size:16px;font-weight:700;color:#1a1a2e;">${Math.round(totalCost).toLocaleString()}</div></div>
+        <div style="background:#f0f4ff;border-radius:8px;padding:10px 16px;flex:1;min-width:120px;text-align:center;"><div style="font-size:11px;color:#888;">수량</div><div style="font-size:16px;font-weight:700;color:#1a1a2e;">${totalQty.toLocaleString()}</div></div>
+        <div style="background:#f0f4ff;border-radius:8px;padding:10px 16px;flex:1;min-width:120px;text-align:center;"><div style="font-size:11px;color:#888;">마진율</div><div style="font-size:16px;font-weight:700;color:#1a1a2e;">${mg}%</div></div>
+      </div>`:`
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;">
+        <div style="background:#f0f4ff;border-radius:8px;padding:10px 16px;min-width:120px;text-align:center;"><div style="font-size:11px;color:#888;">수량</div><div style="font-size:16px;font-weight:700;color:#1a1a2e;">${totalQty.toLocaleString()}</div></div>
+      </div>`;
+    summaryArea.innerHTML=`
+      ${summaryCards}
+      <div style="display:flex;gap:6px;margin-bottom:10px;">
+        <button onclick="switchDetailPeriod('month')" id="detPrdMonth" class="detPrdBtn" style="padding:4px 12px;font-size:12px;border:1px solid #d0d0d0;border-radius:6px;cursor:pointer;background:#1a73e8;color:#fff;">월별</button>
+        <button onclick="switchDetailPeriod('quarter')" id="detPrdQtr" class="detPrdBtn" style="padding:4px 12px;font-size:12px;border:1px solid #d0d0d0;border-radius:6px;cursor:pointer;background:#fff;color:#333;">분기별</button>
+        <button onclick="switchDetailPeriod('year')" id="detPrdYear" class="detPrdBtn" style="padding:4px 12px;font-size:12px;border:1px solid #d0d0d0;border-radius:6px;cursor:pointer;background:#fff;color:#333;">연도별</button>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;">
+        <div style="flex:2;min-width:300px;">
+          <div id="detPeriodTable">${periodTable(byMonth,'월')}</div>
+        </div>
+        ${gubunHtml}
+      </div>`;
+    window._detPeriodData={month:byMonth,quarter:byQtr,year:byYear,totalSales,totalCost,totalQty,hasEquip};
+  }else{summaryArea.innerHTML=''}
+  // === 주문 상세 테이블 ===
   const dh=document.getElementById('detailHead');
   if(isClass)dh.innerHTML='<th>주문일</th><th>소분류</th><th>카테고리</th><th class="text-right">매출금액</th>';
   else dh.innerHTML='<th>주문번호</th><th>주문일</th><th>한의원명</th><th>품목명</th><th>옵션명</th><th class="text-right">매출금액</th><th class="text-right">공급가</th><th class="text-right">수량</th><th>구분</th>';
@@ -1625,6 +1687,22 @@ function showDetail(name){
   document.getElementById('detailSection').style.display='block';
   document.getElementById('detailSection').scrollIntoView({behavior:'smooth',block:'start'});
 }
+function switchDetailPeriod(type){
+  const d=window._detPeriodData;if(!d)return;
+  const labels={month:'월',quarter:'분기',year:'연도'};
+  const obj=d[type];
+  const keys=Object.keys(obj).sort();
+  let html;
+  if(d.hasEquip){
+    html=`<table style="width:100%;font-size:12px;"><thead><tr style="background:#f5f5f5;"><th style="padding:4px 8px;text-align:left;">${labels[type]}</th><th style="padding:4px 8px;text-align:right;">매출</th><th style="padding:4px 8px;text-align:right;">공급가</th><th style="padding:4px 8px;text-align:right;">수량</th></tr></thead><tbody>${keys.map(k=>`<tr><td style="padding:3px 8px;">${k}</td><td style="padding:3px 8px;text-align:right;">${Math.round(obj[k].sales).toLocaleString()}</td><td style="padding:3px 8px;text-align:right;">${Math.round(obj[k].cost).toLocaleString()}</td><td style="padding:3px 8px;text-align:right;">${obj[k].qty.toLocaleString()}</td></tr>`).join('')}<tr style="font-weight:700;border-top:2px solid #ddd;"><td style="padding:3px 8px;">합계</td><td style="padding:3px 8px;text-align:right;">${Math.round(d.totalSales).toLocaleString()}</td><td style="padding:3px 8px;text-align:right;">${Math.round(d.totalCost).toLocaleString()}</td><td style="padding:3px 8px;text-align:right;">${d.totalQty.toLocaleString()}</td></tr></tbody></table>`;
+  }else{
+    html=`<table style="width:100%;font-size:12px;"><thead><tr style="background:#f5f5f5;"><th style="padding:4px 8px;text-align:left;">${labels[type]}</th><th style="padding:4px 8px;text-align:right;">수량</th></tr></thead><tbody>${keys.map(k=>`<tr><td style="padding:3px 8px;">${k}</td><td style="padding:3px 8px;text-align:right;">${obj[k].qty.toLocaleString()}</td></tr>`).join('')}<tr style="font-weight:700;border-top:2px solid #ddd;"><td style="padding:3px 8px;">합계</td><td style="padding:3px 8px;text-align:right;">${d.totalQty.toLocaleString()}</td></tr></tbody></table>`;
+  }
+  document.getElementById('detPeriodTable').innerHTML=html;
+  document.querySelectorAll('.detPrdBtn').forEach(b=>{b.style.background='#fff';b.style.color='#333'});
+  const btnId={month:'detPrdMonth',quarter:'detPrdQtr',year:'detPrdYear'};
+  const btn=document.getElementById(btnId[type]);if(btn){btn.style.background='#1a73e8';btn.style.color='#fff'}
+}
 let detailListExpanded=false;
 function toggleDetailList(){
   detailListExpanded=!detailListExpanded;
@@ -1632,7 +1710,7 @@ function toggleDetailList(){
   document.getElementById('detailBody').innerHTML=detailListExpanded?all.join(''):all.slice(0,20).join('');
   document.getElementById('detailToggle').textContent=detailListExpanded?'접기 ▲':`더보기 (${all.length-20}건) ▼`;
 }
-function closeDetail(){document.getElementById('detailSection').style.display='none'}
+function closeDetail(){document.getElementById('detailSection').style.display='none';document.getElementById('detailSummaryArea').innerHTML=''}
 function downloadDetailExcel(){
   const data=getFilteredData();
   if(!data.length){alert('데이터가 없습니다.');return;}
