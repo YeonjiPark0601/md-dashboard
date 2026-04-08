@@ -1613,36 +1613,62 @@ function showDetail(name){
   const summaryArea=document.getElementById('detailSummaryArea');
   if(!isClass&&currentTab==='의료기기'){
     const hasEquip=data.some(d=>{const ids=(d['품목번호']||'').split('|||');return ids.some(id=>equipMaster[id]==='O')});
-    // 기간별 집계
-    const byMonth={},byQtr={},byYear={};
+    // 구분별×기간별 집계
+    const gubuns=new Set();const gubunByPeriod={month:{},quarter:{},year:{}};
+    const totalByPeriod={month:{},quarter:{},year:{}};
     data.forEach(d=>{
-      const ym=d['연월']||'';const amt=d['매출금액']||0;const cost=d['공급가']||0;const qty=d['수량']||0;
-      if(ym){
-        if(!byMonth[ym])byMonth[ym]={sales:0,cost:0,qty:0};byMonth[ym].sales+=amt;byMonth[ym].cost+=cost;byMonth[ym].qty+=qty;
-        const [y,m]=ym.split('-');const q=y+'-Q'+Math.ceil(parseInt(m)/3);
-        if(!byQtr[q])byQtr[q]={sales:0,cost:0,qty:0};byQtr[q].sales+=amt;byQtr[q].cost+=cost;byQtr[q].qty+=qty;
-        if(!byYear[y])byYear[y]={sales:0,cost:0,qty:0};byYear[y].sales+=amt;byYear[y].cost+=cost;byYear[y].qty+=qty;
-      }
+      const ym=d['연월']||'';if(!ym)return;
+      const amt=d['매출금액']||0;const cost=d['공급가']||0;const qty=d['수량']||0;
+      const g=hasEquip?(d['구분']||'기타'):'_all';
+      gubuns.add(g);
+      const [y,mo]=ym.split('-');const qk=y+'-Q'+Math.ceil(parseInt(mo)/3);
+      [[ym,'month'],[qk,'quarter'],[y,'year']].forEach(([pk,pt])=>{
+        if(!totalByPeriod[pt][pk])totalByPeriod[pt][pk]={sales:0,cost:0,qty:0};
+        totalByPeriod[pt][pk].sales+=amt;totalByPeriod[pt][pk].cost+=cost;totalByPeriod[pt][pk].qty+=qty;
+        if(!gubunByPeriod[pt][g])gubunByPeriod[pt][g]={};
+        if(!gubunByPeriod[pt][g][pk])gubunByPeriod[pt][g][pk]={sales:0,qty:0};
+        gubunByPeriod[pt][g][pk].sales+=amt;gubunByPeriod[pt][g][pk].qty+=qty;
+      });
     });
     const totalSales=data.reduce((s,d)=>s+(d['매출금액']||0),0);
     const totalCost=data.reduce((s,d)=>s+(d['공급가']||0),0);
     const totalQty=data.reduce((s,d)=>s+(d['수량']||0),0);
     const mg=totalSales?((totalSales-totalCost)/totalSales*100).toFixed(1):'-';
-    // 구분별 내역 (기기수량 있는 업체만)
-    let gubunHtml='';
-    if(hasEquip){
-      const byGubun={};
-      data.forEach(d=>{const g=d['구분']||'기타';if(!byGubun[g])byGubun[g]={sales:0,qty:0};byGubun[g].sales+=(d['매출금액']||0);byGubun[g].qty+=(d['수량']||0)});
-      const gubunRows=Object.entries(byGubun).sort((a,b)=>b[1].sales-a[1].sales);
-      gubunHtml=`<div style="flex:1;min-width:240px;"><div style="font-weight:600;font-size:12px;color:#888;margin-bottom:6px;">구분별 내역</div><table style="width:100%;font-size:12px;"><thead><tr style="background:#f5f5f5;"><th style="padding:4px 8px;text-align:left;">구분</th><th style="padding:4px 8px;text-align:right;">수량</th><th style="padding:4px 8px;text-align:right;">매출</th></tr></thead><tbody>${gubunRows.map(([g,v])=>`<tr><td style="padding:3px 8px;">${g}</td><td style="padding:3px 8px;text-align:right;">${v.qty.toLocaleString()}</td><td style="padding:3px 8px;text-align:right;">${Math.round(v.sales).toLocaleString()}</td></tr>`).join('')}</tbody></table></div>`;
-    }
-    // 기간별 테이블 생성 함수
-    function periodTable(obj,label){
-      const keys=Object.keys(obj).sort();
+    // 구분 정렬 (매출 내림차순)
+    const gubunList=[...gubuns].sort((a,b)=>{
+      const sa=data.filter(d=>(hasEquip?(d['구분']||'기타'):'_all')===a).reduce((s,d)=>s+(d['매출금액']||0),0);
+      const sb=data.filter(d=>(hasEquip?(d['구분']||'기타'):'_all')===b).reduce((s,d)=>s+(d['매출금액']||0),0);
+      return sb-sa;
+    });
+    // 옴니핏 스타일 피벗 테이블 생성
+    function pivotTable(periodType){
+      const periods=Object.keys(totalByPeriod[periodType]).sort();
+      const thStyle='padding:4px 8px;font-size:11px;';
+      const tdStyle='padding:3px 8px;font-size:12px;';
+      const stickyStyle='position:sticky;left:0;background:#fff;z-index:2;min-width:80px;';
+      const sticky2Style='position:sticky;left:80px;background:#fff;z-index:2;min-width:60px;';
+      let head=`<th style="${thStyle}${stickyStyle}">항목</th><th style="${thStyle}${sticky2Style}">구분</th><th class="text-right" style="${thStyle}background:#f0f2f5;font-weight:700;">합계</th>`+
+        periods.map(p=>`<th class="text-right" style="${thStyle}">${p.length>4?p.slice(2):p}</th>`).join('');
+      let body='';
+      // 전체 합계 행
       if(hasEquip){
-        return`<table style="width:100%;font-size:12px;"><thead><tr style="background:#f5f5f5;"><th style="padding:4px 8px;text-align:left;">${label}</th><th style="padding:4px 8px;text-align:right;">매출</th><th style="padding:4px 8px;text-align:right;">공급가</th><th style="padding:4px 8px;text-align:right;">수량</th></tr></thead><tbody>${keys.map(k=>`<tr><td style="padding:3px 8px;">${k}</td><td style="padding:3px 8px;text-align:right;">${Math.round(obj[k].sales).toLocaleString()}</td><td style="padding:3px 8px;text-align:right;">${Math.round(obj[k].cost).toLocaleString()}</td><td style="padding:3px 8px;text-align:right;">${obj[k].qty.toLocaleString()}</td></tr>`).join('')}<tr style="font-weight:700;border-top:2px solid #ddd;"><td style="padding:3px 8px;">합계</td><td style="padding:3px 8px;text-align:right;">${Math.round(totalSales).toLocaleString()}</td><td style="padding:3px 8px;text-align:right;">${Math.round(totalCost).toLocaleString()}</td><td style="padding:3px 8px;text-align:right;">${totalQty.toLocaleString()}</td></tr></tbody></table>`;
+        const tObj=totalByPeriod[periodType];
+        body+=`<tr style="font-weight:700;background:#eef3ff;"><td style="${tdStyle}${stickyStyle}font-weight:700;">전체</td><td style="${tdStyle}${sticky2Style}">매출</td><td class="text-right" style="${tdStyle}background:#f0f2f5;font-weight:700;">${Math.round(totalSales).toLocaleString()}</td>${periods.map(p=>`<td class="text-right" style="${tdStyle}">${tObj[p]?Math.round(tObj[p].sales).toLocaleString():'-'}</td>`).join('')}</tr>`;
+        body+=`<tr style="font-weight:700;background:#eef3ff;"><td style="${tdStyle}${stickyStyle}"></td><td style="${tdStyle}${sticky2Style}">수량</td><td class="text-right" style="${tdStyle}background:#f0f2f5;font-weight:700;">${totalQty.toLocaleString()}</td>${periods.map(p=>`<td class="text-right" style="${tdStyle}">${tObj[p]?tObj[p].qty.toLocaleString():'-'}</td>`).join('')}</tr>`;
+        // 구분별 행
+        gubunList.forEach(g=>{
+          const gd=gubunByPeriod[periodType][g]||{};
+          const gTotalS=Object.values(gd).reduce((s,v)=>s+v.sales,0);
+          const gTotalQ=Object.values(gd).reduce((s,v)=>s+v.qty,0);
+          body+=`<tr><td style="${tdStyle}${stickyStyle}font-weight:600;">${g}</td><td style="${tdStyle}${sticky2Style}">매출</td><td class="text-right" style="${tdStyle}background:#f0f2f5;font-weight:700;">${Math.round(gTotalS).toLocaleString()}</td>${periods.map(p=>`<td class="text-right" style="${tdStyle}">${gd[p]?Math.round(gd[p].sales).toLocaleString():'-'}</td>`).join('')}</tr>`;
+          body+=`<tr style="border-bottom:2px solid #e8e8e8;"><td style="${tdStyle}${stickyStyle}"></td><td style="${tdStyle}${sticky2Style}">수량</td><td class="text-right" style="${tdStyle}background:#f0f2f5;font-weight:700;">${gTotalQ.toLocaleString()}</td>${periods.map(p=>`<td class="text-right" style="${tdStyle}">${gd[p]?gd[p].qty.toLocaleString():'-'}</td>`).join('')}</tr>`;
+        });
+      }else{
+        // 기기수량 없는 업체: 수량만
+        const tObj=totalByPeriod[periodType];
+        body+=`<tr><td style="${tdStyle}${stickyStyle}font-weight:700;">수량</td><td style="${tdStyle}${sticky2Style}"></td><td class="text-right" style="${tdStyle}background:#f0f2f5;font-weight:700;">${totalQty.toLocaleString()}</td>${periods.map(p=>`<td class="text-right" style="${tdStyle}">${tObj[p]?tObj[p].qty.toLocaleString():'-'}</td>`).join('')}</tr>`;
       }
-      return`<table style="width:100%;font-size:12px;"><thead><tr style="background:#f5f5f5;"><th style="padding:4px 8px;text-align:left;">${label}</th><th style="padding:4px 8px;text-align:right;">수량</th></tr></thead><tbody>${keys.map(k=>`<tr><td style="padding:3px 8px;">${k}</td><td style="padding:3px 8px;text-align:right;">${obj[k].qty.toLocaleString()}</td></tr>`).join('')}<tr style="font-weight:700;border-top:2px solid #ddd;"><td style="padding:3px 8px;">합계</td><td style="padding:3px 8px;text-align:right;">${totalQty.toLocaleString()}</td></tr></tbody></table>`;
+      return`<div style="overflow-x:auto;"><table class="pt10-sticky" style="width:100%;white-space:nowrap;font-size:12px;"><thead><tr style="background:#f5f5f5;">${head}</tr></thead><tbody>${body}</tbody></table></div>`;
     }
     // 요약 카드
     const summaryCards=hasEquip?`
@@ -1662,13 +1688,8 @@ function showDetail(name){
         <button onclick="switchDetailPeriod('quarter')" id="detPrdQtr" class="detPrdBtn" style="padding:4px 12px;font-size:12px;border:1px solid #d0d0d0;border-radius:6px;cursor:pointer;background:#fff;color:#333;">분기별</button>
         <button onclick="switchDetailPeriod('year')" id="detPrdYear" class="detPrdBtn" style="padding:4px 12px;font-size:12px;border:1px solid #d0d0d0;border-radius:6px;cursor:pointer;background:#fff;color:#333;">연도별</button>
       </div>
-      <div style="display:flex;gap:16px;flex-wrap:wrap;">
-        <div style="flex:2;min-width:300px;">
-          <div id="detPeriodTable">${periodTable(byMonth,'월')}</div>
-        </div>
-        ${gubunHtml}
-      </div>`;
-    window._detPeriodData={month:byMonth,quarter:byQtr,year:byYear,totalSales,totalCost,totalQty,hasEquip};
+      <div id="detPeriodTable">${pivotTable('month')}</div>`;
+    window._detPeriodPivot=pivotTable;
   }else{summaryArea.innerHTML=''}
   // === 주문 상세 테이블 ===
   const dh=document.getElementById('detailHead');
@@ -1688,17 +1709,8 @@ function showDetail(name){
   document.getElementById('detailSection').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function switchDetailPeriod(type){
-  const d=window._detPeriodData;if(!d)return;
-  const labels={month:'월',quarter:'분기',year:'연도'};
-  const obj=d[type];
-  const keys=Object.keys(obj).sort();
-  let html;
-  if(d.hasEquip){
-    html=`<table style="width:100%;font-size:12px;"><thead><tr style="background:#f5f5f5;"><th style="padding:4px 8px;text-align:left;">${labels[type]}</th><th style="padding:4px 8px;text-align:right;">매출</th><th style="padding:4px 8px;text-align:right;">공급가</th><th style="padding:4px 8px;text-align:right;">수량</th></tr></thead><tbody>${keys.map(k=>`<tr><td style="padding:3px 8px;">${k}</td><td style="padding:3px 8px;text-align:right;">${Math.round(obj[k].sales).toLocaleString()}</td><td style="padding:3px 8px;text-align:right;">${Math.round(obj[k].cost).toLocaleString()}</td><td style="padding:3px 8px;text-align:right;">${obj[k].qty.toLocaleString()}</td></tr>`).join('')}<tr style="font-weight:700;border-top:2px solid #ddd;"><td style="padding:3px 8px;">합계</td><td style="padding:3px 8px;text-align:right;">${Math.round(d.totalSales).toLocaleString()}</td><td style="padding:3px 8px;text-align:right;">${Math.round(d.totalCost).toLocaleString()}</td><td style="padding:3px 8px;text-align:right;">${d.totalQty.toLocaleString()}</td></tr></tbody></table>`;
-  }else{
-    html=`<table style="width:100%;font-size:12px;"><thead><tr style="background:#f5f5f5;"><th style="padding:4px 8px;text-align:left;">${labels[type]}</th><th style="padding:4px 8px;text-align:right;">수량</th></tr></thead><tbody>${keys.map(k=>`<tr><td style="padding:3px 8px;">${k}</td><td style="padding:3px 8px;text-align:right;">${obj[k].qty.toLocaleString()}</td></tr>`).join('')}<tr style="font-weight:700;border-top:2px solid #ddd;"><td style="padding:3px 8px;">합계</td><td style="padding:3px 8px;text-align:right;">${d.totalQty.toLocaleString()}</td></tr></tbody></table>`;
-  }
-  document.getElementById('detPeriodTable').innerHTML=html;
+  const fn=window._detPeriodPivot;if(!fn)return;
+  document.getElementById('detPeriodTable').innerHTML=fn(type);
   document.querySelectorAll('.detPrdBtn').forEach(b=>{b.style.background='#fff';b.style.color='#333'});
   const btnId={month:'detPrdMonth',quarter:'detPrdQtr',year:'detPrdYear'};
   const btn=document.getElementById(btnId[type]);if(btn){btn.style.background='#1a73e8';btn.style.color='#fff'}
