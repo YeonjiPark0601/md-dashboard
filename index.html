@@ -139,6 +139,7 @@ tr:hover { background: #f7f9fc; }
   <a href="#sonoInventoryRow" onclick="return scrollTo2('sonoInventoryRow')" id="navSonoInventory" style="display:none;">재고 현황</a>
   <!-- 턴키 -->
   <a href="#turnkeyRegionRow" onclick="return scrollTo2('turnkeyRegionRow')" id="navTkRegion" style="display:none;">지역별 매출</a>
+  <a href="#turnkeySurveyRegionRow" onclick="return scrollTo2('turnkeySurveyRegionRow')" id="navTkSurveyRegion" style="display:none;">지역별 상담</a>
   <a href="#turnkeySurveyMonthRow" onclick="return scrollTo2('turnkeySurveyMonthRow')" id="navTkSurvey" style="display:none;">설문 응답</a>
   <a href="#turnkeyConsultMonthRow" onclick="return scrollTo2('turnkeyConsultMonthRow')" id="navTkConsult" style="display:none;">컨설팅 현황</a>
   <a href="#sec-profitMargin" onclick="return scrollTo2('sec-profitMargin')" id="navProfitMargin" style="display:none;">매출총이익률</a>
@@ -504,6 +505,9 @@ tr:hover { background: #f7f9fc; }
     <!-- 턴키 전용: 지역별 매출 상세 -->
     <div class="chart-row-full" id="turnkeyRegionRow" style="display:none;">
       <div class="table-card"><h3 style="display:flex;align-items:center;gap:12px;">지역별 매출 상세 <span id="tkYearChecks" style="font-size:12px;font-weight:400;display:flex;gap:8px;"></span></h3><div id="tkUnmatchedMsg" style="display:none;font-size:12px;color:#e8453c;margin-bottom:8px;"></div><table><thead><tr><th>권역</th><th>지역</th><th class="text-right">매출금액</th><th class="text-right">건수</th><th class="text-right">비중</th></tr></thead><tbody id="tkRegionBody"></tbody></table></div>
+    </div>
+    <div class="chart-row-full" id="turnkeySurveyRegionRow" style="display:none;">
+      <div class="table-card"><h3 style="display:flex;align-items:center;gap:12px;">지역별 상담 건수 <span id="tkSurveyYearChecks" style="font-size:12px;font-weight:400;display:flex;gap:8px;"></span></h3><table><thead><tr><th>권역</th><th>지역</th><th class="text-right">상담건수</th><th class="text-right">비중</th></tr></thead><tbody id="tkSurveyRegionBody"></tbody></table></div>
     </div>
     <div class="chart-row-full" id="turnkeySubRegionRow" style="display:none;">
       <div class="table-card"><h3 style="display:flex;justify-content:space-between;align-items:center;"><span id="tkSubRegionTitle">구/시별 매출 상세</span><button onclick="document.getElementById('turnkeySubRegionRow').style.display='none'" style="font-size:13px;padding:4px 12px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;color:#666;">닫기</button></h3><table><thead><tr><th>구/시</th><th class="text-right">매출금액</th><th class="text-right">건수</th><th class="text-right">비중</th></tr></thead><tbody id="tkSubRegionBody"></tbody></table></div>
@@ -915,8 +919,10 @@ function render(){
   document.getElementById('turnkeyConsultWeekRow').style.display=isTurnkey?'':'none';
   document.getElementById('turnkeyConsultQtrRow').style.display=isTurnkey?'':'none';
   document.getElementById('turnkeyRegionRow').style.display=isTurnkey?'':'none';
+  document.getElementById('turnkeySurveyRegionRow').style.display=isTurnkey?'':'none';
   document.getElementById('turnkeySubRegionRow').style.display='none';
   document.getElementById('navTkRegion').style.display=isTurnkey?'':'none';
+  document.getElementById('navTkSurveyRegion').style.display=isTurnkey?'':'none';
   // 턴키: 주별 컨설팅 하단에 지역별→매출총이익→상품별 월별 매출 순 배치
   const _cwRow=document.getElementById('turnkeyConsultWeekRow');
   const _rgRow=document.getElementById('turnkeyRegionRow');
@@ -927,7 +933,7 @@ function render(){
   const _cqRow=document.getElementById('turnkeyConsultQtrRow');
   if(isTurnkey){_cwRow.after(_cqRow);_cqRow.after(_rgRow);_rgRow.after(_srRow);_srRow.after(document.getElementById('sec-profitMargin'));document.getElementById('sec-profitMargin').after(_pmRow);_pmRow.after(_smEl);_smEl.after(_mRow)}
   else{const _smSec=document.getElementById('sonoMonthlySection');_smSec.before(_smEl);_smEl.after(_smSec);_smSec.after(_mRow)}
-  if(isTurnkey){renderTurnkeyKPI();renderProfitMargin();try{renderTurnkeyRegion()}catch(e){console.warn('턴키 지역별 에러',e)}try{renderTurnkeySurvey()}catch(e){console.warn('설문 렌더 에러',e)}try{renderConsultImpact()}catch(e){console.warn('기여도 에러',e)}}
+  if(isTurnkey){renderTurnkeyKPI();renderProfitMargin();try{renderTurnkeyRegion()}catch(e){console.warn('턴키 지역별 에러',e)}try{renderTurnkeySurveyRegion()}catch(e){console.warn('상담 지역별 에러',e)}try{renderTurnkeySurvey()}catch(e){console.warn('설문 렌더 에러',e)}try{renderConsultImpact()}catch(e){console.warn('기여도 에러',e)}}
   const isClassOnly=currentTab==='클래스';
   document.getElementById('puRow').style.display=isClassOnly?'grid':'none';
   document.getElementById('rebuyRow').style.display=isClassOnly?'':'none';
@@ -1824,6 +1830,44 @@ function renderTurnkeyRegion(){
   document.getElementById('turnkeySubRegionRow').style.display='none';
 }
 function toggleTkRegionYear(y){if(_tkRegionYears.includes(y))_tkRegionYears=_tkRegionYears.filter(v=>v!==y);else _tkRegionYears.push(y);renderTurnkeyRegion()}
+
+let _tkSurveyRegionYears=['2026'];
+function renderTurnkeySurveyRegion(){
+  if(!turnkeySurveyData.length){document.getElementById('tkSurveyRegionBody').innerHTML='<tr><td colspan="4" style="text-align:center;color:#999;">데이터 없음</td></tr>';return}
+  const allYears=[...new Set(turnkeySurveyData.map(d=>(d['_date']||'').substring(0,4)).filter(y=>y>='2023'))].sort();
+  const chkEl=document.getElementById('tkSurveyYearChecks');
+  chkEl.innerHTML=allYears.map(y=>`<label style="display:flex;align-items:center;gap:3px;cursor:pointer;"><input type="checkbox" ${_tkSurveyRegionYears.includes(y)?'checked':''} onchange="toggleTkSurveyRegionYear('${y}')" style="cursor:pointer;">${y}년</label>`).join('');
+  const filtered=turnkeySurveyData.filter(d=>{const dt=d['_date']||'';return _tkSurveyRegionYears.some(y=>dt.startsWith(y))});
+  const regionCount={};
+  filtered.forEach(d=>{const r=(d['개원지역']||'').trim();if(r)regionCount[r]=(regionCount[r]||0)+1});
+  const total=Object.values(regionCount).reduce((s,v)=>s+v,0);
+  const regionGroups=[
+    {group:'수도권',regions:['경기','서울','인천']},
+    {group:'영남권',regions:['경남','경북','대구','부산','울산']},
+    {group:'충청권',regions:['충남','충북','대전','세종']},
+    {group:'호남권',regions:['전남','전북','광주']},
+    {group:'강원',regions:['강원']},
+    {group:'제주',regions:['제주']}
+  ];
+  let html='';
+  regionGroups.forEach(g=>{
+    const groupRegions=g.regions.filter(r=>regionCount[r]).sort((a,b)=>(regionCount[b]||0)-(regionCount[a]||0));
+    if(!groupRegions.length)return;
+    const groupTotal=groupRegions.reduce((s,r)=>s+(regionCount[r]||0),0);
+    const needSubtotal=g.regions.length>1;
+    groupRegions.forEach((r,i)=>{
+      html+=`<tr><td style="font-weight:${i===0?'700':'400'};color:${i===0?'#333':'#999'}">${i===0?g.group:''}</td><td>${r}</td><td class="text-right">${regionCount[r]}</td><td class="text-right">${total?(regionCount[r]/total*100).toFixed(1)+'%':'-'}</td></tr>`;
+    });
+    if(needSubtotal)html+=`<tr style="font-weight:600;background:#f7f8fa;"><td>${g.group} 소계</td><td></td><td class="text-right">${groupTotal}</td><td class="text-right">${total?(groupTotal/total*100).toFixed(1)+'%':'-'}</td></tr>`;
+  });
+  // 미분류 (개원지역 비어있거나 매핑 안 되는 것)
+  const knownRegions=new Set(regionGroups.flatMap(g=>g.regions));
+  const unknownCount=filtered.filter(d=>{const r=(d['개원지역']||'').trim();return !r||!knownRegions.has(r)}).length;
+  if(unknownCount)html+=`<tr style="color:#999;"><td>미분류</td><td></td><td class="text-right">${unknownCount}</td><td class="text-right">${total?(unknownCount/(total+unknownCount)*100).toFixed(1)+'%':'-'}</td></tr>`;
+  html+=`<tr style="font-weight:700;background:#f0f2f5;"><td>합계</td><td></td><td class="text-right">${total+unknownCount}</td><td class="text-right">100%</td></tr>`;
+  document.getElementById('tkSurveyRegionBody').innerHTML=html;
+}
+function toggleTkSurveyRegionYear(y){if(_tkSurveyRegionYears.includes(y))_tkSurveyRegionYears=_tkSurveyRegionYears.filter(v=>v!==y);else _tkSurveyRegionYears.push(y);renderTurnkeySurveyRegion()}
 function showTkSubRegion(region){
   const metros=new Set(['서울','부산','대구','인천','광주','대전','울산','세종']);
   const label=metros.has(region)?region+' 구별 매출':region+' 시별 매출';
