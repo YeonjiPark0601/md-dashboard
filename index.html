@@ -1833,13 +1833,14 @@ function toggleTkRegionYear(y){if(_tkRegionYears.includes(y))_tkRegionYears=_tkR
 
 let _tkSurveyRegionYears=['2026'];
 function renderTurnkeySurveyRegion(){
-  if(!turnkeySurveyData.length){document.getElementById('tkSurveyRegionBody').innerHTML='<tr><td colspan="4" style="text-align:center;color:#999;">데이터 없음</td></tr>';return}
+  const mapSize=Object.keys(turnkeyCidMap).length;
+  if(!turnkeySurveyData.length||!mapSize){document.getElementById('tkSurveyRegionBody').innerHTML='<tr><td colspan="4" style="text-align:center;color:#999;">데이터 없음</td></tr>';return}
   const allYears=[...new Set(turnkeySurveyData.map(d=>(d['_date']||'').substring(0,4)).filter(y=>y>='2023'))].sort();
   const chkEl=document.getElementById('tkSurveyYearChecks');
   chkEl.innerHTML=allYears.map(y=>`<label style="display:flex;align-items:center;gap:3px;cursor:pointer;"><input type="checkbox" ${_tkSurveyRegionYears.includes(y)?'checked':''} onchange="toggleTkSurveyRegionYear('${y}')" style="cursor:pointer;">${y}년</label>`).join('');
   const filtered=turnkeySurveyData.filter(d=>{const dt=d['_date']||'';return _tkSurveyRegionYears.some(y=>dt.startsWith(y))});
-  const regionCount={};
-  filtered.forEach(d=>{const r=(d['개원지역']||'').trim();if(r)regionCount[r]=(regionCount[r]||0)+1});
+  const regionCount={};let unmatchedCount=0;
+  filtered.forEach(d=>{const cid=d['_cid'];const info=turnkeyCidMap[cid];if(!info){unmatchedCount++;return}regionCount[info.region]=(regionCount[info.region]||0)+1});
   const total=Object.values(regionCount).reduce((s,v)=>s+v,0);
   const regionGroups=[
     {group:'수도권',regions:['경기','서울','인천']},
@@ -1860,11 +1861,8 @@ function renderTurnkeySurveyRegion(){
     });
     if(needSubtotal)html+=`<tr style="font-weight:600;background:#f7f8fa;"><td>${g.group} 소계</td><td></td><td class="text-right">${groupTotal}</td><td class="text-right">${total?(groupTotal/total*100).toFixed(1)+'%':'-'}</td></tr>`;
   });
-  // 미분류 (개원지역 비어있거나 매핑 안 되는 것)
-  const knownRegions=new Set(regionGroups.flatMap(g=>g.regions));
-  const unknownCount=filtered.filter(d=>{const r=(d['개원지역']||'').trim();return !r||!knownRegions.has(r)}).length;
-  if(unknownCount)html+=`<tr style="color:#999;"><td>미분류</td><td></td><td class="text-right">${unknownCount}</td><td class="text-right">${total?(unknownCount/(total+unknownCount)*100).toFixed(1)+'%':'-'}</td></tr>`;
-  html+=`<tr style="font-weight:700;background:#f0f2f5;"><td>합계</td><td></td><td class="text-right">${total+unknownCount}</td><td class="text-right">100%</td></tr>`;
+  if(unmatchedCount)html+=`<tr style="color:#999;"><td>미확인</td><td></td><td class="text-right">${unmatchedCount}</td><td class="text-right">${(total+unmatchedCount)?(unmatchedCount/(total+unmatchedCount)*100).toFixed(1)+'%':'-'}</td></tr>`;
+  html+=`<tr style="font-weight:700;background:#f0f2f5;"><td>합계</td><td></td><td class="text-right">${total+unmatchedCount}</td><td class="text-right">100%</td></tr>`;
   document.getElementById('tkSurveyRegionBody').innerHTML=html;
 }
 function toggleTkSurveyRegionYear(y){if(_tkSurveyRegionYears.includes(y))_tkSurveyRegionYears=_tkSurveyRegionYears.filter(v=>v!==y);else _tkSurveyRegionYears.push(y);renderTurnkeySurveyRegion()}
