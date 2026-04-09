@@ -1866,7 +1866,7 @@ function renderTurnkeySurveyRegion(){
   const totBg='background:#f0f2f5;';
   let hdr='<th>권역</th><th>지역</th>';
   if(multi)hdr+=`<th class="text-right" style="${totBg}font-weight:700;">합계</th><th class="text-right" style="${totBg}font-weight:700;">비중</th>`;
-  selYears.forEach(y=>hdr+=`<th class="text-right">${y} 건수</th><th class="text-right">${y} 비중</th>`);
+  selYears.forEach(y=>hdr+=`<th class="text-right">${y}년 건수</th><th class="text-right">${y}년 비중</th>`);
   if(!multi){}// 1개일 때는 연도 열이 곧 합계
   headEl.innerHTML=hdr;
   // 셀 생성 헬퍼
