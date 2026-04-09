@@ -1884,11 +1884,13 @@ function renderTkRegionCharts(){
   // 막대 차트: X축=4개 연도, 범례=지역
   const fixedYears=['2023','2024','2025','2026'];
   const barData=_tkGroupSalesByYear(fixedYears);
+  const barTotals=fixedYears.map(y=>_tkRegionGroupNames.reduce((s,g)=>s+((barData[y]||{})[g]||0),0));
   const barDatasets=_tkRegionGroupNames.map((g,gi)=>({
     label:g,
     data:fixedYears.map(y=>(barData[y]||{})[g]||0),
     backgroundColor:_tkRegionColors[gi],
-    borderRadius:4
+    borderRadius:gi===_tkRegionGroupNames.length-1?4:0,
+    datalabels:gi===_tkRegionGroupNames.length-1?{display:true,anchor:'end',align:'end',color:'#333',font:{weight:'bold',size:11},formatter:function(_v,ctx){const t=barTotals[ctx.dataIndex];return t>=100000000?(t/100000000).toFixed(1)+'억':t>=10000?Math.round(t/10000).toLocaleString()+'만':t.toLocaleString()}}:{display:false}
   }));
   if(_tkBarChart){_tkBarChart.destroy();_tkBarChart=null}
   const barCtx=document.getElementById('tkRegionBarChart').getContext('2d');
@@ -1897,7 +1899,7 @@ function renderTkRegionCharts(){
     data:{labels:fixedYears.map(y=>y+'년'),datasets:barDatasets},
     options:{
       responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{position:'top'},datalabels:{display:false},
+      plugins:{legend:{position:'top'},
         tooltip:{callbacks:{label:function(ctx){const v=ctx.raw;const yr=fixedYears[ctx.dataIndex];const yrTotal=_tkRegionGroupNames.reduce((s,g)=>(s+((barData[yr]||{})[g]||0)),0);const pct=yrTotal?(v/yrTotal*100).toFixed(1)+'%':'0%';const amt=v>=100000000?(v/100000000).toFixed(1)+'억':v>=10000?Math.round(v/10000).toLocaleString()+'만':v.toLocaleString();return ctx.dataset.label+': '+amt+' ('+pct+')'}}}},
       scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:v=>v>=100000000?(v/100000000).toFixed(1)+'억':v>=10000?(v/10000).toFixed(0)+'만':v},beginAtZero:true}}
     }
@@ -2060,11 +2062,13 @@ function renderTkSurveyRegionCharts(){
   const fixedYears=['2023','2024','2025','2026'];
   const barData=_tkSurveyGroupCountByYear(fixedYears);
   // X축=연도, 범례=지역
+  const barTotals2=fixedYears.map(y=>_tkRegionGroupNames.reduce((s,g)=>s+((barData[y]||{})[g]||0),0));
   const barDatasets=_tkRegionGroupNames.map((g,gi)=>({
     label:g,
     data:fixedYears.map(y=>(barData[y]||{})[g]||0),
     backgroundColor:_tkRegionColors[gi],
-    borderRadius:4
+    borderRadius:gi===_tkRegionGroupNames.length-1?4:0,
+    datalabels:gi===_tkRegionGroupNames.length-1?{display:true,anchor:'end',align:'end',color:'#333',font:{weight:'bold',size:11},formatter:function(_v,ctx){return barTotals2[ctx.dataIndex]+'건'}}:{display:false}
   }));
   if(_tkSurveyBarChart){_tkSurveyBarChart.destroy();_tkSurveyBarChart=null}
   const barCtx=document.getElementById('tkSurveyRegionBarChart').getContext('2d');
@@ -2073,7 +2077,7 @@ function renderTkSurveyRegionCharts(){
     data:{labels:fixedYears.map(y=>y+'년'),datasets:barDatasets},
     options:{
       responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{position:'top'},datalabels:{display:false},
+      plugins:{legend:{position:'top'},
         tooltip:{callbacks:{label:function(ctx){const v=ctx.raw;const yr=fixedYears[ctx.dataIndex];const yrTotal=_tkRegionGroupNames.reduce((s,g)=>(s+((barData[yr]||{})[g]||0)),0);const pct=yrTotal?(v/yrTotal*100).toFixed(1)+'%':'0%';return ctx.dataset.label+': '+v+'건 ('+pct+')'}}}},
       scales:{x:{stacked:true},y:{stacked:true,ticks:{stepSize:1},beginAtZero:true}}
     }
