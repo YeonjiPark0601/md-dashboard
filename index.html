@@ -2139,88 +2139,99 @@ function renderResultRegion(){
   const mapSize=Object.keys(turnkeyCidMap).length;
   const headEl=document.getElementById('tkResultRegionHead');
   const bodyEl=document.getElementById('tkResultRegionBody');
-  if(!turnkeySurveyData.length||!mapSize){headEl.innerHTML='<th>권역</th><th>지역</th><th class="text-right">건수</th>';bodyEl.innerHTML='<tr><td colspan="3" style="text-align:center;color:#999;">데이터 없음</td></tr>';return}
+  if(!turnkeySurveyData.length||!mapSize){headEl.innerHTML='<th>권역</th><th>지역</th><th>Stage</th><th class="text-right">건수</th>';bodyEl.innerHTML='<tr><td colspan="4" style="text-align:center;color:#999;">데이터 없음</td></tr>';return}
   const allYears=['2023','2024','2025','2026'];
   const selYears=_tkResultRegionYears.filter(y=>allYears.includes(y)).sort();
   const chkEl=document.getElementById('tkResultYearChecks');
   chkEl.innerHTML=allYears.map(y=>`<label style="display:flex;align-items:center;gap:3px;cursor:pointer;"><input type="checkbox" ${selYears.includes(y)?'checked':''} onchange="toggleTkResultRegionYear('${y}')" style="cursor:pointer;">${y}년</label>`).join('');
   const multi=selYears.length>1;
-  // 연도별+지역별+결과별 집계
-  const data={};// data[year][region][result] = count
-  let noCidByYear={},unmatchedByYear={};
-  selYears.forEach(y=>{data[y]={};noCidByYear[y]=0;unmatchedByYear[y]=0});
+  // 집계
+  const data={};// data[year][region][result]=count
+  selYears.forEach(y=>{data[y]={}});
   turnkeySurveyData.forEach(d=>{
     const dt=d['_date']||'';const yr=dt.substring(0,4);if(!selYears.includes(yr))return;
-    const cid=d['_cid'];const result=d['_result'];if(!result)return;
-    if(!cid){noCidByYear[yr]++;return}
-    const info=turnkeyCidMap[cid];if(!info){unmatchedByYear[yr]++;return}
+    const cid=d['_cid'];const result=d['_result'];if(!result||!cid)return;
+    const info=turnkeyCidMap[cid];if(!info)return;
     if(!data[yr][info.region])data[yr][info.region]={};
     data[yr][info.region][result]=(data[yr][info.region][result]||0)+1;
   });
-  // 합계
-  const totalByRegion={};// totalByRegion[region][result]
+  const totalByRegion={};
   selYears.forEach(y=>{Object.entries(data[y]).forEach(([r,res])=>{if(!totalByRegion[r])totalByRegion[r]={};Object.entries(res).forEach(([k,v])=>{totalByRegion[r][k]=(totalByRegion[r][k]||0)+v})})});
-  // 사용되는 결과값만 추출
-  const usedResults=_tkResultNames.filter(r=>{return Object.values(totalByRegion).some(rr=>rr[r])});
-  const grandByResult={};usedResults.forEach(r=>{grandByResult[r]=Object.values(totalByRegion).reduce((s,rr)=>s+(rr[r]||0),0)});
-  const grandTotal=Object.values(grandByResult).reduce((s,v)=>s+v,0);
-  // 연도별 합계
-  const yearTotals={};selYears.forEach(y=>{let t=0;Object.values(data[y]).forEach(rr=>{Object.values(rr).forEach(v=>{t+=v})});yearTotals[y]=t+noCidByYear[y]+unmatchedByYear[y]});
+  const usedResults=_tkResultNames.filter(r=>Object.values(totalByRegion).some(rr=>rr[r]));
   const totBg='background:#f0f2f5;';
+  const colCount=3+(multi?1:0)+selYears.length;
   // 헤더
-  let hdr='<th>권역</th><th>지역</th>';
-  if(multi){hdr+=`<th class="text-right" style="${totBg}font-weight:700;">합계</th>`;usedResults.forEach(r=>hdr+=`<th class="text-right" style="${totBg}font-weight:700;">${r}</th>`)}
-  selYears.forEach(y=>{hdr+=`<th class="text-right">${y}년 합계</th>`;usedResults.forEach(r=>hdr+=`<th class="text-right">${y}년 ${r}</th>`)});
+  let hdr='<th>권역</th><th>지역</th><th>Stage</th>';
+  if(multi)hdr+=`<th class="text-right" style="${totBg}font-weight:700;">합계</th>`;
+  selYears.forEach(y=>hdr+=`<th class="text-right">${y}년</th>`);
   headEl.innerHTML=hdr;
-  // 셀
-  function cells(region){
+  // 값 셀 헬퍼
+  function valCells(regionOrRegions,result){
     let c='';
+    const isArr=Array.isArray(regionOrRegions);
     if(multi){
-      const rr=totalByRegion[region]||{};const t=usedResults.reduce((s,r)=>s+(rr[r]||0),0);
-      c+=`<td class="text-right" style="${totBg}font-weight:700;">${t}</td>`;
-      usedResults.forEach(r=>c+=`<td class="text-right" style="${totBg}">${rr[r]||'-'}</td>`);
+      let t=0;
+      if(isArr)regionOrRegions.forEach(r=>{if(result){t+=(totalByRegion[r]||{})[result]||0}else{usedResults.forEach(k=>{t+=(totalByRegion[r]||{})[k]||0})}});
+      else{if(result)t=(totalByRegion[regionOrRegions]||{})[result]||0;else usedResults.forEach(k=>{t+=(totalByRegion[regionOrRegions]||{})[k]||0})}
+      c+=`<td class="text-right" style="${totBg}font-weight:700;">${t||'-'}</td>`;
     }
     selYears.forEach(y=>{
-      const rr=(data[y]||{})[region]||{};const t=usedResults.reduce((s,r)=>s+(rr[r]||0),0);
-      c+=`<td class="text-right">${t||'-'}</td>`;
-      usedResults.forEach(r=>c+=`<td class="text-right">${rr[r]||'-'}</td>`);
+      let v=0;
+      if(isArr)regionOrRegions.forEach(r=>{if(result)v+=((data[y]||{})[r]||{})[result]||0;else usedResults.forEach(k=>{v+=((data[y]||{})[r]||{})[k]||0})});
+      else{if(result)v=((data[y]||{})[regionOrRegions]||{})[result]||0;else usedResults.forEach(k=>{v+=((data[y]||{})[regionOrRegions]||{})[k]||0})}
+      c+=`<td class="text-right">${v||'-'}</td>`;
     });
     return c;
   }
-  const regionGroups=_tkRegionGroupDef;
-  let html='';
-  regionGroups.forEach(g=>{
+  const caret='<span style="font-size:10px;margin-left:4px;transition:transform .2s;">▶</span>';
+  let html='';let gIdx=0;
+  _tkRegionGroupDef.forEach(g=>{
     const groupRegions=g.regions.filter(r=>totalByRegion[r]).sort((a,b)=>{
       const ta=usedResults.reduce((s,k)=>s+((totalByRegion[a]||{})[k]||0),0);
-      const tb=usedResults.reduce((s,k)=>s+((totalByRegion[b]||{})[k]||0),0);
-      return tb-ta;
+      const tb=usedResults.reduce((s,k)=>s+((totalByRegion[b]||{})[k]||0),0);return tb-ta;
     });
     if(!groupRegions.length)return;
-    const needSubtotal=g.regions.length>1;
-    groupRegions.forEach((r,i)=>{
-      html+=`<tr><td style="font-weight:${i===0?'700':'400'};color:${i===0?'#333':'#999'}">${i===0?g.group:''}</td><td>${r}</td>${cells(r)}</tr>`;
-    });
-    if(needSubtotal){
-      html+=`<tr style="font-weight:600;background:#f7f8fa;"><td>${g.group} 소계</td><td></td>`;
-      if(multi){
-        const gt=groupRegions.reduce((s,r)=>usedResults.reduce((s2,k)=>s2+((totalByRegion[r]||{})[k]||0),s),0);
-        html+=`<td class="text-right" style="${totBg}font-weight:700;">${gt}</td>`;
-        usedResults.forEach(k=>{const v=groupRegions.reduce((s,r)=>s+((totalByRegion[r]||{})[k]||0),0);html+=`<td class="text-right" style="${totBg}">${v||'-'}</td>`});
-      }
-      selYears.forEach(y=>{
-        const gt=groupRegions.reduce((s,r)=>usedResults.reduce((s2,k)=>s2+(((data[y]||{})[r]||{})[k]||0),s),0);
-        html+=`<td class="text-right">${gt||'-'}</td>`;
-        usedResults.forEach(k=>{const v=groupRegions.reduce((s,r)=>s+(((data[y]||{})[r]||{})[k]||0),0);html+=`<td class="text-right">${v||'-'}</td>`});
+    const gid='rrg_'+gIdx++;
+    // 권역 합계 행 (클릭으로 접기/펼치기)
+    html+=`<tr class="rr-group" data-gid="${gid}" onclick="toggleRRGroup('${gid}')" style="cursor:pointer;font-weight:700;background:#f7f8fa;"><td>${g.group} ${caret}</td><td></td><td>소계</td>${valCells(groupRegions,null)}</tr>`;
+    // 지역별 행
+    groupRegions.forEach((r,ri)=>{
+      const rid=gid+'_r'+ri;
+      // 지역 소계 행
+      const regionTotal=usedResults.reduce((s,k)=>s+((totalByRegion[r]||{})[k]||0),0);
+      html+=`<tr class="rr-region ${gid}" data-rid="${rid}" onclick="toggleRRRegion('${rid}')" style="cursor:pointer;"><td style="padding-left:20px;color:#666;"></td><td style="font-weight:600;">${r} ${caret}</td><td style="color:#888;">소계</td>${valCells(r,null)}</tr>`;
+      // Stage 행
+      usedResults.forEach(st=>{
+        const hasData=selYears.some(y=>((data[y]||{})[r]||{})[st]);
+        if(!hasData&&!((totalByRegion[r]||{})[st]))return;
+        const color=_tkResultColors[st]||'#333';
+        html+=`<tr class="rr-stage ${gid} ${rid}" style="display:none;"><td></td><td style="padding-left:30px;"></td><td><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${color};margin-right:6px;"></span>${st}</td>${valCells(r,st)}</tr>`;
       });
-      html+=`</tr>`;
-    }
+    });
   });
   // 합계 행
-  html+=`<tr style="font-weight:700;background:#f0f2f5;"><td>합계</td><td></td>`;
-  if(multi){html+=`<td class="text-right">${grandTotal}</td>`;usedResults.forEach(r=>html+=`<td class="text-right">${grandByResult[r]||'-'}</td>`)}
-  selYears.forEach(y=>{html+=`<td class="text-right">${yearTotals[y]}</td>`;usedResults.forEach(r=>{let v=0;Object.values(data[y]).forEach(rr=>{v+=(rr[r]||0)});html+=`<td class="text-right">${v||'-'}</td>`})});
-  html+=`</tr>`;
+  const allRegions=Object.keys(totalByRegion);
+  html+=`<tr style="font-weight:700;background:#f0f2f5;"><td>합계</td><td></td><td></td>${valCells(allRegions,null)}</tr>`;
   bodyEl.innerHTML=html;
+}
+function toggleRRGroup(gid){
+  const rows=document.querySelectorAll('.'+gid);
+  const first=rows[0];if(!first)return;
+  const show=first.style.display==='none';
+  rows.forEach(r=>{
+    if(r.classList.contains('rr-stage')&&show){r.style.display='none';return}// stage는 접힌 상태 유지
+    r.style.display=show?'':'none';
+  });
+  const header=document.querySelector(`[data-gid="${gid}"] span`);
+  if(header)header.style.transform=show?'rotate(90deg)':'rotate(0deg)';
+}
+function toggleRRRegion(rid){
+  const rows=document.querySelectorAll('.'+rid);
+  const first=rows[0];if(!first)return;
+  const show=first.style.display==='none';
+  rows.forEach(r=>r.style.display=show?'':'none');
+  const header=document.querySelector(`[data-rid="${rid}"] span`);
+  if(header)header.style.transform=show?'rotate(90deg)':'rotate(0deg)';
 }
 function toggleTkResultRegionYear(y){if(_tkResultRegionYears.includes(y))_tkResultRegionYears=_tkResultRegionYears.filter(v=>v!==y);else _tkResultRegionYears.push(y);renderResultRegion()}
 
