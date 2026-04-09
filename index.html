@@ -509,8 +509,18 @@ tr:hover { background: #f7f9fc; }
     <div class="chart-row-full" id="turnkeySubRegionRow" style="display:none;">
       <div class="table-card"><h3 style="display:flex;justify-content:space-between;align-items:center;"><span id="tkSubRegionTitle">구/시별 매출 상세</span><button onclick="document.getElementById('turnkeySubRegionRow').style.display='none'" style="font-size:13px;padding:4px 12px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;color:#666;">닫기</button></h3><table><thead><tr><th>구/시</th><th class="text-right">매출금액</th><th class="text-right">건수</th><th class="text-right">비중</th></tr></thead><tbody id="tkSubRegionBody"></tbody></table></div>
     </div>
+    <!-- 턴키 지역별 차트: 막대 + 원형 -->
+    <div class="chart-row" id="turnkeyRegionChartRow" style="display:none;grid-template-columns:1fr 1fr;">
+      <div class="chart-card" style="display:flex;flex-direction:column;"><h3>권역별 매출 (연도별)</h3><div style="position:relative;flex:1;min-height:300px;"><canvas id="tkRegionBarChart"></canvas></div></div>
+      <div class="chart-card" style="display:flex;flex-direction:column;"><h3 style="display:flex;align-items:center;gap:12px;">권역별 매출 비중 <span id="tkPieYearChecks" style="font-size:12px;font-weight:400;display:flex;gap:8px;"></span></h3><div style="position:relative;flex:1;min-height:300px;"><canvas id="tkRegionPieChart"></canvas></div></div>
+    </div>
     <div class="chart-row-full" id="turnkeySurveyRegionRow" style="display:none;">
       <div class="table-card"><h3 style="display:flex;align-items:center;gap:12px;">지역별 상담 건수 <span id="tkSurveyYearChecks" style="font-size:12px;font-weight:400;display:flex;gap:8px;"></span></h3><table><thead><tr id="tkSurveyRegionHead"></tr></thead><tbody id="tkSurveyRegionBody"></tbody></table></div>
+    </div>
+    <!-- 턴키 지역별 상담 차트: 막대 + 원형 -->
+    <div class="chart-row" id="turnkeySurveyRegionChartRow" style="display:none;grid-template-columns:1fr 1fr;">
+      <div class="chart-card" style="display:flex;flex-direction:column;"><h3>권역별 상담 건수 (연도별)</h3><div style="position:relative;flex:1;min-height:300px;"><canvas id="tkSurveyRegionBarChart"></canvas></div></div>
+      <div class="chart-card" style="display:flex;flex-direction:column;"><h3 style="display:flex;align-items:center;gap:12px;">권역별 상담 비중 <span id="tkSurveyPieYearChecks" style="font-size:12px;font-weight:400;display:flex;gap:8px;"></span></h3><div style="position:relative;flex:1;min-height:300px;"><canvas id="tkSurveyRegionPieChart"></canvas></div></div>
     </div>
     <div class="chart-row-full" id="turnkeyConsultImpactRow" style="display:none;">
       <div class="table-card">
@@ -919,7 +929,9 @@ function render(){
   document.getElementById('turnkeyConsultWeekRow').style.display=isTurnkey?'':'none';
   document.getElementById('turnkeyConsultQtrRow').style.display=isTurnkey?'':'none';
   document.getElementById('turnkeyRegionRow').style.display=isTurnkey?'':'none';
+  document.getElementById('turnkeyRegionChartRow').style.display=isTurnkey?'grid':'none';
   document.getElementById('turnkeySurveyRegionRow').style.display=isTurnkey?'':'none';
+  document.getElementById('turnkeySurveyRegionChartRow').style.display=isTurnkey?'grid':'none';
   document.getElementById('turnkeySubRegionRow').style.display='none';
   document.getElementById('navTkRegion').style.display=isTurnkey?'':'none';
   document.getElementById('navTkSurveyRegion').style.display=isTurnkey?'':'none';
@@ -1829,8 +1841,100 @@ function renderTurnkeyRegion(){
   html+=`<tr style="font-weight:700;background:#f0f2f5;"><td>합계</td><td></td><td class="text-right">${Math.round(total).toLocaleString()}</td><td class="text-right">${totalCount}</td><td class="text-right">100%</td></tr>`;
   document.getElementById('tkRegionBody').innerHTML=html;
   document.getElementById('turnkeySubRegionRow').style.display='none';
+  renderTkRegionCharts();
 }
 function toggleTkRegionYear(y){if(_tkRegionYears.includes(y))_tkRegionYears=_tkRegionYears.filter(v=>v!==y);else _tkRegionYears.push(y);renderTurnkeyRegion()}
+
+let _tkBarChart=null,_tkPieChart=null;
+let _tkPieYears=['2026'];
+const _tkRegionGroupNames=['수도권','영남권','충청권','호남권','강원','제주'];
+const _tkRegionGroupDef=[
+  {group:'수도권',regions:['경기','서울','인천']},
+  {group:'영남권',regions:['경남','경북','대구','부산','울산']},
+  {group:'충청권',regions:['충남','충북','대전','세종']},
+  {group:'호남권',regions:['전남','전북','광주']},
+  {group:'강원',regions:['강원']},
+  {group:'제주',regions:['제주']}
+];
+const _tkRegionColors=['#4285f4','#ea4335','#fbbc04','#34a853','#ff6d01','#46bdc6'];
+
+function _tkGroupSalesByYear(years){
+  const result={};
+  years.forEach(y=>{
+    const byGroup={};
+    const filtered=turnkeyData.filter(d=>(d['연월']||'').startsWith(y));
+    filtered.forEach(d=>{
+      const cid=d['CID']||'';const info=turnkeyCidMap[cid];if(!info)return;
+      const gIdx=_tkRegionGroupDef.findIndex(g=>g.regions.includes(info.region));
+      if(gIdx<0)return;
+      const gName=_tkRegionGroupNames[gIdx];
+      byGroup[gName]=(byGroup[gName]||0)+d['매출금액'];
+    });
+    result[y]=byGroup;
+  });
+  return result;
+}
+
+function renderTkRegionCharts(){
+  const allYears=[...new Set(turnkeyData.map(d=>(d['연월']||'').substring(0,4)).filter(y=>y>='2023'))].sort();
+  if(!allYears.length)return;
+  // 막대 차트: _tkRegionYears 기준
+  const barYears=_tkRegionYears.filter(y=>allYears.includes(y)).sort();
+  const barData=_tkGroupSalesByYear(barYears);
+  const barDatasets=barYears.map((y,yi)=>({
+    label:y+'년',
+    data:_tkRegionGroupNames.map(g=>(barData[y]||{})[g]||0),
+    backgroundColor:['#4285f4','#ea4335','#fbbc04','#34a853','#ff6d01','#46bdc6'][yi%6],
+    borderRadius:4
+  }));
+  if(_tkBarChart){_tkBarChart.destroy();_tkBarChart=null}
+  const barCtx=document.getElementById('tkRegionBarChart').getContext('2d');
+  _tkBarChart=new Chart(barCtx,{
+    type:'bar',
+    data:{labels:_tkRegionGroupNames,datasets:barDatasets},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'top'},datalabels:{display:false}},
+      scales:{y:{ticks:{callback:v=>v>=100000000?(v/100000000).toFixed(1)+'억':v>=10000?(v/10000).toFixed(0)+'만':v},beginAtZero:true}}
+    }
+  });
+
+  // 원형 차트: _tkPieYears 기준 (다중선택 가능)
+  _tkPieYears=_tkPieYears.filter(y=>allYears.includes(y));
+  if(!_tkPieYears.length)_tkPieYears=[allYears[allYears.length-1]];
+  const chkEl=document.getElementById('tkPieYearChecks');
+  chkEl.innerHTML=allYears.map(y=>`<label style="display:flex;align-items:center;gap:3px;cursor:pointer;"><input type="checkbox" ${_tkPieYears.includes(y)?'checked':''} onchange="toggleTkPieYear('${y}')" style="cursor:pointer;">${y}년</label>`).join('');
+  const pieGroupData={};
+  const pieData=_tkGroupSalesByYear(_tkPieYears);
+  _tkRegionGroupNames.forEach(g=>{pieGroupData[g]=0});
+  _tkPieYears.forEach(y=>{_tkRegionGroupNames.forEach(g=>{pieGroupData[g]+=(pieData[y]||{})[g]||0})});
+  const pieValues=_tkRegionGroupNames.map(g=>pieGroupData[g]);
+  const pieTotal=pieValues.reduce((s,v)=>s+v,0);
+  if(_tkPieChart){_tkPieChart.destroy();_tkPieChart=null}
+  const pieCtx=document.getElementById('tkRegionPieChart').getContext('2d');
+  _tkPieChart=new Chart(pieCtx,{
+    type:'doughnut',
+    data:{labels:_tkRegionGroupNames,datasets:[{data:pieValues,backgroundColor:_tkRegionColors,borderWidth:2,borderColor:'#fff'}]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{position:'right',labels:{font:{size:12},generateLabels:function(chart){
+          return chart.data.labels.map((l,i)=>{
+            const v=chart.data.datasets[0].data[i];
+            const pct=pieTotal?(v/pieTotal*100).toFixed(1)+'%':'0%';
+            return{text:`${l} ${pct}`,fillStyle:_tkRegionColors[i],strokeStyle:'#fff',lineWidth:2,index:i};
+          });
+        }}},
+        datalabels:{
+          color:'#fff',font:{weight:'bold',size:12},
+          formatter:function(v){return v>=100000000?(v/100000000).toFixed(1)+'억':v>=10000?Math.round(v/10000)+'만':''},
+          display:function(ctx){return ctx.dataset.data[ctx.dataIndex]/pieTotal>0.05}
+        }
+      }
+    }
+  });
+}
+function toggleTkPieYear(y){if(_tkPieYears.includes(y))_tkPieYears=_tkPieYears.filter(v=>v!==y);else _tkPieYears.push(y);if(!_tkPieYears.length)_tkPieYears=[y];renderTkRegionCharts()}
 
 let _tkSurveyRegionYears=['2026'];
 function renderTurnkeySurveyRegion(){
@@ -1923,8 +2027,90 @@ function renderTurnkeySurveyRegion(){
   selYears.forEach(y=>html+=`<td class="text-right">${yearTotals[y]}</td><td class="text-right">100%</td>`);
   html+=`</tr>`;
   bodyEl.innerHTML=html;
+  renderTkSurveyRegionCharts();
 }
 function toggleTkSurveyRegionYear(y){if(_tkSurveyRegionYears.includes(y))_tkSurveyRegionYears=_tkSurveyRegionYears.filter(v=>v!==y);else _tkSurveyRegionYears.push(y);renderTurnkeySurveyRegion()}
+
+let _tkSurveyBarChart=null,_tkSurveyPieChart=null;
+let _tkSurveyPieYears=['2026'];
+
+function _tkSurveyGroupCountByYear(years){
+  const result={};
+  years.forEach(y=>{
+    const byGroup={};
+    turnkeySurveyData.forEach(d=>{
+      const dt=d['_date']||'';if(!dt.startsWith(y))return;
+      const cid=d['_cid'];if(!cid)return;
+      const info=turnkeyCidMap[cid];if(!info)return;
+      const gIdx=_tkRegionGroupDef.findIndex(g=>g.regions.includes(info.region));
+      if(gIdx<0)return;
+      const gName=_tkRegionGroupNames[gIdx];
+      byGroup[gName]=(byGroup[gName]||0)+1;
+    });
+    result[y]=byGroup;
+  });
+  return result;
+}
+
+function renderTkSurveyRegionCharts(){
+  const allYears=['2023','2024','2025','2026'];
+  const barYears=_tkSurveyRegionYears.filter(y=>allYears.includes(y)).sort();
+  if(!barYears.length)return;
+  const barData=_tkSurveyGroupCountByYear(barYears);
+  const barDatasets=barYears.map((y,yi)=>({
+    label:y+'년',
+    data:_tkRegionGroupNames.map(g=>(barData[y]||{})[g]||0),
+    backgroundColor:_tkRegionColors[yi%6],
+    borderRadius:4
+  }));
+  if(_tkSurveyBarChart){_tkSurveyBarChart.destroy();_tkSurveyBarChart=null}
+  const barCtx=document.getElementById('tkSurveyRegionBarChart').getContext('2d');
+  _tkSurveyBarChart=new Chart(barCtx,{
+    type:'bar',
+    data:{labels:_tkRegionGroupNames,datasets:barDatasets},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'top'},datalabels:{display:false}},
+      scales:{y:{ticks:{stepSize:1},beginAtZero:true}}
+    }
+  });
+
+  // 원형 차트
+  _tkSurveyPieYears=_tkSurveyPieYears.filter(y=>allYears.includes(y));
+  if(!_tkSurveyPieYears.length)_tkSurveyPieYears=['2026'];
+  const chkEl=document.getElementById('tkSurveyPieYearChecks');
+  chkEl.innerHTML=allYears.map(y=>`<label style="display:flex;align-items:center;gap:3px;cursor:pointer;"><input type="checkbox" ${_tkSurveyPieYears.includes(y)?'checked':''} onchange="toggleTkSurveyPieYear('${y}')" style="cursor:pointer;">${y}년</label>`).join('');
+  const pieData=_tkSurveyGroupCountByYear(_tkSurveyPieYears);
+  const pieGroupData={};
+  _tkRegionGroupNames.forEach(g=>{pieGroupData[g]=0});
+  _tkSurveyPieYears.forEach(y=>{_tkRegionGroupNames.forEach(g=>{pieGroupData[g]+=(pieData[y]||{})[g]||0})});
+  const pieValues=_tkRegionGroupNames.map(g=>pieGroupData[g]);
+  const pieTotal=pieValues.reduce((s,v)=>s+v,0);
+  if(_tkSurveyPieChart){_tkSurveyPieChart.destroy();_tkSurveyPieChart=null}
+  const pieCtx=document.getElementById('tkSurveyRegionPieChart').getContext('2d');
+  _tkSurveyPieChart=new Chart(pieCtx,{
+    type:'doughnut',
+    data:{labels:_tkRegionGroupNames,datasets:[{data:pieValues,backgroundColor:_tkRegionColors,borderWidth:2,borderColor:'#fff'}]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{position:'right',labels:{font:{size:12},generateLabels:function(chart){
+          return chart.data.labels.map((l,i)=>{
+            const v=chart.data.datasets[0].data[i];
+            const pct=pieTotal?(v/pieTotal*100).toFixed(1)+'%':'0%';
+            return{text:`${l} ${pct}`,fillStyle:_tkRegionColors[i],strokeStyle:'#fff',lineWidth:2,index:i};
+          });
+        }}},
+        datalabels:{
+          color:'#fff',font:{weight:'bold',size:12},
+          formatter:function(v){return v>0?v+'건':''},
+          display:function(ctx){return ctx.dataset.data[ctx.dataIndex]/pieTotal>0.05}
+        }
+      }
+    }
+  });
+}
+function toggleTkSurveyPieYear(y){if(_tkSurveyPieYears.includes(y))_tkSurveyPieYears=_tkSurveyPieYears.filter(v=>v!==y);else _tkSurveyPieYears.push(y);if(!_tkSurveyPieYears.length)_tkSurveyPieYears=[y];renderTkSurveyRegionCharts()}
 function showTkSubRegion(region){
   const metros=new Set(['서울','부산','대구','인천','광주','대전','울산','세종']);
   const label=metros.has(region)?region+' 구별 매출':region+' 시별 매출';
