@@ -506,13 +506,13 @@ tr:hover { background: #f7f9fc; }
     <div class="chart-row-full" id="turnkeyRegionRow" style="display:none;">
       <div class="table-card"><h3 style="display:flex;align-items:center;gap:12px;">지역별 매출 상세 <span id="tkYearChecks" style="font-size:12px;font-weight:400;display:flex;gap:8px;"></span></h3><div id="tkUnmatchedMsg" style="display:none;font-size:12px;color:#e8453c;margin-bottom:8px;"></div><table><thead><tr><th>권역</th><th>지역</th><th class="text-right">매출금액</th><th class="text-right">건수</th><th class="text-right">비중</th></tr></thead><tbody id="tkRegionBody"></tbody></table></div>
     </div>
-    <div class="chart-row-full" id="turnkeySubRegionRow" style="display:none;">
-      <div class="table-card"><h3 style="display:flex;justify-content:space-between;align-items:center;"><span id="tkSubRegionTitle">구/시별 매출 상세</span><button onclick="document.getElementById('turnkeySubRegionRow').style.display='none'" style="font-size:13px;padding:4px 12px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;color:#666;">닫기</button></h3><table><thead><tr><th>구/시</th><th class="text-right">매출금액</th><th class="text-right">건수</th><th class="text-right">비중</th></tr></thead><tbody id="tkSubRegionBody"></tbody></table></div>
-    </div>
     <!-- 턴키 지역별 차트: 막대 + 원형 -->
     <div class="chart-row" id="turnkeyRegionChartRow" style="display:none;grid-template-columns:1fr 1fr;">
       <div class="chart-card" style="display:flex;flex-direction:column;"><h3>권역별 매출 (연도별)</h3><div style="position:relative;flex:1;min-height:300px;"><canvas id="tkRegionBarChart"></canvas></div></div>
       <div class="chart-card" style="display:flex;flex-direction:column;"><h3 style="display:flex;align-items:center;gap:12px;">권역별 매출 비중 <span id="tkPieYearChecks" style="font-size:12px;font-weight:400;display:flex;gap:8px;"></span></h3><div style="position:relative;flex:1;min-height:300px;"><canvas id="tkRegionPieChart"></canvas></div></div>
+    </div>
+    <div class="chart-row-full" id="turnkeySubRegionRow" style="display:none;">
+      <div class="table-card"><h3 style="display:flex;justify-content:space-between;align-items:center;"><span id="tkSubRegionTitle">구/시별 매출 상세</span><button onclick="document.getElementById('turnkeySubRegionRow').style.display='none'" style="font-size:13px;padding:4px 12px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;color:#666;">닫기</button></h3><table><thead><tr><th>구/시</th><th class="text-right">매출금액</th><th class="text-right">건수</th><th class="text-right">비중</th></tr></thead><tbody id="tkSubRegionBody"></tbody></table></div>
     </div>
     <div class="chart-row-full" id="turnkeySurveyRegionRow" style="display:none;">
       <div class="table-card"><h3 style="display:flex;align-items:center;gap:12px;">지역별 상담 건수 <span id="tkSurveyYearChecks" style="font-size:12px;font-weight:400;display:flex;gap:8px;"></span></h3><table><thead><tr id="tkSurveyRegionHead"></tr></thead><tbody id="tkSurveyRegionBody"></tbody></table></div>
@@ -2057,17 +2057,18 @@ function renderTkSurveyRegionCharts(){
   const barYears=_tkSurveyRegionYears.filter(y=>allYears.includes(y)).sort();
   if(!barYears.length)return;
   const barData=_tkSurveyGroupCountByYear(barYears);
-  const barDatasets=barYears.map((y,yi)=>({
-    label:y+'년',
-    data:_tkRegionGroupNames.map(g=>(barData[y]||{})[g]||0),
-    backgroundColor:_tkRegionColors[yi%6],
+  // X축=연도, 범례=권역
+  const barDatasets=_tkRegionGroupNames.map((g,gi)=>({
+    label:g,
+    data:barYears.map(y=>(barData[y]||{})[g]||0),
+    backgroundColor:_tkRegionColors[gi],
     borderRadius:4
   }));
   if(_tkSurveyBarChart){_tkSurveyBarChart.destroy();_tkSurveyBarChart=null}
   const barCtx=document.getElementById('tkSurveyRegionBarChart').getContext('2d');
   _tkSurveyBarChart=new Chart(barCtx,{
     type:'bar',
-    data:{labels:_tkRegionGroupNames,datasets:barDatasets},
+    data:{labels:barYears.map(y=>y+'년'),datasets:barDatasets},
     options:{
       responsive:true,maintainAspectRatio:false,
       plugins:{legend:{position:'top'},datalabels:{display:false}},
