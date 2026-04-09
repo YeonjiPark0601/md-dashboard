@@ -1896,7 +1896,7 @@ function renderTkRegionCharts(){
       responsive:true,maintainAspectRatio:false,
       plugins:{legend:{position:'top'},datalabels:{display:false},
         tooltip:{callbacks:{label:function(ctx){const v=ctx.raw;const yr=fixedYears[ctx.dataIndex];const yrTotal=_tkRegionGroupNames.reduce((s,g)=>(s+((barData[yr]||{})[g]||0)),0);const pct=yrTotal?(v/yrTotal*100).toFixed(1)+'%':'0%';const amt=v>=100000000?(v/100000000).toFixed(1)+'억':v>=10000?Math.round(v/10000).toLocaleString()+'만':v.toLocaleString();return ctx.dataset.label+': '+amt+' ('+pct+')'}}}},
-      scales:{y:{ticks:{callback:v=>v>=100000000?(v/100000000).toFixed(1)+'억':v>=10000?(v/10000).toFixed(0)+'만':v},beginAtZero:true}}
+      scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:v=>v>=100000000?(v/100000000).toFixed(1)+'억':v>=10000?(v/10000).toFixed(0)+'만':v},beginAtZero:true}}
     }
   });
 
@@ -2072,15 +2072,15 @@ function renderTkSurveyRegionCharts(){
       responsive:true,maintainAspectRatio:false,
       plugins:{legend:{position:'top'},datalabels:{display:false},
         tooltip:{callbacks:{label:function(ctx){const v=ctx.raw;const yr=fixedYears[ctx.dataIndex];const yrTotal=_tkRegionGroupNames.reduce((s,g)=>(s+((barData[yr]||{})[g]||0)),0);const pct=yrTotal?(v/yrTotal*100).toFixed(1)+'%':'0%';return ctx.dataset.label+': '+v+'건 ('+pct+')'}}}},
-      scales:{y:{ticks:{stepSize:1},beginAtZero:true}}
+      scales:{x:{stacked:true},y:{stacked:true,ticks:{stepSize:1},beginAtZero:true}}
     }
   });
 
   // 원형 차트
-  _tkSurveyPieYears=_tkSurveyPieYears.filter(y=>allYears.includes(y));
+  _tkSurveyPieYears=_tkSurveyPieYears.filter(y=>fixedYears.includes(y));
   if(!_tkSurveyPieYears.length)_tkSurveyPieYears=['2026'];
   const chkEl=document.getElementById('tkSurveyPieYearChecks');
-  chkEl.innerHTML=allYears.map(y=>`<label style="display:flex;align-items:center;gap:3px;cursor:pointer;"><input type="checkbox" ${_tkSurveyPieYears.includes(y)?'checked':''} onchange="toggleTkSurveyPieYear('${y}')" style="cursor:pointer;">${y}년</label>`).join('');
+  chkEl.innerHTML=fixedYears.map(y=>`<label style="display:flex;align-items:center;gap:3px;cursor:pointer;"><input type="checkbox" ${_tkSurveyPieYears.includes(y)?'checked':''} onchange="toggleTkSurveyPieYear('${y}')" style="cursor:pointer;">${y}년</label>`).join('');
   const pieData=_tkSurveyGroupCountByYear(_tkSurveyPieYears);
   const pieGroupData={};
   _tkRegionGroupNames.forEach(g=>{pieGroupData[g]=0});
