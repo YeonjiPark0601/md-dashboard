@@ -522,6 +522,9 @@ tr:hover { background: #f7f9fc; }
       <div class="chart-card" style="display:flex;flex-direction:column;"><h3>지역별 상담 건수 (연도별)</h3><div style="position:relative;flex:1;min-height:300px;"><canvas id="tkSurveyRegionBarChart"></canvas></div></div>
       <div class="chart-card" style="display:flex;flex-direction:column;"><h3 style="display:flex;align-items:center;gap:12px;">지역별 상담 비중 <span id="tkSurveyPieYearChecks" style="font-size:12px;font-weight:400;display:flex;gap:8px;"></span></h3><div style="position:relative;flex:1;min-height:300px;"><canvas id="tkSurveyRegionPieChart"></canvas></div></div>
     </div>
+    <div class="chart-row-full" id="turnkeyResultRegionRow" style="display:none;">
+      <div class="table-card"><h3 style="display:flex;align-items:center;gap:12px;">지역별 결과 현황 <span id="tkResultYearChecks" style="font-size:12px;font-weight:400;display:flex;gap:8px;"></span></h3><table><thead><tr id="tkResultRegionHead"></tr></thead><tbody id="tkResultRegionBody"></tbody></table></div>
+    </div>
     <div class="chart-row-full" id="turnkeyConsultImpactRow" style="display:none;">
       <div class="table-card">
         <h3>컨설팅 기여도 분석</h3>
@@ -932,6 +935,7 @@ function render(){
   document.getElementById('turnkeyRegionChartRow').style.display=isTurnkey?'grid':'none';
   document.getElementById('turnkeySurveyRegionRow').style.display=isTurnkey?'':'none';
   document.getElementById('turnkeySurveyRegionChartRow').style.display=isTurnkey?'grid':'none';
+  document.getElementById('turnkeyResultRegionRow').style.display=isTurnkey?'':'none';
   document.getElementById('turnkeySubRegionRow').style.display='none';
   document.getElementById('navTkRegion').style.display=isTurnkey?'':'none';
   document.getElementById('navTkSurveyRegion').style.display=isTurnkey?'':'none';
@@ -947,9 +951,10 @@ function render(){
   const _rgChartRow=document.getElementById('turnkeyRegionChartRow');
   const _svRgChartRow=document.getElementById('turnkeySurveyRegionChartRow');
   const _ciRow=document.getElementById('turnkeyConsultImpactRow');
-  if(isTurnkey){_cwRow.after(_cqRow);_cqRow.after(_rgRow);_rgRow.after(_rgChartRow);_rgChartRow.after(_srRow);_srRow.after(_svRgRow);_svRgRow.after(_svRgChartRow);_svRgChartRow.after(_ciRow);_ciRow.after(document.getElementById('sec-profitMargin'));document.getElementById('sec-profitMargin').after(_pmRow);_pmRow.after(_smEl);_smEl.after(_mRow)}
+  const _rrRow=document.getElementById('turnkeyResultRegionRow');
+  if(isTurnkey){_cwRow.after(_cqRow);_cqRow.after(_rgRow);_rgRow.after(_rgChartRow);_rgChartRow.after(_srRow);_srRow.after(_svRgRow);_svRgRow.after(_svRgChartRow);_svRgChartRow.after(_rrRow);_rrRow.after(_ciRow);_ciRow.after(document.getElementById('sec-profitMargin'));document.getElementById('sec-profitMargin').after(_pmRow);_pmRow.after(_smEl);_smEl.after(_mRow)}
   else{const _smSec=document.getElementById('sonoMonthlySection');_smSec.before(_smEl);_smEl.after(_smSec);_smSec.after(_mRow)}
-  if(isTurnkey){renderTurnkeyKPI();renderProfitMargin();try{renderTurnkeyRegion()}catch(e){console.warn('턴키 지역별 에러',e)}try{renderTurnkeySurveyRegion()}catch(e){console.warn('상담 지역별 에러',e)}try{renderTurnkeySurvey()}catch(e){console.warn('설문 렌더 에러',e)}try{renderConsultImpact()}catch(e){console.warn('기여도 에러',e)}}
+  if(isTurnkey){renderTurnkeyKPI();renderProfitMargin();try{renderTurnkeyRegion()}catch(e){console.warn('턴키 지역별 에러',e)}try{renderTurnkeySurveyRegion()}catch(e){console.warn('상담 지역별 에러',e)}try{renderResultRegion()}catch(e){console.warn('결과 지역별 에러',e)}try{renderTurnkeySurvey()}catch(e){console.warn('설문 렌더 에러',e)}try{renderConsultImpact()}catch(e){console.warn('기여도 에러',e)}}
   const isClassOnly=currentTab==='클래스';
   document.getElementById('puRow').style.display=isClassOnly?'grid':'none';
   document.getElementById('rebuyRow').style.display=isClassOnly?'':'none';
@@ -2126,6 +2131,99 @@ function renderTkSurveyRegionCharts(){
   });
 }
 function toggleTkSurveyPieYear(y){if(_tkSurveyPieYears.includes(y))_tkSurveyPieYears=_tkSurveyPieYears.filter(v=>v!==y);else _tkSurveyPieYears.push(y);if(!_tkSurveyPieYears.length)_tkSurveyPieYears=[y];renderTkSurveyRegionCharts()}
+
+let _tkResultRegionYears=['2026'];
+const _tkResultNames=['Done','HALF','DROP','LOSE','Pending'];
+const _tkResultColors={'Done':'#34a853','HALF':'#4285f4','DROP':'#ea4335','LOSE':'#999','Pending':'#fbbc04'};
+function renderResultRegion(){
+  const mapSize=Object.keys(turnkeyCidMap).length;
+  const headEl=document.getElementById('tkResultRegionHead');
+  const bodyEl=document.getElementById('tkResultRegionBody');
+  if(!turnkeySurveyData.length||!mapSize){headEl.innerHTML='<th>권역</th><th>지역</th><th class="text-right">건수</th>';bodyEl.innerHTML='<tr><td colspan="3" style="text-align:center;color:#999;">데이터 없음</td></tr>';return}
+  const allYears=['2023','2024','2025','2026'];
+  const selYears=_tkResultRegionYears.filter(y=>allYears.includes(y)).sort();
+  const chkEl=document.getElementById('tkResultYearChecks');
+  chkEl.innerHTML=allYears.map(y=>`<label style="display:flex;align-items:center;gap:3px;cursor:pointer;"><input type="checkbox" ${selYears.includes(y)?'checked':''} onchange="toggleTkResultRegionYear('${y}')" style="cursor:pointer;">${y}년</label>`).join('');
+  const multi=selYears.length>1;
+  // 연도별+지역별+결과별 집계
+  const data={};// data[year][region][result] = count
+  let noCidByYear={},unmatchedByYear={};
+  selYears.forEach(y=>{data[y]={};noCidByYear[y]=0;unmatchedByYear[y]=0});
+  turnkeySurveyData.forEach(d=>{
+    const dt=d['_date']||'';const yr=dt.substring(0,4);if(!selYears.includes(yr))return;
+    const cid=d['_cid'];const result=d['_result'];if(!result)return;
+    if(!cid){noCidByYear[yr]++;return}
+    const info=turnkeyCidMap[cid];if(!info){unmatchedByYear[yr]++;return}
+    if(!data[yr][info.region])data[yr][info.region]={};
+    data[yr][info.region][result]=(data[yr][info.region][result]||0)+1;
+  });
+  // 합계
+  const totalByRegion={};// totalByRegion[region][result]
+  selYears.forEach(y=>{Object.entries(data[y]).forEach(([r,res])=>{if(!totalByRegion[r])totalByRegion[r]={};Object.entries(res).forEach(([k,v])=>{totalByRegion[r][k]=(totalByRegion[r][k]||0)+v})})});
+  // 사용되는 결과값만 추출
+  const usedResults=_tkResultNames.filter(r=>{return Object.values(totalByRegion).some(rr=>rr[r])});
+  const grandByResult={};usedResults.forEach(r=>{grandByResult[r]=Object.values(totalByRegion).reduce((s,rr)=>s+(rr[r]||0),0)});
+  const grandTotal=Object.values(grandByResult).reduce((s,v)=>s+v,0);
+  // 연도별 합계
+  const yearTotals={};selYears.forEach(y=>{let t=0;Object.values(data[y]).forEach(rr=>{Object.values(rr).forEach(v=>{t+=v})});yearTotals[y]=t+noCidByYear[y]+unmatchedByYear[y]});
+  const totBg='background:#f0f2f5;';
+  // 헤더
+  let hdr='<th>권역</th><th>지역</th>';
+  if(multi){hdr+=`<th class="text-right" style="${totBg}font-weight:700;">합계</th>`;usedResults.forEach(r=>hdr+=`<th class="text-right" style="${totBg}font-weight:700;">${r}</th>`)}
+  selYears.forEach(y=>{hdr+=`<th class="text-right">${y}년 합계</th>`;usedResults.forEach(r=>hdr+=`<th class="text-right">${y}년 ${r}</th>`)});
+  headEl.innerHTML=hdr;
+  // 셀
+  function cells(region){
+    let c='';
+    if(multi){
+      const rr=totalByRegion[region]||{};const t=usedResults.reduce((s,r)=>s+(rr[r]||0),0);
+      c+=`<td class="text-right" style="${totBg}font-weight:700;">${t}</td>`;
+      usedResults.forEach(r=>c+=`<td class="text-right" style="${totBg}">${rr[r]||'-'}</td>`);
+    }
+    selYears.forEach(y=>{
+      const rr=(data[y]||{})[region]||{};const t=usedResults.reduce((s,r)=>s+(rr[r]||0),0);
+      c+=`<td class="text-right">${t||'-'}</td>`;
+      usedResults.forEach(r=>c+=`<td class="text-right">${rr[r]||'-'}</td>`);
+    });
+    return c;
+  }
+  const regionGroups=_tkRegionGroupDef;
+  let html='';
+  regionGroups.forEach(g=>{
+    const groupRegions=g.regions.filter(r=>totalByRegion[r]).sort((a,b)=>{
+      const ta=usedResults.reduce((s,k)=>s+((totalByRegion[a]||{})[k]||0),0);
+      const tb=usedResults.reduce((s,k)=>s+((totalByRegion[b]||{})[k]||0),0);
+      return tb-ta;
+    });
+    if(!groupRegions.length)return;
+    const needSubtotal=g.regions.length>1;
+    groupRegions.forEach((r,i)=>{
+      html+=`<tr><td style="font-weight:${i===0?'700':'400'};color:${i===0?'#333':'#999'}">${i===0?g.group:''}</td><td>${r}</td>${cells(r)}</tr>`;
+    });
+    if(needSubtotal){
+      html+=`<tr style="font-weight:600;background:#f7f8fa;"><td>${g.group} 소계</td><td></td>`;
+      if(multi){
+        const gt=groupRegions.reduce((s,r)=>usedResults.reduce((s2,k)=>s2+((totalByRegion[r]||{})[k]||0),s),0);
+        html+=`<td class="text-right" style="${totBg}font-weight:700;">${gt}</td>`;
+        usedResults.forEach(k=>{const v=groupRegions.reduce((s,r)=>s+((totalByRegion[r]||{})[k]||0),0);html+=`<td class="text-right" style="${totBg}">${v||'-'}</td>`});
+      }
+      selYears.forEach(y=>{
+        const gt=groupRegions.reduce((s,r)=>usedResults.reduce((s2,k)=>s2+(((data[y]||{})[r]||{})[k]||0),s),0);
+        html+=`<td class="text-right">${gt||'-'}</td>`;
+        usedResults.forEach(k=>{const v=groupRegions.reduce((s,r)=>s+(((data[y]||{})[r]||{})[k]||0),0);html+=`<td class="text-right">${v||'-'}</td>`});
+      });
+      html+=`</tr>`;
+    }
+  });
+  // 합계 행
+  html+=`<tr style="font-weight:700;background:#f0f2f5;"><td>합계</td><td></td>`;
+  if(multi){html+=`<td class="text-right">${grandTotal}</td>`;usedResults.forEach(r=>html+=`<td class="text-right">${grandByResult[r]||'-'}</td>`)}
+  selYears.forEach(y=>{html+=`<td class="text-right">${yearTotals[y]}</td>`;usedResults.forEach(r=>{let v=0;Object.values(data[y]).forEach(rr=>{v+=(rr[r]||0)});html+=`<td class="text-right">${v||'-'}</td>`})});
+  html+=`</tr>`;
+  bodyEl.innerHTML=html;
+}
+function toggleTkResultRegionYear(y){if(_tkResultRegionYears.includes(y))_tkResultRegionYears=_tkResultRegionYears.filter(v=>v!==y);else _tkResultRegionYears.push(y);renderResultRegion()}
+
 function showTkSubRegion(region){
   const metros=new Set(['서울','부산','대구','인천','광주','대전','울산','세종']);
   const label=metros.has(region)?region+' 구별 매출':region+' 시별 매출';
