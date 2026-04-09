@@ -507,7 +507,7 @@ tr:hover { background: #f7f9fc; }
       <div class="table-card"><h3 style="display:flex;align-items:center;gap:12px;">지역별 매출 상세 <span id="tkYearChecks" style="font-size:12px;font-weight:400;display:flex;gap:8px;"></span></h3><div id="tkUnmatchedMsg" style="display:none;font-size:12px;color:#e8453c;margin-bottom:8px;"></div><table><thead><tr><th>권역</th><th>지역</th><th class="text-right">매출금액</th><th class="text-right">건수</th><th class="text-right">비중</th></tr></thead><tbody id="tkRegionBody"></tbody></table></div>
     </div>
     <div class="chart-row-full" id="turnkeySurveyRegionRow" style="display:none;">
-      <div class="table-card"><h3 style="display:flex;align-items:center;gap:12px;">지역별 상담 건수 <span id="tkSurveyYearChecks" style="font-size:12px;font-weight:400;display:flex;gap:8px;"></span></h3><table><thead><tr><th>권역</th><th>지역</th><th class="text-right">상담건수</th><th class="text-right">비중</th></tr></thead><tbody id="tkSurveyRegionBody"></tbody></table></div>
+      <div class="table-card"><h3 style="display:flex;align-items:center;gap:12px;">지역별 상담 건수 <span id="tkSurveyYearChecks" style="font-size:12px;font-weight:400;display:flex;gap:8px;"></span></h3><table><thead><tr id="tkSurveyRegionHead"></tr></thead><tbody id="tkSurveyRegionBody"></tbody></table></div>
     </div>
     <div class="chart-row-full" id="turnkeySubRegionRow" style="display:none;">
       <div class="table-card"><h3 style="display:flex;justify-content:space-between;align-items:center;"><span id="tkSubRegionTitle">구/시별 매출 상세</span><button onclick="document.getElementById('turnkeySubRegionRow').style.display='none'" style="font-size:13px;padding:4px 12px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;color:#666;">닫기</button></h3><table><thead><tr><th>구/시</th><th class="text-right">매출금액</th><th class="text-right">건수</th><th class="text-right">비중</th></tr></thead><tbody id="tkSubRegionBody"></tbody></table></div>
@@ -1834,14 +1834,63 @@ function toggleTkRegionYear(y){if(_tkRegionYears.includes(y))_tkRegionYears=_tkR
 let _tkSurveyRegionYears=['2026'];
 function renderTurnkeySurveyRegion(){
   const mapSize=Object.keys(turnkeyCidMap).length;
-  if(!turnkeySurveyData.length||!mapSize){document.getElementById('tkSurveyRegionBody').innerHTML='<tr><td colspan="4" style="text-align:center;color:#999;">데이터 없음</td></tr>';return}
+  const headEl=document.getElementById('tkSurveyRegionHead');
+  const bodyEl=document.getElementById('tkSurveyRegionBody');
+  if(!turnkeySurveyData.length||!mapSize){headEl.innerHTML='<th>권역</th><th>지역</th><th class="text-right">건수</th>';bodyEl.innerHTML='<tr><td colspan="3" style="text-align:center;color:#999;">데이터 없음</td></tr>';return}
   const allYears=['2023','2024','2025','2026'];
+  const selYears=_tkSurveyRegionYears.filter(y=>allYears.includes(y)).sort();
   const chkEl=document.getElementById('tkSurveyYearChecks');
-  chkEl.innerHTML=allYears.map(y=>`<label style="display:flex;align-items:center;gap:3px;cursor:pointer;"><input type="checkbox" ${_tkSurveyRegionYears.includes(y)?'checked':''} onchange="toggleTkSurveyRegionYear('${y}')" style="cursor:pointer;">${y}년</label>`).join('');
-  const filtered=turnkeySurveyData.filter(d=>{const dt=d['_date']||'';return _tkSurveyRegionYears.some(y=>dt.startsWith(y))});
-  const regionCount={};let unmatchedCount=0,noCidCount=0;
-  filtered.forEach(d=>{const cid=d['_cid'];if(!cid){noCidCount++;return}const info=turnkeyCidMap[cid];if(!info){unmatchedCount++;return}regionCount[info.region]=(regionCount[info.region]||0)+1});
-  const total=Object.values(regionCount).reduce((s,v)=>s+v,0);
+  chkEl.innerHTML=allYears.map(y=>`<label style="display:flex;align-items:center;gap:3px;cursor:pointer;"><input type="checkbox" ${selYears.includes(y)?'checked':''} onchange="toggleTkSurveyRegionYear('${y}')" style="cursor:pointer;">${y}년</label>`).join('');
+  const multi=selYears.length>1;
+  // 연도별+지역별 집계
+  const byYearRegion={};let noCidByYear={},unmatchedByYear={};
+  selYears.forEach(y=>{byYearRegion[y]={};noCidByYear[y]=0;unmatchedByYear[y]=0});
+  turnkeySurveyData.forEach(d=>{
+    const dt=d['_date']||'';const yr=dt.substring(0,4);if(!selYears.includes(yr))return;
+    const cid=d['_cid'];if(!cid){noCidByYear[yr]++;return}
+    const info=turnkeyCidMap[cid];if(!info){unmatchedByYear[yr]++;return}
+    byYearRegion[yr][info.region]=(byYearRegion[yr][info.region]||0)+1;
+  });
+  // 합계 집계
+  const totalByRegion={};let totalNoCid=0,totalUnmatched=0;
+  selYears.forEach(y=>{
+    Object.entries(byYearRegion[y]).forEach(([r,c])=>{totalByRegion[r]=(totalByRegion[r]||0)+c});
+    totalNoCid+=noCidByYear[y];totalUnmatched+=unmatchedByYear[y];
+  });
+  const totalAll=Object.values(totalByRegion).reduce((s,v)=>s+v,0);
+  const grandTotal=totalAll+totalNoCid+totalUnmatched;
+  // 연도별 전체 합계 (비중 계산용)
+  const yearTotals={};selYears.forEach(y=>{yearTotals[y]=Object.values(byYearRegion[y]).reduce((s,v)=>s+v,0)+noCidByYear[y]+unmatchedByYear[y]});
+  // 헤더: 권역 | 지역 | 합계 건수 | 합계 비중 | 연도별 건수 | 연도별 비중
+  const totBg='background:#f0f2f5;';
+  let hdr='<th>권역</th><th>지역</th>';
+  if(multi)hdr+=`<th class="text-right" style="${totBg}font-weight:700;">합계</th><th class="text-right" style="${totBg}font-weight:700;">비중</th>`;
+  selYears.forEach(y=>hdr+=`<th class="text-right">${y} 건수</th><th class="text-right">${y} 비중</th>`);
+  if(!multi){}// 1개일 때는 연도 열이 곧 합계
+  headEl.innerHTML=hdr;
+  // 셀 생성 헬퍼
+  function cells(region){
+    let c='';
+    if(multi){
+      const t=totalByRegion[region]||0;
+      c+=`<td class="text-right" style="${totBg}font-weight:700;">${t}</td><td class="text-right" style="${totBg}font-weight:700;">${grandTotal?(t/grandTotal*100).toFixed(1)+'%':'-'}</td>`;
+    }
+    selYears.forEach(y=>{
+      const v=(byYearRegion[y]||{})[region]||0;
+      const yt=yearTotals[y];
+      c+=`<td class="text-right">${v||'-'}</td><td class="text-right">${yt?(v/yt*100).toFixed(1)+'%':'-'}</td>`;
+    });
+    return c;
+  }
+  function specialCells(label,getVal){
+    let c='';
+    if(multi){
+      const t=selYears.reduce((s,y)=>s+getVal(y),0);
+      c+=`<td class="text-right" style="${totBg}font-weight:700;">${t}</td><td class="text-right" style="${totBg}font-weight:700;">${grandTotal?(t/grandTotal*100).toFixed(1)+'%':'-'}</td>`;
+    }
+    selYears.forEach(y=>{const v=getVal(y);const yt=yearTotals[y];c+=`<td class="text-right">${v||'-'}</td><td class="text-right">${yt?(v/yt*100).toFixed(1)+'%':'-'}</td>`});
+    return c;
+  }
   const regionGroups=[
     {group:'수도권',regions:['경기','서울','인천']},
     {group:'영남권',regions:['경남','경북','대구','부산','울산']},
@@ -1852,20 +1901,27 @@ function renderTurnkeySurveyRegion(){
   ];
   let html='';
   regionGroups.forEach(g=>{
-    const groupRegions=g.regions.filter(r=>regionCount[r]).sort((a,b)=>(regionCount[b]||0)-(regionCount[a]||0));
+    const groupRegions=g.regions.filter(r=>totalByRegion[r]).sort((a,b)=>(totalByRegion[b]||0)-(totalByRegion[a]||0));
     if(!groupRegions.length)return;
-    const groupTotal=groupRegions.reduce((s,r)=>s+(regionCount[r]||0),0);
     const needSubtotal=g.regions.length>1;
     groupRegions.forEach((r,i)=>{
-      html+=`<tr><td style="font-weight:${i===0?'700':'400'};color:${i===0?'#333':'#999'}">${i===0?g.group:''}</td><td>${r}</td><td class="text-right">${regionCount[r]}</td><td class="text-right">${total?(regionCount[r]/total*100).toFixed(1)+'%':'-'}</td></tr>`;
+      html+=`<tr><td style="font-weight:${i===0?'700':'400'};color:${i===0?'#333':'#999'}">${i===0?g.group:''}</td><td>${r}</td>${cells(r)}</tr>`;
     });
-    if(needSubtotal)html+=`<tr style="font-weight:600;background:#f7f8fa;"><td>${g.group} 소계</td><td></td><td class="text-right">${groupTotal}</td><td class="text-right">${total?(groupTotal/total*100).toFixed(1)+'%':'-'}</td></tr>`;
+    if(needSubtotal){
+      html+=`<tr style="font-weight:600;background:#f7f8fa;"><td>${g.group} 소계</td><td></td>`;
+      if(multi){const gt=groupRegions.reduce((s,r)=>s+(totalByRegion[r]||0),0);html+=`<td class="text-right" style="${totBg}font-weight:700;">${gt}</td><td class="text-right" style="${totBg}font-weight:700;">${grandTotal?(gt/grandTotal*100).toFixed(1)+'%':'-'}</td>`}
+      selYears.forEach(y=>{const v=groupRegions.reduce((s,r)=>s+((byYearRegion[y]||{})[r]||0),0);const yt=yearTotals[y];html+=`<td class="text-right">${v||'-'}</td><td class="text-right">${yt?(v/yt*100).toFixed(1)+'%':'-'}</td>`});
+      html+=`</tr>`;
+    }
   });
-  const grandTotal=total+unmatchedCount+noCidCount;
-  if(noCidCount)html+=`<tr style="color:#e8453c;"><td>CID 누락</td><td></td><td class="text-right">${noCidCount}</td><td class="text-right">${grandTotal?(noCidCount/grandTotal*100).toFixed(1)+'%':'-'}</td></tr>`;
-  if(unmatchedCount)html+=`<tr style="color:#999;"><td>주소 미확인</td><td></td><td class="text-right">${unmatchedCount}</td><td class="text-right">${grandTotal?(unmatchedCount/grandTotal*100).toFixed(1)+'%':'-'}</td></tr>`;
-  html+=`<tr style="font-weight:700;background:#f0f2f5;"><td>합계</td><td></td><td class="text-right">${grandTotal}</td><td class="text-right">100%</td></tr>`;
-  document.getElementById('tkSurveyRegionBody').innerHTML=html;
+  if(totalNoCid)html+=`<tr style="color:#e8453c;"><td>CID 누락</td><td></td>${specialCells('CID 누락',y=>noCidByYear[y])}</tr>`;
+  if(totalUnmatched)html+=`<tr style="color:#999;"><td>주소 미확인</td><td></td>${specialCells('주소 미확인',y=>unmatchedByYear[y])}</tr>`;
+  // 합계 행
+  html+=`<tr style="font-weight:700;background:#f0f2f5;"><td>합계</td><td></td>`;
+  if(multi)html+=`<td class="text-right">${grandTotal}</td><td class="text-right">100%</td>`;
+  selYears.forEach(y=>html+=`<td class="text-right">${yearTotals[y]}</td><td class="text-right">100%</td>`);
+  html+=`</tr>`;
+  bodyEl.innerHTML=html;
 }
 function toggleTkSurveyRegionYear(y){if(_tkSurveyRegionYears.includes(y))_tkSurveyRegionYears=_tkSurveyRegionYears.filter(v=>v!==y);else _tkSurveyRegionYears.push(y);renderTurnkeySurveyRegion()}
 function showTkSubRegion(region){
