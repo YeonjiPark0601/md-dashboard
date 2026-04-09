@@ -1835,7 +1835,7 @@ let _tkSurveyRegionYears=['2026'];
 function renderTurnkeySurveyRegion(){
   const mapSize=Object.keys(turnkeyCidMap).length;
   if(!turnkeySurveyData.length||!mapSize){document.getElementById('tkSurveyRegionBody').innerHTML='<tr><td colspan="4" style="text-align:center;color:#999;">데이터 없음</td></tr>';return}
-  const allYears=[...new Set(turnkeySurveyData.map(d=>(d['_date']||'').substring(0,4)).filter(y=>y>='2023'))].sort();
+  const allYears=['2023','2024','2025','2026'];
   const chkEl=document.getElementById('tkSurveyYearChecks');
   chkEl.innerHTML=allYears.map(y=>`<label style="display:flex;align-items:center;gap:3px;cursor:pointer;"><input type="checkbox" ${_tkSurveyRegionYears.includes(y)?'checked':''} onchange="toggleTkSurveyRegionYear('${y}')" style="cursor:pointer;">${y}년</label>`).join('');
   const filtered=turnkeySurveyData.filter(d=>{const dt=d['_date']||'';return _tkSurveyRegionYears.some(y=>dt.startsWith(y))});
