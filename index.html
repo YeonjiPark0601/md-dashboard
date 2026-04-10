@@ -2198,7 +2198,7 @@ function renderResultRegion(){
     // ── 지역별 ──
     gr.forEach((r,ri)=>{
       const rid=gid+'_r'+ri;
-      html+=`<tr class="rr-region ${gid}" data-rid="${rid}" onclick="toggleRRRegion(event,'${rid}')" style="cursor:pointer;border-top:1px solid #e8e8e8;"><td style="padding-left:28px;font-weight:600;color:#444;">${r} ${arrow}</td><td style="color:#888;">소계</td>${vc(r,null)}</tr>`;
+      html+=`<tr class="rr-region ${gid}" data-rid="${rid}" onclick="toggleRRRegion(event,'${rid}')" style="cursor:pointer;border-top:1px solid #e8e8e8;background:#f5f7fa;"><td style="padding-left:28px;font-weight:600;color:#444;">${r} ${arrow}</td><td style="color:#888;">소계</td>${vc(r,null)}</tr>`;
       usedResults.forEach(st=>{
         if(!((totalByRegion[r]||{})[st]))return;
         html+=`<tr class="rr-stage ${gid} ${rid}" style="display:none;"><td style="padding-left:44px;"></td><td>${badge(st)}</td>${vc(r,st)}</tr>`;
