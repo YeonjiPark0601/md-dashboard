@@ -245,19 +245,19 @@ function render() {
   // pivot table
   html += '<div class="table-card">';
   html += `<h3><span>담당자 × 월별 피벗 (${year}년${cat ? ' / ' + cat : ''})</span><span style="font-size:12px;color:#888;font-weight:400;">건수 = 주문번호 유니크 / 금액 = 포인트제외결제공급가액(원)</span></h3>`;
-  html += '<table><thead><tr><th>담당자</th><th class="text-right">합계 건수</th>';
+  html += '<table><thead><tr><th>담당자</th><th class="text-right">합계 건수</th><th class="text-right">합계 금액</th>';
   months.forEach(m => {
     const mm = parseInt(m.split('-')[1], 10);
     html += `<th class="text-right">${mm}월 건수</th><th class="text-right">${mm}월 금액</th>`;
   });
-  html += '<th class="text-right">합계 금액</th></tr></thead><tbody>';
+  html += '</tr></thead><tbody>';
 
   const colCount = {}, colAmount = {};
   months.forEach(m => { colCount[m] = 0; colAmount[m] = 0; });
   let grandCount = 0, grandAmount = 0;
 
   repTotals.forEach(({ rep, byMonth, count, amount }) => {
-    html += `<tr><td class="rep-name">${rep}</td><td class="text-right"><b>${count}</b></td>`;
+    html += `<tr><td class="rep-name">${rep}</td><td class="text-right"><b>${count}</b></td><td class="text-right"><b>${fmt(amount)}</b></td>`;
     months.forEach(m => {
       const cell = byMonth[m];
       if (cell) {
@@ -270,17 +270,16 @@ function render() {
         html += '<td class="text-right muted">-</td><td class="text-right muted">-</td>';
       }
     });
-    html += `<td class="text-right"><b>${fmt(amount)}</b></td></tr>`;
+    html += '</tr>';
     grandCount += count;
     grandAmount += amount;
   });
 
-  html += `<tr class="total-row"><td>합계</td><td class="text-right">${grandCount}</td>`;
+  html += `<tr class="total-row"><td>합계</td><td class="text-right">${grandCount}</td><td class="text-right">${fmt(grandAmount)}</td>`;
   months.forEach(m => {
     html += `<td class="text-right">${colCount[m]}</td><td class="text-right">${fmt(colAmount[m])}</td>`;
   });
-  html += `<td class="text-right">${fmt(grandAmount)}</td></tr>`;
-  html += '</tbody></table></div>';
+  html += '</tr></tbody></table></div>';
 
   // monthly summary chart-like table
   html += '<div class="table-card">';
