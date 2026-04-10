@@ -2195,15 +2195,17 @@ function renderResultRegion(){
       const has=gr.some(r=>(totalByRegion[r]||{})[st]);if(!has)return;
       html+=`<tr class="rr-gstage ${gid}" style="background:#f7f8fb;"><td style="padding-left:24px;"></td><td>${badge(st)}</td>${vc(gr,st)}</tr>`;
     });
-    // ── 지역별 ──
-    gr.forEach((r,ri)=>{
-      const rid=gid+'_r'+ri;
-      html+=`<tr class="rr-region ${gid}" data-rid="${rid}" onclick="toggleRRRegion(event,'${rid}')" style="cursor:pointer;border-top:1px solid #e8e8e8;background:#f5f7fa;"><td style="padding-left:28px;font-weight:600;color:#444;">${r} ${arrow}</td><td style="color:#888;">소계</td>${vc(r,null)}</tr>`;
-      usedResults.forEach(st=>{
-        if(!((totalByRegion[r]||{})[st]))return;
-        html+=`<tr class="rr-stage ${gid} ${rid}" style="display:none;"><td style="padding-left:44px;"></td><td>${badge(st)}</td>${vc(r,st)}</tr>`;
+    // ── 지역별 (권역=지역 1개인 경우 생략) ──
+    if(gr.length>1){
+      gr.forEach((r,ri)=>{
+        const rid=gid+'_r'+ri;
+        html+=`<tr class="rr-region ${gid}" data-rid="${rid}" onclick="toggleRRRegion(event,'${rid}')" style="cursor:pointer;border-top:1px solid #e8e8e8;background:#f5f7fa;"><td style="padding-left:28px;font-weight:600;color:#444;">${r} ${arrow}</td><td style="color:#888;">소계</td>${vc(r,null)}</tr>`;
+        usedResults.forEach(st=>{
+          if(!((totalByRegion[r]||{})[st]))return;
+          html+=`<tr class="rr-stage ${gid} ${rid}" style="display:none;"><td style="padding-left:44px;"></td><td>${badge(st)}</td>${vc(r,st)}</tr>`;
+        });
       });
-    });
+    }
   });
   // 합계 행
   const allR=Object.keys(totalByRegion);
