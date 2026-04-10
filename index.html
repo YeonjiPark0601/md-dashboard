@@ -2133,8 +2133,8 @@ function renderTkSurveyRegionCharts(){
 function toggleTkSurveyPieYear(y){if(_tkSurveyPieYears.includes(y))_tkSurveyPieYears=_tkSurveyPieYears.filter(v=>v!==y);else _tkSurveyPieYears.push(y);if(!_tkSurveyPieYears.length)_tkSurveyPieYears=[y];renderTkSurveyRegionCharts()}
 
 let _tkResultRegionYears=['2026'];
-const _tkResultNames=['Done','HALF','DROP','LOSE','Pending'];
-const _tkResultColors={'Done':'#34a853','HALF':'#4285f4','DROP':'#ea4335','LOSE':'#999','Pending':'#fbbc04'};
+const _tkResultOrder=['BO1','BO2','Pending','HALF','Done','DROP','LOSE'];
+const _tkResultColors={'Done':'#34a853','HALF':'#4285f4','DROP':'#ea4335','LOSE':'#999','Pending':'#fbbc04','BO1':'#ff6d01','BO2':'#8e24aa'};
 function renderResultRegion(){
   const mapSize=Object.keys(turnkeyCidMap).length;
   const headEl=document.getElementById('tkResultRegionHead');
@@ -2156,7 +2156,8 @@ function renderResultRegion(){
   });
   const totalByRegion={};
   selYears.forEach(y=>{Object.entries(data[y]).forEach(([r,res])=>{if(!totalByRegion[r])totalByRegion[r]={};Object.entries(res).forEach(([k,v])=>{totalByRegion[r][k]=(totalByRegion[r][k]||0)+v})})});
-  const usedResults=_tkResultNames.filter(r=>Object.values(totalByRegion).some(rr=>rr[r]));
+  const allResults=new Set();Object.values(totalByRegion).forEach(rr=>Object.keys(rr).forEach(k=>allResults.add(k)));
+  const usedResults=[..._tkResultOrder.filter(r=>allResults.has(r)),...[...allResults].filter(r=>!_tkResultOrder.includes(r)).sort()];
   const totBg='background:#f0f2f5;';
   // 헤더: 구분 | Stage | [합계] | 연도별
   let hdr='<th>구분</th><th>Stage</th>';
