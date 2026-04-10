@@ -2133,8 +2133,8 @@ function renderTkSurveyRegionCharts(){
 function toggleTkSurveyPieYear(y){if(_tkSurveyPieYears.includes(y))_tkSurveyPieYears=_tkSurveyPieYears.filter(v=>v!==y);else _tkSurveyPieYears.push(y);if(!_tkSurveyPieYears.length)_tkSurveyPieYears=[y];renderTkSurveyRegionCharts()}
 
 let _tkResultRegionYears=['2026'];
-const _tkResultOrder=['BO1','BO2','Pending','HALF','Done','DROP','LOSE'];
-const _tkResultColors={'Done':'#34a853','HALF':'#4285f4','DROP':'#ea4335','LOSE':'#999','Pending':'#fbbc04','BO1':'#ff6d01','BO2':'#8e24aa'};
+const _tkResultOrder=['BO1','BO2','Pending','Follow','HALF','Done','DROP','LOSE'];
+const _tkResultColors={'Done':'#34a853','HALF':'#4285f4','DROP':'#ea4335','LOSE':'#999','Pending':'#fbbc04','BO1':'#ff6d01','BO2':'#8e24aa','Follow':'#0d9488'};
 function renderResultRegion(){
   const mapSize=Object.keys(turnkeyCidMap).length;
   const headEl=document.getElementById('tkResultRegionHead');
