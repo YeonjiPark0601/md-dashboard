@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>의료기기 주문서 담당자별 현황</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', -apple-system, sans-serif; background: #f0f2f5; color: #333; }
+
+.header {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  color: #fff; padding: 16px 30px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.header .left { display: flex; align-items: center; gap: 12px; }
+.header h1 { font-size: 20px; font-weight: 600; }
+.header a.home {
+  color: #fff; text-decoration: none; font-size: 18px;
+  padding: 4px 8px; border-radius: 6px; background: rgba(255,255,255,.1);
+}
+.header .updated { font-size: 12px; color: #8899aa; }
+
+.filters {
+  background: #fff; padding: 12px 30px; border-bottom: 1px solid #e0e0e0;
+  display: flex; gap: 16px; flex-wrap: wrap; align-items: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+}
+.filter-group { display: flex; align-items: center; gap: 6px; }
+.filter-group label { font-size: 13px; font-weight: 600; color: #555; }
+.filter-group select {
+  padding: 5px 10px; border: 1px solid #d0d0d0; border-radius: 6px;
+  font-size: 13px; background: #fff;
+}
+
+.container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+.kpi-row {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 16px; margin-bottom: 20px;
+}
+.kpi-card {
+  background: #fff; border-radius: 12px; padding: 18px 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.kpi-card .label { font-size: 12px; color: #888; margin-bottom: 6px; font-weight: 600; }
+.kpi-card .value { font-size: 26px; font-weight: 700; color: #1a1a2e; }
+.kpi-card .sub { font-size: 12px; color: #888; margin-top: 4px; }
+
+.table-card {
+  background: #fff; border-radius: 12px; padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08); overflow-x: auto;
+  margin-bottom: 20px;
+}
+.table-card h3 {
+  font-size: 14px; font-weight: 600; color: #555; margin-bottom: 12px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th {
+  background: #f7f8fa; padding: 10px 12px; text-align: left;
+  font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0;
+  white-space: nowrap;
+}
+td { padding: 8px 12px; border-bottom: 1px solid #f0f0f0; white-space: nowrap; }
+tr:hover { background: #f7f9fc; }
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+tbody tr.total-row td { background: #f7f8fa; font-weight: 700; border-top: 2px solid #e0e0e0; }
+td.rep-name { font-weight: 600; color: #1a1a2e; min-width: 90px; }
+.muted { color: #ccc; }
+
+.loading { text-align: center; padding: 60px; color: #888; font-size: 16px; }
+
+@media (max-width: 900px) {
+  .kpi-row { grid-template-columns: 1fr 1fr; }
+  .filters { padding: 12px 20px; }
+  .container { padding: 16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="left">
+    <a class="home" href="home.html" title="홈으로">&#8962;</a>
+    <h1>의료기기 주문서 담당자별 현황</h1>
+  </div>
+  <div class="updated" id="lastUpdated">로딩중…</div>
+</div>
+
+<div class="filters">
+  <div class="filter-group">
+    <label>연도</label>
+    <select id="yearSelect"></select>
+  </div>
+  <div class="filter-group">
+    <label>카테고리</label>
+    <select id="categorySelect"><option value="">전체</option></select>
+  </div>
+  <div class="filter-group" style="margin-left:auto;font-size:12px;color:#888;">
+    데이터 출처: Redash #3829 / 결제완료 / 매출담당자 지정건
+  </div>
+</div>
+
+<div class="container">
+  <div id="content" class="loading">데이터 불러오는 중…</div>
+</div>
+
+<script>
+const SHEET_ID = '1s34C5qB-K_A8vJEJQaOOyJ44YM3netORbfCVVfM3idw';
+const SHEET_TAB = '담당자별주문';
+const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_TAB)}&headers=1&_t=${Date.now()}`;
+let DATA = null;
+
+function parseCSV(text) {
+  const rows = [];
+  let cur = [], field = '', inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQ) {
+      if (c === '"') {
+        if (text[i + 1] === '"') { field += '"'; i++; }
+        else inQ = false;
+      } else field += c;
+    } else {
+      if (c === '"') inQ = true;
+      else if (c === ',') { cur.push(field); field = ''; }
+      else if (c === '\n') { cur.push(field); rows.push(cur); cur = []; field = ''; }
+      else if (c === '\r') { /* skip */ }
+      else field += c;
+    }
+  }
+  if (field.length || cur.length) { cur.push(field); rows.push(cur); }
+  return rows;
+}
+
+async function loadData() {
+  try {
+    const r = await fetch(SHEET_URL);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const csv = await r.text();
+    const rows = parseCSV(csv).filter(r => r.length > 1 && r[0]);
+    if (rows.length < 2) throw new Error('시트 데이터 없음');
+    const header = rows[0];
+    const idx = name => header.indexOf(name);
+    const iMonth = idx('거래월'), iDate = idx('거래일자'), iOrder = idx('주문번호'),
+          iRep = idx('매출담당자'), iAmt = idx('금액'), iCat = idx('카테고리명'),
+          iHos = idx('병의원명'), iProd = idx('상품명');
+    const parsed = rows.slice(1).map(r => ({
+      '거래월': r[iMonth] || '',
+      '거래일자': r[iDate] || '',
+      '주문번호': r[iOrder] || '',
+      '매출담당자': r[iRep] || '',
+      '금액': parseFloat((r[iAmt] || '0').replace(/,/g, '')) || 0,
+      '카테고리명': r[iCat] || '',
+      '병의원명': r[iHos] || '',
+      '상품명': r[iProd] || ''
+    }));
+    DATA = { updated_at: new Date().toISOString(), source: 'Google Sheets 담당자별주문', rows: parsed };
+  } catch (e) {
+    document.getElementById('content').innerHTML =
+      '<div class="loading">데이터 로드 실패: ' + e.message + '</div>';
+    return;
+  }
+  initFilters();
+  render();
+}
+
+function initFilters() {
+  const years = Array.from(new Set(DATA.rows.map(r => (r['거래월'] || '').slice(0, 4))))
+    .filter(Boolean).sort().reverse();
+  const ySel = document.getElementById('yearSelect');
+  years.forEach(y => {
+    const o = document.createElement('option');
+    o.value = y; o.textContent = y + '년';
+    ySel.appendChild(o);
+  });
+  ySel.value = years[0];
+  ySel.addEventListener('change', render);
+
+  const cats = Array.from(new Set(DATA.rows.map(r => r['카테고리명']).filter(Boolean))).sort();
+  const cSel = document.getElementById('categorySelect');
+  cats.forEach(c => {
+    const o = document.createElement('option');
+    o.value = c; o.textContent = c;
+    cSel.appendChild(o);
+  });
+  cSel.addEventListener('change', render);
+
+  document.getElementById('lastUpdated').textContent =
+    '시트 조회: ' + new Date().toLocaleString('ko-KR') + ' · 자동 갱신 매일 08:00';
+}
+
+function fmt(n) {
+  return Math.round(n).toLocaleString('ko-KR');
+}
+
+function render() {
+  const year = document.getElementById('yearSelect').value;
+  const cat = document.getElementById('categorySelect').value;
+  const rows = DATA.rows.filter(r =>
+    (r['거래월'] || '').startsWith(year) &&
+    (!cat || r['카테고리명'] === cat)
+  );
+
+  const months = Array.from(new Set(rows.map(r => r['거래월']))).sort();
+
+  // pivot: rep -> month -> {orders:Set, amount:number}
+  const pivot = {};
+  rows.forEach(r => {
+    const rep = r['매출담당자'];
+    const m = r['거래월'];
+    if (!pivot[rep]) pivot[rep] = {};
+    if (!pivot[rep][m]) pivot[rep][m] = { orders: new Set(), amount: 0 };
+    pivot[rep][m].orders.add(r['주문번호']);
+    pivot[rep][m].amount += r['금액'];
+  });
+
+  // rep totals
+  const repTotals = Object.entries(pivot).map(([rep, byMonth]) => {
+    let amt = 0;
+    const ordSet = new Set();
+    Object.values(byMonth).forEach(v => {
+      amt += v.amount;
+      v.orders.forEach(o => ordSet.add(o));
+    });
+    return { rep, amount: amt, count: ordSet.size, byMonth };
+  }).sort((a, b) => b.amount - a.amount);
+
+  // KPI
+  const totalAmount = repTotals.reduce((s, r) => s + r.amount, 0);
+  const totalCount = new Set(rows.map(r => r['주문번호'])).size;
+  const top = repTotals[0] || { rep: '-', amount: 0 };
+  const activeReps = repTotals.length;
+
+  let html = '';
+  html += '<div class="kpi-row">';
+  html += `<div class="kpi-card"><div class="label">총 매출</div><div class="value">${fmt(totalAmount)}원</div><div class="sub">${year}년</div></div>`;
+  html += `<div class="kpi-card"><div class="label">총 주문건수</div><div class="value">${totalCount}</div><div class="sub">유니크 주문번호</div></div>`;
+  html += `<div class="kpi-card"><div class="label">활동 담당자</div><div class="value">${activeReps}명</div><div class="sub">매출 발생 기준</div></div>`;
+  html += `<div class="kpi-card"><div class="label">1위 담당자</div><div class="value">${top.rep}</div><div class="sub">${fmt(top.amount)}원</div></div>`;
+  html += '</div>';
+
+  // pivot table
+  html += '<div class="table-card">';
+  html += `<h3><span>담당자 × 월별 피벗 (${year}년${cat ? ' / ' + cat : ''})</span><span style="font-size:12px;color:#888;font-weight:400;">건수 = 주문번호 유니크 / 금액 = 포인트제외결제공급가액(원)</span></h3>`;
+  html += '<table><thead><tr><th>담당자</th>';
+  months.forEach(m => {
+    const mm = parseInt(m.split('-')[1], 10);
+    html += `<th class="text-right">${mm}월 건수</th><th class="text-right">${mm}월 금액</th>`;
+  });
+  html += '<th class="text-right">합계 건수</th><th class="text-right">합계 금액</th></tr></thead><tbody>';
+
+  const colCount = {}, colAmount = {};
+  months.forEach(m => { colCount[m] = 0; colAmount[m] = 0; });
+  let grandCount = 0, grandAmount = 0;
+
+  repTotals.forEach(({ rep, byMonth, count, amount }) => {
+    html += `<tr><td class="rep-name">${rep}</td>`;
+    months.forEach(m => {
+      const cell = byMonth[m];
+      if (cell) {
+        const c = cell.orders.size;
+        const a = cell.amount;
+        html += `<td class="text-right">${c}</td><td class="text-right">${fmt(a)}</td>`;
+        colCount[m] += c;
+        colAmount[m] += a;
+      } else {
+        html += '<td class="text-right muted">-</td><td class="text-right muted">-</td>';
+      }
+    });
+    html += `<td class="text-right"><b>${count}</b></td><td class="text-right"><b>${fmt(amount)}</b></td></tr>`;
+    grandCount += count;
+    grandAmount += amount;
+  });
+
+  html += '<tr class="total-row"><td>합계</td>';
+  months.forEach(m => {
+    html += `<td class="text-right">${colCount[m]}</td><td class="text-right">${fmt(colAmount[m])}</td>`;
+  });
+  html += `<td class="text-right">${grandCount}</td><td class="text-right">${fmt(grandAmount)}</td></tr>`;
+  html += '</tbody></table></div>';
+
+  // monthly summary chart-like table
+  html += '<div class="table-card">';
+  html += '<h3><span>월별 요약</span></h3>';
+  html += '<table><thead><tr><th>월</th><th class="text-right">건수</th><th class="text-right">금액</th><th class="text-right">건당 평균</th></tr></thead><tbody>';
+  months.forEach(m => {
+    const c = colCount[m];
+    const a = colAmount[m];
+    const avg = c ? a / c : 0;
+    html += `<tr><td>${m}</td><td class="text-right">${c}</td><td class="text-right">${fmt(a)}</td><td class="text-right">${fmt(avg)}</td></tr>`;
+  });
+  html += `<tr class="total-row"><td>합계</td><td class="text-right">${grandCount}</td><td class="text-right">${fmt(grandAmount)}</td><td class="text-right">${grandCount ? fmt(grandAmount / grandCount) : '-'}</td></tr>`;
+  html += '</tbody></table></div>';
+
+  document.getElementById('content').innerHTML = html;
+}
+
+loadData();
+</script>
+
+</body>
+</html>
