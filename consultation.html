@@ -356,6 +356,7 @@ th.sortable:hover { background: #eef0f4; }
             <th>고객명</th>
             <th>한의원명</th>
             <th>지역</th>
+            <th>공급처</th>
             <th>상담물품</th>
             <th>수량</th>
             <th>견적가</th>
@@ -493,10 +494,13 @@ function fetchExternalInquiries() {
           region: r.region || '',
           product: r.product || '',
           productId: r.productId || '',
+          supplier: r.supplier || '',
           qty: r.qty || '',
           price: priceStr,
+          payAmount: r.payAmount != null ? r.payAmount : null,
           caller: r.caller || '', buyDate: '', rep: '',
-          stage: 'New', status: '', demoDate: '', payDate: '',
+          stage: 'New', status: '', demoDate: '',
+          payDate: r.payDate || '',
           note: noteOverrides[stableKey] || ''
         };
       });
@@ -877,6 +881,7 @@ function renderTable() {
       '<td>' + (r.cid ? '<a href="https://tools.medistream.co.kr/customers/' + encodeURIComponent(r.cid) + '" target="_blank" rel="noopener" style="color:#1a73e8;text-decoration:none;font-weight:700;">' + escHtml(r.customer) + '</a>' : '<strong>' + escHtml(r.customer) + '</strong>') + '</td>' +
       '<td>' + escHtml(r.clinic) + '</td>' +
       '<td>' + escHtml(r.region) + '</td>' +
+      '<td style="font-size:12px;color:#555;">' + escHtml(r.supplier || '') + '</td>' +
       '<td class="td-truncate" title="' + escHtml(r.product) + '">' + (r.productId ? '<a href="https://market.medistream.co.kr/products/' + encodeURIComponent(r.productId) + '" target="_blank" rel="noopener" style="color:#1a73e8;text-decoration:none;">' + escHtml(r.product) + '</a>' : escHtml(r.product)) + '</td>' +
       '<td style="text-align:right;">' + (r.qty !== '' && r.qty != null ? escHtml(r.qty) : '') + '</td>' +
       '<td>' + escHtml(r.price) + '</td>' +
