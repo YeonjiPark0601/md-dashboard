@@ -479,6 +479,8 @@ function fetchExternalInquiries() {
       var noteOverrides = loadExtNoteOverrides();
       var stageOverrides = loadExtStageOverrides();
       var callerOverrides = loadExtCallerOverrides();
+      var supplierOverrides = loadExtSupplierOverrides();
+      var demoOverrides = loadExtDemoOverrides();
       EXTERNAL_DATA = data.items.map(function(r, i){
         var priceStr = (r.price || '').replace(/^견적가:\s*/, '').trim();
         var stableKey = 'ext_' + (r.timestamp || r.date || '') + '_' + (r.cid || '') + '_' + (r.name || '') + '_' + (r.product || '');
@@ -496,12 +498,12 @@ function fetchExternalInquiries() {
           region: r.region || '',
           product: r.product || '',
           productId: r.productId || '',
-          supplier: r.supplier || '',
+          supplier: supplierOverrides[stableKey] || r.supplier || '',
           qty: r.qty || '',
           price: priceStr,
           payAmount: r.payAmount != null ? r.payAmount : null,
           caller: r.caller || callerOverrides[stableKey] || '', buyDate: '', rep: '',
-          stage: stageOverrides[stableKey] || (r.payDate ? 'Done' : 'New'), status: '', demoDate: '',
+          stage: stageOverrides[stableKey] || (r.payDate ? 'Done' : 'New'), status: '', demoDate: demoOverrides[stableKey] || '',
           payDate: r.payDate || '',
           note: noteOverrides[stableKey] || ''
         };
@@ -883,14 +885,14 @@ function renderTable() {
       '<td>' + ((r.cid && r.cid !== 'N/A' && /^[a-f0-9]{24}$/.test(r.cid)) ? '<a href="https://tools.medistream.co.kr/customers/' + encodeURIComponent(r.cid) + '" target="_blank" rel="noopener" style="color:#1a73e8;text-decoration:none;font-weight:700;">' + escHtml(r.customer) + '</a>' : '<strong>' + escHtml(r.customer) + '</strong>') + '</td>' +
       '<td>' + escHtml(r.clinic) + '</td>' +
       '<td>' + escHtml(r.region) + '</td>' +
-      '<td style="font-size:12px;color:#555;">' + escHtml(r.supplier || '') + '</td>' +
+      '<td class="supplier-cell editable" data-id="' + escHtml(r.id) + '" data-ext="' + (r.external?'1':'0') + '" style="font-size:12px;color:#555;cursor:text;" title="클릭해서 편집">' + (escHtml(r.supplier || '') || '<span class="note-placeholder">입력</span>') + '</td>' +
       '<td class="td-truncate" title="' + escHtml(r.product) + '">' + ((r.productId && /^[a-f0-9]{24}$/.test(r.productId)) ? '<a href="https://market.medistream.co.kr/products/' + encodeURIComponent(r.productId) + '" target="_blank" rel="noopener" style="color:#1a73e8;text-decoration:none;">' + escHtml(r.product) + '</a>' : escHtml(r.product)) + '</td>' +
       '<td style="text-align:right;">' + (r.qty !== '' && r.qty != null ? escHtml(r.qty) : '') + '</td>' +
       '<td>' + escHtml(r.price) + '</td>' +
       '<td>' + renderCallerCell(r) + '</td>' +
       '<td>' + renderStageCell(r) + '</td>' +
       '<td class="note-cell editable" data-id="' + escHtml(r.id) + '" data-ext="' + (r.external ? '1' : '0') + '" title="클릭해서 편집">' + (escHtml(r.note) || '<span class="note-placeholder">클릭해서 입력</span>') + '</td>' +
-      '<td>' + escHtml(r.demoDate) + '</td>' +
+      '<td class="demo-cell editable" data-id="' + escHtml(r.id) + '" data-ext="' + (r.external?'1':'0') + '" style="cursor:text;" title="클릭해서 편집">' + (escHtml(r.demoDate || '') || '<span class="note-placeholder">입력</span>') + '</td>' +
       '<td>' + escHtml(r.payDate) + '</td>' +
       '<td><div class="td-actions">' + actionsCell + '</div></td>' +
     '</tr>';
@@ -1375,6 +1377,116 @@ function loadExtStageOverrides() {
 function saveExtStageOverrides(obj) {
   localStorage.setItem(EXT_STAGE_KEY, JSON.stringify(obj));
 }
+
+var EXT_DEMO_KEY = 'md_consult_ext_demos';
+function loadExtDemoOverrides() {
+  try { return JSON.parse(localStorage.getItem(EXT_DEMO_KEY) || '{}'); }
+  catch(e) { return {}; }
+}
+function saveExtDemoOverrides(obj) {
+  localStorage.setItem(EXT_DEMO_KEY, JSON.stringify(obj));
+}
+
+function startDemoEdit(td) {
+  if (td.querySelector('input')) return;
+  var id = td.dataset.id;
+  var isExt = td.dataset.ext === '1';
+  var current = '';
+  if (isExt) {
+    var exIdx = EXTERNAL_DATA.findIndex(function(r){ return r.id === id; });
+    if (exIdx !== -1) current = EXTERNAL_DATA[exIdx].demoDate || '';
+  } else {
+    var d = loadLocalOnly();
+    var rec = d.find(function(r){ return r.id === id; });
+    current = rec ? (rec.demoDate || '') : '';
+  }
+  td.innerHTML = '<input type="date" value="' + escHtml(current).replace(/"/g,'&quot;') + '" style="width:100%;padding:3px 4px;border:1px solid #1a73e8;border-radius:4px;font-size:12px;">';
+  var input = td.querySelector('input');
+  input.focus();
+  var saved = false;
+  function commit() {
+    if (saved) return;
+    saved = true;
+    var val = input.value.trim();
+    if (isExt) {
+      var ov = loadExtDemoOverrides();
+      if (val) ov[id] = val; else delete ov[id];
+      saveExtDemoOverrides(ov);
+      var idx = EXTERNAL_DATA.findIndex(function(r){ return r.id === id; });
+      if (idx !== -1) EXTERNAL_DATA[idx].demoDate = val;
+    } else {
+      var d = loadLocalOnly();
+      var idx = d.findIndex(function(r){ return r.id === id; });
+      if (idx !== -1) { d[idx].demoDate = val; saveData(d); }
+    }
+    renderTable();
+  }
+  input.addEventListener('blur', commit);
+  input.addEventListener('keydown', function(e){
+    if (e.key === 'Enter') { e.preventDefault(); commit(); }
+    else if (e.key === 'Escape') { saved = true; renderTable(); }
+  });
+}
+
+document.addEventListener('click', function(e){
+  var td = e.target.closest('.demo-cell.editable');
+  if (td && !e.target.closest('input')) startDemoEdit(td);
+});
+
+var EXT_SUPPLIER_KEY = 'md_consult_ext_suppliers';
+function loadExtSupplierOverrides() {
+  try { return JSON.parse(localStorage.getItem(EXT_SUPPLIER_KEY) || '{}'); }
+  catch(e) { return {}; }
+}
+function saveExtSupplierOverrides(obj) {
+  localStorage.setItem(EXT_SUPPLIER_KEY, JSON.stringify(obj));
+}
+
+function startSupplierEdit(td) {
+  if (td.querySelector('input')) return;
+  var id = td.dataset.id;
+  var isExt = td.dataset.ext === '1';
+  var current = '';
+  if (isExt) {
+    var exIdx = EXTERNAL_DATA.findIndex(function(r){ return r.id === id; });
+    if (exIdx !== -1) current = EXTERNAL_DATA[exIdx].supplier || '';
+  } else {
+    var d = loadLocalOnly();
+    var rec = d.find(function(r){ return r.id === id; });
+    current = rec ? (rec.supplier || '') : '';
+  }
+  td.innerHTML = '<input type="text" value="' + escHtml(current).replace(/"/g,'&quot;') + '" placeholder="공급처" style="width:100%;padding:3px 4px;border:1px solid #1a73e8;border-radius:4px;font-size:12px;">';
+  var input = td.querySelector('input');
+  input.focus(); input.select();
+  var saved = false;
+  function commit() {
+    if (saved) return;
+    saved = true;
+    var val = input.value.trim();
+    if (isExt) {
+      var ov = loadExtSupplierOverrides();
+      if (val) ov[id] = val; else delete ov[id];
+      saveExtSupplierOverrides(ov);
+      var idx = EXTERNAL_DATA.findIndex(function(r){ return r.id === id; });
+      if (idx !== -1) EXTERNAL_DATA[idx].supplier = val;
+    } else {
+      var d = loadLocalOnly();
+      var idx = d.findIndex(function(r){ return r.id === id; });
+      if (idx !== -1) { d[idx].supplier = val; saveData(d); }
+    }
+    renderTable();
+  }
+  input.addEventListener('blur', commit);
+  input.addEventListener('keydown', function(e){
+    if (e.key === 'Enter') { e.preventDefault(); commit(); }
+    else if (e.key === 'Escape') { saved = true; renderTable(); }
+  });
+}
+
+document.addEventListener('click', function(e){
+  var td = e.target.closest('.supplier-cell.editable');
+  if (td && !e.target.closest('input')) startSupplierEdit(td);
+});
 
 var EXT_CALLER_KEY = 'md_consult_ext_callers';
 function loadExtCallerOverrides() {
