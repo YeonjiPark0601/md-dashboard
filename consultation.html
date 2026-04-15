@@ -60,6 +60,7 @@ th.sortable:hover { background: #eef0f4; }
 
 /* ===== STAGE BADGES ===== */
 .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.badge-new { background: #e0e7ff; color: #3730a3; }
 .badge-done { background: #d1fae5; color: #065f46; }
 .badge-drop { background: #fee2e2; color: #991b1b; }
 .badge-follow { background: #fef3c7; color: #92400e; }
@@ -313,7 +314,8 @@ th.sortable:hover { background: #eef0f4; }
           <div class="form-group">
             <label>Stage</label>
             <select id="f_stage" name="stage">
-              <option value="Follow" selected>Follow</option>
+              <option value="New" selected>New</option>
+              <option value="Follow">Follow</option>
               <option value="Demo">Demo</option>
               <option value="Turn-key">Turn-key</option>
               <option value="Done">Done</option>
@@ -491,7 +493,7 @@ function fetchExternalInquiries() {
           qty: r.qty || '',
           price: priceStr,
           caller: '', buyDate: '', rep: '',
-          stage: 'Follow', status: '', demoDate: '', payDate: '', note: ''
+          stage: 'New', status: '', demoDate: '', payDate: '', note: ''
         };
       });
     })
@@ -528,11 +530,11 @@ function fmtPct(n, digits) {
 
 function getStageBadgeClass(stage) {
   var map = {
-    'Done':'badge-done', 'Drop':'badge-drop', 'Follow':'badge-follow',
+    'New':'badge-new', 'Done':'badge-done', 'Drop':'badge-drop', 'Follow':'badge-follow',
     'Demo':'badge-demo', 'Turn-key':'badge-turnkey',
     'BO-0':'badge-bo0', 'BO-1':'badge-bo1', 'BO-2':'badge-bo2', 'WIN':'badge-win'
   };
-  return map[stage] || 'badge-bo0';
+  return map[stage] || 'badge-new';
 }
 
 function showToast(msg, type) {
@@ -585,7 +587,7 @@ function openForm() {
 function resetForm() {
   document.getElementById('consultForm').reset();
   document.getElementById('f_date').value = today();
-  document.getElementById('f_stage').value = 'Follow';
+  document.getElementById('f_stage').value = 'New';
   document.getElementById('f_editId').value = '';
   document.getElementById('submitBtn').textContent = '등록';
   document.querySelectorAll('.error').forEach(function(el){ el.classList.remove('error'); });
@@ -1021,7 +1023,7 @@ function renderDashboard() {
   var cntTK = data.filter(function(r){ return isTurnkeyStage(r.stage); }).length;
   var tkRevenue = 0;
   data.forEach(function(r){ if (isTurnkeyStage(r.stage)) tkRevenue += parsePrice(r.price); });
-  var cntFollow = data.filter(function(r){ return r.stage === 'Follow' || r.stage === 'BO-0' || r.stage === 'BO-1'; }).length;
+  var cntFollow = data.filter(function(r){ return r.stage === 'Follow' || r.stage === 'New' || !r.stage || r.stage === 'BO-0' || r.stage === 'BO-1'; }).length;
   var cntDone = data.filter(function(r){ return r.stage === 'Done'; }).length;
   var cntDrop = data.filter(function(r){ return r.stage === 'Drop'; }).length;
   var convRate = total > 0 ? (cntTK / total * 100) : 0;
@@ -1065,9 +1067,10 @@ function kpiCard(label, value, sub) {
 
 // --- Pipeline ---
 function renderPipeline(data, total) {
-  var stages = ['Follow','Demo','Turn-key','Done','Drop'];
-  var barColors = { 'Follow':'bar-amber', 'Demo':'bar-purple', 'Turn-key':'bar-blue', 'Done':'bar-green', 'Drop':'bar-red' };
+  var stages = ['New','Follow','Demo','Turn-key','Done','Drop'];
+  var barColors = { 'New':'bar-indigo', 'Follow':'bar-amber', 'Demo':'bar-purple', 'Turn-key':'bar-blue', 'Done':'bar-green', 'Drop':'bar-red' };
   function stageMatch(s, stage) {
+    if (stage === 'New') return s === 'New' || !s;
     if (stage === 'Follow') return s === 'Follow' || s === 'BO-0' || s === 'BO-1';
     if (stage === 'Demo') return s === 'Demo' || s === 'BO-2';
     if (stage === 'Turn-key') return s === 'Turn-key' || s === 'WIN';
