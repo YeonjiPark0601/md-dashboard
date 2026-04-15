@@ -1,9 +1,27 @@
 {
-  "updated": "2026-04-15T09:55:56.306Z",
+  "updated": "2026-04-15T18:25:58.904Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 16 오전 03:25:13",
+      "date": "2026-04-16",
+      "name": "김경주",
+      "cid": "5dad10d80dabe405b156eed6",
+      "phone": "010-7599-9451",
+      "product": "[상담하기] 체형진단기 아이밸런스 iBalance",
+      "qty": 1,
+      "price": "모름",
+      "productId": "66ab3b65e149e95e3c878664",
+      "clinic": "신사임당한의원",
+      "region": "서울시 성동구",
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
+    },
     {
       "source": "일반",
       "timestamp": "2026. 04. 15 오전 10:34:32",
