@@ -1,8 +1,8 @@
 {
-  "updated": "2026-04-15T05:01:31.407Z",
+  "updated": "2026-04-15T05:42:22.324Z",
   "month": "2026-04",
   "rollingMonths": 3,
-  "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE",
+  "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
     {
       "source": "일반",
@@ -17,7 +17,10 @@
       "productId": "645c45796fa3a0002addd9f5",
       "clinic": "경희삼진당한의원",
       "region": "경기도 광명시",
-      "caller": ""
+      "caller": "",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -32,7 +35,10 @@
       "productId": "5eafd60a1a3ca36b967850cb",
       "clinic": "맑은숲한의원",
       "region": "서울시 동작구",
-      "caller": ""
+      "caller": "",
+      "supplier": "굿플",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -47,7 +53,10 @@
       "productId": "661cf80e531907ae86b91a4b",
       "clinic": "시호한의원",
       "region": "경기도 화성시",
-      "caller": "조성갑"
+      "caller": "조성갑",
+      "supplier": "정메디칼",
+      "payDate": "2026-04-14",
+      "payAmount": 1064693
     },
     {
       "source": "일반",
@@ -62,7 +71,10 @@
       "productId": "5eafc6ff1a3ca36b96785045",
       "clinic": "나무한의원",
       "region": "경기도 용인시",
-      "caller": "조성갑"
+      "caller": "조성갑",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -77,7 +89,10 @@
       "productId": "5ea7cee61a3ca36b96784cfe",
       "clinic": "마주침한의원",
       "region": "서울시 용산구",
-      "caller": "조성갑"
+      "caller": "조성갑",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -92,7 +107,10 @@
       "productId": "N/A",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -107,7 +125,10 @@
       "productId": "66a328fc96e0816c37572d22",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -122,7 +143,10 @@
       "productId": "67bc1cd05a4f59cacd7839f8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "디에스이아이엔씨",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -137,7 +161,10 @@
       "productId": "",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -152,7 +179,10 @@
       "productId": "5fc8a12ace872a1a803a95cd",
       "clinic": "김포정성한의원",
       "region": "경기도 김포시",
-      "caller": "주봉현"
+      "caller": "주봉현",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -167,7 +197,10 @@
       "productId": "5eafbc981a3ca36b96785036",
       "clinic": "김포정성한의원",
       "region": "경기도 김포시",
-      "caller": "주봉현"
+      "caller": "주봉현",
+      "supplier": "굿플",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -182,7 +215,10 @@
       "productId": "67bc1cd05a4f59cacd7839f8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "디에스이아이엔씨",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -197,7 +233,10 @@
       "productId": "64be3e85814894001b955a06",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -212,7 +251,10 @@
       "productId": "5dde05fb2bb59605ca3d09b9",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "메디코아",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -227,7 +269,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -242,7 +287,10 @@
       "productId": "5ef06528e510ee503167d1a9",
       "clinic": "두일한의원",
       "region": "인천시 서구",
-      "caller": "주봉현"
+      "caller": "주봉현",
+      "supplier": "원효메디텍",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -257,7 +305,10 @@
       "productId": "69ae1e1a2fba9153936e00eb",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "오스테오시스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -272,7 +323,10 @@
       "productId": "68b7eaa05b5a1eca5ed30e69",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -287,7 +341,10 @@
       "productId": "6899730a0199fa2e00c19c97",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -302,7 +359,10 @@
       "productId": "67bf00ac52b44543385c08d5",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -317,7 +377,10 @@
       "productId": "693960a721009623ac43112a",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -332,7 +395,10 @@
       "productId": "613ee5446b61d0001afbbc52",
       "clinic": "당당한방병원 김해점",
       "region": "경상남도 김해시",
-      "caller": "김진석"
+      "caller": "김진석",
+      "supplier": "굿플",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -347,7 +413,10 @@
       "productId": "68c2908de9a11019a13653ab",
       "clinic": "형인재한의원",
       "region": "서울시 강남구",
-      "caller": "조성갑"
+      "caller": "조성갑",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -362,7 +431,10 @@
       "productId": "5ea28350f1c8cc684388d210",
       "clinic": "365신의손한의원",
       "region": "서울시 도봉구",
-      "caller": "주봉현"
+      "caller": "주봉현",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -377,7 +449,10 @@
       "productId": "696f2ac6b2e5d7c403164645",
       "clinic": "",
       "region": "부산시 해운대구",
-      "caller": "조성갑"
+      "caller": "조성갑",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -392,7 +467,10 @@
       "productId": "67bc1cd05a4f59cacd7839f8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "디에스이아이엔씨",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -407,7 +485,10 @@
       "productId": "610cd88909c63a06ed1489fe",
       "clinic": "경희바른한의원",
       "region": "서울시 구로구",
-      "caller": "김진석"
+      "caller": "김진석",
+      "supplier": "에이치씨케이",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -422,7 +503,10 @@
       "productId": "617b4cd2bc63410023471ef3",
       "clinic": "청운한의원",
       "region": "강원도 강릉시",
-      "caller": "김진석"
+      "caller": "김진석",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -437,7 +521,10 @@
       "productId": "610a369a09c63a06ed1487a7",
       "clinic": "호랑이부부한의원",
       "region": "경상남도 양산시",
-      "caller": "박원"
+      "caller": "박원",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -452,7 +539,10 @@
       "productId": "693960a721009623ac43112a",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -467,7 +557,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -482,7 +575,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -497,7 +593,10 @@
       "productId": "67bc1cd05a4f59cacd7839f8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "디에스이아이엔씨",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -512,7 +611,10 @@
       "productId": "66a328fc96e0816c37572d22",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -527,7 +629,10 @@
       "productId": "5ef06528e510ee503167d1a9",
       "clinic": "가온자리한의원",
       "region": "경기도 의정부시",
-      "caller": "김진석"
+      "caller": "김진석",
+      "supplier": "원효메디텍",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -542,7 +647,10 @@
       "productId": "617b4cd2bc63410023471ef3",
       "clinic": "가온자리한의원",
       "region": "경기도 의정부시",
-      "caller": "김진석"
+      "caller": "김진석",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -557,7 +665,10 @@
       "productId": "5f7ec8b748060c52caf16513",
       "clinic": "경희본앤척한의원",
       "region": "경기도 평택시",
-      "caller": "주봉현"
+      "caller": "주봉현",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -572,7 +683,10 @@
       "productId": "645c45796fa3a0002addd9f5",
       "clinic": "",
       "region": "서울시 송파구",
-      "caller": "주봉현"
+      "caller": "주봉현",
+      "supplier": "선웅메디테크",
+      "payDate": "2026-04-10",
+      "payAmount": 300000
     },
     {
       "source": "총판기기",
@@ -587,7 +701,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -602,7 +719,10 @@
       "productId": "67bd57740c109d9ed2324fd0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -617,7 +737,10 @@
       "productId": "66a328fc96e0816c37572d22",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -632,7 +755,10 @@
       "productId": "66a328fc96e0816c37572d22",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -647,7 +773,10 @@
       "productId": "66a328fc96e0816c37572d22",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -662,7 +791,10 @@
       "productId": "66a328fc96e0816c37572d22",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -677,7 +809,10 @@
       "productId": "6899730a0199fa2e00c19c97",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -692,7 +827,10 @@
       "productId": "5fbf45f8ce872a1a803a803b",
       "clinic": "",
       "region": "부산시 연제구",
-      "caller": "김진석"
+      "caller": "김진석",
+      "supplier": "바디헬스케어",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -707,7 +845,10 @@
       "productId": "6018c0c12c593a001ace93fb",
       "clinic": "",
       "region": "부산시 연제구",
-      "caller": "김진석"
+      "caller": "김진석",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -722,7 +863,10 @@
       "productId": "68c27626b9972879bbfef389",
       "clinic": "위례해오름한의원",
       "region": "서울시 송파구",
-      "caller": "김진석"
+      "caller": "김진석",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -737,7 +881,10 @@
       "productId": "68c27626b9972879bbfef389",
       "clinic": "위례해오름한의원",
       "region": "서울시 송파구",
-      "caller": "김진석"
+      "caller": "김진석",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -752,7 +899,10 @@
       "productId": "5fbf45f8ce872a1a803a803b",
       "clinic": "",
       "region": "충청북도 청주시",
-      "caller": "김진석"
+      "caller": "김진석",
+      "supplier": "바디헬스케어",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -767,7 +917,10 @@
       "productId": "5ea28350f1c8cc684388d210",
       "clinic": "문곡16형 대추밭한의원",
       "region": "충청남도 당진시",
-      "caller": "김진석"
+      "caller": "김진석",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -782,7 +935,10 @@
       "productId": "63edb3cd86095b0031e5ef71",
       "clinic": "",
       "region": "서울시 관악구",
-      "caller": "이예림"
+      "caller": "이예림",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -797,7 +953,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -812,7 +971,10 @@
       "productId": "693960a721009623ac43112a",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -827,7 +989,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -842,7 +1007,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -857,7 +1025,10 @@
       "productId": "67bd57740c109d9ed2324fd0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -872,7 +1043,10 @@
       "productId": "67bf00ac52b44543385c08d5",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -887,7 +1061,10 @@
       "productId": "5e65ead2bfe4260944783220",
       "clinic": "온유한의원",
       "region": "서울시 서초구",
-      "caller": "김진석"
+      "caller": "김진석",
+      "supplier": "굿플",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -902,7 +1079,10 @@
       "productId": "617b4cd2bc63410023471ef3",
       "clinic": "경희효인한의원",
       "region": "서울시 은평구",
-      "caller": "김진석"
+      "caller": "김진석",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -917,7 +1097,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -932,7 +1115,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -947,7 +1133,10 @@
       "productId": "67bf00ac52b44543385c08d5",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -962,7 +1151,10 @@
       "productId": "67bf00ac52b44543385c08d5",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -977,7 +1169,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -992,7 +1187,10 @@
       "productId": "",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1007,7 +1205,10 @@
       "productId": "691447b071757ccadba9e3d8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1022,7 +1223,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1037,7 +1241,10 @@
       "productId": "69ae1e1a2fba9153936e00eb",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "오스테오시스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1052,7 +1259,10 @@
       "productId": "691447b071757ccadba9e3d8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1067,7 +1277,10 @@
       "productId": "691447b071757ccadba9e3d8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -1082,7 +1295,10 @@
       "productId": "60bd7a640ccc56001bc7fe1a",
       "clinic": "천광한의원",
       "region": "서울시 동대문구",
-      "caller": "김진석"
+      "caller": "김진석",
+      "supplier": "정메디칼",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1097,7 +1313,10 @@
       "productId": "67bd57740c109d9ed2324fd0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1112,7 +1331,10 @@
       "productId": "67bc1cd05a4f59cacd7839f8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "디에스이아이엔씨",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1127,7 +1349,10 @@
       "productId": "67da79fb98299a4d627dd8cd",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "옴니씨앤에스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1142,7 +1367,10 @@
       "productId": "693960a721009623ac43112a",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -1157,7 +1385,10 @@
       "productId": "60f1157909c63a06ed147125",
       "clinic": "도본한의원",
       "region": "충청남도 천안시",
-      "caller": "조성갑"
+      "caller": "조성갑",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -1172,7 +1403,10 @@
       "productId": "60b722fec1908b001a64a31e",
       "clinic": "도본한의원",
       "region": "충청남도 천안시",
-      "caller": "조성갑"
+      "caller": "조성갑",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -1187,7 +1421,10 @@
       "productId": "6018c0c2527223001a20775d",
       "clinic": "",
       "region": "세종시",
-      "caller": "조성갑"
+      "caller": "조성갑",
+      "supplier": "영일엠",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -1202,7 +1439,10 @@
       "productId": "617b4cd2bc63410023471ef3",
       "clinic": "",
       "region": "세종시",
-      "caller": "조성갑"
+      "caller": "조성갑",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -1217,7 +1457,10 @@
       "productId": "5e4a2cd34267e105dfff1d6b",
       "clinic": "",
       "region": "세종시",
-      "caller": "조성갑"
+      "caller": "조성갑",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -1232,7 +1475,10 @@
       "productId": "60f1157c09c63a06ed147127",
       "clinic": "",
       "region": "세종시",
-      "caller": "조성갑"
+      "caller": "조성갑",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -1247,7 +1493,10 @@
       "productId": "610cd88909c63a06ed1489fe",
       "clinic": "",
       "region": "세종시",
-      "caller": "조성갑"
+      "caller": "조성갑",
+      "supplier": "에이치씨케이",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -1262,7 +1511,10 @@
       "productId": "617b4cd4bc63410023471ef4",
       "clinic": "연세한의원",
       "region": "인천시 남동구",
-      "caller": "김진석"
+      "caller": "김진석",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -1277,7 +1529,10 @@
       "productId": "617b4cd2bc63410023471ef3",
       "clinic": "연세한의원",
       "region": "인천시 남동구",
-      "caller": "김진석"
+      "caller": "김진석",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -1292,7 +1547,10 @@
       "productId": "610cd88909c63a06ed1489fe",
       "clinic": "소통부부한의원",
       "region": "인천시 서구",
-      "caller": "김진석"
+      "caller": "김진석",
+      "supplier": "에이치씨케이",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1307,7 +1565,10 @@
       "productId": "67e2322d9d6aa764d124103e",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "디에스이아이엔씨",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1322,7 +1583,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1337,7 +1601,10 @@
       "productId": "67bf00ac52b44543385c08d5",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -1352,7 +1619,10 @@
       "productId": "617b4cd2bc63410023471ef3",
       "clinic": "",
       "region": "충청남도 천안시",
-      "caller": "주봉현"
+      "caller": "",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -1367,7 +1637,10 @@
       "productId": "68c28018b4ea61bdadcd40c5",
       "clinic": "",
       "region": "경기도 광주시",
-      "caller": "이예림"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -1382,7 +1655,10 @@
       "productId": "N/A",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -1397,7 +1673,10 @@
       "productId": "N/A",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -1412,7 +1691,10 @@
       "productId": "628c5f8f9d9388002406e579",
       "clinic": "",
       "region": "서울시 송파구",
-      "caller": "조성갑"
+      "caller": "조성갑",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1427,7 +1709,10 @@
       "productId": "66ab3b65e149e95e3c878664",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1442,7 +1727,10 @@
       "productId": "691447b071757ccadba9e3d8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1457,7 +1745,10 @@
       "productId": "6744372fb7f1deb74e849d26",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1472,7 +1763,10 @@
       "productId": "693960a721009623ac43112a",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1487,7 +1781,10 @@
       "productId": "693960a721009623ac43112a",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1502,7 +1799,10 @@
       "productId": "693960a721009623ac43112a",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1517,7 +1817,10 @@
       "productId": "693960a721009623ac43112a",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1532,7 +1835,10 @@
       "productId": "693960a721009623ac43112a",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1547,7 +1853,10 @@
       "productId": "693960a721009623ac43112a",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1562,7 +1871,10 @@
       "productId": "693960a721009623ac43112a",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1577,7 +1889,10 @@
       "productId": "693960a721009623ac43112a",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1592,7 +1907,10 @@
       "productId": "693960a721009623ac43112a",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -1607,7 +1925,10 @@
       "productId": "61162ddad26af90681b1f6fd",
       "clinic": "금호호랑이한의원",
       "region": "서울시 성동구",
-      "caller": "주봉현"
+      "caller": "",
+      "supplier": "에이치씨케이",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -1622,7 +1943,10 @@
       "productId": "611b6df8d26af90681b1fbe8",
       "clinic": "일침한의원",
       "region": "인천시 부평구",
-      "caller": "이예림"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -1637,7 +1961,10 @@
       "productId": "617b4cd2bc63410023471ef3",
       "clinic": "",
       "region": "인천시 남동구",
-      "caller": "주봉현"
+      "caller": "",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -1652,7 +1979,10 @@
       "productId": "5ea28350f1c8cc684388d210",
       "clinic": "참다정한의원",
       "region": "인천시 계양구",
-      "caller": "주봉현"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -1667,7 +1997,10 @@
       "productId": "64c70cee37e218002a5c3a00",
       "clinic": "해빛한방병원",
       "region": "전라북도 전주시",
-      "caller": "조성갑"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -1682,7 +2015,10 @@
       "productId": "5fbf45f8ce872a1a803a803b",
       "clinic": "화가한의원",
       "region": "서울시 강동구",
-      "caller": "이예림"
+      "caller": "",
+      "supplier": "바디헬스케어",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -1697,7 +2033,10 @@
       "productId": "5e65dd5abfe426094478320a",
       "clinic": "해들인한의원",
       "region": "서울시 서대문구",
-      "caller": "주봉현"
+      "caller": "",
+      "supplier": "굿플",
+      "payDate": "2026-04-01",
+      "payAmount": 1092500
     },
     {
       "source": "일반",
@@ -1712,7 +2051,10 @@
       "productId": "62848c0b9d93880024064efb",
       "clinic": "신침한의원",
       "region": "서울시 송파구",
-      "caller": "유승준"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -1727,7 +2069,10 @@
       "productId": "68c28018b4ea61bdadcd40c5",
       "clinic": "",
       "region": "경기도 군포시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -1742,7 +2087,10 @@
       "productId": "68c27626b9972879bbfef389",
       "clinic": "",
       "region": "경기도 여주시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1757,7 +2105,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1772,7 +2123,10 @@
       "productId": "6699e90a96e0816c37564e19",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1787,7 +2141,10 @@
       "productId": "66b99c93f3860e1ca0557631",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1802,7 +2159,10 @@
       "productId": "67bd57740c109d9ed2324fd0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1817,7 +2177,10 @@
       "productId": "67bf00ac52b44543385c08d5",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1832,7 +2195,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1847,7 +2213,10 @@
       "productId": "67bf00ac52b44543385c08d5",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1862,7 +2231,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1877,7 +2249,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1892,7 +2267,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1907,7 +2285,10 @@
       "productId": "691447b071757ccadba9e3d8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -1922,7 +2303,10 @@
       "productId": "69ae1e1a2fba9153936e00eb",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "오스테오시스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -1937,7 +2321,10 @@
       "productId": "",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -1952,7 +2339,10 @@
       "productId": "6153ca3f4cf9a5002287c4c2",
       "clinic": "",
       "region": "경기도 고양시",
-      "caller": "조성갑"
+      "caller": "",
+      "supplier": "스파인케어",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -1967,7 +2357,10 @@
       "productId": "683d30f5a0b2ff81f784fdb2",
       "clinic": "수한의원",
       "region": "부산시 사하구",
-      "caller": "이예림"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -1982,7 +2375,10 @@
       "productId": "5e65dd5abfe426094478320a",
       "clinic": "해들인한의원",
       "region": "서울시 서대문구",
-      "caller": "주봉현"
+      "caller": "",
+      "supplier": "굿플",
+      "payDate": "2026-04-01",
+      "payAmount": 1092500
     },
     {
       "source": "일반",
@@ -1997,7 +2393,10 @@
       "productId": "698591e7b52b39916b870879",
       "clinic": "해빛한방병원",
       "region": "전라북도 전주시",
-      "caller": "조성갑"
+      "caller": "",
+      "supplier": "메디코넷",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -2012,7 +2411,10 @@
       "productId": "5e65dd5abfe426094478320a",
       "clinic": "해들인한의원",
       "region": "서울시 서대문구",
-      "caller": "주봉현"
+      "caller": "",
+      "supplier": "굿플",
+      "payDate": "2026-04-01",
+      "payAmount": 1092500
     },
     {
       "source": "일반",
@@ -2027,7 +2429,10 @@
       "productId": "617b4cd2bc63410023471ef3",
       "clinic": "해들인한의원",
       "region": "서울시 서대문구",
-      "caller": "주봉현"
+      "caller": "",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -2042,7 +2447,10 @@
       "productId": "617b4cd2bc63410023471ef3",
       "clinic": "해들인한의원",
       "region": "서울시 서대문구",
-      "caller": "주봉현"
+      "caller": "",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -2057,7 +2465,10 @@
       "productId": "696f2ac6b2e5d7c403164645",
       "clinic": "",
       "region": "경기도 고양시",
-      "caller": "조성갑"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2072,7 +2483,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2087,7 +2501,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2102,7 +2519,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2117,7 +2537,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2132,7 +2555,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -2147,7 +2573,10 @@
       "productId": "65af529152a3c7001bc4983a",
       "clinic": "삼인당한의원",
       "region": "전라북도 익산시",
-      "caller": "조성갑"
+      "caller": "",
+      "supplier": "인바디",
+      "payDate": "2026-04-12",
+      "payAmount": 5868573
     },
     {
       "source": "총판기기",
@@ -2162,7 +2591,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2177,7 +2609,10 @@
       "productId": "691447b071757ccadba9e3d8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2192,7 +2627,10 @@
       "productId": "68b7eaa05b5a1eca5ed30e69",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2207,7 +2645,10 @@
       "productId": "69ae1e1a2fba9153936e00eb",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "오스테오시스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2222,7 +2663,10 @@
       "productId": "69ae1e1a2fba9153936e00eb",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "오스테오시스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2237,7 +2681,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -2252,7 +2699,10 @@
       "productId": "60bd7a630ccc56001bc7fe19",
       "clinic": "",
       "region": "서울시 강남구",
-      "caller": "조성갑"
+      "caller": "",
+      "supplier": "정메디칼",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -2267,7 +2717,10 @@
       "productId": "5ff800325ae455001b219e9c",
       "clinic": "",
       "region": "경기도 광주시",
-      "caller": "조성갑"
+      "caller": "",
+      "supplier": "영일엠",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2282,7 +2735,10 @@
       "productId": "6899816d66efcf46326dcdba",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2297,7 +2753,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2312,7 +2771,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2327,7 +2789,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2342,7 +2807,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2357,7 +2825,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2372,7 +2843,10 @@
       "productId": "67bc1cd05a4f59cacd7839f8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "디에스이아이엔씨",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2387,7 +2861,10 @@
       "productId": "691447b071757ccadba9e3d8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2402,7 +2879,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2417,7 +2897,10 @@
       "productId": "67bc1cd05a4f59cacd7839f8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "디에스이아이엔씨",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2432,7 +2915,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2447,7 +2933,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2462,7 +2951,10 @@
       "productId": "67bc1cd05a4f59cacd7839f8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "디에스이아이엔씨",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2477,7 +2969,10 @@
       "productId": "69ae1e1a2fba9153936e00eb",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "오스테오시스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2492,7 +2987,10 @@
       "productId": "69ae1e1a2fba9153936e00eb",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "오스테오시스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2507,7 +3005,10 @@
       "productId": "67bdcc3cbade696523840a6b",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -2522,7 +3023,10 @@
       "productId": "610a369a09c63a06ed1487a7",
       "clinic": "김한의원",
       "region": "경기도 여주시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -2537,7 +3041,10 @@
       "productId": "5eafd60a1a3ca36b967850cb",
       "clinic": "영종바른한의원",
       "region": "인천시 중구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "굿플",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -2552,7 +3059,10 @@
       "productId": "617b4cd2bc63410023471ef3",
       "clinic": "영종바른한의원",
       "region": "인천시 중구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -2567,7 +3077,10 @@
       "productId": "5e4a2cd34267e105dfff1d6b",
       "clinic": "영종바른한의원",
       "region": "인천시 중구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -2582,7 +3095,10 @@
       "productId": "60b722fec1908b001a64a31e",
       "clinic": "",
       "region": "인천시 중구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -2597,7 +3113,10 @@
       "productId": "661cf80e531907ae86b91a4b",
       "clinic": "수이한의원",
       "region": "경기도 하남시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "정메디칼",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2612,7 +3131,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2627,7 +3149,10 @@
       "productId": "67e2322d9d6aa764d124103e",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "디에스이아이엔씨",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2642,7 +3167,10 @@
       "productId": "612354a509c63a06ed14a1d2",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2657,7 +3185,10 @@
       "productId": "612354a4d26af90681b206b3",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -2672,7 +3203,10 @@
       "productId": "5ef06528e510ee503167d1a9",
       "clinic": "경성한의원",
       "region": "서울시 중랑구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "원효메디텍",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -2687,7 +3221,10 @@
       "productId": "5ef06528e510ee503167d1a9",
       "clinic": "경희한방병원",
       "region": "인천시 계양구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "원효메디텍",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -2702,7 +3239,10 @@
       "productId": "5eafd60a1a3ca36b967850cb",
       "clinic": "경희한방병원",
       "region": "인천시 계양구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "굿플",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -2717,7 +3257,10 @@
       "productId": "617b4cd2bc63410023471ef3",
       "clinic": "",
       "region": "서울시 강서구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -2732,7 +3275,10 @@
       "productId": "683d30f5a0b2ff81f784fdb2",
       "clinic": "새봄한의원",
       "region": "대구시 수성구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -2747,7 +3293,10 @@
       "productId": "N/A",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -2762,7 +3311,10 @@
       "productId": "N/A",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -2777,7 +3329,10 @@
       "productId": "N/A",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -2792,7 +3347,10 @@
       "productId": "613ee5446b61d0001afbbc52",
       "clinic": "프라임한의원",
       "region": "전라남도 순천시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "굿플",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -2807,7 +3365,10 @@
       "productId": "6066ad5f0ccc56001bc7a6bb",
       "clinic": "청아한의원",
       "region": "서울시 마포구",
-      "caller": "박원"
+      "caller": "",
+      "supplier": "인바디부산",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -2822,7 +3383,10 @@
       "productId": "5eafd60a1a3ca36b967850cb",
       "clinic": "더바른한의원",
       "region": "부산시 해운대구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "굿플",
+      "payDate": "2026-03-26",
+      "payAmount": 300000
     },
     {
       "source": "총판기기",
@@ -2837,7 +3401,10 @@
       "productId": "67bd57740c109d9ed2324fd0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2852,7 +3419,10 @@
       "productId": "6899730a0199fa2e00c19c97",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2867,7 +3437,10 @@
       "productId": "6914257d29e7c5ac4ac44c05",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2882,7 +3455,10 @@
       "productId": "67bdcc3cbade696523840a6b",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -2897,7 +3473,10 @@
       "productId": "661cf80e531907ae86b91a4b",
       "clinic": "올바른경희한의원",
       "region": "경기도 김포시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "정메디칼",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2912,7 +3491,10 @@
       "productId": "67bc1cd05a4f59cacd7839f8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "디에스이아이엔씨",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2927,7 +3509,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2942,7 +3527,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -2957,7 +3545,10 @@
       "productId": "69af6f4fe5f74098d66b4617",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2972,7 +3563,10 @@
       "productId": "67bd57740c109d9ed2324fd0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -2987,7 +3581,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3002,7 +3599,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -3017,7 +3617,10 @@
       "productId": "5e4a2cd34267e105dfff1d6b",
       "clinic": "경희정진한의원",
       "region": "경기도 군포시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3032,7 +3635,10 @@
       "productId": "687efbcf3d86dc978b0ead48",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "아이웰니스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3047,7 +3653,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3062,7 +3671,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3077,7 +3689,10 @@
       "productId": "66a328fc96e0816c37572d22",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3092,7 +3707,10 @@
       "productId": "67bd57740c109d9ed2324fd0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3107,7 +3725,10 @@
       "productId": "67bf00ac52b44543385c08d5",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3122,7 +3743,10 @@
       "productId": "67da79fb98299a4d627dd8cd",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "옴니씨앤에스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3137,7 +3761,10 @@
       "productId": "6699e90a96e0816c37564e19",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3152,7 +3779,10 @@
       "productId": "69ae1e1a2fba9153936e00eb",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "오스테오시스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -3167,7 +3797,10 @@
       "productId": "5ef06528e510ee503167d1a9",
       "clinic": "한중한의원",
       "region": "충청북도 청주시",
-      "caller": "이예림"
+      "caller": "",
+      "supplier": "원효메디텍",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -3182,7 +3815,10 @@
       "productId": "617b4cd2bc63410023471ef3",
       "clinic": "한중한의원",
       "region": "충청북도 청주시",
-      "caller": "이예림"
+      "caller": "",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -3197,7 +3833,10 @@
       "productId": "613ee5446b61d0001afbbc52",
       "clinic": "시티오부부한의원",
       "region": "인천시 미추홀구",
-      "caller": "이예림"
+      "caller": "",
+      "supplier": "굿플",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3212,7 +3851,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3227,7 +3869,10 @@
       "productId": "687efbcf3d86dc978b0ead48",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "아이웰니스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3242,7 +3887,10 @@
       "productId": "67da79fb98299a4d627dd8cd",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "옴니씨앤에스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3257,7 +3905,10 @@
       "productId": "67bbd1a35712128607614aa7",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "동아참메드",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3272,7 +3923,10 @@
       "productId": "67bf00ac52b44543385c08d5",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3287,7 +3941,10 @@
       "productId": "67bdc091545eab1651838e84",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3302,7 +3959,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3317,7 +3977,10 @@
       "productId": "67bf00ac52b44543385c08d5",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3332,7 +3995,10 @@
       "productId": "66a328fc96e0816c37572d22",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3347,7 +4013,10 @@
       "productId": "67bbd1a35712128607614aa7",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "동아참메드",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -3362,7 +4031,10 @@
       "productId": "60f4d9c8d26af90681b1ca84",
       "clinic": "경희동행한의원",
       "region": "서울시 강남구",
-      "caller": "조성갑"
+      "caller": "",
+      "supplier": "한메드",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -3377,7 +4049,10 @@
       "productId": "6066ad5f0ccc56001bc7a6ba",
       "clinic": "구로 끗 한의원",
       "region": "서울시 관악구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3392,7 +4067,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3407,7 +4085,10 @@
       "productId": "67bd57740c109d9ed2324fd0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3422,7 +4103,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3437,7 +4121,10 @@
       "productId": "67bbd1a35712128607614aa7",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "동아참메드",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3452,7 +4139,10 @@
       "productId": "687efbcf3d86dc978b0ead48",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "아이웰니스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3467,7 +4157,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3482,7 +4175,10 @@
       "productId": "67bbd1a35712128607614aa7",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "동아참메드",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3497,7 +4193,10 @@
       "productId": "69ae1e1a2fba9153936e00eb",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "오스테오시스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -3512,7 +4211,10 @@
       "productId": "6018c0c12c593a001ace93fb",
       "clinic": "무실한의원",
       "region": "강원도 원주시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -3527,7 +4229,10 @@
       "productId": "5efd3984221c8b5f77c8d36f",
       "clinic": "더치유한의원",
       "region": "서울시 서초구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "한메디",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3542,7 +4247,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3557,7 +4265,10 @@
       "productId": "687efbcf3d86dc978b0ead48",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "아이웰니스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3572,7 +4283,10 @@
       "productId": "687efbcf3d86dc978b0ead48",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "아이웰니스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3587,7 +4301,10 @@
       "productId": "66ab3b65e149e95e3c878664",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3602,7 +4319,10 @@
       "productId": "67bd57740c109d9ed2324fd0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3617,7 +4337,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3632,7 +4355,10 @@
       "productId": "6899730a0199fa2e00c19c97",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3647,7 +4373,10 @@
       "productId": "67bbd1a35712128607614aa7",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "동아참메드",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -3662,7 +4391,10 @@
       "productId": "685cce24111d6bde79408b5b",
       "clinic": "얼핏한의원",
       "region": "서울시 강남구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -3677,7 +4409,10 @@
       "productId": "68c2842c860009fbc509994a",
       "clinic": "얼핏한의원",
       "region": "서울시 강남구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "파이주식회사",
+      "payDate": "2026-04-14",
+      "payAmount": 4950000
     },
     {
       "source": "총판기기",
@@ -3692,7 +4427,10 @@
       "productId": "67bbd1a35712128607614aa7",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "동아참메드",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3707,7 +4445,10 @@
       "productId": "5dde05fb2bb59605ca3d09b9",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "메디코아",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -3722,7 +4463,10 @@
       "productId": "5fbf45f8ce872a1a803a803b",
       "clinic": "화명새길한의원",
       "region": "부산시 북구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "바디헬스케어",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -3737,7 +4481,10 @@
       "productId": "63edb3cd86095b0031e5ef71",
       "clinic": "",
       "region": "서울시 노원구",
-      "caller": "이예림"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -3752,7 +4499,10 @@
       "productId": "610a369a09c63a06ed1487a7",
       "clinic": "세목한의원",
       "region": "경기도 성남시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -3767,7 +4517,10 @@
       "productId": "60bd7a630ccc56001bc7fe19",
       "clinic": "남한산성한의원",
       "region": "경기도 광주시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "정메디칼",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -3782,7 +4535,10 @@
       "productId": "671f207808965d9e4d18c387",
       "clinic": "동한의원",
       "region": "경기도 양평군",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "바디헬스케어",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3797,7 +4553,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3812,7 +4571,10 @@
       "productId": "6205b01119e291002362d0ad",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -3827,7 +4589,10 @@
       "productId": "69b0cd99f663106423517bad",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -3842,7 +4607,10 @@
       "productId": "621ed809407c980024b651cc",
       "clinic": "",
       "region": "대전시 서구",
-      "caller": "유승준"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -3857,7 +4625,10 @@
       "productId": "69b221f462c09f27eec72303",
       "clinic": "365경희스마일한의원",
       "region": "경기도 광명시",
-      "caller": "김태호"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -3872,7 +4643,10 @@
       "productId": "613ee5446b61d0001afbbc52",
       "clinic": "한음한방신경정신과한의원",
       "region": "경기도 평택시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "굿플",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -3887,7 +4661,10 @@
       "productId": "69b221f462c09f27eec72303",
       "clinic": "로하스요양병원",
       "region": "경기도 동두천시",
-      "caller": "김태호"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -3902,7 +4679,10 @@
       "productId": "69b221f462c09f27eec72303",
       "clinic": "바로고침한의원",
       "region": "경기도 성남시",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -3917,7 +4697,10 @@
       "productId": "69b221f462c09f27eec72303",
       "clinic": "바로고침한의원",
       "region": "경기도 성남시",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -3932,7 +4715,10 @@
       "productId": "69b221f462c09f27eec72303",
       "clinic": "바로고침한의원",
       "region": "경기도 성남시",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -3947,7 +4733,10 @@
       "productId": "69b221f462c09f27eec72303",
       "clinic": "바로고침한의원",
       "region": "경기도 성남시",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -3962,7 +4751,10 @@
       "productId": "69b221f462c09f27eec72303",
       "clinic": "바로고침한의원",
       "region": "경기도 성남시",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -3977,7 +4769,10 @@
       "productId": "69b221f462c09f27eec72303",
       "clinic": "바로고침한의원",
       "region": "경기도 성남시",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -3992,7 +4787,10 @@
       "productId": "69b221f462c09f27eec72303",
       "clinic": "이응한의원",
       "region": "세종시",
-      "caller": "이예림"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -4007,7 +4805,10 @@
       "productId": "69b27f606eff304d944408c6",
       "clinic": "메디한의원",
       "region": "서울시 강남구",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -4022,7 +4823,10 @@
       "productId": "69b27f606eff304d944408c6",
       "clinic": "메디한의원",
       "region": "서울시 강남구",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4037,7 +4841,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4052,7 +4859,10 @@
       "productId": "67bf00ac52b44543385c08d5",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4067,7 +4877,10 @@
       "productId": "67bdcc3cbade696523840a6b",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4082,7 +4895,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4097,7 +4913,10 @@
       "productId": "687efbcf3d86dc978b0ead48",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "아이웰니스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4112,7 +4931,10 @@
       "productId": "67da79fb98299a4d627dd8cd",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "옴니씨앤에스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4127,7 +4949,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4142,7 +4967,10 @@
       "productId": "66a328fc96e0816c37572d22",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4157,7 +4985,10 @@
       "productId": "687efbcf3d86dc978b0ead48",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "아이웰니스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4172,7 +5003,10 @@
       "productId": "67bbd1a35712128607614aa7",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "동아참메드",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4187,7 +5021,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4202,7 +5039,10 @@
       "productId": "67bbd1a35712128607614aa7",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "동아참메드",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4217,7 +5057,10 @@
       "productId": "66a328fc96e0816c37572d22",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4232,7 +5075,10 @@
       "productId": "67bf00ac52b44543385c08d5",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4247,7 +5093,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4262,7 +5111,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4277,7 +5129,10 @@
       "productId": "68b7eaa05b5a1eca5ed30e69",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4292,7 +5147,10 @@
       "productId": "67da79fb98299a4d627dd8cd",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "옴니씨앤에스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4307,7 +5165,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4322,7 +5183,10 @@
       "productId": "67bf00ac52b44543385c08d5",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4337,7 +5201,10 @@
       "productId": "66a328fc96e0816c37572d22",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4352,7 +5219,10 @@
       "productId": "67bd57740c109d9ed2324fd0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4367,7 +5237,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4382,7 +5255,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4397,7 +5273,10 @@
       "productId": "69ae1e1a2fba9153936e00eb",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "오스테오시스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4412,7 +5291,10 @@
       "productId": "69ae1e1a2fba9153936e00eb",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "오스테오시스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -4427,7 +5309,10 @@
       "productId": "60b722fec1908b001a64a31e",
       "clinic": "청운한의원",
       "region": "경상남도 거창군",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "선웅메디테크",
+      "payDate": "2026-03-12",
+      "payAmount": 690000
     },
     {
       "source": "일반",
@@ -4442,7 +5327,10 @@
       "productId": "610cd88909c63a06ed1489fe",
       "clinic": "경희나라한의원",
       "region": "서울시 서초구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "에이치씨케이",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -4457,7 +5345,10 @@
       "productId": "68c28018b4ea61bdadcd40c5",
       "clinic": "은정한의원",
       "region": "부산시 동구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4472,7 +5363,10 @@
       "productId": "691447b071757ccadba9e3d8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4487,7 +5381,10 @@
       "productId": "691447b071757ccadba9e3d8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4502,7 +5399,10 @@
       "productId": "687efbcf3d86dc978b0ead48",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "아이웰니스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4517,7 +5417,10 @@
       "productId": "67bdcc3cbade696523840a6b",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -4532,7 +5435,10 @@
       "productId": "6268ccc1dc78e80024f12a80",
       "clinic": "마린한의원",
       "region": "부산시 해운대구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -4547,7 +5453,10 @@
       "productId": "5ea28350f1c8cc684388d210",
       "clinic": "마린한의원",
       "region": "부산시 해운대구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4562,7 +5471,10 @@
       "productId": "67bc1cd05a4f59cacd7839f8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "디에스이아이엔씨",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4577,7 +5489,10 @@
       "productId": "67bc1cd05a4f59cacd7839f8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "디에스이아이엔씨",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4592,7 +5507,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4607,7 +5525,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -4622,7 +5543,10 @@
       "productId": "",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -4637,7 +5561,10 @@
       "productId": "60bd7a640ccc56001bc7fe1a",
       "clinic": "윤한의원",
       "region": "대구시 달서구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "정메디칼",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -4652,7 +5579,10 @@
       "productId": "5efd3984221c8b5f77c8d36f",
       "clinic": "도닥한의원",
       "region": "대구시 수성구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "한메디",
+      "payDate": "2026-03-10",
+      "payAmount": 1024090
     },
     {
       "source": "일반",
@@ -4667,7 +5597,10 @@
       "productId": "685b73335c71a5d66aa83127",
       "clinic": "경희다나은한의원",
       "region": "서울시 강서구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4682,7 +5615,10 @@
       "productId": "691447b071757ccadba9e3d8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -4697,7 +5633,10 @@
       "productId": "60b722fec1908b001a64a31e",
       "clinic": "청운한의원",
       "region": "경상남도 거창군",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "선웅메디테크",
+      "payDate": "2026-03-12",
+      "payAmount": 690000
     },
     {
       "source": "일반",
@@ -4712,7 +5651,10 @@
       "productId": "5da995310dabe405b156ed53",
       "clinic": "서울한의원",
       "region": "경상남도 사천시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -4727,7 +5669,10 @@
       "productId": "5e65dd5abfe426094478320a",
       "clinic": "서울한의원",
       "region": "경상남도 사천시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "굿플",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4742,7 +5687,10 @@
       "productId": "64c0ba5fa9b8eb001b60cdd3",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "삼성메디슨",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4757,7 +5705,10 @@
       "productId": "68997a622409fedf37673561",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4772,7 +5723,10 @@
       "productId": "67bbdd6479f2a8144040d311",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4787,7 +5741,10 @@
       "productId": "6205b01219e291002362d0ae",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4802,7 +5759,10 @@
       "productId": "612354a509c63a06ed14a1d2",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4817,7 +5777,10 @@
       "productId": "612354a4d26af90681b206b3",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -4832,7 +5795,10 @@
       "productId": "60f4d9cb09c63a06ed147370",
       "clinic": "경희동행한의원",
       "region": "서울시 강남구",
-      "caller": "조성갑"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -4847,7 +5813,10 @@
       "productId": "6602342bea7f1393f2a62474",
       "clinic": "경희동행한의원",
       "region": "서울시 강남구",
-      "caller": "조성갑"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -4862,7 +5831,10 @@
       "productId": "613ee5446b61d0001afbbc52",
       "clinic": "케이한방병원",
       "region": "경기도 화성시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "굿플",
+      "payDate": "2026-03-09",
+      "payAmount": 670000
     },
     {
       "source": "일반",
@@ -4877,7 +5849,10 @@
       "productId": "613ee5446b61d0001afbbc52",
       "clinic": "케이한방병원",
       "region": "경기도 화성시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "굿플",
+      "payDate": "2026-03-09",
+      "payAmount": 670000
     },
     {
       "source": "일반",
@@ -4892,7 +5867,10 @@
       "productId": "613ee5446b61d0001afbbc52",
       "clinic": "케이한방병원",
       "region": "경기도 화성시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "굿플",
+      "payDate": "2026-03-09",
+      "payAmount": 670000
     },
     {
       "source": "일반",
@@ -4907,7 +5885,10 @@
       "productId": "5ef06528e510ee503167d1a9",
       "clinic": "두암경희한의원",
       "region": "경기도 수원시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "원효메디텍",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -4922,7 +5903,10 @@
       "productId": "5e65dd5abfe426094478320a",
       "clinic": "오산부부한의원",
       "region": "경기도 오산시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "굿플",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -4937,7 +5921,10 @@
       "productId": "5e4a2cd34267e105dfff1d6b",
       "clinic": "오산부부한의원",
       "region": "경기도 오산시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -4952,7 +5939,10 @@
       "productId": "60bd7a640ccc56001bc7fe1a",
       "clinic": "강한마디한의원",
       "region": "경기도 수원시",
-      "caller": "조성갑"
+      "caller": "",
+      "supplier": "정메디칼",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4967,7 +5957,10 @@
       "productId": "691447b071757ccadba9e3d8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4982,7 +5975,10 @@
       "productId": "691447b071757ccadba9e3d8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -4997,7 +5993,10 @@
       "productId": "691447b071757ccadba9e3d8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -5012,7 +6011,10 @@
       "productId": "617b4cd2bc63410023471ef3",
       "clinic": "경덕한의원",
       "region": "서울시 송파구",
-      "caller": ""
+      "caller": "",
+      "supplier": "선웅메디테크",
+      "payDate": "2026-03-09",
+      "payAmount": 2715390
     },
     {
       "source": "총판기기",
@@ -5027,7 +6029,10 @@
       "productId": "66a328fc96e0816c37572d22",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5042,7 +6047,10 @@
       "productId": "67bdcc3cbade696523840a6b",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5057,7 +6065,10 @@
       "productId": "6899816d66efcf46326dcdba",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5072,7 +6083,10 @@
       "productId": "64be3dfe814894001b9559ec",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "삼성메디슨",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -5087,7 +6101,10 @@
       "productId": "60bd7a630ccc56001bc7fe19",
       "clinic": "경희탑한의원",
       "region": "경기도 구리시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "정메디칼",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -5102,7 +6119,10 @@
       "productId": "5e869205bfe4260944784a6d",
       "clinic": "365봄한의원",
       "region": "서울시 은평구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -5117,7 +6137,10 @@
       "productId": "5e49fd034267e105dfff1d3c",
       "clinic": "아산1오케이한의원",
       "region": "충청남도 아산시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -5132,7 +6155,10 @@
       "productId": "5e4a82c64267e105dfff1dbb",
       "clinic": "아산1오케이한의원",
       "region": "충청남도 아산시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -5147,7 +6173,10 @@
       "productId": "60f1157c09c63a06ed147127",
       "clinic": "마디엠한의원",
       "region": "경기도 파주시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5162,7 +6191,10 @@
       "productId": "67bf00ac52b44543385c08d5",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5177,7 +6209,10 @@
       "productId": "67bdcc3cbade696523840a6b",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -5192,7 +6227,10 @@
       "productId": "617b4cd2bc63410023471ef3",
       "clinic": "",
       "region": "부산시 부산진구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -5207,7 +6245,10 @@
       "productId": "645c45796fa3a0002addd9f5",
       "clinic": "",
       "region": "부산시 부산진구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -5222,7 +6263,10 @@
       "productId": "617b4cd2bc63410023471ef3",
       "clinic": "",
       "region": "부산시 부산진구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -5237,7 +6281,10 @@
       "productId": "617b4cd4bc63410023471ef4",
       "clinic": "",
       "region": "부산시 부산진구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -5252,7 +6299,10 @@
       "productId": "610cd88909c63a06ed1489fe",
       "clinic": "홍한의원",
       "region": "경기도 안산시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "에이치씨케이",
+      "payDate": "2026-03-04",
+      "payAmount": 681600
     },
     {
       "source": "일반",
@@ -5267,7 +6317,10 @@
       "productId": "610cd88909c63a06ed1489fe",
       "clinic": "홍한의원",
       "region": "경기도 안산시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "에이치씨케이",
+      "payDate": "2026-03-04",
+      "payAmount": 681600
     },
     {
       "source": "일반",
@@ -5282,7 +6335,10 @@
       "productId": "611b434009c63a06ed1498ef",
       "clinic": "삼대심신한의원",
       "region": "서울시 강동구",
-      "caller": "이예림"
+      "caller": "",
+      "supplier": "에이치씨케이",
+      "payDate": "2026-03-03",
+      "payAmount": 910000
     },
     {
       "source": "일반",
@@ -5297,7 +6353,10 @@
       "productId": "5fbf45f8ce872a1a803a803b",
       "clinic": "유덕경희한의원",
       "region": "경기도 안양시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "바디헬스케어",
+      "payDate": "2026-03-04",
+      "payAmount": 1200000
     },
     {
       "source": "총판기기",
@@ -5312,7 +6371,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5327,7 +6389,10 @@
       "productId": "6914257d29e7c5ac4ac44c05",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5342,7 +6407,10 @@
       "productId": "6205b01219e291002362d0ae",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5357,7 +6425,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5372,7 +6443,10 @@
       "productId": "67bf00ac52b44543385c08d5",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -5387,7 +6461,10 @@
       "productId": "68c27626b9972879bbfef389",
       "clinic": "본바로한의원",
       "region": "경기도 부천시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -5402,7 +6479,10 @@
       "productId": "5e4a82c64267e105dfff1dbb",
       "clinic": "인애한의원",
       "region": "서울시 노원구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5417,7 +6497,10 @@
       "productId": "67bf00ac52b44543385c08d5",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5432,7 +6515,10 @@
       "productId": "67bc1cd05a4f59cacd7839f8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "디에스이아이엔씨",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -5447,7 +6533,10 @@
       "productId": "645c45796fa3a0002addd9f5",
       "clinic": "백석길365한의원",
       "region": "경기도 고양시",
-      "caller": ""
+      "caller": "",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -5462,7 +6551,10 @@
       "productId": "66ff9c9225c1c6f52d7d86b4",
       "clinic": "구로 끗 한의원",
       "region": "서울시 관악구",
-      "caller": "김태호"
+      "caller": "",
+      "supplier": "디에프아이",
+      "payDate": "2026-03-03",
+      "payAmount": 779000
     },
     {
       "source": "총판기기",
@@ -5477,7 +6569,10 @@
       "productId": "67da79fb98299a4d627dd8cd",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "옴니씨앤에스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5492,7 +6587,10 @@
       "productId": "67bd57740c109d9ed2324fd0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5507,7 +6605,10 @@
       "productId": "6699e90a96e0816c37564e19",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5522,7 +6623,10 @@
       "productId": "6911cef0d985e2440e6f14c2",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -5537,7 +6641,10 @@
       "productId": "610cd88909c63a06ed1489fe",
       "clinic": "경희수인한의원",
       "region": "경기도 용인시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "에이치씨케이",
+      "payDate": "2026-03-06",
+      "payAmount": 3069998
     },
     {
       "source": "총판기기",
@@ -5552,7 +6659,10 @@
       "productId": "67da79fb98299a4d627dd8cd",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "옴니씨앤에스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5567,7 +6677,10 @@
       "productId": "67bdcc3cbade696523840a6b",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5582,7 +6695,10 @@
       "productId": "6899816d66efcf46326dcdba",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5597,7 +6713,10 @@
       "productId": "687efbcf3d86dc978b0ead48",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "아이웰니스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5612,7 +6731,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5627,7 +6749,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5642,7 +6767,10 @@
       "productId": "67da79fb98299a4d627dd8cd",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "옴니씨앤에스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -5657,7 +6785,10 @@
       "productId": "5efd3984221c8b5f77c8d36f",
       "clinic": "도닥한의원",
       "region": "대구시 수성구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "한메디",
+      "payDate": "2026-03-10",
+      "payAmount": 1024090
     },
     {
       "source": "총판기기",
@@ -5672,7 +6803,10 @@
       "productId": "67bdcc3cbade696523840a6b",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5687,7 +6821,10 @@
       "productId": "6899730a0199fa2e00c19c97",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5702,7 +6839,10 @@
       "productId": "67bd57740c109d9ed2324fd0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5717,7 +6857,10 @@
       "productId": "67bc1cd05a4f59cacd7839f8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "디에스이아이엔씨",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5732,7 +6875,10 @@
       "productId": "67bdcc3cbade696523840a6b",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -5747,7 +6893,10 @@
       "productId": "5e65dd5abfe426094478320a",
       "clinic": "혜민한의원",
       "region": "경기도 안양시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "굿플",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -5762,7 +6911,10 @@
       "productId": "61162ddad26af90681b1f6fd",
       "clinic": "으뜸경희한의원",
       "region": "경기도 광주시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "에이치씨케이",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -5777,7 +6929,10 @@
       "productId": "5e4a82c64267e105dfff1dbb",
       "clinic": "경희서동한의원",
       "region": "경기도 부천시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -5792,7 +6947,10 @@
       "productId": "63edb3cd86095b0031e5ef71",
       "clinic": "연희동경희한의원",
       "region": "서울시 서대문구",
-      "caller": "류창희"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5807,7 +6965,10 @@
       "productId": "67e2322d9d6aa764d124103e",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "디에스이아이엔씨",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -5822,7 +6983,10 @@
       "productId": "687f7c387e555ffd187ddde2",
       "clinic": "경희신의한의원",
       "region": "경기도 성남시",
-      "caller": "조성갑"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -5837,7 +7001,10 @@
       "productId": "5ea7b4021a3ca36b96784caf",
       "clinic": "순리한의원",
       "region": "서울시 서대문구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5852,7 +7019,10 @@
       "productId": "67bbd1a35712128607614aa7",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "동아참메드",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5867,7 +7037,10 @@
       "productId": "6205b01119e291002362d0ad",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5882,7 +7055,10 @@
       "productId": "67da79fb98299a4d627dd8cd",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "옴니씨앤에스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5897,7 +7073,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5912,7 +7091,10 @@
       "productId": "67bc1cd05a4f59cacd7839f8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "디에스이아이엔씨",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5927,7 +7109,10 @@
       "productId": "685bb9fab7ac8d6f02415834",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -5942,7 +7127,10 @@
       "productId": "61245520d26af90681b20891",
       "clinic": "에이비한의원",
       "region": "서울시 강남구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -5957,7 +7145,10 @@
       "productId": "617b4cd2bc63410023471ef3",
       "clinic": "삼대심신한의원",
       "region": "서울시 강동구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "선웅메디테크",
+      "payDate": "2026-02-24",
+      "payAmount": 1356000
     },
     {
       "source": "총판기기",
@@ -5972,7 +7163,10 @@
       "productId": "67da79fb98299a4d627dd8cd",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "옴니씨앤에스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -5987,7 +7181,10 @@
       "productId": "6899816d66efcf46326dcdba",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6002,7 +7199,10 @@
       "productId": "661cf80e531907ae86b91a4b",
       "clinic": "삼대심신한의원",
       "region": "서울시 강동구",
-      "caller": "주봉현"
+      "caller": "",
+      "supplier": "정메디칼",
+      "payDate": "2026-02-19",
+      "payAmount": 1105000
     },
     {
       "source": "일반",
@@ -6017,7 +7217,10 @@
       "productId": "62b4189b08e04900234e1aa1",
       "clinic": "인애한의원",
       "region": "부산시 부산진구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "원효메디텍",
+      "payDate": "2026-02-20",
+      "payAmount": 126100
     },
     {
       "source": "일반",
@@ -6032,7 +7235,10 @@
       "productId": "6066ad5f0ccc56001bc7a6bb",
       "clinic": "바를연한의원",
       "region": "서울시 영등포구",
-      "caller": "주봉현"
+      "caller": "",
+      "supplier": "인바디부산",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6047,7 +7253,10 @@
       "productId": "6066ad5fc1908b001a63d0a4",
       "clinic": "바를연한의원",
       "region": "서울시 영등포구",
-      "caller": "주봉현"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6062,7 +7271,10 @@
       "productId": "5e4a2cd34267e105dfff1d6b",
       "clinic": "365팔팔한의원",
       "region": "경기도 김포시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6077,7 +7289,10 @@
       "productId": "5ef06528e510ee503167d1a9",
       "clinic": "최한의원",
       "region": "경상북도 포항시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "원효메디텍",
+      "payDate": "2026-02-20",
+      "payAmount": 725760
     },
     {
       "source": "총판기기",
@@ -6092,7 +7307,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6107,7 +7325,10 @@
       "productId": "5efd3984221c8b5f77c8d36f",
       "clinic": "율재한의원",
       "region": "서울시 광진구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "한메디",
+      "payDate": "2026-04-07",
+      "payAmount": 1052700
     },
     {
       "source": "일반",
@@ -6122,7 +7343,10 @@
       "productId": "61162ddad26af90681b1f6fd",
       "clinic": "",
       "region": "서울시 송파구",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "에이치씨케이",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6137,7 +7361,10 @@
       "productId": "645c45796fa3a0002addd9f5",
       "clinic": "품듯한의원",
       "region": "제주도 제주시",
-      "caller": "이예림"
+      "caller": "",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6152,7 +7379,10 @@
       "productId": "63edb3cd86095b0031e5ef71",
       "clinic": "품듯한의원",
       "region": "제주도 제주시",
-      "caller": "이예림"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -6167,7 +7397,10 @@
       "productId": "67e2322d9d6aa764d124103e",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "디에스이아이엔씨",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6182,7 +7415,10 @@
       "productId": "6268ccbedc78e80024f12a7e",
       "clinic": "으뜸경희한의원",
       "region": "경기도 광주시",
-      "caller": "김진석"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6197,7 +7433,10 @@
       "productId": "5fbf45f8ce872a1a803a803b",
       "clinic": "녹양한의원",
       "region": "서울시 중구",
-      "caller": "조성갑"
+      "caller": "",
+      "supplier": "바디헬스케어",
+      "payDate": "2026-02-19",
+      "payAmount": 1200000
     },
     {
       "source": "총판기기",
@@ -6212,7 +7451,10 @@
       "productId": "67bdcc3cbade696523840a6b",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -6227,7 +7469,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -6242,7 +7487,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6257,7 +7505,10 @@
       "productId": "65af4dec52a3c7001bc4973d",
       "clinic": "아이누리한의원",
       "region": "전라북도 전주시",
-      "caller": "주봉현"
+      "caller": "",
+      "supplier": "인바디",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6272,7 +7523,10 @@
       "productId": "6306e10c58e1680033a58d17",
       "clinic": "통영잘보는한의원",
       "region": "경상남도 통영시",
-      "caller": "주봉현"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -6287,7 +7541,10 @@
       "productId": "6914257d29e7c5ac4ac44c05",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -6302,7 +7559,10 @@
       "productId": "67bdcc3cbade696523840a6b",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6317,7 +7577,10 @@
       "productId": "617b4cd2bc63410023471ef3",
       "clinic": "동강한의원",
       "region": "서울시 마포구",
-      "caller": "주봉현"
+      "caller": "",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -6332,7 +7595,10 @@
       "productId": "64c0ba5fa9b8eb001b60cdd3",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "삼성메디슨",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6347,7 +7613,10 @@
       "productId": "5fbf45f8ce872a1a803a803b",
       "clinic": "소래한의원",
       "region": "인천시 남동구",
-      "caller": "조성갑"
+      "caller": "",
+      "supplier": "바디헬스케어",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -6362,7 +7631,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -6377,7 +7649,10 @@
       "productId": "679196a4a9da155d96fe0c64",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -6392,7 +7667,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6407,7 +7685,10 @@
       "productId": "645c45796fa3a0002addd9f5",
       "clinic": "",
       "region": "부산시 부산진구",
-      "caller": "조성갑"
+      "caller": "",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -6422,7 +7703,10 @@
       "productId": "67bc1cd05a4f59cacd7839f8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "디에스이아이엔씨",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -6437,7 +7721,10 @@
       "productId": "6914257d29e7c5ac4ac44c05",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6452,7 +7739,10 @@
       "productId": "698591e7b52b39916b870879",
       "clinic": "기세한의원",
       "region": "부산시 남구",
-      "caller": "조성갑"
+      "caller": "",
+      "supplier": "메디코넷",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6467,7 +7757,10 @@
       "productId": "5eafd60a1a3ca36b967850cb",
       "clinic": "경희구암한의원",
       "region": "경기도 광명시",
-      "caller": "조성갑"
+      "caller": "",
+      "supplier": "굿플",
+      "payDate": "2026-02-11",
+      "payAmount": 158395
     },
     {
       "source": "일반",
@@ -6482,7 +7775,10 @@
       "productId": "6066ad5f0ccc56001bc7a6bb",
       "clinic": "김범한의원",
       "region": "서울시 동작구",
-      "caller": "이예림"
+      "caller": "",
+      "supplier": "인바디부산",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -6497,7 +7793,10 @@
       "productId": "64c0ba5fa9b8eb001b60cdd3",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "삼성메디슨",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6512,7 +7811,10 @@
       "productId": "661cf80e531907ae86b91a4b",
       "clinic": "박서현한의원",
       "region": "경기도 성남시",
-      "caller": "조성갑"
+      "caller": "",
+      "supplier": "정메디칼",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6527,7 +7829,10 @@
       "productId": "66ff9c9225c1c6f52d7d86b4",
       "clinic": "분당 경희온도한의원",
       "region": "경기도 성남시",
-      "caller": "이예림"
+      "caller": "",
+      "supplier": "디에프아이",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6542,7 +7847,10 @@
       "productId": "65af4dec52a3c7001bc4973d",
       "clinic": "경희자강한의원",
       "region": "부산시 남구",
-      "caller": "조성갑"
+      "caller": "",
+      "supplier": "인바디",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6557,7 +7865,10 @@
       "productId": "65af4dec52a3c7001bc4973d",
       "clinic": "경희자강한의원",
       "region": "부산시 남구",
-      "caller": "조성갑"
+      "caller": "",
+      "supplier": "인바디",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6572,7 +7883,10 @@
       "productId": "5eafd60a1a3ca36b967850cb",
       "clinic": "김범한의원",
       "region": "서울시 동작구",
-      "caller": "이예림"
+      "caller": "",
+      "supplier": "굿플",
+      "payDate": "2026-02-09",
+      "payAmount": 405000
     },
     {
       "source": "총판기기",
@@ -6587,7 +7901,10 @@
       "productId": "67bd57740c109d9ed2324fd0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -6602,7 +7919,10 @@
       "productId": "69142c4d6d34252cd8eef11a",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6617,7 +7937,10 @@
       "productId": "610cd88909c63a06ed1489fe",
       "clinic": "경희온맘한의원",
       "region": "대전시 유성구",
-      "caller": "주봉현"
+      "caller": "",
+      "supplier": "에이치씨케이",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6632,7 +7955,10 @@
       "productId": "68d4de055472da0918256a41",
       "clinic": "도본한의원",
       "region": "충청남도 천안시",
-      "caller": "조성갑"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -6647,7 +7973,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -6662,7 +7991,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -6677,7 +8009,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -6692,7 +8027,10 @@
       "productId": "687efbcf3d86dc978b0ead48",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "아이웰니스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -6707,7 +8045,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -6722,7 +8063,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -6737,7 +8081,10 @@
       "productId": "67bc1cd05a4f59cacd7839f8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "디에스이아이엔씨",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6752,7 +8099,10 @@
       "productId": "6066ad5f0ccc56001bc7a6ba",
       "clinic": "안심부부한의원",
       "region": "충청북도 제천시",
-      "caller": "조성갑"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6767,7 +8117,10 @@
       "productId": "6066ad5f0ccc56001bc7a6bb",
       "clinic": "수한의원",
       "region": "경기도 고양시",
-      "caller": "조성갑"
+      "caller": "",
+      "supplier": "인바디부산",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6782,7 +8135,10 @@
       "productId": "6066ad5f0ccc56001bc7a6ba",
       "clinic": "영도한의원",
       "region": "부산시 영도구",
-      "caller": "주봉현"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6797,7 +8153,10 @@
       "productId": "61133b17d26af90681b1f1e9",
       "clinic": "마디엠한의원",
       "region": "경기도 파주시",
-      "caller": "주봉현"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6812,7 +8171,10 @@
       "productId": "5e79c813bfe42609447840e7",
       "clinic": "압구정대자인한의원",
       "region": "서울시 강남구",
-      "caller": "주봉현"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6827,7 +8189,10 @@
       "productId": "617b4cd2bc63410023471ef3",
       "clinic": "온화한의원",
       "region": "서울시 송파구",
-      "caller": "주봉현"
+      "caller": "",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6842,7 +8207,10 @@
       "productId": "5ef06528e510ee503167d1a9",
       "clinic": "온기한의원",
       "region": "경기도 남양주시",
-      "caller": "조성갑"
+      "caller": "",
+      "supplier": "원효메디텍",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6857,7 +8225,10 @@
       "productId": "696f2e58d59650d187cb8d4f",
       "clinic": "차담한의원",
       "region": "부산시 기장군",
-      "caller": "조성갑"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6872,7 +8243,10 @@
       "productId": "696f2c1c3ecf593630a1688e",
       "clinic": "스마일365한의원",
       "region": "대구시 북구",
-      "caller": "이예림"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6887,7 +8261,10 @@
       "productId": "696f2ac6b2e5d7c403164645",
       "clinic": "스마일365한의원",
       "region": "대구시 북구",
-      "caller": "이예림"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6902,7 +8279,10 @@
       "productId": "63e0ed4d8757650022268174",
       "clinic": "스마일365한의원",
       "region": "대구시 북구",
-      "caller": "이예림"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6917,7 +8297,10 @@
       "productId": "63e0ed4d8757650022268174",
       "clinic": "스마일365한의원",
       "region": "대구시 북구",
-      "caller": "이예림"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6932,7 +8315,10 @@
       "productId": "6086239ac1908b001a63f443",
       "clinic": "노아한의원",
       "region": "경기도 용인시",
-      "caller": "조성갑"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -6947,7 +8333,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -6962,7 +8351,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -6977,7 +8369,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -6992,7 +8387,10 @@
       "productId": "6018c0c12c593a001ace93fb",
       "clinic": "",
       "region": "대전시 서구",
-      "caller": "조성갑"
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -7007,7 +8405,10 @@
       "productId": "610cd88909c63a06ed1489fe",
       "clinic": "청라리아한의원",
       "region": "인천시 서구",
-      "caller": "주봉현"
+      "caller": "",
+      "supplier": "에이치씨케이",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -7022,7 +8423,10 @@
       "productId": "6899ad4d27d3f20f5d843ef4",
       "clinic": "빌리브한의원 신천역",
       "region": "대구시 동구",
-      "caller": "조성갑"
+      "caller": "",
+      "supplier": "팀엘리시움",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -7037,7 +8441,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -7052,7 +8459,10 @@
       "productId": "67da79fb98299a4d627dd8cd",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "옴니씨앤에스",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -7067,7 +8477,10 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "일반",
@@ -7082,7 +8495,10 @@
       "productId": "60bd7a640ccc56001bc7fe1a",
       "clinic": "풀의우주 한의원",
       "region": "부산시 해운대구",
-      "caller": "주봉현"
+      "caller": "",
+      "supplier": "정메디칼",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -7097,7 +8513,10 @@
       "productId": "67bc1cd05a4f59cacd7839f8",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "디에스이아이엔씨",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -7112,7 +8531,10 @@
       "productId": "67e2322d9d6aa764d124103e",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "디에스이아이엔씨",
+      "payDate": "",
+      "payAmount": null
     },
     {
       "source": "총판기기",
@@ -7127,7 +8549,10 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "",
       "region": "",
-      "caller": ""
+      "caller": "",
+      "supplier": "네오펙트",
+      "payDate": "",
+      "payAmount": null
     }
   ]
 }
