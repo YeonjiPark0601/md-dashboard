@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-15T08:15:40.126Z",
+  "updated": "2026-04-15T09:20:57.507Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -37,6 +37,24 @@
       "region": "서울시 동작구",
       "caller": "",
       "supplier": "굿플",
+      "payDate": "",
+      "payAmount": null
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 15 오후 06:17:14",
+      "date": "2026-04-15",
+      "name": "김명환",
+      "cid": "62de3784119967002389b5bc",
+      "phone": "010-3477-8485",
+      "product": "옴니핏 마인드케어 메디칼 맥파분석기 MK2",
+      "qty": 1,
+      "price": "모름",
+      "productId": "67da79fb98299a4d627dd8cd",
+      "clinic": "해늘한의원",
+      "region": "대전시 서구",
+      "caller": "",
+      "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null
     },
