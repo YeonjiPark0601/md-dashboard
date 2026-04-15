@@ -506,6 +506,8 @@ function fetchExternalInquiries() {
           product: r.product || '',
           productId: r.productId || '',
           supplier: supplierOverrides[stableKey] || r.supplier || '',
+          supplierLocked: !supplierOverrides[stableKey] && !!r.supplier, // 주문이력에서 온 공급처는 수정 불가
+
           qty: r.qty || '',
           price: priceStr,
           payAmount: r.payAmount != null ? r.payAmount : null,
@@ -892,7 +894,7 @@ function renderTable() {
       '<td>' + ((r.cid && r.cid !== 'N/A' && /^[a-f0-9]{24}$/.test(r.cid)) ? '<a href="https://tools.medistream.co.kr/customers/' + encodeURIComponent(r.cid) + '" target="_blank" rel="noopener" style="color:#1a73e8;text-decoration:none;font-weight:700;">' + escHtml(r.customer) + '</a>' : '<strong>' + escHtml(r.customer) + '</strong>') + '</td>' +
       '<td>' + escHtml(r.clinic) + '</td>' +
       '<td>' + escHtml(r.region) + '</td>' +
-      '<td class="supplier-cell editable" data-id="' + escHtml(r.id) + '" data-ext="' + (r.external?'1':'0') + '" style="font-size:12px;color:#555;cursor:text;" title="클릭해서 편집">' + (escHtml(r.supplier || '') || '<span class="note-placeholder">입력</span>') + '</td>' +
+      '<td' + (r.supplierLocked ? ' style="font-size:12px;color:#555;" title="주문이력에서 자동 매핑 — 수정 불가"' : ' class="supplier-cell editable" data-id="' + escHtml(r.id) + '" data-ext="' + (r.external?'1':'0') + '" style="font-size:12px;color:#555;cursor:text;" title="클릭해서 편집"') + '>' + (escHtml(r.supplier || '') || '<span class="note-placeholder">입력</span>') + '</td>' +
       '<td class="td-truncate" title="' + escHtml(r.product) + '">' + ((r.productId && /^[a-f0-9]{24}$/.test(r.productId)) ? '<a href="https://market.medistream.co.kr/products/' + encodeURIComponent(r.productId) + '" target="_blank" rel="noopener" style="color:#1a73e8;text-decoration:none;">' + escHtml(r.product) + '</a>' : escHtml(r.product)) + '</td>' +
       '<td style="text-align:right;">' + (r.qty !== '' && r.qty != null ? escHtml(r.qty) : '') + '</td>' +
       '<td>' + escHtml(r.price) + '</td>' +
