@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-15T09:25:56.009Z",
+  "updated": "2026-04-15T09:45:57.713Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -37,6 +37,24 @@
       "region": "서울시 동작구",
       "caller": "",
       "supplier": "굿플",
+      "payDate": "",
+      "payAmount": null
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 04. 15 오후 06:45:07",
+      "date": "2026-04-15",
+      "name": "강보형",
+      "cid": "5f16b219221c8b5f77c8f764",
+      "phone": "010-9850-2502",
+      "product": "HCK 치료실 베드 (N100)",
+      "qty": 1,
+      "price": "모름",
+      "productId": "61162ddad26af90681b1f6fd",
+      "clinic": "정원한의원",
+      "region": "경기도 성남시",
+      "caller": "",
+      "supplier": "에이치씨케이",
       "payDate": "",
       "payAmount": null
     },
