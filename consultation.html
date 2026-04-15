@@ -478,6 +478,7 @@ function fetchExternalInquiries() {
       if (!data || !data.items) return;
       var noteOverrides = loadExtNoteOverrides();
       var stageOverrides = loadExtStageOverrides();
+      var callerOverrides = loadExtCallerOverrides();
       EXTERNAL_DATA = data.items.map(function(r, i){
         var priceStr = (r.price || '').replace(/^견적가:\s*/, '').trim();
         var stableKey = 'ext_' + (r.timestamp || r.date || '') + '_' + (r.cid || '') + '_' + (r.name || '') + '_' + (r.product || '');
@@ -499,7 +500,7 @@ function fetchExternalInquiries() {
           qty: r.qty || '',
           price: priceStr,
           payAmount: r.payAmount != null ? r.payAmount : null,
-          caller: r.caller || '', buyDate: '', rep: '',
+          caller: r.caller || callerOverrides[stableKey] || '', buyDate: '', rep: '',
           stage: stageOverrides[stableKey] || (r.payDate ? 'Done' : 'New'), status: '', demoDate: '',
           payDate: r.payDate || '',
           note: noteOverrides[stableKey] || ''
@@ -886,7 +887,7 @@ function renderTable() {
       '<td class="td-truncate" title="' + escHtml(r.product) + '">' + ((r.productId && /^[a-f0-9]{24}$/.test(r.productId)) ? '<a href="https://market.medistream.co.kr/products/' + encodeURIComponent(r.productId) + '" target="_blank" rel="noopener" style="color:#1a73e8;text-decoration:none;">' + escHtml(r.product) + '</a>' : escHtml(r.product)) + '</td>' +
       '<td style="text-align:right;">' + (r.qty !== '' && r.qty != null ? escHtml(r.qty) : '') + '</td>' +
       '<td>' + escHtml(r.price) + '</td>' +
-      '<td>' + escHtml(r.caller) + '</td>' +
+      '<td>' + renderCallerCell(r) + '</td>' +
       '<td>' + renderStageCell(r) + '</td>' +
       '<td class="note-cell editable" data-id="' + escHtml(r.id) + '" data-ext="' + (r.external ? '1' : '0') + '" title="클릭해서 편집">' + (escHtml(r.note) || '<span class="note-placeholder">클릭해서 입력</span>') + '</td>' +
       '<td>' + escHtml(r.demoDate) + '</td>' +
@@ -1374,6 +1375,47 @@ function loadExtStageOverrides() {
 function saveExtStageOverrides(obj) {
   localStorage.setItem(EXT_STAGE_KEY, JSON.stringify(obj));
 }
+
+var EXT_CALLER_KEY = 'md_consult_ext_callers';
+function loadExtCallerOverrides() {
+  try { return JSON.parse(localStorage.getItem(EXT_CALLER_KEY) || '{}'); }
+  catch(e) { return {}; }
+}
+function saveExtCallerOverrides(obj) {
+  localStorage.setItem(EXT_CALLER_KEY, JSON.stringify(obj));
+}
+
+var CALLER_OPTIONS = ['주봉현','김태호','조성갑','유승준','박원','이예림','김진석','류창희'];
+function renderCallerCell(r) {
+  // 이미 배정된 담당자(슬랙 리액션 or 수동 저장)는 텍스트로 표시
+  if (r.caller) return escHtml(r.caller);
+  // 비어있으면 드롭다운으로 선택 가능
+  var opts = '<option value="">미지정</option>' + CALLER_OPTIONS.map(function(n){
+    return '<option value="' + n + '">' + n + '</option>';
+  }).join('');
+  return '<select class="caller-select" data-id="' + escHtml(r.id) + '" data-ext="' + (r.external?'1':'0') + '" style="width:100%;padding:3px 4px;border:1px solid #d0d5dd;border-radius:4px;font-size:12px;background:#fff;">' + opts + '</select>';
+}
+
+document.addEventListener('change', function(e){
+  var sel = e.target.closest('.caller-select');
+  if (!sel) return;
+  var id = sel.dataset.id;
+  var isExt = sel.dataset.ext === '1';
+  var val = sel.value;
+  if (!val) return;
+  if (isExt) {
+    var ov = loadExtCallerOverrides();
+    ov[id] = val;
+    saveExtCallerOverrides(ov);
+    var idx = EXTERNAL_DATA.findIndex(function(r){ return r.id === id; });
+    if (idx !== -1) EXTERNAL_DATA[idx].caller = val;
+  } else {
+    var d = loadLocalOnly();
+    var idx = d.findIndex(function(r){ return r.id === id; });
+    if (idx !== -1) { d[idx].caller = val; saveData(d); }
+  }
+  renderTable();
+});
 
 // Stage 전환 허용 규칙: 현재 Stage → 가능한 다음 Stage 목록
 var STAGE_TRANSITIONS = {
