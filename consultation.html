@@ -44,8 +44,10 @@ body { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; b
 /* ===== TABLE CARDS ===== */
 .table-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); overflow-x: auto; margin-bottom: 20px; }
 .table-card h3 { font-size: 14px; font-weight: 600; color: #555; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-th { background: #f7f8fa; padding: 10px 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; white-space: nowrap; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
+th { background: #f7f8fa; padding: 10px 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; white-space: nowrap; position: relative; overflow: hidden; text-overflow: ellipsis; }
+.col-resizer { position: absolute; top: 0; right: 0; width: 6px; height: 100%; cursor: col-resize; user-select: none; z-index: 10; }
+.col-resizer:hover, .col-resizer.dragging { background: #1a73e8; opacity: 0.4; }
 td { padding: 8px 12px; border-bottom: 1px solid #f0f0f0; white-space: nowrap; }
 tr:hover { background: #f7f9fc; }
 th.sortable { cursor: pointer; user-select: none; }
@@ -1358,12 +1360,82 @@ document.addEventListener('click', function(e){
   if (td && !e.target.closest('.note-input')) startNoteEdit(td);
 });
 
+// ============================================================
+// COLUMN RESIZE (widths persisted to localStorage)
+// ============================================================
+var COL_WIDTH_KEY = 'md_consult_col_widths';
+
+function loadColWidths() {
+  try { return JSON.parse(localStorage.getItem(COL_WIDTH_KEY) || '{}'); }
+  catch(e) { return {}; }
+}
+function saveColWidths(obj) {
+  localStorage.setItem(COL_WIDTH_KEY, JSON.stringify(obj));
+}
+
+var DEFAULT_COL_WIDTHS = {
+  0: 90,   // 인입시점
+  1: 100,  // 인입경로
+  2: 90,   // 고객명
+  6: 60,   // 수량
+  7: 90,   // 견적가
+  8: 80,   // 담당자
+  9: 70,   // Stage
+  10: 320, // 문의내용
+  11: 90,  // 데모일정
+  12: 90,  // 결제일자
+  13: 70   // 수정
+};
+
+function applyColWidths() {
+  var widths = loadColWidths();
+  var ths = document.querySelectorAll('#consultTable thead th');
+  ths.forEach(function(th, i){
+    var w = widths[i] != null ? widths[i] : DEFAULT_COL_WIDTHS[i];
+    if (w) th.style.width = w + 'px';
+  });
+}
+
+function setupColResizers() {
+  var ths = document.querySelectorAll('#consultTable thead th');
+  ths.forEach(function(th, i){
+    if (th.querySelector('.col-resizer')) return;
+    var rz = document.createElement('div');
+    rz.className = 'col-resizer';
+    th.appendChild(rz);
+    rz.addEventListener('mousedown', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      rz.classList.add('dragging');
+      var startX = e.clientX;
+      var startW = th.getBoundingClientRect().width;
+      function onMove(ev) {
+        var w = Math.max(40, startW + (ev.clientX - startX));
+        th.style.width = w + 'px';
+      }
+      function onUp() {
+        rz.classList.remove('dragging');
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+        var widths = loadColWidths();
+        widths[i] = Math.round(th.getBoundingClientRect().width);
+        saveColWidths(widths);
+      }
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+    });
+  });
+}
+
 function init() {
   document.getElementById('f_date').value = today();
   renderTable();
+  setupColResizers();
+  applyColWidths();
   fetchExternalInquiries().then(function(){
     populateRepFilter();
     renderTable();
+    applyColWidths();
   });
 }
 
