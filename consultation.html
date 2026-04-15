@@ -1009,25 +1009,30 @@ function daysBetween(d1, d2) {
 // ============================================================
 // DASHBOARD
 // ============================================================
+function isDemoStage(s) { return s === 'Demo' || s === 'BO-2'; }
+function isTurnkeyStage(s) { return s === 'Turn-key' || s === 'WIN'; }
+function isDemoReached(s) { return isDemoStage(s) || isTurnkeyStage(s); }
+
 function renderDashboard() {
   var data = loadData();
   var total = data.length;
 
-  var cntBO2 = data.filter(function(r){ return r.stage === 'BO-2'; }).length;
-  var cntWIN = data.filter(function(r){ return r.stage === 'WIN'; }).length;
-  var winRevenue = 0;
-  data.forEach(function(r){ if (r.stage === 'WIN') winRevenue += parsePrice(r.price); });
+  var cntDemoReach = data.filter(function(r){ return isDemoReached(r.stage); }).length;
+  var cntTK = data.filter(function(r){ return isTurnkeyStage(r.stage); }).length;
+  var tkRevenue = 0;
+  data.forEach(function(r){ if (isTurnkeyStage(r.stage)) tkRevenue += parsePrice(r.price); });
+  var cntFollow = data.filter(function(r){ return r.stage === 'Follow' || r.stage === 'BO-0' || r.stage === 'BO-1'; }).length;
+  var cntDone = data.filter(function(r){ return r.stage === 'Done'; }).length;
   var cntDrop = data.filter(function(r){ return r.stage === 'Drop'; }).length;
-  var convRate = total > 0 ? (cntWIN / total * 100) : 0;
+  var convRate = total > 0 ? (cntTK / total * 100) : 0;
 
-  // KPI cards
   document.getElementById('dashKpi').innerHTML =
-    kpiCard('총 상담건수', fmtNum(total), '누적 등록') +
-    kpiCard('데모 건수', fmtNum(cntBO2), 'Stage=BO-2') +
-    kpiCard('WIN(결제)', fmtNum(cntWIN), 'Stage=WIN') +
-    kpiCard('WIN 매출(원)', fmtNum(winRevenue), 'WIN 견적가 합계') +
-    kpiCard('Drop 건수', fmtNum(cntDrop), '') +
-    kpiCard('전환율(인입->WIN)', fmtPct(convRate), 'WIN / 전체');
+    kpiCard('총 상담건수', fmtNum(total), '누적 인입') +
+    kpiCard('Demo 도달', fmtNum(cntDemoReach), 'Demo + Turn-key') +
+    kpiCard('Turn-key(결제)', fmtNum(cntTK), '전환 성공') +
+    kpiCard('Turn-key 매출(원)', fmtNum(tkRevenue), '견적가 합계') +
+    kpiCard('Drop 건수', fmtNum(cntDrop), 'Follow 진행중 ' + cntFollow) +
+    kpiCard('전환율', fmtPct(convRate), 'Turn-key / 전체');
 
   // Section 2: Pipeline
   renderPipeline(data, total);
@@ -1060,9 +1065,15 @@ function kpiCard(label, value, sub) {
 
 // --- Pipeline ---
 function renderPipeline(data, total) {
-  var stages = ['BO-0','BO-1','BO-2','WIN'];
-  var barColors = { 'BO-0':'bar-gray', 'BO-1':'bar-amber', 'BO-2':'bar-purple', 'WIN':'bar-green' };
-  var counts = stages.map(function(s){ return { label:s, count: data.filter(function(r){return r.stage===s;}).length }; });
+  var stages = ['Follow','Demo','Turn-key','Done','Drop'];
+  var barColors = { 'Follow':'bar-amber', 'Demo':'bar-purple', 'Turn-key':'bar-blue', 'Done':'bar-green', 'Drop':'bar-red' };
+  function stageMatch(s, stage) {
+    if (stage === 'Follow') return s === 'Follow' || s === 'BO-0' || s === 'BO-1';
+    if (stage === 'Demo') return s === 'Demo' || s === 'BO-2';
+    if (stage === 'Turn-key') return s === 'Turn-key' || s === 'WIN';
+    return s === stage;
+  }
+  var counts = stages.map(function(s){ return { label:s, count: data.filter(function(r){return stageMatch(r.stage, s);}).length }; });
   var mx = Math.max.apply(null, counts.map(function(c){return c.count;})) || 1;
 
   document.getElementById('chartPipeline').innerHTML = counts.map(function(c){
@@ -1077,15 +1088,13 @@ function renderPipeline(data, total) {
 
 // --- Conversion ---
 function renderConversion(data, total) {
-  var cBO1p = data.filter(function(r){ return ['BO-1','BO-2','WIN'].indexOf(r.stage) !== -1; }).length;
-  var cBO2p = data.filter(function(r){ return ['BO-2','WIN'].indexOf(r.stage) !== -1; }).length;
-  var cWIN = data.filter(function(r){ return r.stage === 'WIN'; }).length;
+  var cDemoReach = data.filter(function(r){ return isDemoReached(r.stage); }).length;
+  var cTK = data.filter(function(r){ return isTurnkeyStage(r.stage); }).length;
 
   var rows = [
-    { label: '인입 -> 상담(BO-1+)', num: cBO1p, den: total },
-    { label: '상담 -> 데모(BO-2)', num: cBO2p, den: cBO1p },
-    { label: '데모 -> 결제(WIN)', num: cWIN, den: cBO2p },
-    { label: '전체 인입 -> 결제', num: cWIN, den: total }
+    { label: '인입 → Demo 도달', num: cDemoReach, den: total },
+    { label: 'Demo → Turn-key', num: cTK, den: cDemoReach },
+    { label: '전체 인입 → Turn-key', num: cTK, den: total }
   ];
 
   var html = '<table class="mini-table"><thead><tr><th>구간</th><th style="text-align:right;">건수</th><th style="text-align:right;">전환율</th></tr></thead><tbody>';
@@ -1101,12 +1110,14 @@ function renderConversion(data, total) {
 function renderDropAnalysis(data, total) {
   var cntDrop = data.filter(function(r){ return r.stage === 'Drop'; }).length;
   var dropRate = total > 0 ? fmtPct(cntDrop / total * 100) : '-';
-  var cntBO2 = data.filter(function(r){ return r.stage === 'BO-2'; }).length;
+  var cntDemoOnly = data.filter(function(r){ return isDemoStage(r.stage); }).length;
+  var cntDone = data.filter(function(r){ return r.stage === 'Done'; }).length;
 
   var html = '<table class="mini-table"><tbody>' +
     '<tr><td style="font-weight:600;">Drop 건수</td><td style="text-align:right;font-weight:700;color:#e53e3e;">' + cntDrop + '</td></tr>' +
     '<tr><td style="font-weight:600;">Drop 비율</td><td style="text-align:right;">' + dropRate + '</td></tr>' +
-    '<tr><td style="font-weight:600;">데모 후 미결제 (BO-2)</td><td style="text-align:right;color:#5b21b6;font-weight:700;">' + cntBO2 + '</td></tr>' +
+    '<tr><td style="font-weight:600;">Demo 후 미결제</td><td style="text-align:right;color:#5b21b6;font-weight:700;">' + cntDemoOnly + '</td></tr>' +
+    '<tr><td style="font-weight:600;">Done (전환없이 종결)</td><td style="text-align:right;color:#065f46;font-weight:700;">' + cntDone + '</td></tr>' +
   '</tbody></table>';
   document.getElementById('chartDrop').innerHTML = html;
 }
@@ -1118,16 +1129,17 @@ function renderLeadtime(data) {
   var demoToWin = [];
 
   data.forEach(function(r){
-    if (r.stage === 'WIN' && r.date && r.buyDate) {
-      var d = daysBetween(r.date, r.buyDate);
+    var payD = r.payDate || r.buyDate;
+    if (isTurnkeyStage(r.stage) && r.date && payD) {
+      var d = daysBetween(r.date, payD);
       if (d >= 0) inToWin.push(d);
     }
     if (r.demoDate && r.date) {
       var d2 = daysBetween(r.date, r.demoDate);
       if (d2 >= 0) inToDemo.push(d2);
     }
-    if (r.stage === 'WIN' && r.demoDate && r.buyDate) {
-      var d3 = daysBetween(r.demoDate, r.buyDate);
+    if (isTurnkeyStage(r.stage) && r.demoDate && payD) {
+      var d3 = daysBetween(r.demoDate, payD);
       if (d3 >= 0) demoToWin.push(d3);
     }
   });
@@ -1139,9 +1151,9 @@ function renderLeadtime(data) {
   }
 
   var metrics = [
-    { label:'인입 -> 구매 (WIN)', data: stats(inToWin), n: inToWin.length },
-    { label:'인입 -> 데모', data: stats(inToDemo), n: inToDemo.length },
-    { label:'데모 -> 구매 (WIN)', data: stats(demoToWin), n: demoToWin.length }
+    { label:'인입 → Turn-key', data: stats(inToWin), n: inToWin.length },
+    { label:'인입 → Demo', data: stats(inToDemo), n: inToDemo.length },
+    { label:'Demo → Turn-key', data: stats(demoToWin), n: demoToWin.length }
   ];
 
   var html = '<table class="mini-table"><thead><tr><th>구간</th><th style="text-align:right;">건수</th><th style="text-align:right;">평균</th><th style="text-align:right;">최소</th><th style="text-align:right;">최대</th></tr></thead><tbody>';
@@ -1173,15 +1185,15 @@ function renderCohort(data) {
     return;
   }
 
-  var html = '<table class="mini-table"><thead><tr><th>주차</th><th>시작일</th><th>종료일</th><th style="text-align:right;">인입건</th><th style="text-align:right;">데모전환</th><th style="text-align:right;">WIN전환</th><th style="text-align:right;">데모전환율</th><th style="text-align:right;">WIN전환율</th><th style="text-align:right;">Drop</th><th style="text-align:right;">Drop율</th></tr></thead><tbody>';
+  var html = '<table class="mini-table"><thead><tr><th>주차</th><th>시작일</th><th>종료일</th><th style="text-align:right;">인입건</th><th style="text-align:right;">Demo전환</th><th style="text-align:right;">Turn-key전환</th><th style="text-align:right;">Demo전환율</th><th style="text-align:right;">TK전환율</th><th style="text-align:right;">Drop</th><th style="text-align:right;">Drop율</th></tr></thead><tbody>';
   keys.forEach(function(key){
     var wk = weekMap[key];
     var mon = getWeekMonday(wk.year, wk.week);
     var sun = new Date(mon); sun.setDate(mon.getDate()+6);
     var recs = wk.records;
     var cnt = recs.length;
-    var demo = recs.filter(function(r){ return ['BO-2','WIN'].indexOf(r.stage) !== -1; }).length;
-    var win = recs.filter(function(r){ return r.stage === 'WIN'; }).length;
+    var demo = recs.filter(function(r){ return isDemoReached(r.stage); }).length;
+    var win = recs.filter(function(r){ return isTurnkeyStage(r.stage); }).length;
     var drop = recs.filter(function(r){ return r.stage === 'Drop'; }).length;
     html += '<tr>' +
       '<td style="font-weight:600;">W' + String(wk.week).padStart(2,'0') + '</td>' +
@@ -1204,9 +1216,10 @@ function renderActivity(data) {
   // Group by ISO week of 데모일정 or 구매예정일
   var weekMap = {};
   data.forEach(function(r){
+    var payD = r.payDate || r.buyDate;
     var dates = [];
     if (r.demoDate) dates.push(r.demoDate);
-    if (r.buyDate && r.stage === 'WIN') dates.push(r.buyDate);
+    if (payD && isTurnkeyStage(r.stage)) dates.push(payD);
     dates.forEach(function(dt){
       var w = getISOWeek(dt);
       var key = w.year + '-W' + String(w.week).padStart(2,'0');
@@ -1217,8 +1230,8 @@ function renderActivity(data) {
       var k1 = w1.year + '-W' + String(w1.week).padStart(2,'0');
       weekMap[k1].demos.push(r);
     }
-    if (r.buyDate && r.stage === 'WIN') {
-      var w2 = getISOWeek(r.buyDate);
+    if (payD && isTurnkeyStage(r.stage)) {
+      var w2 = getISOWeek(payD);
       var k2 = w2.year + '-W' + String(w2.week).padStart(2,'0');
       weekMap[k2].wins.push(r);
     }
@@ -1230,7 +1243,7 @@ function renderActivity(data) {
     return;
   }
 
-  var html = '<table class="mini-table"><thead><tr><th>주차</th><th>시작일</th><th>종료일</th><th style="text-align:right;">데모건수</th><th style="text-align:right;">결제건수(WIN)</th><th style="text-align:right;">결제금액</th></tr></thead><tbody>';
+  var html = '<table class="mini-table"><thead><tr><th>주차</th><th>시작일</th><th>종료일</th><th style="text-align:right;">Demo 건수</th><th style="text-align:right;">Turn-key 건수</th><th style="text-align:right;">결제금액</th></tr></thead><tbody>';
   keys.forEach(function(key){
     var wk = weekMap[key];
     var mon = getWeekMonday(wk.year, wk.week);
@@ -1253,11 +1266,11 @@ function renderActivity(data) {
 function renderRepTable(data) {
   var reps = {};
   data.forEach(function(r){
-    var rep = r.rep || '(미지정)';
+    var rep = r.caller || r.rep || '(미지정)';
     if (!reps[rep]) reps[rep] = { total:0, demo:0, win:0, revenue:0 };
     reps[rep].total++;
-    if (['BO-2','WIN'].indexOf(r.stage) !== -1) reps[rep].demo++;
-    if (r.stage === 'WIN') { reps[rep].win++; reps[rep].revenue += parsePrice(r.price); }
+    if (isDemoReached(r.stage)) reps[rep].demo++;
+    if (isTurnkeyStage(r.stage)) { reps[rep].win++; reps[rep].revenue += parsePrice(r.price); }
   });
 
   var keys = Object.keys(reps).sort(function(a,b){ return reps[b].total - reps[a].total; });
@@ -1266,7 +1279,7 @@ function renderRepTable(data) {
     return;
   }
 
-  var html = '<table class="mini-table"><thead><tr><th>담당자</th><th style="text-align:right;">상담건수</th><th style="text-align:right;">데모건수</th><th style="text-align:right;">WIN건수</th><th style="text-align:right;">WIN매출(원)</th><th style="text-align:right;">전환율</th></tr></thead><tbody>';
+  var html = '<table class="mini-table"><thead><tr><th>담당자</th><th style="text-align:right;">상담건수</th><th style="text-align:right;">Demo 도달</th><th style="text-align:right;">Turn-key</th><th style="text-align:right;">매출(원)</th><th style="text-align:right;">전환율</th></tr></thead><tbody>';
   keys.forEach(function(rep){
     var d = reps[rep];
     var rate = d.total > 0 ? fmtPct(d.win / d.total * 100) : '-';
