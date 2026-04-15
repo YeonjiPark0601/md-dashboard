@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-15T09:45:57.713Z",
+  "updated": "2026-04-15T09:55:56.306Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -55,6 +55,24 @@
       "region": "경기도 성남시",
       "caller": "",
       "supplier": "에이치씨케이",
+      "payDate": "",
+      "payAmount": null
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 04. 15 오후 06:52:41",
+      "date": "2026-04-15",
+      "name": "김규완",
+      "cid": "666cff460c0b96ab71208502",
+      "phone": "010-2767-4271",
+      "product": "굿플 ICT GP-MEDIPLUS 간섭전류형 저주파 자극기(2인용)",
+      "qty": 1,
+      "price": "모름",
+      "productId": "5e65ead2bfe4260944783220",
+      "clinic": "365운중한의원",
+      "region": "경기도 성남시",
+      "caller": "",
+      "supplier": "굿플",
       "payDate": "",
       "payAmount": null
     },
