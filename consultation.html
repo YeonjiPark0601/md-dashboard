@@ -188,8 +188,15 @@ th.sortable:hover { background: #eef0f4; }
   </div>
   <div class="filters" id="filterBar">
     <div class="filter-group">
-      <label>검색</label>
-      <input type="text" id="searchInput" placeholder="고객/한의원/물품/담당자/전화..." oninput="applyFilters()" style="width:200px;">
+      <label>기간</label>
+      <select id="periodFilter" onchange="applyFilters()">
+        <option value="all">전체</option>
+        <option value="today">오늘</option>
+        <option value="week">이번 주</option>
+        <option value="month" selected>이번 달</option>
+        <option value="lastmonth">지난 달</option>
+        <option value="3m">최근 3개월</option>
+      </select>
     </div>
     <div class="filter-group">
       <label>Stage</label>
@@ -216,10 +223,14 @@ th.sortable:hover { background: #eef0f4; }
       </select>
     </div>
     <div class="filter-group">
-      <label>영업담당자</label>
+      <label>담당자</label>
       <select id="repFilter" onchange="applyFilters()">
         <option value="">전체</option>
       </select>
+    </div>
+    <div class="filter-group">
+      <label>검색</label>
+      <input type="text" id="searchInput" placeholder="고객/한의원/물품/담당자/전화..." oninput="applyFilters()" style="width:200px;">
     </div>
     <span class="count-badge" id="totalCount">0건</span>
     <button class="form-toggle-btn" id="formToggleBtn" onclick="toggleForm()" style="margin-left:8px;">+ 새 상담 등록</button>
@@ -350,12 +361,12 @@ th.sortable:hover { background: #eef0f4; }
             <th>상담물품</th>
             <th class="sortable" onclick="sortBy('qty')" data-col="qty">수량 <span class="sort-icon">↕</span></th>
             <th>견적가</th>
+            <th class="sortable" onclick="sortBy('caller')" data-col="caller">담당자 <span class="sort-icon">↕</span></th>
             <th class="sortable" onclick="sortBy('stage')" data-col="stage">Stage <span class="sort-icon">↕</span></th>
-            <th>영업현황</th>
-            <th class="sortable" onclick="sortBy('rep')" data-col="rep">영업담당 <span class="sort-icon">↕</span></th>
-            <th class="sortable" onclick="sortBy('buyDate')" data-col="buyDate">구매예정일 <span class="sort-icon">↕</span></th>
+            <th>문의내용</th>
             <th class="sortable" onclick="sortBy('demoDate')" data-col="demoDate">데모일정 <span class="sort-icon">↕</span></th>
-            <th>액션</th>
+            <th class="sortable" onclick="sortBy('payDate')" data-col="payDate">결제일자 <span class="sort-icon">↕</span></th>
+            <th>수정</th>
           </tr>
         </thead>
         <tbody id="tableBody"></tbody>
@@ -672,7 +683,10 @@ var PAGE_SIZE = 50;
 function populateRepFilter() {
   var data = loadData();
   var reps = {};
-  data.forEach(function(r){ if (r.rep) reps[r.rep] = true; });
+  data.forEach(function(r){
+    var who = r.caller || r.rep;
+    if (who) reps[who] = true;
+  });
   var sel = document.getElementById('repFilter');
   var cur = sel.value;
   sel.innerHTML = '<option value="">전체</option>';
@@ -692,22 +706,49 @@ function applyFilters() {
   renderTable();
 }
 
+function getPeriodRange(v) {
+  var now = new Date();
+  var y = now.getFullYear(), m = now.getMonth(), d = now.getDate();
+  if (v === 'today') return [new Date(y,m,d), new Date(y,m,d,23,59,59)];
+  if (v === 'week') {
+    var day = now.getDay(); // 0=Sun
+    var monDelta = (day === 0 ? -6 : 1 - day);
+    var start = new Date(y,m,d+monDelta);
+    var end = new Date(y,m,d+monDelta+6,23,59,59);
+    return [start, end];
+  }
+  if (v === 'month') return [new Date(y,m,1), new Date(y,m+1,0,23,59,59)];
+  if (v === 'lastmonth') return [new Date(y,m-1,1), new Date(y,m,0,23,59,59)];
+  if (v === '3m') return [new Date(y,m-2,1), new Date(y,m+1,0,23,59,59)];
+  return null;
+}
+
 function getFilteredData() {
   var q = (document.getElementById('searchInput').value || '').toLowerCase().trim();
   var stageF = document.getElementById('stageFilter').value;
   var sourceF = document.getElementById('sourceFilter').value;
   var repF = document.getElementById('repFilter').value;
+  var periodF = document.getElementById('periodFilter').value;
   var data = loadData();
+
+  var range = getPeriodRange(periodF);
+  if (range) {
+    data = data.filter(function(r){
+      if (!r.date) return false;
+      var d = new Date(r.date);
+      return d >= range[0] && d <= range[1];
+    });
+  }
 
   if (q) {
     data = data.filter(function(r){
-      return [r.customer, r.clinic, r.product, r.rep, r.caller, r.phone, r.region, r.cid, r.price, r.source, r.status]
+      return [r.customer, r.clinic, r.product, r.rep, r.caller, r.phone, r.region, r.cid, r.price, r.source, r.status, r.note]
         .some(function(v){ return v && String(v).toLowerCase().indexOf(q) !== -1; });
     });
   }
   if (stageF) data = data.filter(function(r){ return r.stage === stageF; });
   if (sourceF) data = data.filter(function(r){ return r.source === sourceF; });
-  if (repF) data = data.filter(function(r){ return r.rep === repF; });
+  if (repF) data = data.filter(function(r){ return (r.caller || r.rep) === repF; });
 
   data.sort(function(a, b){
     var va = a[sortCol] || '';
@@ -743,8 +784,7 @@ function renderTable() {
   tbody.innerHTML = pageData.map(function(r){
     var actionsCell = r.external
       ? '<span style="font-size:11px;color:#888;">시트(' + escHtml(r.externalSource) + ')</span>'
-      : '<button class="btn btn-sm btn-edit" onclick="editRecord(\'' + r.id + '\')">수정</button>' +
-        '<button class="btn btn-sm btn-delete" onclick="confirmDelete(\'' + r.id + '\')">삭제</button>';
+      : '<button class="btn btn-sm btn-edit" onclick="editRecord(\'' + r.id + '\')">수정</button>';
     return '<tr' + (r.external ? ' style="background:#fafbfc;"' : '') + '>' +
       '<td>' + escHtml(r.date) + '</td>' +
       '<td>' + escHtml(r.source) + '</td>' +
@@ -754,11 +794,11 @@ function renderTable() {
       '<td class="td-truncate" title="' + escHtml(r.product) + '">' + escHtml(r.product) + '</td>' +
       '<td style="text-align:right;">' + (r.qty !== '' && r.qty != null ? escHtml(r.qty) : '') + '</td>' +
       '<td>' + escHtml(r.price) + '</td>' +
+      '<td>' + escHtml(r.caller) + '</td>' +
       '<td><span class="badge ' + getStageBadgeClass(r.stage) + '">' + escHtml(r.stage) + '</span></td>' +
-      '<td>' + escHtml(r.status) + '</td>' +
-      '<td>' + escHtml(r.rep) + '</td>' +
-      '<td>' + escHtml(r.buyDate) + '</td>' +
+      '<td class="td-truncate" title="' + escHtml(r.note) + '">' + escHtml(r.note) + '</td>' +
       '<td>' + escHtml(r.demoDate) + '</td>' +
+      '<td>' + escHtml(r.payDate) + '</td>' +
       '<td><div class="td-actions">' + actionsCell + '</div></td>' +
     '</tr>';
   }).join('');
