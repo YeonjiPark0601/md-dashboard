@@ -495,7 +495,7 @@ function fetchExternalInquiries() {
           productId: r.productId || '',
           qty: r.qty || '',
           price: priceStr,
-          caller: '', buyDate: '', rep: '',
+          caller: r.caller || '', buyDate: '', rep: '',
           stage: 'New', status: '', demoDate: '', payDate: '',
           note: noteOverrides[stableKey] || ''
         };
