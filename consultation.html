@@ -60,11 +60,15 @@ th.sortable:hover { background: #eef0f4; }
 
 /* ===== STAGE BADGES ===== */
 .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.badge-done { background: #d1fae5; color: #065f46; }
+.badge-drop { background: #fee2e2; color: #991b1b; }
+.badge-follow { background: #fef3c7; color: #92400e; }
+.badge-demo { background: #ede9fe; color: #5b21b6; }
+.badge-turnkey { background: #dbeafe; color: #1967d2; }
 .badge-bo0 { background: #f3f4f6; color: #4b5563; }
 .badge-bo1 { background: #fef3c7; color: #92400e; }
 .badge-bo2 { background: #ede9fe; color: #5b21b6; }
 .badge-win { background: #d1fae5; color: #065f46; }
-.badge-drop { background: #fee2e2; color: #991b1b; }
 
 /* ===== FORM CARD ===== */
 .form-card { background: #fff; border-radius: 12px; padding: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 20px; overflow: hidden; }
@@ -309,10 +313,10 @@ th.sortable:hover { background: #eef0f4; }
           <div class="form-group">
             <label>Stage</label>
             <select id="f_stage" name="stage">
-              <option value="BO-0" selected>BO-0</option>
-              <option value="BO-1">BO-1</option>
-              <option value="BO-2">BO-2</option>
-              <option value="WIN">WIN</option>
+              <option value="Follow" selected>Follow</option>
+              <option value="Demo">Demo</option>
+              <option value="Turn-key">Turn-key</option>
+              <option value="Done">Done</option>
               <option value="Drop">Drop</option>
             </select>
           </div>
@@ -487,7 +491,7 @@ function fetchExternalInquiries() {
           qty: r.qty || '',
           price: priceStr,
           caller: '', buyDate: '', rep: '',
-          stage: 'BO-0', status: '', demoDate: ''
+          stage: 'Follow', status: '', demoDate: '', payDate: '', note: ''
         };
       });
     })
@@ -523,7 +527,11 @@ function fmtPct(n, digits) {
 }
 
 function getStageBadgeClass(stage) {
-  var map = { 'BO-0':'badge-bo0', 'BO-1':'badge-bo1', 'BO-2':'badge-bo2', 'WIN':'badge-win', 'Drop':'badge-drop' };
+  var map = {
+    'Done':'badge-done', 'Drop':'badge-drop', 'Follow':'badge-follow',
+    'Demo':'badge-demo', 'Turn-key':'badge-turnkey',
+    'BO-0':'badge-bo0', 'BO-1':'badge-bo1', 'BO-2':'badge-bo2', 'WIN':'badge-win'
+  };
   return map[stage] || 'badge-bo0';
 }
 
@@ -577,7 +585,7 @@ function openForm() {
 function resetForm() {
   document.getElementById('consultForm').reset();
   document.getElementById('f_date').value = today();
-  document.getElementById('f_stage').value = 'BO-0';
+  document.getElementById('f_stage').value = 'Follow';
   document.getElementById('f_editId').value = '';
   document.getElementById('submitBtn').textContent = '등록';
   document.querySelectorAll('.error').forEach(function(el){ el.classList.remove('error'); });
