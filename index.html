@@ -618,7 +618,7 @@ function parseCSV(csv) {
   const cols=parseCSVRow(lines[0]);
   return lines.slice(1).map(l=>{const v=parseCSVRow(l);const o={};cols.forEach((c,i)=>{o[c]=v[i]||''});return o});
 }
-function parseNum(s){if(s==null||s==='')return 0;return Number(String(s).replace(/[,₩\\s]/g,''))||0}
+function parseNum(s){if(s==null||s==='')return 0;return Number(String(s).replace(/[,₩\s]/g,''))||0}
 function fixYm(ym){if(!ym||typeof ym!=='string')return'';const s=ym.substring(0,7);const p=s.split('-');if(p.length===2)return p[0]+'-'+p[1].padStart(2,'0');return s}
 function fixDate(d){if(!d||typeof d!=='string')return'';const p=d.substring(0,10).split('-');if(p.length===3)return p[0]+'-'+p[1].padStart(2,'0')+'-'+p[2].padStart(2,'0');return d.substring(0,10)}
 function fmt(n){return Math.round(n).toLocaleString('ko-KR')+'원'}
@@ -630,6 +630,7 @@ function dateStr(d){return d.toISOString().slice(0,10)}
 function getData(){if(currentTab==='전체')return[...allData,...sonoData.filter(d=>!d._isAS),...classData];if(currentTab==='클래스')return classData;if(currentTab==='턴키')return turnkeyData;if(currentTab==='PT10')return pt10Data;if(currentTab==='초음파')return sonoData.filter(d=>!d._isAS);if(currentTab==='옴니핏')return omnifitData;return allData}
 
 async function fetchData(){
+  const failedSheets=[];
   try{
     const sheetUrl=n=>`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(n)}&headers=1&_t=${Date.now()}`;
     const [salesR,classR,turnkeyR,pt10R,pt10MasterR,sonoR,sonoMissR,targetR,puOnR,puOffR,rebuyR,pt10PuR,surveyR,omnifitRevR,omnifitCostR,equipMasterR]=await Promise.all([
@@ -642,12 +643,12 @@ async function fetchData(){
     ]);
     if(!salesR.ok)throw new Error('매출 데이터 로딩 실패');
     allData=parseCSV(await salesR.text()).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['공급가']=parseNum(r['공급가']);r['수량']=parseNum(r['수량']);r['연월']=fixYm(r['연월']);r['주문일']=fixDate(r['주문일']||'');return r});
-    try{if(equipMasterR.ok){const t=await equipMasterR.text();if(t.trim()){equipMaster={};parseCSV(t).forEach(r=>{const sid=r['공급처품목ID']||r['품목ID']||'';if(sid)equipMaster[sid]={equip:r['장비여부']||'',gubun:r['구분']||''}})}}}catch(e){console.warn('기기마스터 파싱 에러',e)}
+    try{if(equipMasterR.ok){const t=await equipMasterR.text();if(t.trim()){equipMaster={};parseCSV(t).forEach(r=>{const sid=r['공급처품목ID']||r['품목ID']||'';if(sid)equipMaster[sid]={equip:r['장비여부']||'',gubun:r['구분']||''}})}}else{failedSheets.push('기기마스터')}}catch(e){console.warn('기기마스터 파싱 에러',e);failedSheets.push('기기마스터')}
     // 취소/반품 식별: 같은 주문번호+공급업체에 음수 매출이 있으면 해당 조합만 건수에서 제외
     const cancelledKeys=new Set();
     allData.forEach(d=>{if(d['매출금액']<0){const key=(d['주문번호']||'')+'_'+(d['공급업체']||'');cancelledKeys.add(key)}});
     allData.forEach(d=>{d._cancelled=cancelledKeys.has((d['주문번호']||'')+'_'+(d['공급업체']||''))});
-    try{if(classR.ok){const ct=await classR.text();if(ct.trim()){classData=parseCSV(ct).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['연월']=fixYm(r['연월']);r['주문일']=fixDate(r['주문일']||'');return r})}}}catch(e){console.warn('클래스 파싱 에러',e)}
+    try{if(classR.ok){const ct=await classR.text();if(ct.trim()){classData=parseCSV(ct).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['연월']=fixYm(r['연월']);r['주문일']=fixDate(r['주문일']||'');return r})}}else{failedSheets.push('클래스')}}catch(e){console.warn('클래스 파싱 에러',e);failedSheets.push('클래스')}
     try{if(turnkeyR.ok){const tt=await turnkeyR.text();if(tt.trim()){
       const tkAll=parseCSV(tt).filter(r=>r['결제 일자']&&String(r['결제 일자']).trim()).map(r=>{
         r['매출금액']=parseNum(r['최종 결제액'])/1.1;r['공급가']=parseNum(r['총 공급가액'])/1.1;r['매출총이익']=parseNum(r['최종 매출총이익'])/1.1;r['할인전금액']=parseNum(r['금액']);
@@ -656,11 +657,11 @@ async function fetchData(){
       // key별 금액(O열) 합계 600만 이상만 포함
       const keySum={};tkAll.forEach(r=>{const k=r['key']||'';keySum[k]=(keySum[k]||0)+parseNum(r['금액'])});
       turnkeyData=tkAll.filter(r=>{const k=r['key']||'';return keySum[k]>=6000000})
-    }}}catch(e){console.warn('턴키 파싱 에러',e)}
-    try{if(pt10MasterR.ok){const t=await pt10MasterR.text();if(t.trim()){parseCSV(t).forEach(r=>{const code=r['품목코드']||'';if(code&&!pt10Master[code])pt10Master[code]={구분:r['구분']||'',상세:r['상세']||''}})}}}catch(e){console.warn('PT10마스터 에러',e)}
+    }}else{failedSheets.push('턴키')}}catch(e){console.warn('턴키 파싱 에러',e);failedSheets.push('턴키')}
+    try{if(pt10MasterR.ok){const t=await pt10MasterR.text();if(t.trim()){parseCSV(t).forEach(r=>{const code=r['품목코드']||'';if(code&&!pt10Master[code])pt10Master[code]={구분:r['구분']||'',상세:r['상세']||''}})}}else{failedSheets.push('PT10마스터')}}catch(e){console.warn('PT10마스터 에러',e);failedSheets.push('PT10마스터')}
     try{if(pt10R.ok){const t=await pt10R.text();if(t.trim()){pt10Data=parseCSV(t).filter(r=>r['주문일']&&String(r['주문일']).trim()).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['수량']=parseNum(r['수량']);r['연월']=fixYm(r['연월']);r['주문일']=fixDate(r['주문일']||'');
       const m=pt10Master[r['품목코드']||''];if(m){r['구분']=m.구분;r['상세']=m.상세}else if(!r['구분']){r['구분']='';r['상세']=''}
-      return r})}}}catch(e){console.warn('PT10 에러',e)}
+      return r})}}else{failedSheets.push('PT10')}}catch(e){console.warn('PT10 에러',e);failedSheets.push('PT10')}
     // 초음파: 2개 시트 합산
     try{
       const sonoArr=[];
@@ -689,13 +690,14 @@ async function fetchData(){
         const cat=isAS?'AS':isProbe?'프로브':isOption?'옵션':'누락';
         sonoArr.push({주문일:fixDate(r['결제일']||''),연월:fixYm(r['연월']||''),한의원명:r['주문자']||'',품목명:cat,공급업체:cat,카테고리:cat,매출금액:parseNum(r['매출액(real_rev)'])/1.1,공급가:parseNum(r['공급가(VAT제외)']),_isAS:isAS})})}}
       sonoData=sonoArr;
-    }catch(e){console.warn('초음파 에러',e)}
-    try{if(puOnR.ok){const t=await puOnR.text();if(t.trim())puOnData=parseCSV(t).map(r=>{r['PU']=parseNum(r['PU']);return r})}}catch(e){console.warn('PU온라인 에러',e)}
-    try{if(puOffR.ok){const t=await puOffR.text();if(t.trim())puOffData=parseCSV(t).map(r=>{r['PU']=parseNum(r['PU']);return r})}}catch(e){console.warn('PU오프라인 에러',e)}
-    try{if(pt10PuR.ok){const t=await pt10PuR.text();if(t.trim())pt10PuData=parseCSV(t).map(r=>{r['고객수']=parseNum(r['고객수']);r['연월']=fixYm(r['연월']);return r})}}catch(e){console.warn('PT10PU 에러',e)}
+      if(!sonoR.ok||!sonoMissR.ok)failedSheets.push('초음파');
+    }catch(e){console.warn('초음파 에러',e);failedSheets.push('초음파')}
+    try{if(puOnR.ok){const t=await puOnR.text();if(t.trim())puOnData=parseCSV(t).map(r=>{r['PU']=parseNum(r['PU']);return r})}else{failedSheets.push('PU온라인')}}catch(e){console.warn('PU온라인 에러',e);failedSheets.push('PU온라인')}
+    try{if(puOffR.ok){const t=await puOffR.text();if(t.trim())puOffData=parseCSV(t).map(r=>{r['PU']=parseNum(r['PU']);return r})}else{failedSheets.push('PU오프라인')}}catch(e){console.warn('PU오프라인 에러',e);failedSheets.push('PU오프라인')}
+    try{if(pt10PuR.ok){const t=await pt10PuR.text();if(t.trim())pt10PuData=parseCSV(t).map(r=>{r['고객수']=parseNum(r['고객수']);r['연월']=fixYm(r['연월']);return r})}else{failedSheets.push('PT10PU')}}catch(e){console.warn('PT10PU 에러',e);failedSheets.push('PT10PU')}
     try{if(rebuyR.ok){const t=await rebuyR.text();if(t.trim())rebuyData=parseCSV(t).map(r=>{
       ['총구매자수','이탈고객수','재구매자수','신규구매자수'].forEach(k=>{r[k]=parseNum(r[k])});
-      ['이탈율','재구매율','신규구매비율'].forEach(k=>{r[k]=parseFloat(r[k])||0});return r})}}catch(e){console.warn('재구매 에러',e)}
+      ['이탈율','재구매율','신규구매비율'].forEach(k=>{r[k]=parseFloat(r[k])||0});return r})}else{failedSheets.push('재구매')}}catch(e){console.warn('재구매 에러',e);failedSheets.push('재구매')}
     try{if(surveyR.ok){const t=await surveyR.text();if(t.trim()){turnkeySurveyData=parseCSV(t).filter(r=>r['문의날짜']&&String(r['문의날짜']).trim()).map(r=>{
       const d=String(r['문의날짜']||'');r['_date']=d.substring(0,10);r['_ym']=fixYm(d.substring(0,7));
       const cd=String(r['실제 컨설팅 일자']||'').substring(0,10);r['_consultDate']=cd&&cd.match(/^\d{4}/)?cd:'';
@@ -703,8 +705,8 @@ async function fetchData(){
       r['_manager']=r['담당자']||'';
       r['_result']=String(r['결과']||'').trim();
       r['_cid']=String(r['CID']||'').trim();
-      return r})}}}catch(e){console.warn('설문 에러',e)}
-    try{if(targetR.ok){const tr=parseCSV(await targetR.text());const mc=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];tr.forEach(r=>{const c=r['품목']||'';if(!c)return;targetData[c]={};mc.forEach((m,i)=>{targetData[c][i+1]=parseNum(r[m])})})}}catch(e){console.warn('목표 에러',e)}
+      return r})}}else{failedSheets.push('턴키상담')}}catch(e){console.warn('설문 에러',e);failedSheets.push('턴키상담')}
+    try{if(targetR.ok){const tr=parseCSV(await targetR.text());const mc=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];tr.forEach(r=>{const c=r['품목']||'';if(!c)return;targetData[c]={};mc.forEach((m,i)=>{targetData[c][i+1]=parseNum(r[m])})})}else{failedSheets.push('목표')}}catch(e){console.warn('목표 에러',e);failedSheets.push('목표')}
     // 옴니핏: 매출+공급가 조인
     try{
       const omnifitRevArr=[],omnifitCostMap={};
@@ -721,15 +723,18 @@ async function fetchData(){
       // 공급가 조인
       omnifitRevArr.forEach(r=>{const key=r.주문번호+'_'+r.품목코드;if(omnifitCostMap[key])r.공급가=omnifitCostMap[key]});
       omnifitData=omnifitRevArr;
-    }catch(e){console.warn('옴니핏 에러',e)}
+      if(!omnifitRevR.ok||!omnifitCostR.ok)failedSheets.push('옴니핏');
+    }catch(e){console.warn('옴니핏 에러',e);failedSheets.push('옴니핏')}
     // 턴키CID 로드
     try{const tkCidR=await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('턴키CID')}&headers=1&_t=${Date.now()}`);
       if(tkCidR.ok){const t=await tkCidR.text();if(t.trim()){const parseAddr=a=>{if(!a)return null;const parts=a.split(/\s+/);const w=parts[0];const m=[['서울','서울'],['부산','부산'],['대구','대구'],['인천','인천'],['광주','광주'],['대전','대전'],['울산','울산'],['세종','세종'],['경기','경기'],['강원','강원'],['충북','충북'],['충청북','충북'],['충남','충남'],['충청남','충남'],['전북','전북'],['전라북','전북'],['전남','전남'],['전라남','전남'],['경북','경북'],['경상북','경북'],['경남','경남'],['경상남','경남'],['제주','제주']];let region='';for(const[k,v]of m){if(w.includes(k)){region=v;break}}if(!region)return null;const sub=parts[1]||'';return{region,sub}};
-        parseCSV(t).forEach(r=>{const cid=(r['customer_id']||r['cid']||'').trim();const addr=(r['shipping_addr_rd']||'').trim();if(cid&&addr){const p=parseAddr(addr);if(p)turnkeyCidMap[cid]=p}})}}}catch(e){console.warn('턴키CID 에러',e)}
+        parseCSV(t).forEach(r=>{const cid=(r['customer_id']||r['cid']||'').trim();const addr=(r['shipping_addr_rd']||'').trim();if(cid&&addr){const p=parseAddr(addr);if(p)turnkeyCidMap[cid]=p}})}else{failedSheets.push('턴키CID')}}catch(e){console.warn('턴키CID 에러',e);failedSheets.push('턴키CID')}
     initFilters();render();
     document.getElementById('loadingMsg').style.display='none';
     document.getElementById('dashboardContent').style.display='block';
-    document.getElementById('lastUpdated').textContent=`의료기기: ${allData.length} | 초음파: ${sonoData.length} | PT10: ${pt10Data.length} | 클래스: ${classData.length} | 턴키: ${turnkeyData.length} | 옴니핏: ${omnifitData.length} | ${new Date().toLocaleString('ko-KR')}`;
+    const warnMsg=failedSheets.length?`⚠️ ${failedSheets.length}개 시트 로딩 실패 (${failedSheets.join(', ')}) | `:'';
+    document.getElementById('lastUpdated').textContent=warnMsg+`의료기기: ${allData.length} | 초음파: ${sonoData.length} | PT10: ${pt10Data.length} | 클래스: ${classData.length} | 턴키: ${turnkeyData.length} | 옴니핏: ${omnifitData.length} | ${new Date().toLocaleString('ko-KR')}`;
+    if(failedSheets.length){const el=document.getElementById('lastUpdated');el.style.color='#d93025';el.style.fontWeight='600'}
   }catch(e){document.getElementById('loadingMsg').textContent='데이터 로딩 실패: '+e.message}
 }
 

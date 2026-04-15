@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>의료기기 가격표 - MD Squad</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', -apple-system, sans-serif; background: #f0f2f5; color: #333; min-height: 100vh; }
+
+.header {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  color: #fff; padding: 32px 30px 24px; text-align: center;
+}
+.header h1 { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
+.header p { font-size: 13px; color: #8899aa; }
+.header a { color: #8899aa; text-decoration: none; font-size: 13px; position: absolute; left: 20px; top: 36px; }
+.header a:hover { color: #fff; }
+.header-wrap { position: relative; max-width: 1200px; margin: 0 auto; }
+
+.container { max-width: 1200px; margin: -16px auto 40px; padding: 0 20px; }
+
+/* 필터 바 */
+.filter-bar {
+  background: #fff; border-radius: 12px; padding: 16px 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 20px;
+  display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+}
+.filter-bar select, .filter-bar input {
+  padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px;
+  font-size: 13px; background: #fff; color: #333; outline: none;
+}
+.filter-bar select:focus, .filter-bar input:focus { border-color: #1a73e8; }
+.filter-bar input { flex: 1; min-width: 180px; }
+.filter-bar .update-info { margin-left: auto; font-size: 12px; color: #999; }
+
+/* 카테고리 섹션 */
+.category-section { margin-bottom: 16px; }
+.category-header {
+  background: #fff; border-radius: 12px 12px 0 0; padding: 14px 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08); cursor: pointer;
+  display: flex; align-items: center; gap: 10px;
+  user-select: none; transition: background 0.15s;
+}
+.category-header:hover { background: #f8f9fa; }
+.category-header .arrow { transition: transform 0.2s; font-size: 12px; color: #999; }
+.category-header.collapsed .arrow { transform: rotate(-90deg); }
+.category-header h2 { font-size: 15px; font-weight: 700; color: #1a1a2e; }
+.category-header .count { font-size: 12px; color: #999; font-weight: 400; }
+.category-body {
+  background: #fff; border-radius: 0 0 12px 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08); overflow: hidden;
+}
+.category-body.hidden { display: none; }
+
+/* 테이블 */
+.price-table { width: 100%; border-collapse: collapse; }
+.price-table th {
+  padding: 10px 16px; text-align: left; font-size: 12px;
+  color: #888; font-weight: 600; border-bottom: 1px solid #f0f0f0;
+  background: #fafbfc; white-space: nowrap;
+}
+.price-table td {
+  padding: 12px 16px; font-size: 13px; border-bottom: 1px solid #f5f5f5;
+  vertical-align: top;
+}
+.price-table tr:last-child td { border-bottom: none; }
+.price-table tr:hover td { background: #f8f9ff; }
+
+.price-value { font-weight: 600; color: #1a1a2e; white-space: nowrap; }
+.price-empty { color: #ccc; }
+
+/* 프로모션 태그 */
+.promo-tags { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px; }
+.promo-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 8px; border-radius: 6px; font-size: 11px;
+  background: #fff3e0; color: #e65100; font-weight: 600;
+}
+.promo-tag.expired { background: #f5f5f5; color: #bbb; text-decoration: line-through; }
+.promo-tag .promo-period { font-weight: 400; color: #999; font-size: 10px; }
+.promo-tag.expired .promo-period { color: #ccc; }
+
+.note-cell { font-size: 12px; color: #999; }
+
+/* 로딩 / 에러 */
+.loading { text-align: center; padding: 60px 20px; color: #999; font-size: 14px; }
+.error { text-align: center; padding: 40px 20px; color: #e53935; font-size: 14px; }
+
+/* 요약 */
+.summary-bar {
+  display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap;
+}
+.summary-card {
+  background: #fff; border-radius: 10px; padding: 14px 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08); flex: 1; min-width: 140px;
+  text-align: center;
+}
+.summary-card .num { font-size: 22px; font-weight: 700; color: #1a1a2e; }
+.summary-card .label { font-size: 11px; color: #999; margin-top: 2px; }
+
+@media (max-width: 768px) {
+  .header { padding: 24px 16px 18px; }
+  .header a { position: static; display: block; margin-bottom: 8px; }
+  .filter-bar { flex-direction: column; }
+  .filter-bar input { min-width: 100%; }
+  .price-table { font-size: 12px; }
+  .price-table th, .price-table td { padding: 8px 10px; }
+  .summary-bar { gap: 8px; }
+  .summary-card { padding: 10px 12px; }
+  .summary-card .num { font-size: 18px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-wrap">
+    <a href="home.html">&larr; 홈으로</a>
+    <h1>의료기기 가격표</h1>
+    <p>제품별 정가/공급가/프로모션가 한눈에 보기</p>
+  </div>
+</div>
+
+<div class="container">
+  <!-- 요약 -->
+  <div class="summary-bar" id="summaryBar">
+    <div class="summary-card"><div class="num" id="totalProducts">-</div><div class="label">전체 제품</div></div>
+    <div class="summary-card"><div class="num" id="totalCategories">-</div><div class="label">카테고리</div></div>
+    <div class="summary-card"><div class="num" id="activePromos">-</div><div class="label">진행중 프로모션</div></div>
+  </div>
+
+  <!-- 필터 -->
+  <div class="filter-bar">
+    <select id="filterCategory"><option value="">전체 카테고리</option></select>
+    <select id="filterPromo"><option value="">전체 프로모션</option></select>
+    <input type="text" id="filterSearch" placeholder="모델명 검색...">
+    <span class="update-info" id="updateInfo"></span>
+  </div>
+
+  <!-- 제품 목록 -->
+  <div id="productList"><div class="loading">데이터 불러오는 중...</div></div>
+</div>
+
+<script>
+const SHEET_ID = '1NLqF0ZH0IzlecTDre3YtVoc2TS5GnHZccseEYGYcO8M';
+const MASTER_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=제품마스터&_t=${Date.now()}`;
+const PROMO_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=프로모션&_t=${Date.now()}`;
+
+let products = [];
+let promos = [];
+
+// CSV 파싱
+function parseCSV(text) {
+  const lines = [];
+  let current = '', inQuote = false, row = [];
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (inQuote) {
+      if (ch === '"' && text[i+1] === '"') { current += '"'; i++; }
+      else if (ch === '"') { inQuote = false; }
+      else { current += ch; }
+    } else {
+      if (ch === '"') { inQuote = true; }
+      else if (ch === ',') { row.push(current.trim()); current = ''; }
+      else if (ch === '\n' || (ch === '\r' && text[i+1] === '\n')) {
+        row.push(current.trim()); current = '';
+        if (row.length > 1 || row[0]) lines.push(row);
+        row = [];
+        if (ch === '\r') i++;
+      } else { current += ch; }
+    }
+  }
+  row.push(current.trim());
+  if (row.length > 1 || row[0]) lines.push(row);
+  return lines;
+}
+
+// 금액 포맷 (만원 단위)
+function formatPrice(val) {
+  const n = parseInt(val);
+  if (!n) return '-';
+  if (n >= 10000) return (n / 10000).toLocaleString('ko-KR') + '만';
+  return n.toLocaleString('ko-KR') + '원';
+}
+
+// 날짜 포맷
+function formatDate(d) {
+  if (!d) return '';
+  return d.replace(/-/g, '.').replace(/^20/, '');
+}
+
+// 프로모션 상태 확인
+function isPromoActive(promo) {
+  const today = new Date().toISOString().slice(0, 10);
+  if (promo.status === '종료') return false;
+  if (promo.endDate && promo.endDate < today) return false;
+  return true;
+}
+
+// 해당 모델에 적용되는 프로모션 찾기
+function getPromosForModel(modelName) {
+  return promos.filter(p => {
+    const models = p.models.split(',').map(m => m.trim());
+    return models.includes(modelName) || models.includes('전체');
+  });
+}
+
+async function loadData() {
+  try {
+    const [masterRes, promoRes] = await Promise.all([fetch(MASTER_URL), fetch(PROMO_URL)]);
+    if (!masterRes.ok) throw new Error('시트 접근 실패 - 공유 설정을 확인하세요');
+
+    const masterCSV = parseCSV(await masterRes.text());
+    const promoCSV = parseCSV(await promoRes.text());
+
+    // 제품 파싱 (헤더 스킵)
+    products = masterCSV.slice(1).map(r => ({
+      category: r[0] || '',
+      model: r[1] || '',
+      listPrice: r[2] || '',
+      supplyPrice: r[3] || '',
+      samplePrice: r[4] || '',
+      tradeInPrice: r[5] || '',
+      note: r[6] || ''
+    })).filter(p => p.model);
+
+    // 프로모션 파싱
+    promos = promoCSV.slice(1).map(r => ({
+      name: r[0] || '',
+      models: r[1] || '',
+      price: r[2] || '',
+      startDate: r[3] || '',
+      endDate: r[4] || '',
+      status: r[5] || '',
+      note: r[6] || ''
+    })).filter(p => p.name);
+
+    render();
+    setupFilters();
+  } catch (e) {
+    document.getElementById('productList').innerHTML = `<div class="error">${e.message}<br><br><small>구글시트가 "링크가 있는 모든 사용자에게 공개"로 설정되어 있는지 확인하세요.</small></div>`;
+  }
+}
+
+function setupFilters() {
+  const catSelect = document.getElementById('filterCategory');
+  const promoSelect = document.getElementById('filterPromo');
+  const categories = [...new Set(products.map(p => p.category))].sort();
+  const promoNames = [...new Set(promos.map(p => p.name))];
+
+  categories.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c; opt.textContent = c;
+    catSelect.appendChild(opt);
+  });
+
+  promoNames.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p; opt.textContent = p;
+    promoSelect.appendChild(opt);
+  });
+
+  catSelect.addEventListener('change', render);
+  promoSelect.addEventListener('change', render);
+  document.getElementById('filterSearch').addEventListener('input', render);
+}
+
+function render() {
+  const catFilter = document.getElementById('filterCategory').value;
+  const promoFilter = document.getElementById('filterPromo').value;
+  const searchFilter = document.getElementById('filterSearch').value.toLowerCase();
+
+  let filtered = products;
+  if (catFilter) filtered = filtered.filter(p => p.category === catFilter);
+  if (searchFilter) filtered = filtered.filter(p => p.model.toLowerCase().includes(searchFilter));
+  if (promoFilter) {
+    const promoModels = promos.filter(p => p.name === promoFilter)
+      .flatMap(p => p.models.split(',').map(m => m.trim()));
+    filtered = filtered.filter(p => promoModels.includes(p.model) || promoModels.includes('전체'));
+  }
+
+  // 카테고리별 그룹
+  const groups = {};
+  filtered.forEach(p => {
+    if (!groups[p.category]) groups[p.category] = [];
+    groups[p.category].push(p);
+  });
+
+  // 요약
+  const activePromoCount = promos.filter(isPromoActive).length;
+  document.getElementById('totalProducts').textContent = filtered.length;
+  document.getElementById('totalCategories').textContent = Object.keys(groups).length;
+  document.getElementById('activePromos').textContent = activePromoCount;
+  document.getElementById('updateInfo').textContent = `최종 업데이트: ${new Date().toLocaleDateString('ko-KR')}`;
+
+  const container = document.getElementById('productList');
+  if (!filtered.length) {
+    container.innerHTML = '<div class="loading">검색 결과가 없습니다.</div>';
+    return;
+  }
+
+  let html = '';
+  for (const [cat, items] of Object.entries(groups).sort((a,b) => a[0].localeCompare(b[0]))) {
+    html += `
+      <div class="category-section">
+        <div class="category-header" onclick="toggleCategory(this)">
+          <span class="arrow">&#9660;</span>
+          <h2>${cat}</h2>
+          <span class="count">(${items.length})</span>
+        </div>
+        <div class="category-body">
+          <table class="price-table">
+            <thead><tr>
+              <th>모델명</th><th>정가</th><th>공급가</th><th>견본가</th><th>보상판매가</th><th>프로모션</th><th>비고</th>
+            </tr></thead>
+            <tbody>`;
+
+    items.forEach(p => {
+      const modelPromos = getPromosForModel(p.model);
+      let promoHtml = '';
+      if (modelPromos.length) {
+        promoHtml = '<div class="promo-tags">';
+        modelPromos.forEach(pr => {
+          const active = isPromoActive(pr);
+          const cls = active ? '' : ' expired';
+          const period = pr.endDate ? `~${formatDate(pr.endDate)}` : '';
+          promoHtml += `<span class="promo-tag${cls}">${pr.name} ${formatPrice(pr.price)} <span class="promo-period">${period}</span></span>`;
+        });
+        promoHtml += '</div>';
+      } else {
+        promoHtml = '<span class="price-empty">-</span>';
+      }
+
+      html += `<tr>
+        <td><strong>${p.model}</strong></td>
+        <td class="price-value">${formatPrice(p.listPrice)}</td>
+        <td class="price-value">${formatPrice(p.supplyPrice)}</td>
+        <td class="price-value">${formatPrice(p.samplePrice)}</td>
+        <td class="price-value">${formatPrice(p.tradeInPrice)}</td>
+        <td>${promoHtml}</td>
+        <td class="note-cell">${p.note && p.note !== '예시 데이터' ? p.note : ''}</td>
+      </tr>`;
+    });
+
+    html += '</tbody></table></div></div>';
+  }
+  container.innerHTML = html;
+}
+
+function toggleCategory(el) {
+  el.classList.toggle('collapsed');
+  el.nextElementSibling.classList.toggle('hidden');
+}
+
+loadData();
+</script>
+</body>
+</html>

@@ -447,10 +447,48 @@ th.sortable:hover { background: #eef0f4; }
 // DATA LAYER
 // ============================================================
 const LS_KEY = 'md_consultations';
+var EXTERNAL_DATA = [];
 
 function loadData() {
+  try {
+    var local = JSON.parse(localStorage.getItem(LS_KEY) || '[]');
+    return local.concat(EXTERNAL_DATA);
+  } catch (e) { console.error('loadData error', e); return EXTERNAL_DATA.slice(); }
+}
+
+function loadLocalOnly() {
   try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]'); }
-  catch (e) { console.error('loadData error', e); return []; }
+  catch (e) { return []; }
+}
+
+function fetchExternalInquiries() {
+  return fetch('data/inquiries.json', { cache: 'no-store' })
+    .then(function(res){ return res.ok ? res.json() : null; })
+    .then(function(data){
+      if (!data || !data.items) return;
+      EXTERNAL_DATA = data.items.map(function(r, i){
+        var priceStr = (r.price || '').replace(/^견적가:\s*/, '').trim();
+        return {
+          id: 'ext_' + i,
+          external: true,
+          externalSource: r.source,
+          date: r.date,
+          source: '상담신청',
+          consent: false,
+          customer: r.name || '',
+          cid: r.cid || '',
+          phone: r.phone || '',
+          clinic: '',
+          region: '',
+          product: r.product || '',
+          qty: r.qty || '',
+          price: priceStr,
+          caller: '', buyDate: '', rep: '',
+          stage: 'BO-0', status: '', demoDate: ''
+        };
+      });
+    })
+    .catch(function(e){ console.warn('외부 문의 로드 실패:', e); });
 }
 
 function saveData(data) {
@@ -600,7 +638,7 @@ function submitForm(e) {
   e.preventDefault();
   var data = getFormData();
   if (!validateForm(data)) { showToast('고객명은 필수 입력 항목입니다.', 'error'); return; }
-  var allData = loadData();
+  var allData = loadLocalOnly();
   var editId = document.getElementById('f_editId').value;
   if (editId) {
     var idx = allData.findIndex(function(r){ return r.id === editId; });
@@ -703,7 +741,11 @@ function renderTable() {
   empty.style.display = 'none';
 
   tbody.innerHTML = pageData.map(function(r){
-    return '<tr>' +
+    var actionsCell = r.external
+      ? '<span style="font-size:11px;color:#888;">시트(' + escHtml(r.externalSource) + ')</span>'
+      : '<button class="btn btn-sm btn-edit" onclick="editRecord(\'' + r.id + '\')">수정</button>' +
+        '<button class="btn btn-sm btn-delete" onclick="confirmDelete(\'' + r.id + '\')">삭제</button>';
+    return '<tr' + (r.external ? ' style="background:#fafbfc;"' : '') + '>' +
       '<td>' + escHtml(r.date) + '</td>' +
       '<td>' + escHtml(r.source) + '</td>' +
       '<td><strong>' + escHtml(r.customer) + '</strong></td>' +
@@ -717,10 +759,7 @@ function renderTable() {
       '<td>' + escHtml(r.rep) + '</td>' +
       '<td>' + escHtml(r.buyDate) + '</td>' +
       '<td>' + escHtml(r.demoDate) + '</td>' +
-      '<td><div class="td-actions">' +
-        '<button class="btn btn-sm btn-edit" onclick="editRecord(\'' + r.id + '\')">수정</button>' +
-        '<button class="btn btn-sm btn-delete" onclick="confirmDelete(\'' + r.id + '\')">삭제</button>' +
-      '</div></td>' +
+      '<td><div class="td-actions">' + actionsCell + '</div></td>' +
     '</tr>';
   }).join('');
 
@@ -802,7 +841,7 @@ function closeModal() {
 
 document.getElementById('confirmDeleteBtn').addEventListener('click', function(){
   if (!pendingDeleteId) return;
-  var data = loadData().filter(function(r){ return r.id !== pendingDeleteId; });
+  var data = loadLocalOnly().filter(function(r){ return r.id !== pendingDeleteId; });
   saveData(data);
   closeModal();
   showToast('삭제되었습니다.');
@@ -1174,8 +1213,11 @@ function renderMfrChart(data) {
 // ============================================================
 function init() {
   document.getElementById('f_date').value = today();
-  populateRepFilter();
   renderTable();
+  fetchExternalInquiries().then(function(){
+    populateRepFilter();
+    renderTable();
+  });
 }
 
 init();
