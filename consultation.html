@@ -99,6 +99,11 @@ th.sortable:hover { background: #eef0f4; }
 /* ===== TD HELPERS ===== */
 .td-truncate { max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .td-actions { white-space: nowrap; display: flex; gap: 5px; }
+.note-cell { max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.note-cell.editable { cursor: text; }
+.note-cell.editable:hover { background: #f0f7ff; }
+.note-placeholder { color: #bbb; font-style: italic; font-size: 12px; }
+.note-input { width: 100%; padding: 4px 6px; border: 1px solid #1a73e8; border-radius: 4px; font-size: 13px; font-family: inherit; outline: none; }
 
 /* ===== PAGINATION ===== */
 .pagination { display: flex; justify-content: center; align-items: center; gap: 4px; margin-top: 16px; }
@@ -796,7 +801,7 @@ function renderTable() {
       '<td>' + escHtml(r.price) + '</td>' +
       '<td>' + escHtml(r.caller) + '</td>' +
       '<td><span class="badge ' + getStageBadgeClass(r.stage) + '">' + escHtml(r.stage) + '</span></td>' +
-      '<td class="td-truncate" title="' + escHtml(r.note) + '">' + escHtml(r.note) + '</td>' +
+      '<td class="note-cell' + (r.external ? '' : ' editable') + '" data-id="' + escHtml(r.id) + '" title="' + (r.external ? '외부 데이터는 수정 불가' : '클릭해서 편집') + '">' + (escHtml(r.note) || (r.external ? '' : '<span class="note-placeholder">클릭해서 입력</span>')) + '</td>' +
       '<td>' + escHtml(r.demoDate) + '</td>' +
       '<td>' + escHtml(r.payDate) + '</td>' +
       '<td><div class="td-actions">' + actionsCell + '</div></td>' +
@@ -1251,6 +1256,43 @@ function renderMfrChart(data) {
 // ============================================================
 // INIT
 // ============================================================
+function startNoteEdit(td) {
+  if (td.querySelector('.note-input')) return;
+  var id = td.dataset.id;
+  var data = loadLocalOnly();
+  var rec = data.find(function(r){ return r.id === id; });
+  var current = rec ? (rec.note || '') : '';
+  td.innerHTML = '<input type="text" class="note-input" value="' + escHtml(current).replace(/"/g,'&quot;') + '" placeholder="문의내용 입력...">';
+  var input = td.querySelector('.note-input');
+  input.focus();
+  input.select();
+  var saved = false;
+  function commit() {
+    if (saved) return;
+    saved = true;
+    var val = input.value.trim();
+    var d = loadLocalOnly();
+    var idx = d.findIndex(function(r){ return r.id === id; });
+    if (idx !== -1) {
+      d[idx].note = val;
+      saveData(d);
+    } else {
+      // record doesn't exist yet in localStorage — ignore external
+    }
+    renderTable();
+  }
+  input.addEventListener('blur', commit);
+  input.addEventListener('keydown', function(e){
+    if (e.key === 'Enter') { e.preventDefault(); commit(); }
+    else if (e.key === 'Escape') { saved = true; renderTable(); }
+  });
+}
+
+document.addEventListener('click', function(e){
+  var td = e.target.closest('.note-cell.editable');
+  if (td && !e.target.closest('.note-input')) startNoteEdit(td);
+});
+
 function init() {
   document.getElementById('f_date').value = today();
   renderTable();
