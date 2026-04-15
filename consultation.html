@@ -1375,18 +1375,21 @@ function saveExtStageOverrides(obj) {
   localStorage.setItem(EXT_STAGE_KEY, JSON.stringify(obj));
 }
 
-var STAGE_OPTIONS = ['New','Follow','Demo','Turn-key','Drop','Done'];
+// Stage 전환 허용 규칙: 현재 Stage → 가능한 다음 Stage 목록
+var STAGE_TRANSITIONS = {
+  'New':      ['New','Follow','Demo','Turn-key','Drop','Done'],
+  'Follow':   ['Follow','Demo','Turn-key','Drop','Done'],
+  'Demo':     ['Demo','Drop']
+};
 function renderStageCell(r) {
-  var badge = '<span class="badge ' + getStageBadgeClass(r.stage) + '">' + escHtml(r.stage) + '</span>';
-  // New/Follow 상태일 때만 인라인 드롭다운으로 단계 전환 허용
-  if (r.stage === 'New' || r.stage === 'Follow') {
-    var opts = STAGE_OPTIONS.map(function(s){
-      if (r.stage === 'Follow' && s === 'New') return '';
-      return '<option value="' + s + '"' + (s===r.stage?' selected':'') + '>' + s + '</option>';
-    }).join('');
-    return '<select class="stage-select" data-id="' + escHtml(r.id) + '" data-ext="' + (r.external?'1':'0') + '" style="width:100%;padding:3px 4px;border:1px solid #d0d5dd;border-radius:4px;font-size:12px;background:#fff;">' + opts + '</select>';
+  var allowed = STAGE_TRANSITIONS[r.stage];
+  if (!allowed) {
+    return '<span class="badge ' + getStageBadgeClass(r.stage) + '">' + escHtml(r.stage) + '</span>';
   }
-  return badge;
+  var opts = allowed.map(function(s){
+    return '<option value="' + s + '"' + (s===r.stage?' selected':'') + '>' + s + '</option>';
+  }).join('');
+  return '<select class="stage-select" data-id="' + escHtml(r.id) + '" data-ext="' + (r.external?'1':'0') + '" style="width:100%;padding:3px 4px;border:1px solid #d0d5dd;border-radius:4px;font-size:12px;background:#fff;">' + opts + '</select>';
 }
 
 document.addEventListener('change', function(e){
