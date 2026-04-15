@@ -505,8 +505,8 @@ function fetchExternalInquiries() {
           region: r.region || '',
           product: r.product || '',
           productId: r.productId || '',
-          supplier: supplierOverrides[stableKey] || r.supplier || '',
-          supplierLocked: !supplierOverrides[stableKey] && !!r.supplier, // 주문이력에서 온 공급처는 수정 불가
+          supplier: r.supplier || supplierOverrides[stableKey] || '',
+          supplierLocked: !!r.supplier, // 주문이력에서 온 공급처는 무조건 수정 불가 (override보다 우선)
 
           qty: r.qty || '',
           price: priceStr,
