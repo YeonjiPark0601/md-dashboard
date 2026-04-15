@@ -66,6 +66,13 @@ th.sortable:hover { background: #eef0f4; }
 .badge-follow { background: #fef3c7; color: #92400e; }
 .badge-demo { background: #ede9fe; color: #5b21b6; }
 .badge-turnkey { background: #dbeafe; color: #1967d2; }
+.stage-select { font-weight: 600; }
+.stage-select.badge-new { background:#e0e7ff; color:#3730a3; border-color:#c7d2fe; }
+.stage-select.badge-follow { background:#fef3c7; color:#92400e; border-color:#fde68a; }
+.stage-select.badge-demo { background:#ede9fe; color:#5b21b6; border-color:#ddd6fe; }
+.stage-select.badge-turnkey { background:#dbeafe; color:#1967d2; border-color:#bfdbfe; }
+.stage-select.badge-drop { background:#fee2e2; color:#991b1b; border-color:#fecaca; }
+.stage-select.badge-done { background:#d1fae5; color:#065f46; border-color:#a7f3d0; }
 .badge-bo0 { background: #f3f4f6; color: #4b5563; }
 .badge-bo1 { background: #fef3c7; color: #92400e; }
 .badge-bo2 { background: #ede9fe; color: #5b21b6; }
@@ -1413,11 +1420,24 @@ function startDemoEdit(td) {
       if (val) ov[id] = val; else delete ov[id];
       saveExtDemoOverrides(ov);
       var idx = EXTERNAL_DATA.findIndex(function(r){ return r.id === id; });
-      if (idx !== -1) EXTERNAL_DATA[idx].demoDate = val;
+      if (idx !== -1) {
+        EXTERNAL_DATA[idx].demoDate = val;
+        // 데모일정 입력 시 Stage 자동 Demo (기존 Stage가 Done/Drop/Turn-key면 유지)
+        if (val && ['New','Follow'].indexOf(EXTERNAL_DATA[idx].stage) !== -1) {
+          EXTERNAL_DATA[idx].stage = 'Demo';
+          var sov = loadExtStageOverrides();
+          sov[id] = 'Demo';
+          saveExtStageOverrides(sov);
+        }
+      }
     } else {
       var d = loadLocalOnly();
       var idx = d.findIndex(function(r){ return r.id === id; });
-      if (idx !== -1) { d[idx].demoDate = val; saveData(d); }
+      if (idx !== -1) {
+        d[idx].demoDate = val;
+        if (val && ['New','Follow'].indexOf(d[idx].stage) !== -1) d[idx].stage = 'Demo';
+        saveData(d);
+      }
     }
     renderTable();
   }
@@ -1543,7 +1563,7 @@ function renderStageCell(r) {
   var opts = allowed.map(function(s){
     return '<option value="' + s + '"' + (s===r.stage?' selected':'') + '>' + s + '</option>';
   }).join('');
-  return '<select class="stage-select" data-id="' + escHtml(r.id) + '" data-ext="' + (r.external?'1':'0') + '" style="width:100%;padding:3px 4px;border:1px solid #d0d5dd;border-radius:4px;font-size:12px;background:#fff;">' + opts + '</select>';
+  return '<select class="stage-select ' + getStageBadgeClass(r.stage) + '" data-id="' + escHtml(r.id) + '" data-ext="' + (r.external?'1':'0') + '" style="width:100%;padding:3px 4px;border:1px solid #d0d5dd;border-radius:4px;font-size:12px;">' + opts + '</select>';
 }
 
 document.addEventListener('change', function(e){
