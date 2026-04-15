@@ -728,7 +728,7 @@ async function fetchData(){
     // 턴키CID 로드
     try{const tkCidR=await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('턴키CID')}&headers=1&_t=${Date.now()}`);
       if(tkCidR.ok){const t=await tkCidR.text();if(t.trim()){const parseAddr=a=>{if(!a)return null;const parts=a.split(/\s+/);const w=parts[0];const m=[['서울','서울'],['부산','부산'],['대구','대구'],['인천','인천'],['광주','광주'],['대전','대전'],['울산','울산'],['세종','세종'],['경기','경기'],['강원','강원'],['충북','충북'],['충청북','충북'],['충남','충남'],['충청남','충남'],['전북','전북'],['전라북','전북'],['전남','전남'],['전라남','전남'],['경북','경북'],['경상북','경북'],['경남','경남'],['경상남','경남'],['제주','제주']];let region='';for(const[k,v]of m){if(w.includes(k)){region=v;break}}if(!region)return null;const sub=parts[1]||'';return{region,sub}};
-        parseCSV(t).forEach(r=>{const cid=(r['customer_id']||r['cid']||'').trim();const addr=(r['shipping_addr_rd']||'').trim();if(cid&&addr){const p=parseAddr(addr);if(p)turnkeyCidMap[cid]=p}})}else{failedSheets.push('턴키CID')}}catch(e){console.warn('턴키CID 에러',e);failedSheets.push('턴키CID')}
+        parseCSV(t).forEach(r=>{const cid=(r['customer_id']||r['cid']||'').trim();const addr=(r['shipping_addr_rd']||'').trim();if(cid&&addr){const p=parseAddr(addr);if(p)turnkeyCidMap[cid]=p}})}}else{failedSheets.push('턴키CID')}}catch(e){console.warn('턴키CID 에러',e);failedSheets.push('턴키CID')}
     initFilters();render();
     document.getElementById('loadingMsg').style.display='none';
     document.getElementById('dashboardContent').style.display='block';
