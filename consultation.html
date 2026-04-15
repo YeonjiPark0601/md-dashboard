@@ -475,10 +475,12 @@ function fetchExternalInquiries() {
     .then(function(res){ return res.ok ? res.json() : null; })
     .then(function(data){
       if (!data || !data.items) return;
+      var noteOverrides = loadExtNoteOverrides();
       EXTERNAL_DATA = data.items.map(function(r, i){
         var priceStr = (r.price || '').replace(/^견적가:\s*/, '').trim();
+        var stableKey = 'ext_' + (r.timestamp || r.date || '') + '_' + (r.cid || '') + '_' + (r.name || '') + '_' + (r.product || '');
         return {
-          id: 'ext_' + i,
+          id: stableKey,
           external: true,
           externalSource: r.source,
           date: r.date,
@@ -490,10 +492,12 @@ function fetchExternalInquiries() {
           clinic: r.clinic || '',
           region: r.region || '',
           product: r.product || '',
+          productId: r.productId || '',
           qty: r.qty || '',
           price: priceStr,
           caller: '', buyDate: '', rep: '',
-          stage: 'New', status: '', demoDate: '', payDate: '', note: ''
+          stage: 'New', status: '', demoDate: '', payDate: '',
+          note: noteOverrides[stableKey] || ''
         };
       });
     })
@@ -878,7 +882,7 @@ function renderTable() {
       '<td>' + escHtml(r.price) + '</td>' +
       '<td>' + escHtml(r.caller) + '</td>' +
       '<td><span class="badge ' + getStageBadgeClass(r.stage) + '">' + escHtml(r.stage) + '</span></td>' +
-      '<td class="note-cell' + (r.external ? '' : ' editable') + '" data-id="' + escHtml(r.id) + '" title="' + (r.external ? '외부 데이터는 수정 불가' : '클릭해서 편집') + '">' + (escHtml(r.note) || (r.external ? '' : '<span class="note-placeholder">클릭해서 입력</span>')) + '</td>' +
+      '<td class="note-cell editable" data-id="' + escHtml(r.id) + '" data-ext="' + (r.external ? '1' : '0') + '" title="클릭해서 편집">' + (escHtml(r.note) || '<span class="note-placeholder">클릭해서 입력</span>') + '</td>' +
       '<td>' + escHtml(r.demoDate) + '</td>' +
       '<td>' + escHtml(r.payDate) + '</td>' +
       '<td><div class="td-actions">' + actionsCell + '</div></td>' +
@@ -1347,12 +1351,28 @@ function renderMfrChart(data) {
 // ============================================================
 // INIT
 // ============================================================
+var EXT_NOTE_KEY = 'md_consult_ext_notes';
+function loadExtNoteOverrides() {
+  try { return JSON.parse(localStorage.getItem(EXT_NOTE_KEY) || '{}'); }
+  catch(e) { return {}; }
+}
+function saveExtNoteOverrides(obj) {
+  localStorage.setItem(EXT_NOTE_KEY, JSON.stringify(obj));
+}
+
 function startNoteEdit(td) {
   if (td.querySelector('.note-input')) return;
   var id = td.dataset.id;
-  var data = loadLocalOnly();
-  var rec = data.find(function(r){ return r.id === id; });
-  var current = rec ? (rec.note || '') : '';
+  var isExt = td.dataset.ext === '1';
+  var current = '';
+  if (isExt) {
+    var overrides = loadExtNoteOverrides();
+    current = overrides[id] || '';
+  } else {
+    var data = loadLocalOnly();
+    var rec = data.find(function(r){ return r.id === id; });
+    current = rec ? (rec.note || '') : '';
+  }
   td.innerHTML = '<input type="text" class="note-input" value="' + escHtml(current).replace(/"/g,'&quot;') + '" placeholder="문의내용 입력...">';
   var input = td.querySelector('.note-input');
   input.focus();
@@ -1362,13 +1382,20 @@ function startNoteEdit(td) {
     if (saved) return;
     saved = true;
     var val = input.value.trim();
-    var d = loadLocalOnly();
-    var idx = d.findIndex(function(r){ return r.id === id; });
-    if (idx !== -1) {
-      d[idx].note = val;
-      saveData(d);
+    if (isExt) {
+      var overrides = loadExtNoteOverrides();
+      if (val) overrides[id] = val;
+      else delete overrides[id];
+      saveExtNoteOverrides(overrides);
+      var exIdx = EXTERNAL_DATA.findIndex(function(r){ return r.id === id; });
+      if (exIdx !== -1) EXTERNAL_DATA[exIdx].note = val;
     } else {
-      // record doesn't exist yet in localStorage — ignore external
+      var d = loadLocalOnly();
+      var idx = d.findIndex(function(r){ return r.id === id; });
+      if (idx !== -1) {
+        d[idx].note = val;
+        saveData(d);
+      }
     }
     renderTable();
   }
