@@ -104,6 +104,8 @@ th.sortable:hover { background: #eef0f4; }
 .note-cell.editable:hover { background: #f0f7ff; }
 .note-placeholder { color: #bbb; font-style: italic; font-size: 12px; }
 .note-input { width: 100%; padding: 4px 6px; border: 1px solid #1a73e8; border-radius: 4px; font-size: 13px; font-family: inherit; outline: none; }
+tr.row-na { background: #fff7ed !important; }
+tr.row-na:hover { background: #ffedd5 !important; }
 
 /* ===== PAGINATION ===== */
 .pagination { display: flex; justify-content: center; align-items: center; gap: 4px; margin-top: 16px; }
@@ -790,7 +792,14 @@ function renderTable() {
     var actionsCell = r.external
       ? '<span style="font-size:11px;color:#888;">시트(' + escHtml(r.externalSource) + ')</span>'
       : '<button class="btn btn-sm btn-edit" onclick="editRecord(\'' + r.id + '\')">수정</button>';
-    return '<tr' + (r.external ? ' style="background:#fafbfc;"' : '') + '>' +
+    var hasNA = ['product','qty','price'].some(function(k){
+      var v = String(r[k] == null ? '' : r[k]).trim();
+      return v === '' || /^n\/?a$/i.test(v) || /모름/.test(v);
+    });
+    var trClass = [];
+    if (hasNA) trClass.push('row-na');
+    var trAttr = trClass.length ? ' class="' + trClass.join(' ') + '"' : (r.external ? ' style="background:#fafbfc;"' : '');
+    return '<tr' + trAttr + '>' +
       '<td>' + escHtml(r.date) + '</td>' +
       '<td>' + escHtml(r.source) + '</td>' +
       '<td>' + (r.cid ? '<a href="https://tools.medistream.co.kr/customers/' + encodeURIComponent(r.cid) + '" target="_blank" rel="noopener" style="color:#1a73e8;text-decoration:none;font-weight:700;">' + escHtml(r.customer) + '</a>' : '<strong>' + escHtml(r.customer) + '</strong>') + '</td>' +
