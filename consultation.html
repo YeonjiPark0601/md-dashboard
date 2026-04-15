@@ -513,8 +513,10 @@ function fetchExternalInquiries() {
           payAmount: r.payAmount != null ? r.payAmount : null,
           caller: r.caller || callerOverrides[stableKey] || '', buyDate: '', rep: '',
           stage: (function(){
-            var s = stageOverrides[stableKey] || (r.payDate ? 'Done' : 'New');
-            // 60일 룰: 인입 60일 경과 + Done 전환 없음(현재 New/Follow) → Drop
+            // 결제 완료가 최우선: payDate 있으면 무조건 Done (이전 Drop이었어도 복구)
+            if (r.payDate) return 'Done';
+            var s = stageOverrides[stableKey] || 'New';
+            // 60일 룰: 인입 60일 경과 + Done 미전환(현재 New/Follow) → Drop 자동 처리
             if ((s === 'New' || s === 'Follow') && r.date) {
               var days = (Date.now() - new Date(r.date).getTime()) / 86400000;
               if (days > 60) s = 'Drop';
