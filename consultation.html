@@ -793,7 +793,7 @@ function renderTable() {
     return '<tr' + (r.external ? ' style="background:#fafbfc;"' : '') + '>' +
       '<td>' + escHtml(r.date) + '</td>' +
       '<td>' + escHtml(r.source) + '</td>' +
-      '<td><strong>' + escHtml(r.customer) + '</strong></td>' +
+      '<td>' + (r.cid ? '<a href="https://tools.medistream.co.kr/customers/' + encodeURIComponent(r.cid) + '" target="_blank" rel="noopener" style="color:#1a73e8;text-decoration:none;font-weight:700;">' + escHtml(r.customer) + '</a>' : '<strong>' + escHtml(r.customer) + '</strong>') + '</td>' +
       '<td>' + escHtml(r.clinic) + '</td>' +
       '<td>' + escHtml(r.region) + '</td>' +
       '<td class="td-truncate" title="' + escHtml(r.product) + '">' + escHtml(r.product) + '</td>' +
