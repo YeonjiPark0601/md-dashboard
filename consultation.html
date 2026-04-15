@@ -499,7 +499,7 @@ function fetchExternalInquiries() {
           price: priceStr,
           payAmount: r.payAmount != null ? r.payAmount : null,
           caller: r.caller || '', buyDate: '', rep: '',
-          stage: 'New', status: '', demoDate: '',
+          stage: (r.payDate ? 'Done' : 'New'), status: '', demoDate: '',
           payDate: r.payDate || '',
           note: noteOverrides[stableKey] || ''
         };
