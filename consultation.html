@@ -120,6 +120,9 @@ th.sortable:hover { background: #eef0f4; }
 .note-input { width: 100%; padding: 4px 6px; border: 1px solid #1a73e8; border-radius: 4px; font-size: 13px; font-family: inherit; outline: none; }
 .th-filterable { position: relative; white-space: nowrap; }
 .col-filter-btn { background: transparent; border: none; cursor: pointer; font-size: 10px; color: #888; padding: 2px 4px; margin-left: 4px; border-radius: 3px; }
+.topbar-filter-btn { background: #fff; border: 1px solid #d0d0d0; border-radius: 6px; padding: 4px 10px; font-size: 13px; color: #333; cursor: pointer; min-width: 90px; text-align: left; }
+.topbar-filter-btn:hover { border-color: #1a73e8; }
+.topbar-filter-btn.active { border-color: #1a73e8; background: #e8f0fe; color: #1a73e8; font-weight: 600; }
 .col-filter-btn:hover { background: #e0e6ed; color: #1a73e8; }
 .col-filter-btn.active { color: #1a73e8; background: #e8f0fe; font-weight: 700; }
 .col-filter-pop { position: absolute; top: 100%; left: 0; z-index: 500; background: #fff; border: 1px solid #d0d0d0; border-radius: 6px; box-shadow: 0 4px 16px rgba(0,0,0,0.15); min-width: 180px; max-height: 320px; overflow-y: auto; padding: 6px; }
@@ -231,6 +234,22 @@ th.sortable:hover { background: #eef0f4; }
         <span style="color:#888;">~</span>
         <input type="date" id="periodTo" onchange="applyFilters()" style="padding:4px 6px;border:1px solid #d0d0d0;border-radius:6px;font-size:13px;">
       </span>
+    </div>
+    <div class="filter-group">
+      <label>인입경로</label>
+      <button class="topbar-filter-btn" data-col="source" onclick="openTopFilter(this,'source')">전체 ▾</button>
+    </div>
+    <div class="filter-group">
+      <label>공급처</label>
+      <button class="topbar-filter-btn" data-col="supplier" onclick="openTopFilter(this,'supplier')">전체 ▾</button>
+    </div>
+    <div class="filter-group">
+      <label>담당자</label>
+      <button class="topbar-filter-btn" data-col="caller" onclick="openTopFilter(this,'caller')">전체 ▾</button>
+    </div>
+    <div class="filter-group">
+      <label>Stage</label>
+      <button class="topbar-filter-btn" data-col="stage" onclick="openTopFilter(this,'stage')">전체 ▾</button>
     </div>
     <div class="filter-group">
       <label>검색</label>
@@ -359,16 +378,16 @@ th.sortable:hover { background: #eef0f4; }
         <thead>
           <tr>
             <th class="sortable" onclick="sortBy('date')" data-col="date">인입시점 <span class="sort-icon">↕</span></th>
-            <th class="th-filterable" data-col="source">인입경로 <button class="col-filter-btn" onclick="event.stopPropagation();openColFilter(this,'source')" title="필터">▾</button></th>
+            <th>인입경로</th>
             <th>고객명</th>
             <th>한의원명</th>
             <th>지역</th>
-            <th class="th-filterable" data-col="supplier">공급처 <button class="col-filter-btn" onclick="event.stopPropagation();openColFilter(this,'supplier')" title="필터">▾</button></th>
+            <th>공급처</th>
             <th>상담물품</th>
             <th>수량</th>
             <th>견적가</th>
-            <th class="th-filterable" data-col="caller">담당자 <button class="col-filter-btn" onclick="event.stopPropagation();openColFilter(this,'caller')" title="필터">▾</button></th>
-            <th class="th-filterable" data-col="stage">Stage <button class="col-filter-btn" onclick="event.stopPropagation();openColFilter(this,'stage')" title="필터">▾</button></th>
+            <th>담당자</th>
+            <th>Stage</th>
             <th>문의내용</th>
             <th>데모일정</th>
             <th>결제일자</th>
@@ -782,6 +801,21 @@ function getColumnValues(col) {
   return Object.keys(vals).sort();
 }
 
+function openTopFilter(btn, col) {
+  openColFilter(btn, col);
+}
+
+function updateTopFilterLabels() {
+  document.querySelectorAll('.topbar-filter-btn').forEach(function(btn){
+    var col = btn.dataset.col;
+    var picked = columnFilters[col];
+    if (!picked) { btn.textContent = '전체 ▾'; btn.classList.remove('active'); }
+    else if (picked.size === 0) { btn.textContent = '없음 ▾'; btn.classList.add('active'); }
+    else if (picked.size === 1) { btn.textContent = Array.from(picked)[0] + ' ▾'; btn.classList.add('active'); }
+    else { btn.textContent = picked.size + '개 선택 ▾'; btn.classList.add('active'); }
+  });
+}
+
 function openColFilter(btn, col) {
   closeColFilter();
   var values = getColumnValues(col);
@@ -812,6 +846,7 @@ function openColFilter(btn, col) {
       columnFilters[col] = allOn ? undefined : picked;
     }
     updateColFilterIndicators();
+    updateTopFilterLabels();
     applyFilters();
   });
 }
@@ -1668,7 +1703,7 @@ var DEFAULT_COL_WIDTHS = {
   2: 90,   // 고객명
   3: 120,  // 한의원명
   4: 100,  // 지역
-  5: 130,  // 공급처
+  5: 110,  // 공급처
   6: 240,  // 상담물품
   7: 60,   // 수량
   8: 100,  // 견적가
