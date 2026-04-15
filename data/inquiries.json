@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-15T05:42:22.324Z",
+  "updated": "2026-04-15T05:50:48.503Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -3636,7 +3636,7 @@
       "clinic": "",
       "region": "",
       "caller": "",
-      "supplier": "아이웰니스",
+      "supplier": "팀엘리시움",
       "payDate": "",
       "payAmount": null
     },
@@ -3870,7 +3870,7 @@
       "clinic": "",
       "region": "",
       "caller": "",
-      "supplier": "아이웰니스",
+      "supplier": "팀엘리시움",
       "payDate": "",
       "payAmount": null
     },
@@ -4140,7 +4140,7 @@
       "clinic": "",
       "region": "",
       "caller": "",
-      "supplier": "아이웰니스",
+      "supplier": "팀엘리시움",
       "payDate": "",
       "payAmount": null
     },
@@ -4266,7 +4266,7 @@
       "clinic": "",
       "region": "",
       "caller": "",
-      "supplier": "아이웰니스",
+      "supplier": "팀엘리시움",
       "payDate": "",
       "payAmount": null
     },
@@ -4284,7 +4284,7 @@
       "clinic": "",
       "region": "",
       "caller": "",
-      "supplier": "아이웰니스",
+      "supplier": "팀엘리시움",
       "payDate": "",
       "payAmount": null
     },
@@ -4914,7 +4914,7 @@
       "clinic": "",
       "region": "",
       "caller": "",
-      "supplier": "아이웰니스",
+      "supplier": "팀엘리시움",
       "payDate": "",
       "payAmount": null
     },
@@ -4986,7 +4986,7 @@
       "clinic": "",
       "region": "",
       "caller": "",
-      "supplier": "아이웰니스",
+      "supplier": "팀엘리시움",
       "payDate": "",
       "payAmount": null
     },
@@ -5400,7 +5400,7 @@
       "clinic": "",
       "region": "",
       "caller": "",
-      "supplier": "아이웰니스",
+      "supplier": "팀엘리시움",
       "payDate": "",
       "payAmount": null
     },
@@ -6714,7 +6714,7 @@
       "clinic": "",
       "region": "",
       "caller": "",
-      "supplier": "아이웰니스",
+      "supplier": "팀엘리시움",
       "payDate": "",
       "payAmount": null
     },
@@ -8028,7 +8028,7 @@
       "clinic": "",
       "region": "",
       "caller": "",
-      "supplier": "아이웰니스",
+      "supplier": "팀엘리시움",
       "payDate": "",
       "payAmount": null
     },
