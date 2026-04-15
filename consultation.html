@@ -512,7 +512,15 @@ function fetchExternalInquiries() {
           price: priceStr,
           payAmount: r.payAmount != null ? r.payAmount : null,
           caller: r.caller || callerOverrides[stableKey] || '', buyDate: '', rep: '',
-          stage: stageOverrides[stableKey] || (r.payDate ? 'Done' : 'New'), status: '', demoDate: demoOverrides[stableKey] || '',
+          stage: (function(){
+            var s = stageOverrides[stableKey] || (r.payDate ? 'Done' : 'New');
+            // 60일 룰: 인입 60일 경과 + Done 전환 없음(현재 New/Follow) → Drop
+            if ((s === 'New' || s === 'Follow') && r.date) {
+              var days = (Date.now() - new Date(r.date).getTime()) / 86400000;
+              if (days > 60) s = 'Drop';
+            }
+            return s;
+          })(), status: '', demoDate: demoOverrides[stableKey] || '',
           payDate: r.payDate || '',
           note: noteOverrides[stableKey] || ''
         };
