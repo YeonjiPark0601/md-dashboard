@@ -356,7 +356,7 @@ th.sortable:hover { background: #eef0f4; }
             <th>고객명</th>
             <th>한의원명</th>
             <th>지역</th>
-            <th>공급처</th>
+            <th class="th-filterable" data-col="supplier">공급처 <button class="col-filter-btn" onclick="event.stopPropagation();openColFilter(this,'supplier')" title="필터">▾</button></th>
             <th>상담물품</th>
             <th>수량</th>
             <th>견적가</th>
