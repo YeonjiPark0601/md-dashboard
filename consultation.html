@@ -25,6 +25,7 @@ body { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; b
 
 /* ===== CONTAINER ===== */
 .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+#tab-reg > .container { max-width: none; padding: 20px 24px; }
 
 /* ===== KPI CARDS ===== */
 .kpi-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
@@ -221,6 +222,7 @@ th.sortable:hover { background: #eef0f4; }
       </select>
     </div>
     <span class="count-badge" id="totalCount">0건</span>
+    <button class="form-toggle-btn" id="formToggleBtn" onclick="toggleForm()" style="margin-left:8px;">+ 새 상담 등록</button>
   </div>
 </div>
 
@@ -229,12 +231,8 @@ th.sortable:hover { background: #eef0f4; }
 <div class="container">
 
   <!-- Registration Form -->
-  <div class="form-card">
-    <div class="form-card-header">
-      <h3>상담 등록</h3>
-      <button class="form-toggle-btn" id="formToggleBtn" onclick="toggleForm()">+ 새 상담 등록</button>
-    </div>
-    <div id="formSection" class="form-section">
+  <div class="form-card" id="formCard" style="display:none;">
+    <div id="formSection" class="form-section open">
       <form id="consultForm" onsubmit="submitForm(event)">
         <div class="form-grid">
           <div class="form-group">
@@ -513,14 +511,22 @@ function switchTab(tabId) {
 // FORM TOGGLE
 // ============================================================
 function toggleForm() {
-  var section = document.getElementById('formSection');
-  var isOpen = section.classList.toggle('open');
-  document.getElementById('formToggleBtn').textContent = isOpen ? '- 닫기' : '+ 새 상담 등록';
+  var card = document.getElementById('formCard');
+  var isOpen = card.style.display !== 'none';
+  if (isOpen) {
+    card.style.display = 'none';
+    document.getElementById('formToggleBtn').textContent = '+ 새 상담 등록';
+  } else {
+    switchTab('tab-reg');
+    card.style.display = '';
+    document.getElementById('formToggleBtn').textContent = '- 닫기';
+    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 function openForm() {
-  var section = document.getElementById('formSection');
-  section.classList.add('open');
+  var card = document.getElementById('formCard');
+  card.style.display = '';
   document.getElementById('formToggleBtn').textContent = '- 닫기';
 }
 
