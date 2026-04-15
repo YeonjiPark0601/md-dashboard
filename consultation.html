@@ -1430,58 +1430,32 @@ function saveColWidths(obj) {
 }
 
 var DEFAULT_COL_WIDTHS = {
-  0: 90,   // 인입시점
+  0: 95,   // 인입시점
   1: 100,  // 인입경로
   2: 90,   // 고객명
-  6: 60,   // 수량
-  7: 90,   // 견적가
-  8: 80,   // 담당자
-  9: 70,   // Stage
-  10: 320, // 문의내용
-  11: 90,  // 데모일정
-  12: 90,  // 결제일자
-  13: 70   // 수정
+  3: 120,  // 한의원명
+  4: 100,  // 지역
+  5: 90,   // 공급처
+  6: 240,  // 상담물품
+  7: 60,   // 수량
+  8: 100,  // 견적가
+  9: 80,   // 담당자
+  10: 80,  // Stage
+  11: 280, // 문의내용
+  12: 95,  // 데모일정
+  13: 95,  // 결제일자
+  14: 70   // 수정
 };
 
 function applyColWidths() {
-  var widths = loadColWidths();
   var ths = document.querySelectorAll('#consultTable thead th');
   ths.forEach(function(th, i){
-    var w = widths[i] != null ? widths[i] : DEFAULT_COL_WIDTHS[i];
-    if (w) th.style.width = w + 'px';
+    var w = DEFAULT_COL_WIDTHS[i];
+    if (w) { th.style.width = w + 'px'; th.style.minWidth = w + 'px'; th.style.maxWidth = w + 'px'; }
   });
 }
 
-function setupColResizers() {
-  var ths = document.querySelectorAll('#consultTable thead th');
-  ths.forEach(function(th, i){
-    if (th.querySelector('.col-resizer')) return;
-    var rz = document.createElement('div');
-    rz.className = 'col-resizer';
-    th.appendChild(rz);
-    rz.addEventListener('mousedown', function(e){
-      e.preventDefault();
-      e.stopPropagation();
-      rz.classList.add('dragging');
-      var startX = e.clientX;
-      var startW = th.getBoundingClientRect().width;
-      function onMove(ev) {
-        var w = Math.max(40, startW + (ev.clientX - startX));
-        th.style.width = w + 'px';
-      }
-      function onUp() {
-        rz.classList.remove('dragging');
-        document.removeEventListener('mousemove', onMove);
-        document.removeEventListener('mouseup', onUp);
-        var widths = loadColWidths();
-        widths[i] = Math.round(th.getBoundingClientRect().width);
-        saveColWidths(widths);
-      }
-      document.addEventListener('mousemove', onMove);
-      document.addEventListener('mouseup', onUp);
-    });
-  });
-}
+function setupColResizers() { /* 열 너비 고정 — 드래그 조정 비활성화 */ }
 
 function init() {
   document.getElementById('f_date').value = today();
