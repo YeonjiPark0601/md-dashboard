@@ -104,8 +104,15 @@ th.sortable:hover { background: #eef0f4; }
 .note-cell.editable:hover { background: #f0f7ff; }
 .note-placeholder { color: #bbb; font-style: italic; font-size: 12px; }
 .note-input { width: 100%; padding: 4px 6px; border: 1px solid #1a73e8; border-radius: 4px; font-size: 13px; font-family: inherit; outline: none; }
-tr.row-na { background: #fff7ed !important; }
-tr.row-na:hover { background: #ffedd5 !important; }
+.th-filterable { position: relative; white-space: nowrap; }
+.col-filter-btn { background: transparent; border: none; cursor: pointer; font-size: 10px; color: #888; padding: 2px 4px; margin-left: 4px; border-radius: 3px; }
+.col-filter-btn:hover { background: #e0e6ed; color: #1a73e8; }
+.col-filter-btn.active { color: #1a73e8; background: #e8f0fe; font-weight: 700; }
+.col-filter-pop { position: absolute; top: 100%; left: 0; z-index: 500; background: #fff; border: 1px solid #d0d0d0; border-radius: 6px; box-shadow: 0 4px 16px rgba(0,0,0,0.15); min-width: 180px; max-height: 320px; overflow-y: auto; padding: 6px; }
+.col-filter-pop label { display: flex; align-items: center; gap: 6px; padding: 5px 8px; font-size: 13px; font-weight: 500; color: #333; cursor: pointer; border-radius: 4px; white-space: nowrap; }
+.col-filter-pop label:hover { background: #f0f7ff; }
+.col-filter-pop .all-row { border-bottom: 1px solid #eee; margin-bottom: 4px; padding-bottom: 4px; }
+.col-filter-pop input[type="checkbox"] { margin: 0; }
 
 /* ===== PAGINATION ===== */
 .pagination { display: flex; justify-content: center; align-items: center; gap: 4px; margin-top: 16px; }
@@ -196,44 +203,20 @@ tr.row-na:hover { background: #ffedd5 !important; }
   <div class="filters" id="filterBar">
     <div class="filter-group">
       <label>기간</label>
-      <select id="periodFilter" onchange="applyFilters()">
+      <select id="periodFilter" onchange="onPeriodChange()">
         <option value="all">전체</option>
         <option value="today">오늘</option>
         <option value="week">이번 주</option>
         <option value="month" selected>이번 달</option>
         <option value="lastmonth">지난 달</option>
         <option value="3m">최근 3개월</option>
+        <option value="custom">직접 지정</option>
       </select>
-    </div>
-    <div class="filter-group">
-      <label>Stage</label>
-      <select id="stageFilter" onchange="applyFilters()">
-        <option value="">전체</option>
-        <option value="BO-0">BO-0</option>
-        <option value="BO-1">BO-1</option>
-        <option value="BO-2">BO-2</option>
-        <option value="WIN">WIN</option>
-        <option value="Drop">Drop</option>
-      </select>
-    </div>
-    <div class="filter-group">
-      <label>인입경로</label>
-      <select id="sourceFilter" onchange="applyFilters()">
-        <option value="">전체</option>
-        <option>아웃바운드</option>
-        <option>자체행사</option>
-        <option>외부행사</option>
-        <option>강의</option>
-        <option>상담신청</option>
-        <option>1:1문의(CX포함)</option>
-        <option>소개건</option>
-      </select>
-    </div>
-    <div class="filter-group">
-      <label>담당자</label>
-      <select id="repFilter" onchange="applyFilters()">
-        <option value="">전체</option>
-      </select>
+      <span id="customPeriodWrap" style="display:none;gap:4px;align-items:center;">
+        <input type="date" id="periodFrom" onchange="applyFilters()" style="padding:4px 6px;border:1px solid #d0d0d0;border-radius:6px;font-size:13px;">
+        <span style="color:#888;">~</span>
+        <input type="date" id="periodTo" onchange="applyFilters()" style="padding:4px 6px;border:1px solid #d0d0d0;border-radius:6px;font-size:13px;">
+      </span>
     </div>
     <div class="filter-group">
       <label>검색</label>
@@ -361,15 +344,15 @@ tr.row-na:hover { background: #ffedd5 !important; }
         <thead>
           <tr>
             <th class="sortable" onclick="sortBy('date')" data-col="date">인입시점 <span class="sort-icon">↕</span></th>
-            <th class="sortable" onclick="sortBy('source')" data-col="source">인입경로 <span class="sort-icon">↕</span></th>
+            <th class="th-filterable" data-col="source">인입경로 <button class="col-filter-btn" onclick="event.stopPropagation();openColFilter(this,'source')" title="필터">▾</button></th>
             <th class="sortable" onclick="sortBy('customer')" data-col="customer">고객명 <span class="sort-icon">↕</span></th>
             <th class="sortable" onclick="sortBy('clinic')" data-col="clinic">한의원명 <span class="sort-icon">↕</span></th>
             <th class="sortable" onclick="sortBy('region')" data-col="region">지역 <span class="sort-icon">↕</span></th>
             <th>상담물품</th>
             <th class="sortable" onclick="sortBy('qty')" data-col="qty">수량 <span class="sort-icon">↕</span></th>
             <th>견적가</th>
-            <th class="sortable" onclick="sortBy('caller')" data-col="caller">담당자 <span class="sort-icon">↕</span></th>
-            <th class="sortable" onclick="sortBy('stage')" data-col="stage">Stage <span class="sort-icon">↕</span></th>
+            <th class="th-filterable" data-col="caller">담당자 <button class="col-filter-btn" onclick="event.stopPropagation();openColFilter(this,'caller')" title="필터">▾</button></th>
+            <th class="th-filterable" data-col="stage">Stage <button class="col-filter-btn" onclick="event.stopPropagation();openColFilter(this,'stage')" title="필터">▾</button></th>
             <th>문의내용</th>
             <th class="sortable" onclick="sortBy('demoDate')" data-col="demoDate">데모일정 <span class="sort-icon">↕</span></th>
             <th class="sortable" onclick="sortBy('payDate')" data-col="payDate">결제일자 <span class="sort-icon">↕</span></th>
@@ -688,13 +671,12 @@ var PAGE_SIZE = 50;
 // REP FILTER POPULATION
 // ============================================================
 function populateRepFilter() {
+  // column-header filters now; no-op retained for compatibility
+  var sel = document.getElementById('repFilter');
+  if (!sel) return;
   var data = loadData();
   var reps = {};
-  data.forEach(function(r){
-    var who = r.caller || r.rep;
-    if (who) reps[who] = true;
-  });
-  var sel = document.getElementById('repFilter');
+  data.forEach(function(r){ var who = r.caller || r.rep; if (who) reps[who] = true; });
   var cur = sel.value;
   sel.innerHTML = '<option value="">전체</option>';
   Object.keys(reps).sort().forEach(function(rep){
@@ -718,23 +700,98 @@ function getPeriodRange(v) {
   var y = now.getFullYear(), m = now.getMonth(), d = now.getDate();
   if (v === 'today') return [new Date(y,m,d), new Date(y,m,d,23,59,59)];
   if (v === 'week') {
-    var day = now.getDay(); // 0=Sun
+    var day = now.getDay();
     var monDelta = (day === 0 ? -6 : 1 - day);
-    var start = new Date(y,m,d+monDelta);
-    var end = new Date(y,m,d+monDelta+6,23,59,59);
-    return [start, end];
+    return [new Date(y,m,d+monDelta), new Date(y,m,d+monDelta+6,23,59,59)];
   }
   if (v === 'month') return [new Date(y,m,1), new Date(y,m+1,0,23,59,59)];
   if (v === 'lastmonth') return [new Date(y,m-1,1), new Date(y,m,0,23,59,59)];
   if (v === '3m') return [new Date(y,m-2,1), new Date(y,m+1,0,23,59,59)];
+  if (v === 'custom') {
+    var f = document.getElementById('periodFrom').value;
+    var t = document.getElementById('periodTo').value;
+    if (!f && !t) return null;
+    var from = f ? new Date(f + 'T00:00:00') : new Date(1900,0,1);
+    var to = t ? new Date(t + 'T23:59:59') : new Date(2999,11,31);
+    return [from, to];
+  }
   return null;
 }
 
+function onPeriodChange() {
+  var v = document.getElementById('periodFilter').value;
+  document.getElementById('customPeriodWrap').style.display = v === 'custom' ? 'inline-flex' : 'none';
+  applyFilters();
+}
+
+// ============================================================
+// COLUMN FILTERS (Excel-style header dropdowns)
+// ============================================================
+var columnFilters = {}; // { stage: Set, source: Set, caller: Set }
+
+function getColumnValues(col) {
+  var data = loadData();
+  var vals = {};
+  data.forEach(function(r){
+    var v = col === 'caller' ? (r.caller || r.rep || '') : (r[col] || '');
+    if (v !== '' && v != null) vals[String(v)] = true;
+  });
+  return Object.keys(vals).sort();
+}
+
+function openColFilter(btn, col) {
+  closeColFilter();
+  var values = getColumnValues(col);
+  var selected = columnFilters[col]; // undefined = all
+  var pop = document.createElement('div');
+  pop.className = 'col-filter-pop';
+  pop.dataset.col = col;
+  var html = '<label class="all-row"><input type="checkbox" data-all ' + (!selected ? 'checked' : '') + '> <strong>전체</strong></label>';
+  values.forEach(function(v){
+    var checked = !selected || selected.has(v);
+    html += '<label><input type="checkbox" data-val="' + escHtml(v).replace(/"/g,'&quot;') + '" ' + (checked ? 'checked' : '') + '> ' + escHtml(v) + '</label>';
+  });
+  pop.innerHTML = html;
+  btn.parentElement.appendChild(pop);
+
+  pop.addEventListener('change', function(e){
+    var t = e.target;
+    if (t.hasAttribute('data-all')) {
+      var on = t.checked;
+      pop.querySelectorAll('input[data-val]').forEach(function(i){ i.checked = on; });
+      columnFilters[col] = on ? undefined : new Set();
+    } else {
+      var checks = pop.querySelectorAll('input[data-val]');
+      var picked = new Set();
+      checks.forEach(function(i){ if (i.checked) picked.add(i.getAttribute('data-val')); });
+      var allOn = picked.size === values.length;
+      pop.querySelector('input[data-all]').checked = allOn;
+      columnFilters[col] = allOn ? undefined : picked;
+    }
+    updateColFilterIndicators();
+    applyFilters();
+  });
+}
+
+function closeColFilter() {
+  document.querySelectorAll('.col-filter-pop').forEach(function(p){ p.remove(); });
+}
+
+function updateColFilterIndicators() {
+  document.querySelectorAll('.th-filterable').forEach(function(th){
+    var col = th.dataset.col;
+    var btn = th.querySelector('.col-filter-btn');
+    if (!btn) return;
+    if (columnFilters[col]) btn.classList.add('active'); else btn.classList.remove('active');
+  });
+}
+
+document.addEventListener('click', function(e){
+  if (!e.target.closest('.col-filter-pop') && !e.target.closest('.col-filter-btn')) closeColFilter();
+});
+
 function getFilteredData() {
   var q = (document.getElementById('searchInput').value || '').toLowerCase().trim();
-  var stageF = document.getElementById('stageFilter').value;
-  var sourceF = document.getElementById('sourceFilter').value;
-  var repF = document.getElementById('repFilter').value;
   var periodF = document.getElementById('periodFilter').value;
   var data = loadData();
 
@@ -753,9 +810,15 @@ function getFilteredData() {
         .some(function(v){ return v && String(v).toLowerCase().indexOf(q) !== -1; });
     });
   }
-  if (stageF) data = data.filter(function(r){ return r.stage === stageF; });
-  if (sourceF) data = data.filter(function(r){ return r.source === sourceF; });
-  if (repF) data = data.filter(function(r){ return (r.caller || r.rep) === repF; });
+
+  Object.keys(columnFilters).forEach(function(col){
+    var picked = columnFilters[col];
+    if (!picked) return;
+    data = data.filter(function(r){
+      var v = col === 'caller' ? (r.caller || r.rep || '') : (r[col] || '');
+      return picked.has(String(v));
+    });
+  });
 
   data.sort(function(a, b){
     var va = a[sortCol] || '';
@@ -792,14 +855,7 @@ function renderTable() {
     var actionsCell = r.external
       ? '<span style="font-size:11px;color:#888;">시트(' + escHtml(r.externalSource) + ')</span>'
       : '<button class="btn btn-sm btn-edit" onclick="editRecord(\'' + r.id + '\')">수정</button>';
-    var hasNA = ['product','qty','price'].some(function(k){
-      var v = String(r[k] == null ? '' : r[k]).trim();
-      return v === '' || /^n\/?a$/i.test(v) || /모름/.test(v);
-    });
-    var trClass = [];
-    if (hasNA) trClass.push('row-na');
-    var trAttr = trClass.length ? ' class="' + trClass.join(' ') + '"' : (r.external ? ' style="background:#fafbfc;"' : '');
-    return '<tr' + trAttr + '>' +
+    return '<tr' + (r.external ? ' style="background:#fafbfc;"' : '') + '>' +
       '<td>' + escHtml(r.date) + '</td>' +
       '<td>' + escHtml(r.source) + '</td>' +
       '<td>' + (r.cid ? '<a href="https://tools.medistream.co.kr/customers/' + encodeURIComponent(r.cid) + '" target="_blank" rel="noopener" style="color:#1a73e8;text-decoration:none;font-weight:700;">' + escHtml(r.customer) + '</a>' : '<strong>' + escHtml(r.customer) + '</strong>') + '</td>' +
