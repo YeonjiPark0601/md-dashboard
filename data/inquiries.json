@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-16T08:20:59.317Z",
+  "updated": "2026-04-16T08:26:00.805Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -181,6 +181,24 @@
       "region": "경기도 화성시",
       "caller": "",
       "supplier": "",
+      "payDate": "",
+      "payAmount": null
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 16 오후 05:21:28",
+      "date": "2026-04-16",
+      "name": "황동성",
+      "cid": "61cae80f7560f900324cb03a",
+      "phone": "010-2558-1057",
+      "product": "[DSE] 의료용 석션기 (SSB EVA)",
+      "qty": 1,
+      "price": "모름",
+      "productId": "67e2322d9d6aa764d124103e",
+      "clinic": "365통치한의원 ",
+      "region": "경기도 화성시",
+      "caller": "",
+      "supplier": "디에스이아이엔씨",
       "payDate": "",
       "payAmount": null
     },
