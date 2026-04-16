@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-16T11:45:58.623Z",
+  "updated": "2026-04-16T13:56:00.904Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -342,6 +342,24 @@
       "clinic": "죽림한의원",
       "region": "경상남도 통영시",
       "caller": "김태호",
+      "supplier": "이노메디케어",
+      "payDate": "",
+      "payAmount": null
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 16 오후 10:54:34",
+      "date": "2026-04-16",
+      "name": "현석기",
+      "cid": "5fc9cbdf0204ef001a67ed98",
+      "phone": "010-8828-3850",
+      "product": "(상담하기) PT10 혈액검사기",
+      "qty": "N/A",
+      "price": "N/A",
+      "productId": "618c881fbc63410023476154",
+      "clinic": "닥터스한의원",
+      "region": "부산시 기장군",
+      "caller": "",
       "supplier": "이노메디케어",
       "payDate": "",
       "payAmount": null
