@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-16T02:45:58.210Z",
+  "updated": "2026-04-16T04:55:57.812Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -55,6 +55,24 @@
       "region": "경기도 남양주시",
       "caller": "",
       "supplier": "메쉬",
+      "payDate": "",
+      "payAmount": null
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 04. 16 오후 01:52:15",
+      "date": "2026-04-16",
+      "name": "박가영",
+      "cid": "5d6f753e19efa30eb29140c4",
+      "phone": "010-5068-1638",
+      "product": "[영일엠] OMS 테이블 기본형 (OMS-1)",
+      "qty": 1,
+      "price": "모름",
+      "productId": "696f34951dfcaf25535db872",
+      "clinic": "",
+      "region": "광주시 남구",
+      "caller": "",
+      "supplier": "",
       "payDate": "",
       "payAmount": null
     },
