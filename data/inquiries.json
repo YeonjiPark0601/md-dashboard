@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-16T06:35:58.213Z",
+  "updated": "2026-04-16T06:41:05.631Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -71,7 +71,7 @@
       "productId": "696f34951dfcaf25535db872",
       "clinic": "",
       "region": "광주시 남구",
-      "caller": "",
+      "caller": "김진석",
       "supplier": "",
       "payDate": "",
       "payAmount": null
@@ -89,7 +89,7 @@
       "productId": "610cd88909c63a06ed1489fe",
       "clinic": "약손한의원",
       "region": "부산시 남구",
-      "caller": "",
+      "caller": "김진석",
       "supplier": "에이치씨케이",
       "payDate": "",
       "payAmount": null
@@ -107,7 +107,7 @@
       "productId": "610cd88909c63a06ed1489fe",
       "clinic": "",
       "region": "광주시 남구",
-      "caller": "",
+      "caller": "김진석",
       "supplier": "에이치씨케이",
       "payDate": "",
       "payAmount": null
