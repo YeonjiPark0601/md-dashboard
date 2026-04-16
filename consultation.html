@@ -187,6 +187,18 @@ th.sortable:hover { background: #eef0f4; }
 .mini-table td { padding: 8px 10px; border-bottom: 1px solid #f0f0f0; }
 .mini-table tr:hover { background: #f7f9fc; }
 
+/* ===== ASSIGN REMINDER BANNER ===== */
+.assign-banner { display: none; align-items: center; gap: 12px; background: #fff7ed; border: 1px solid #fdba74; border-radius: 10px; padding: 12px 18px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+.assign-banner.show { display: flex; }
+.assign-banner .icon { font-size: 20px; }
+.assign-banner .msg { flex: 1; font-size: 14px; color: #9a3412; font-weight: 600; }
+.assign-banner .msg b { color: #c2410c; font-size: 16px; }
+.assign-banner .btn-show { padding: 6px 14px; border: 1px solid #ea580c; background: #fff; color: #c2410c; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.assign-banner .btn-show:hover { background: #ea580c; color: #fff; }
+.assign-banner .btn-show.active { background: #ea580c; color: #fff; }
+.assign-banner .btn-close { background: none; border: none; color: #9a3412; font-size: 18px; cursor: pointer; padding: 0 6px; opacity: 0.6; }
+.assign-banner .btn-close:hover { opacity: 1; }
+
 /* ===== TAB PANELS ===== */
 .tab-panel { display: none; }
 .tab-panel.active { display: block; }
@@ -390,6 +402,14 @@ th.sortable:hover { background: #eef0f4; }
 <div id="tab-reg" class="tab-panel active">
 <div class="container">
 
+  <!-- Assign Reminder Banner -->
+  <div id="assignBanner" class="assign-banner">
+    <span class="icon">⚠️</span>
+    <div class="msg">담당자 배정이 필요한 상담건이 <b id="assignBannerCount">0</b>건 있어요</div>
+    <button type="button" id="assignBannerBtn" class="btn-show" onclick="toggleAssignReminderFilter()">해당 건만 보기</button>
+    <button type="button" class="btn-close" onclick="dismissAssignBanner()" title="오늘은 숨기기">×</button>
+  </div>
+
   <!-- Registration Form -->
   <div class="form-card" id="formCard" style="display:none;">
     <div id="formSection" class="form-section open">
@@ -452,16 +472,12 @@ th.sortable:hover { background: #eef0f4; }
             <input type="text" id="f_price" name="price" placeholder="예: 3,500,000">
           </div>
           <div class="form-group">
-            <label>유선상담자</label>
+            <label>담당자</label>
             <input type="text" id="f_caller" name="caller" placeholder="담당자명">
           </div>
           <div class="form-group">
             <label>구매예정일</label>
             <input type="date" id="f_buyDate" name="buyDate">
-          </div>
-          <div class="form-group">
-            <label>영업담당자</label>
-            <input type="text" id="f_rep" name="rep" placeholder="담당 영업사원">
           </div>
           <div class="form-group">
             <label>Stage</label>
@@ -795,7 +811,6 @@ function getFormData() {
     price:    document.getElementById('f_price').value.trim(),
     caller:   document.getElementById('f_caller').value.trim(),
     buyDate:  document.getElementById('f_buyDate').value,
-    rep:      document.getElementById('f_rep').value.trim(),
     stage:    document.getElementById('f_stage').value,
     status:   document.getElementById('f_status').value,
     demoDate: document.getElementById('f_demoDate').value
@@ -814,9 +829,8 @@ function populateForm(record) {
   document.getElementById('f_product').value  = record.product || '';
   document.getElementById('f_qty').value      = record.qty || '';
   document.getElementById('f_price').value    = record.price || '';
-  document.getElementById('f_caller').value   = record.caller || '';
+  document.getElementById('f_caller').value   = record.caller || record.rep || '';
   document.getElementById('f_buyDate').value  = record.buyDate || '';
-  document.getElementById('f_rep').value      = record.rep || '';
   document.getElementById('f_stage').value    = record.stage || 'BO-0';
   document.getElementById('f_status').value   = record.status || '';
   document.getElementById('f_demoDate').value = record.demoDate || '';
@@ -893,6 +907,7 @@ function applyFilters() {
   currentPage = 1;
   renderTable();
   updateFilterBadge();
+  updateAssignBanner();
 }
 
 function toggleFilters() {
@@ -951,6 +966,47 @@ function onPeriodChange() {
 // COLUMN FILTERS (Excel-style header dropdowns)
 // ============================================================
 var columnFilters = {}; // { stage: Set, source: Set, caller: Set }
+var assignReminderFilter = false;
+
+function isUnassignedNew(r) {
+  var stage = (r.stage || '').trim();
+  var stageEmpty = !stage || stage === 'New' || stage === 'BO-0' || stage === 'BO-1';
+  var noManager = !(r.caller && String(r.caller).trim()) && !(r.rep && String(r.rep).trim());
+  return stageEmpty && noManager;
+}
+
+function countUnassigned() {
+  try { return loadData().filter(isUnassignedNew).length; } catch (e) { return 0; }
+}
+
+function updateAssignBanner() {
+  var banner = document.getElementById('assignBanner');
+  if (!banner) return;
+  var count = countUnassigned();
+  var dismissed = sessionStorage.getItem('md_consult_assign_banner_dismissed') === new Date().toISOString().slice(0,10);
+  if (count > 0 && !dismissed) {
+    banner.classList.add('show');
+    document.getElementById('assignBannerCount').textContent = count;
+    var btn = document.getElementById('assignBannerBtn');
+    btn.classList.toggle('active', assignReminderFilter);
+    btn.textContent = assignReminderFilter ? '필터 해제' : '해당 건만 보기';
+  } else {
+    banner.classList.remove('show');
+  }
+}
+
+function toggleAssignReminderFilter() {
+  assignReminderFilter = !assignReminderFilter;
+  currentPage = 1;
+  applyFilters();
+  updateAssignBanner();
+}
+
+function dismissAssignBanner() {
+  sessionStorage.setItem('md_consult_assign_banner_dismissed', new Date().toISOString().slice(0,10));
+  if (assignReminderFilter) { assignReminderFilter = false; applyFilters(); }
+  updateAssignBanner();
+}
 
 function getColumnValues(col) {
   var data = loadData();
@@ -1058,6 +1114,10 @@ function getFilteredData() {
       return picked.has(String(v));
     });
   });
+
+  if (assignReminderFilter) {
+    data = data.filter(isUnassignedNew);
+  }
 
   data.sort(function(a, b){
     var va = a[sortCol] || '';
@@ -1897,10 +1957,12 @@ function init() {
   setupColResizers();
   applyColWidths();
   updateFilterBadge();
+  updateAssignBanner();
   fetchExternalInquiries().then(function(){
     populateRepFilter();
     renderTable();
     applyColWidths();
+    updateAssignBanner();
   });
 }
 
