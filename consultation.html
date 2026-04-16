@@ -18,6 +18,10 @@ body { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; b
 .tab:hover { color: #555; }
 .tab.active { color: #1a73e8; border-bottom-color: #1a73e8; }
 .filters { background: #fff; padding: 12px 30px; border-bottom: 1px solid #e0e0e0; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
+.filter-toggle-mobile { display: none; }
+.filter-count-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 10px; background: #1a73e8; color: #fff; font-size: 11px; font-weight: 700; }
+.filter-toggle-arrow { transition: transform 0.2s; display: inline-block; }
+.filter-toggle-mobile[aria-expanded="true"] .filter-toggle-arrow { transform: rotate(180deg); }
 .filter-group { display: flex; align-items: center; gap: 6px; }
 .filter-group label { font-size: 13px; font-weight: 600; color: #555; }
 .filter-group select, .filter-group input { padding: 5px 10px; border: 1px solid #d0d0d0; border-radius: 6px; font-size: 13px; background: #fff; }
@@ -212,6 +216,8 @@ th.sortable:hover { background: #eef0f4; }
   .tabs { padding: 0 12px; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
   .tab { padding: 10px 14px; font-size: 13px; flex-shrink: 0; }
   .filters { padding: 10px 12px; gap: 8px; flex-direction: row; flex-wrap: wrap; align-items: stretch; }
+  .filter-toggle-mobile { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border: 1px solid #1a73e8; border-radius: 6px; background: #fff; color: #1a73e8; font-size: 13px; font-weight: 600; cursor: pointer; min-height: 38px; order: -1; }
+  .filters.filters-collapsed .filter-collapsible { display: none !important; }
   .filter-group { flex: 1 1 45%; min-width: 0; flex-direction: column; align-items: stretch; gap: 4px; }
   .filter-group label { font-size: 11px; color: #888; }
   .filter-group select,
@@ -335,7 +341,10 @@ th.sortable:hover { background: #eef0f4; }
     <div class="tab" data-tab="tab-dash" onclick="switchTab('tab-dash')">현황 대시보드</div>
   </div>
   <div class="filters" id="filterBar">
-    <div class="filter-group">
+    <button type="button" class="filter-toggle-mobile" id="filterToggleBtn" onclick="toggleFilters()" aria-expanded="false">
+      <span>필터</span><span class="filter-count-badge" id="filterCountBadge" style="display:none;">0</span><span class="filter-toggle-arrow">▾</span>
+    </button>
+    <div class="filter-group filter-collapsible">
       <label>기간</label>
       <select id="periodFilter" onchange="onPeriodChange()">
         <option value="all">전체</option>
@@ -352,19 +361,19 @@ th.sortable:hover { background: #eef0f4; }
         <input type="date" id="periodTo" onchange="applyFilters()" style="padding:4px 6px;border:1px solid #d0d0d0;border-radius:6px;font-size:13px;">
       </span>
     </div>
-    <div class="filter-group">
+    <div class="filter-group filter-collapsible">
       <label>인입경로</label>
       <button class="topbar-filter-btn" data-col="source" onclick="openTopFilter(this,'source')">전체 ▾</button>
     </div>
-    <div class="filter-group">
+    <div class="filter-group filter-collapsible">
       <label>공급처</label>
       <button class="topbar-filter-btn" data-col="supplier" onclick="openTopFilter(this,'supplier')">전체 ▾</button>
     </div>
-    <div class="filter-group">
+    <div class="filter-group filter-collapsible">
       <label>담당자</label>
       <button class="topbar-filter-btn" data-col="caller" onclick="openTopFilter(this,'caller')">전체 ▾</button>
     </div>
-    <div class="filter-group">
+    <div class="filter-group filter-collapsible">
       <label>Stage</label>
       <button class="topbar-filter-btn" data-col="stage" onclick="openTopFilter(this,'stage')">전체 ▾</button>
     </div>
@@ -883,6 +892,30 @@ function populateRepFilter() {
 function applyFilters() {
   currentPage = 1;
   renderTable();
+  updateFilterBadge();
+}
+
+function toggleFilters() {
+  var filters = document.getElementById('filterBar');
+  var btn = document.getElementById('filterToggleBtn');
+  var collapsed = filters.classList.toggle('filters-collapsed');
+  btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+}
+
+function updateFilterBadge() {
+  var count = 0;
+  var period = document.getElementById('periodFilter');
+  if (period && period.value !== 'month') count++;
+  ['source','supplier','caller','stage'].forEach(function(col){
+    var s = columnFilters[col];
+    if (s && s.size > 0) count++;
+  });
+  var search = document.getElementById('searchInput');
+  if (search && search.value.trim()) count++;
+  var badge = document.getElementById('filterCountBadge');
+  if (!badge) return;
+  if (count > 0) { badge.textContent = count; badge.style.display = 'inline-flex'; }
+  else { badge.style.display = 'none'; }
 }
 
 function getPeriodRange(v) {
@@ -1857,9 +1890,13 @@ function setupColResizers() { /* 열 너비 고정 — 드래그 조정 비활�
 
 function init() {
   document.getElementById('f_date').value = today();
+  if (window.matchMedia('(max-width: 768px)').matches) {
+    document.getElementById('filterBar').classList.add('filters-collapsed');
+  }
   renderTable();
   setupColResizers();
   applyColWidths();
+  updateFilterBadge();
   fetchExternalInquiries().then(function(){
     populateRepFilter();
     renderTable();
