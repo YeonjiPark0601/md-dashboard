@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-16T02:01:23.805Z",
+  "updated": "2026-04-16T02:45:58.210Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -37,6 +37,24 @@
       "region": "경기도 성남시",
       "caller": "",
       "supplier": "굿플",
+      "payDate": "",
+      "payAmount": null
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 04. 16 오전 11:42:31",
+      "date": "2026-04-16",
+      "name": "김정현",
+      "cid": "5d83424e3f0e6805c4706710",
+      "phone": "010-3244-2983",
+      "product": "MESH T-1000 SMART 체열진단기 ",
+      "qty": 1,
+      "price": "모름",
+      "productId": "5da995310dabe405b156ed53",
+      "clinic": "",
+      "region": "경기도 남양주시",
+      "caller": "",
+      "supplier": "메쉬",
       "payDate": "",
       "payAmount": null
     },
