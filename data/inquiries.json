@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-16T06:20:59.216Z",
+  "updated": "2026-04-16T06:35:58.213Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -35,7 +35,7 @@
       "productId": "5e65ead2bfe4260944783220",
       "clinic": "365운중한의원",
       "region": "경기도 성남시",
-      "caller": "",
+      "caller": "김진석",
       "supplier": "굿플",
       "payDate": "",
       "payAmount": null
@@ -197,7 +197,7 @@
       "productId": "5e65ead2bfe4260944783220",
       "clinic": "365운중한의원",
       "region": "경기도 성남시",
-      "caller": "",
+      "caller": "김진석",
       "supplier": "굿플",
       "payDate": "",
       "payAmount": null
