@@ -272,18 +272,19 @@ th.sortable:hover { background: #eef0f4; }
   #consultTable td:nth-of-type(1)::before { content: "인입시점"; }
   #consultTable td:nth-of-type(2)::before { content: "경로"; }
   #consultTable td:nth-of-type(3)::before { content: "고객명"; }
-  #consultTable td:nth-of-type(4)::before { content: "한의원"; }
-  #consultTable td:nth-of-type(5)::before { content: "지역"; }
-  #consultTable td:nth-of-type(6)::before { content: "공급처"; }
-  #consultTable td:nth-of-type(7)::before { content: "상담물품"; }
-  #consultTable td:nth-of-type(8)::before { content: "수량"; }
-  #consultTable td:nth-of-type(9)::before { content: "견적가"; }
-  #consultTable td:nth-of-type(10)::before { content: "담당자"; }
-  #consultTable td:nth-of-type(11)::before { content: "Stage"; }
-  #consultTable td:nth-of-type(12)::before { content: "문의내용"; }
-  #consultTable td:nth-of-type(13)::before { content: "데모일정"; }
-  #consultTable td:nth-of-type(14)::before { content: "결제일자"; }
-  #consultTable td:nth-of-type(15)::before { content: "수정"; }
+  #consultTable td:nth-of-type(4)::before { content: "연락처"; }
+  #consultTable td:nth-of-type(5)::before { content: "한의원"; }
+  #consultTable td:nth-of-type(6)::before { content: "지역"; }
+  #consultTable td:nth-of-type(7)::before { content: "공급처"; }
+  #consultTable td:nth-of-type(8)::before { content: "상담물품"; }
+  #consultTable td:nth-of-type(9)::before { content: "수량"; }
+  #consultTable td:nth-of-type(10)::before { content: "견적가"; }
+  #consultTable td:nth-of-type(11)::before { content: "담당자"; }
+  #consultTable td:nth-of-type(12)::before { content: "Stage"; }
+  #consultTable td:nth-of-type(13)::before { content: "문의내용"; }
+  #consultTable td:nth-of-type(14)::before { content: "데모일정"; }
+  #consultTable td:nth-of-type(15)::before { content: "결제일자"; }
+  #consultTable td:nth-of-type(16)::before { content: "수정"; }
   #consultTable td:nth-of-type(3) { font-size: 15px; font-weight: 700; padding-top: 2px; padding-bottom: 6px; border-bottom: 1px solid #f0f0f0; margin-bottom: 4px; }
   #consultTable td:nth-of-type(3)::before { color: #aaa; }
   #consultTable td.td-truncate, #consultTable td.note-cell { max-width: none; white-space: normal; overflow: visible; text-overflow: clip; }
@@ -494,6 +495,7 @@ th.sortable:hover { background: #eef0f4; }
             <th class="sortable" onclick="sortBy('date')" data-col="date">인입시점 <span class="sort-icon">↕</span></th>
             <th>인입경로</th>
             <th>고객명</th>
+            <th>연락처</th>
             <th>한의원명</th>
             <th>지역</th>
             <th>공급처</th>
@@ -1051,6 +1053,7 @@ function renderTable() {
       '<td>' + escHtml(r.date) + '</td>' +
       '<td>' + escHtml(r.source) + '</td>' +
       '<td>' + ((r.cid && r.cid !== 'N/A' && /^[a-f0-9]{24}$/.test(r.cid)) ? '<a href="https://tools.medistream.co.kr/customers/' + encodeURIComponent(r.cid) + '" target="_blank" rel="noopener" style="color:#1a73e8;text-decoration:none;font-weight:700;">' + escHtml(r.customer) + '</a>' : '<strong>' + escHtml(r.customer) + '</strong>') + '</td>' +
+      '<td style="font-size:13px;letter-spacing:-0.3px;">' + escHtml(r.phone || '') + '</td>' +
       '<td>' + escHtml(r.clinic) + '</td>' +
       '<td>' + escHtml(r.region) + '</td>' +
       '<td' + (r.supplierLocked ? ' style="font-size:12px;color:#555;" title="주문이력에서 자동 매핑 — 수정 불가"' : ' class="supplier-cell editable" data-id="' + escHtml(r.id) + '" data-ext="' + (r.external?'1':'0') + '" style="font-size:12px;color:#555;cursor:text;" title="클릭해서 편집"') + '>' + (escHtml(r.supplier || '') || '<span class="note-placeholder">입력</span>') + '</td>' +
@@ -1815,18 +1818,19 @@ var DEFAULT_COL_WIDTHS = {
   0: 95,   // 인입시점
   1: 100,  // 인입경로
   2: 90,   // 고객명
-  3: 120,  // 한의원명
-  4: 100,  // 지역
-  5: 110,  // 공급처
-  6: 240,  // 상담물품
-  7: 60,   // 수량
-  8: 100,  // 견적가
-  9: 80,   // 담당자
-  10: 80,  // Stage
-  11: 280, // 문의내용
-  12: 95,  // 데모일정
-  13: 95,  // 결제일자
-  14: 70   // 수정
+  3: 120,  // 연락처
+  4: 120,  // 한의원명
+  5: 100,  // 지역
+  6: 110,  // 공급처
+  7: 240,  // 상담물품
+  8: 60,   // 수량
+  9: 100,  // 견적가
+  10: 80,  // 담당자
+  11: 80,  // Stage
+  12: 280, // 문의내용
+  13: 95,  // 데모일정
+  14: 95,  // 결제일자
+  15: 70   // 수정
 };
 
 function applyColWidths() {
