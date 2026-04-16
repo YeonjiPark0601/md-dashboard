@@ -1,9 +1,27 @@
 {
-  "updated": "2026-04-15T18:25:58.904Z",
+  "updated": "2026-04-16T01:01:46.621Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "일반",
+      "timestamp": "2026. 04. 16 오전 09:57:04",
+      "date": "2026-04-16",
+      "name": "전형선",
+      "cid": "5e829d36bfe4260944784803",
+      "phone": "010-5548-1423",
+      "product": "대요메디 3차원 맥영상 검사기 DMP-LIFEPLUS",
+      "qty": 1,
+      "price": "1300만원",
+      "productId": "610a369a09c63a06ed1487a7",
+      "clinic": "",
+      "region": "전라남도 나주시",
+      "caller": "",
+      "supplier": "대요메디",
+      "payDate": "",
+      "payAmount": null
+    },
     {
       "source": "총판기기",
       "timestamp": "2026. 04. 16 오전 03:25:13",
