@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-16T01:55:59.506Z",
+  "updated": "2026-04-16T02:01:23.805Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -3237,8 +3237,8 @@
       "qty": "N/A",
       "price": "N/A",
       "productId": "618c881fbc63410023476154",
-      "clinic": "",
-      "region": "충청남도 아산시",
+      "clinic": "나음누리한의원",
+      "region": "충청남도 천안시",
       "caller": "",
       "supplier": "이노메디케어",
       "payDate": "",
