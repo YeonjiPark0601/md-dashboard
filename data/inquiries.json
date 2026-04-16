@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-16T08:45:59.502Z",
+  "updated": "2026-04-16T08:55:56.405Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -216,6 +216,24 @@
       "clinic": "담비한의원",
       "region": "대전시 유성구",
       "caller": "김태호",
+      "supplier": "이노메디케어",
+      "payDate": "",
+      "payAmount": null
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 16 오후 05:53:48",
+      "date": "2026-04-16",
+      "name": "황영식",
+      "cid": "5f9777bb512031633431fbef",
+      "phone": "010-4024-2494",
+      "product": "(상담하기) PT10 혈액검사기",
+      "qty": 1,
+      "price": "모름",
+      "productId": "618c881fbc63410023476154",
+      "clinic": "경희피어라한의원",
+      "region": "세종시",
+      "caller": "",
       "supplier": "이노메디케어",
       "payDate": "",
       "payAmount": null
