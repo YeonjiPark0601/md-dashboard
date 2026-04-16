@@ -1,9 +1,27 @@
 {
-  "updated": "2026-04-16T13:56:00.904Z",
+  "updated": "2026-04-16T17:15:59.613Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "일반",
+      "timestamp": "2026. 04. 17 오전 02:13:09",
+      "date": "2026-04-17",
+      "name": "임연준",
+      "cid": "5e8751adbfe4260944784b65",
+      "phone": "010-3011-2196",
+      "product": "오케이차트",
+      "qty": 1,
+      "price": "1210000",
+      "productId": "5efd3984221c8b5f77c8d36f",
+      "clinic": "청당경희365한의원",
+      "region": "충청남도 천안시",
+      "caller": "",
+      "supplier": "한메디",
+      "payDate": "",
+      "payAmount": null
+    },
     {
       "source": "일반",
       "timestamp": "2026. 04. 16 오전 09:57:04",
