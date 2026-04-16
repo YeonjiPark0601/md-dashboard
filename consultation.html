@@ -117,6 +117,8 @@ th.sortable:hover { background: #eef0f4; }
 .note-cell.editable { cursor: text; }
 .note-cell.editable:hover { background: #f0f7ff; }
 .note-placeholder { color: #bbb; font-style: italic; font-size: 12px; }
+.copy-phone:hover { color: #1a73e8; text-decoration: underline; }
+.copy-phone.copied { color: #16a34a; }
 .note-input { width: 100%; padding: 4px 6px; border: 1px solid #1a73e8; border-radius: 4px; font-size: 13px; font-family: inherit; outline: none; }
 .th-filterable { position: relative; white-space: nowrap; }
 .col-filter-btn { background: transparent; border: none; cursor: pointer; font-size: 10px; color: #888; padding: 2px 4px; margin-left: 4px; border-radius: 3px; }
@@ -703,6 +705,16 @@ function getStageBadgeClass(stage) {
   return map[stage] || 'badge-new';
 }
 
+function copyPhone(el) {
+  var text = el.textContent.trim();
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(function() {
+    el.classList.add('copied');
+    showToast(text + ' 복사됨');
+    setTimeout(function(){ el.classList.remove('copied'); }, 800);
+  });
+}
+
 function showToast(msg, type) {
   type = type || 'success';
   var t = document.getElementById('toast');
@@ -1053,7 +1065,7 @@ function renderTable() {
       '<td>' + escHtml(r.date) + '</td>' +
       '<td>' + escHtml(r.source) + '</td>' +
       '<td>' + ((r.cid && r.cid !== 'N/A' && /^[a-f0-9]{24}$/.test(r.cid)) ? '<a href="https://tools.medistream.co.kr/customers/' + encodeURIComponent(r.cid) + '" target="_blank" rel="noopener" style="color:#1a73e8;text-decoration:none;font-weight:700;">' + escHtml(r.customer) + '</a>' : '<strong>' + escHtml(r.customer) + '</strong>') + '</td>' +
-      '<td style="font-size:13px;letter-spacing:-0.3px;">' + escHtml(r.phone || '') + '</td>' +
+      '<td style="font-size:13px;letter-spacing:-0.3px;">' + (r.phone ? '<span class="copy-phone" onclick="copyPhone(this)" style="cursor:pointer;" title="클릭해서 복사">' + escHtml(r.phone) + '</span>' : '') + '</td>' +
       '<td>' + escHtml(r.clinic) + '</td>' +
       '<td>' + escHtml(r.region) + '</td>' +
       '<td' + (r.supplierLocked ? ' style="font-size:12px;color:#555;" title="주문이력에서 자동 매핑 — 수정 불가"' : ' class="supplier-cell editable" data-id="' + escHtml(r.id) + '" data-ext="' + (r.external?'1':'0') + '" style="font-size:12px;color:#555;cursor:text;" title="클릭해서 편집"') + '>' + (escHtml(r.supplier || '') || '<span class="note-placeholder">입력</span>') + '</td>' +
