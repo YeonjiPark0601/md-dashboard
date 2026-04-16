@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-16T08:26:00.805Z",
+  "updated": "2026-04-16T08:45:59.502Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -199,6 +199,24 @@
       "region": "경기도 화성시",
       "caller": "",
       "supplier": "디에스이아이엔씨",
+      "payDate": "",
+      "payAmount": null
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 16 오후 05:43:26",
+      "date": "2026-04-16",
+      "name": "최종일",
+      "cid": "5ff05a02d6491c001b178148",
+      "phone": "010-2262-4429",
+      "product": "(상담하기) PT10 혈액검사기",
+      "qty": 1,
+      "price": "모름",
+      "productId": "618c881fbc63410023476154",
+      "clinic": "담비한의원",
+      "region": "대전시 유성구",
+      "caller": "김태호",
+      "supplier": "이노메디케어",
       "payDate": "",
       "payAmount": null
     },
