@@ -658,6 +658,9 @@ function recordToSheetData(r) {
   return d;
 }
 
+// ⚠️ 레코드 생성 경로를 수정/추가할 때는 반드시 clinic/region/supplierLocked 설정을
+// 함께 고려할 것. 자동 매칭된 한의원명/지역/공급처는 사용자 요구사항상 수정 불가여야 한다.
+// 렌더링(renderTable)이 이 플래그를 읽어 editable input vs 정적 text를 분기한다.
 function sheetRowToRecord(row) {
   var r = { id: row.id || '', sheetRow: true };
   Object.keys(COL_TO_FIELD).forEach(function(col){ r[COL_TO_FIELD[col]] = row[col] || ''; });
