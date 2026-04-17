@@ -2978,38 +2978,64 @@ function renderPT10CartTrendBase(canvasId,chartKey,trfOnly,startYm){
 function renderPT10SummaryYear(year,headId,bodyId){
   const allMonths=['01','02','03','04','05','06','07','08','09','10','11','12'];
   const dY=pt10Data.filter(r=>r['연월']&&r['연월'].startsWith(year));
-  const sumByFilter=(m,cat,field)=>{let t=0;dY.forEach(r=>{if(r['연월']===year+'-'+m&&(!cat||r['구분']===cat))t+=r[field]||0});return t};
-  // PT10 PU 집계
+  const isTrf=d=>/TRF/i.test(d['상품명']||d['품목명']||'');
+  // brand: 'all' | 'pt10' | 'trf'
+  const sumByFilter=(m,cat,field,brand)=>{let t=0;dY.forEach(r=>{
+    if(r['연월']!==year+'-'+m)return;
+    if(cat&&r['구분']!==cat)return;
+    if(brand==='pt10'&&isTrf(r))return;
+    if(brand==='trf'&&!isTrf(r))return;
+    t+=r[field]||0});return t};
   const pt10PuByM={};
   pt10PuData.filter(d=>d['연월']&&d['연월'].startsWith(year)).forEach(d=>{const m=d['연월'].split('-')[1];pt10PuByM[m]=(pt10PuByM[m]||0)+d['고객수']});
-  const allMetrics=[
-    {label:'전체 매출',fn:m=>sumByFilter(m,null,'매출금액')},
-    {label:'본체 수량',fn:m=>sumByFilter(m,'본체','수량')},
-    {label:'본체 매출',fn:m=>sumByFilter(m,'본체','매출금액')},
-    {label:'카트리지 수량',fn:m=>sumByFilter(m,'카트리지','수량')},
-    {label:'카트리지 매출',fn:m=>sumByFilter(m,'카트리지','매출금액')},
-    {label:'PU PU',fn:m=>pt10PuByM[m]||0},
-    {label:'기타 카트리지+튜브 매출',fn:m=>sumByFilter(m,'카트리지','매출금액')+sumByFilter(m,'캐필러리 튜브','매출금액')},
-    {label:'기타 캐필러리 튜브 매출',fn:m=>sumByFilter(m,'캐필러리 튜브','매출금액')},
-    {label:'기타 플런져 매출',fn:m=>sumByFilter(m,'플런져','매출금액')},
-    {label:'기타 AS 매출',fn:m=>sumByFilter(m,'AS','매출금액')},
-    {label:'기타 기타 매출',fn:m=>sumByFilter(m,'기타','매출금액')}
-  ];
-  const metrics=allMetrics.filter(mt=>{const total=allMonths.reduce((s,m)=>s+mt.fn(m),0);return total>0});
+
   document.getElementById(headId).innerHTML='<th class="sticky-col">구분</th><th class="sticky-col2">항목</th>'+allMonths.map(m=>`<th class="text-right">${m}월</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
-  const groups=[
-    {group:'전체',rows:metrics.filter(m=>m.label==='전체 매출')},
-    {group:'본체',rows:metrics.filter(m=>m.label.startsWith('본체'))},
-    {group:'카트리지',rows:metrics.filter(m=>m.label.startsWith('카트리지'))},
-    {group:'PU',rows:metrics.filter(m=>m.label.startsWith('PU'))},
-    {group:'기타',rows:metrics.filter(m=>!['전체 매출'].includes(m.label)&&!m.label.startsWith('본체')&&!m.label.startsWith('카트리지')&&!m.label.startsWith('PU'))}
-  ].filter(g=>g.rows.length>0);
+
+  // 2026년만 PT10/TRF 분리, 나머지 해는 기존 방식
+  const splitBrand=(year==='2026');
+  const groups=[];
+  const buildMetrics=brand=>[
+    {label:'본체 수량',fn:m=>sumByFilter(m,'본체','수량',brand)},
+    {label:'본체 매출',fn:m=>sumByFilter(m,'본체','매출금액',brand)},
+    {label:'카트리지 수량',fn:m=>sumByFilter(m,'카트리지','수량',brand)},
+    {label:'카트리지 매출',fn:m=>sumByFilter(m,'카트리지','매출금액',brand)},
+    ...(brand==='pt10'||!splitBrand?[
+      {label:'PU PU',fn:m=>pt10PuByM[m]||0},
+      {label:'기타 카트리지+튜브 매출',fn:m=>sumByFilter(m,'카트리지','매출금액',brand)+sumByFilter(m,'캐필러리 튜브','매출금액',brand)},
+      {label:'기타 캐필러리 튜브 매출',fn:m=>sumByFilter(m,'캐필러리 튜브','매출금액',brand)},
+      {label:'기타 플런져 매출',fn:m=>sumByFilter(m,'플런져','매출금액',brand)},
+      {label:'기타 AS 매출',fn:m=>sumByFilter(m,'AS','매출금액',brand)},
+      {label:'기타 기타 매출',fn:m=>sumByFilter(m,'기타','매출금액',brand)}
+    ]:[])
+  ];
+  const filterNonZero=mts=>mts.filter(mt=>allMonths.reduce((s,m)=>s+mt.fn(m),0)>0);
+
+  // 전체 매출
+  groups.push({group:'전체',rows:[{label:'매출',fn:m=>sumByFilter(m,null,'매출금액','all')}]});
+
+  if(splitBrand){
+    // PT10 서브그룹
+    const pt10M=filterNonZero(buildMetrics('pt10'));
+    if(pt10M.length)groups.push({group:'PT10',rows:pt10M});
+    // TRF 서브그룹
+    const trfM=filterNonZero(buildMetrics('trf'));
+    if(trfM.length)groups.push({group:'TRF',rows:trfM});
+  }else{
+    const metrics=filterNonZero(buildMetrics('all'));
+    groups.push(
+      {group:'본체',rows:metrics.filter(m=>m.label.startsWith('본체'))},
+      {group:'카트리지',rows:metrics.filter(m=>m.label.startsWith('카트리지'))},
+      {group:'PU',rows:metrics.filter(m=>m.label.startsWith('PU'))},
+      {group:'기타',rows:metrics.filter(m=>m.label.startsWith('기타'))}
+    );
+  }
+  const finalGroups=groups.filter(g=>g.rows.length>0);
+
   let html='';
-  groups.forEach(g=>{
+  finalGroups.forEach(g=>{
     g.rows.forEach((mt,i)=>{
       const vals=allMonths.map(m=>mt.fn(m));const total=vals.reduce((s,v)=>s+v,0);
-      const subLabel=mt.label.replace(g.group+' ','').replace(g.group,'');
-      html+=`<tr><td class="sticky-col">${i===0?g.group:''}</td><td class="sticky-col2">${subLabel||'매출'}</td>`+vals.map(v=>`<td class="text-right">${v?Math.round(v).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(total).toLocaleString()}</td></tr>`;
+      html+=`<tr><td class="sticky-col">${i===0?g.group:''}</td><td class="sticky-col2">${mt.label}</td>`+vals.map(v=>`<td class="text-right">${v?Math.round(v).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(total).toLocaleString()}</td></tr>`;
     });
   });
   document.getElementById(bodyId).innerHTML=html;
