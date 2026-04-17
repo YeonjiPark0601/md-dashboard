@@ -3102,7 +3102,10 @@ const DIO_PRODUCTS=[
   {id:'MEDDPEURIS190001B001',name:'PT10 본체',moq:1,moqLabel:'1'},
   {id:'MEETPEURIS2B0010B001',name:'플런져(압축패드)',moq:1,moqLabel:'1'},
   {id:'GEETPEURIS780007B001',name:'캐필러리 튜브 25개입',moq:800,moqLabel:'800set',fixedRop:500},
-  {id:'MEDOMEDISED80035B001',name:'HbA1c 캐필러리튜브 100pcs',moq:0,moqLabel:'-'}
+  {id:'MEDOMEDISED80035B001',name:'HbA1c 캐필러리튜브 100pcs',moq:0,moqLabel:'-'},
+  {id:'01KP56A33TZRW0ZPYX899DEJS1',name:'TRF Plus 본체',moq:1,moqLabel:'1'},
+  {id:'01KP56J1V7MXV4J7SHQM4BYDNG',name:'TRF Plus D-Dimer',moq:12,moqLabel:'12'},
+  {id:'01KP56GBD07S01E2NX7PMB90J4',name:'TRF Plus CRP',moq:12,moqLabel:'12'}
 ];
 
 async function renderPT10DIO(){
@@ -3170,7 +3173,11 @@ async function renderPT10DIO(){
       // 최신 제품명
       const names=nameMap[p.id]||{};const latestYm=Object.keys(names).sort().pop();
       const displayName=latestYm?names[latestYm]:p.name;
-      const shortName=displayName.replace(/^\(냉\)\[프리시젼바이오\]\s*/,'').replace(/^Exdia PT10 카트리지\s*/,'').replace(/\s*1박스$/,'').replace(/\s*1팩$/,'');
+      const shortName=displayName
+        .replace(/^\(냉\)\[프리시젼바이오\]\s*/,'').replace(/^\[프리시젼바이오\]\s*/,'')
+        .replace(/^Exdia PT10 카트리지\s*/,'').replace(/^Exdia TRF Plus 카트리지\s*/,'TRF ')
+        .replace(/^Exdia TRF Plus\s*/,'TRF Plus ')
+        .replace(/\s*1박스$/,'').replace(/\s*1팩$/,'').replace(/\s*1개$/,'');
 
       const bold=dio<45?'font-weight:bold':'';
       bodyHtml+=`<tr style="${bold}"><td>${shortName}</td><td class="text-right">${stock.toLocaleString()}</td><td class="text-right">${dailyAvg.toFixed(1)}</td><td class="text-right">${dio===Infinity?'∞':dio.toFixed(1)}</td><td class="text-right">${rop.toLocaleString()}</td><td>${orderDate==='즉시'?'<span style="color:#e53935;font-weight:bold">즉시</span>':orderDate}</td><td class="text-right">${p.moqLabel}</td><td style="${statusCls}">${status}</td></tr>`;
