@@ -1690,12 +1690,12 @@ function renderByModel(startKey, endKey) {
   let head = '<tr><th rowspan="2" style="text-align:left; position:sticky; left:0; background:#f7f8fa; min-width:90px">모델</th>';
   for (const ym of months) {
     const [yy, mm] = ym.split('-');
-    head += `<th colspan="4" class="col-sep" style="min-width:280px">20${yy}-${mm}</th>`;
+    head += `<th colspan="6" class="col-sep" style="min-width:400px">20${yy}-${mm}</th>`;
   }
-  head += '<th colspan="4" class="col-sep" style="min-width:280px; background:#eef2f7">합계</th></tr>';
+  head += '<th colspan="6" class="col-sep" style="min-width:400px; background:#eef2f7">합계</th></tr>';
   head += '<tr>';
-  const subCols = ['상품수', '상품액', '견본수', '견본액'];
-  const subColors = ['#1a73e8', '#1a73e8', '#7c3aed', '#7c3aed'];
+  const subCols = ['상품수', '상품액', '견본수', '견본액', '합계수', '합계액'];
+  const subColors = ['#1a73e8', '#1a73e8', '#7c3aed', '#7c3aed', '#0f766e', '#0f766e'];
   for (let i = 0; i <= months.length; i++) {
     subCols.forEach((c, j) => {
       const sep = j === 0 ? 'col-sep ' : '';
@@ -1707,7 +1707,7 @@ function renderByModel(startKey, endKey) {
 
   // 바디
   if (!models.length) {
-    tbody.innerHTML = `<tr><td colspan="${months.length * 4 + 5}" style="text-align:center; color:#888; padding:20px">해당 기간 데이터 없음</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="${months.length * 6 + 7}" style="text-align:center; color:#888; padding:20px">해당 기간 데이터 없음</td></tr>`;
     return;
   }
   tbody.innerHTML = '';
@@ -1721,15 +1721,21 @@ function renderByModel(startKey, endKey) {
     let row = `<td style="text-align:left; font-weight:700; position:sticky; left:0; background:#fff">${m}</td>`;
     for (const ym of months) {
       const c = cell[m][ym] || { p_q:0, p_a:0, d_q:0, d_a:0 };
+      const tq = c.p_q + c.d_q, ta = c.p_a + c.d_a;
       row += `<td class="col-sep" style="color:#1a73e8">${dim(c.p_q)}</td>`;
       row += `<td style="color:#555; font-size:12px">${dimAmt(c.p_a)}</td>`;
       row += `<td style="color:#7c3aed">${dim(c.d_q)}</td>`;
       row += `<td style="color:#555; font-size:12px">${dimAmt(c.d_a)}</td>`;
+      row += `<td style="color:#0f766e; font-weight:700; background:#f0fdfa">${dim(tq)}</td>`;
+      row += `<td style="color:#0f766e; font-size:12px; font-weight:600; background:#f0fdfa">${dimAmt(ta)}</td>`;
     }
+    const rtTq = rt.p_q + rt.d_q, rtTa = rt.p_a + rt.d_a;
     row += `<td class="col-sep" style="background:#f7f9fc; color:#1a73e8; font-weight:700">${rt.p_q || '-'}</td>`;
     row += `<td style="background:#f7f9fc; font-weight:600">${rt.p_a ? fmt(rt.p_a) : '-'}</td>`;
     row += `<td style="background:#f7f9fc; color:#7c3aed; font-weight:700">${rt.d_q || '-'}</td>`;
     row += `<td style="background:#f7f9fc; font-weight:600">${rt.d_a ? fmt(rt.d_a) : '-'}</td>`;
+    row += `<td style="background:#ccfbf1; color:#0f766e; font-weight:700">${rtTq || '-'}</td>`;
+    row += `<td style="background:#ccfbf1; color:#0f766e; font-weight:700">${rtTa ? fmt(rtTa) : '-'}</td>`;
     tr.innerHTML = row;
     tbody.appendChild(tr);
   }
@@ -1741,16 +1747,22 @@ function renderByModel(startKey, endKey) {
   const grand = { p_q:0, p_a:0, d_q:0, d_a:0 };
   for (const ym of months) {
     const c = colTotal[ym];
+    const tq = c.p_q + c.d_q, ta = c.p_a + c.d_a;
     grand.p_q += c.p_q; grand.p_a += c.p_a; grand.d_q += c.d_q; grand.d_a += c.d_a;
     sumRow += `<td class="col-sep" style="color:#1a73e8">${c.p_q || '-'}</td>`;
     sumRow += `<td>${c.p_a ? fmt(c.p_a) : '-'}</td>`;
     sumRow += `<td style="color:#7c3aed">${c.d_q || '-'}</td>`;
     sumRow += `<td>${c.d_a ? fmt(c.d_a) : '-'}</td>`;
+    sumRow += `<td style="color:#0f766e; background:#f0fdfa">${tq || '-'}</td>`;
+    sumRow += `<td style="color:#0f766e; background:#f0fdfa">${ta ? fmt(ta) : '-'}</td>`;
   }
+  const gTq = grand.p_q + grand.d_q, gTa = grand.p_a + grand.d_a;
   sumRow += `<td class="col-sep" style="color:#1a73e8">${grand.p_q || '-'}</td>`;
   sumRow += `<td>${grand.p_a ? fmt(grand.p_a) : '-'}</td>`;
   sumRow += `<td style="color:#7c3aed">${grand.d_q || '-'}</td>`;
   sumRow += `<td>${grand.d_a ? fmt(grand.d_a) : '-'}</td>`;
+  sumRow += `<td style="color:#0f766e; background:#ccfbf1">${gTq || '-'}</td>`;
+  sumRow += `<td style="color:#0f766e; background:#ccfbf1">${gTa ? fmt(gTa) : '-'}</td>`;
   sumTr.innerHTML = sumRow;
   tbody.appendChild(sumTr);
 }
