@@ -888,8 +888,8 @@ function render(){
     document.getElementById('classTrendRow').style.display='';
     document.getElementById('chartRow3').style.display='none';
   }else{
-    // 턴키: 의료기기와 동일 트렌드, 차트 숨김
-    document.getElementById('trendRow').style.display='';
+    // 턴키: 의료기기와 동일 트렌드, 차트 숨김 / PT10: 자체 YoY 트렌드 사용하므로 공용 숨김
+    document.getElementById('trendRow').style.display=isPT10?'none':'';
     document.getElementById('classTrendRow').style.display='none';
     document.getElementById('chartRow3').style.display='none';
   }
@@ -2891,17 +2891,16 @@ function renderPT10TrfTrend(){
     // 전년 매핑: 해당 월의 1년 후 ym이 months에 있으면 pY에 기록
     const sh=yearShift(ym,1);if(months.includes(sh))pY[sh]=(pY[sh]||0)+amt});
   const ptColor='#4285f4',trfColor='#fbbc04';
+  const stackLabelCfg={anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',
+    display:function(ctx){const chart=ctx.chart;const di=ctx.dataIndex;let t=0,lastVisible=-1;
+      for(let j=0;j<chart.data.datasets.length;j++){if(chart.data.datasets[j].stack==='thisYear'&&!chart.getDatasetMeta(j).hidden){t+=(chart.data.datasets[j].data[di]||0);lastVisible=j}}
+      return ctx.datasetIndex===lastVisible&&t>0;},
+    formatter:function(v,ctx){const chart=ctx.chart;const di=ctx.dataIndex;let t=0;
+      for(let j=0;j<chart.data.datasets.length;j++){if(chart.data.datasets[j].stack==='thisYear'&&!chart.getDatasetMeta(j).hidden)t+=(chart.data.datasets[j].data[di]||0)}
+      return fmtLabel(t);}};
   const datasets=[
-    {label:'PT10',data:months.map(m=>salesPT[m]||0),backgroundColor:ptColor,borderRadius:0,stack:'thisYear',order:2,
-      datalabels:{display:false}},
-    {label:'TRF Plus',data:months.map(m=>salesTRF[m]||0),backgroundColor:trfColor,borderRadius:0,stack:'thisYear',order:2,
-      datalabels:{anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',
-        display:function(ctx){const chart=ctx.chart;const di=ctx.dataIndex;let t=0,lastVisible=-1;
-          for(let j=0;j<chart.data.datasets.length;j++){if(chart.data.datasets[j].stack==='thisYear'&&!chart.getDatasetMeta(j).hidden){t+=(chart.data.datasets[j].data[di]||0);lastVisible=j}}
-          return ctx.datasetIndex===lastVisible&&t>0;},
-        formatter:function(v,ctx){const chart=ctx.chart;const di=ctx.dataIndex;let t=0;
-          for(let j=0;j<chart.data.datasets.length;j++){if(chart.data.datasets[j].stack==='thisYear'&&!chart.getDatasetMeta(j).hidden)t+=(chart.data.datasets[j].data[di]||0)}
-          return fmtLabel(t);}}},
+    {label:'PT10',data:months.map(m=>salesPT[m]||0),backgroundColor:ptColor,borderRadius:0,stack:'thisYear',order:2,datalabels:stackLabelCfg},
+    {label:'TRF Plus',data:months.map(m=>salesTRF[m]||0),backgroundColor:trfColor,borderRadius:0,stack:'thisYear',order:2,datalabels:stackLabelCfg},
     {label:'전년',data:months.map(m=>pY[m]||0),type:'line',borderColor:'#bbb',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,borderDash:[5,3],pointRadius:3,pointBackgroundColor:'#999',order:0,fill:false,
       datalabels:{display:false}}
   ];
@@ -2911,23 +2910,29 @@ function renderPT10TrfTrend(){
       plugins:{legend:{position:'top'},
         tooltip:{callbacks:{
           label:ctx=>ctx.dataset.label+': '+fmt(ctx.raw),
-          afterBody:items=>{if(!items||!items.length)return'';const i=items[0].dataIndex;
-            const t=(salesPT[months[i]]||0)+(salesTRF[months[i]]||0);const lines=['합계: '+fmt(t)];
-            const p=pY[months[i]]||0;if(p){const pct=((t-p)/p*100).toFixed(1);lines.push('YoY: '+(pct>0?'+':'')+pct+'%')}
+          afterBody:items=>{if(!items||!items.length)return'';const i=items[0].dataIndex;const chart=items[0].chart;
+            let t=0;for(let j=0;j<chart.data.datasets.length;j++){const ds=chart.data.datasets[j];if(ds.stack==='thisYear'&&!chart.getDatasetMeta(j).hidden)t+=(ds.data[i]||0)}
+            const lines=['합계: '+fmt(t)];
+            const pMeta=chart.data.datasets.findIndex(d=>d.label==='전년');
+            const pVisible=pMeta>=0&&!chart.getDatasetMeta(pMeta).hidden;
+            const p=pY[months[i]]||0;if(p&&pVisible){const pct=((t-p)/p*100).toFixed(1);lines.push('YoY: '+(pct>0?'+':'')+pct+'%')}
             return lines.join('\n')}}},datalabels:{}},
       scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:v=>fmt(v)}}}}});
 }
 
-function renderPT10CartTrend(){renderPT10CartTrendBase('pt10CartChart','pt10',false);renderPT10CartTrendBase('pt10TrfCartChart','pt10Trf',true);}
-function renderPT10CartTrendBase(canvasId,chartKey,trfOnly){
+function renderPT10CartTrend(){renderPT10CartTrendBase('pt10CartChart','pt10',false,2025);renderPT10CartTrendBase('pt10TrfCartChart','pt10Trf',true,2026);}
+function renderPT10CartTrendBase(canvasId,chartKey,trfOnly,startYear){
   const now=new Date();const curYm=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-  const months=[];for(let y=2025;;){for(let m=1;m<=12;m++){const ym=`${y}-${String(m).padStart(2,'0')}`;months.push(ym);if(ym===curYm)break}if(months[months.length-1]===curYm)break;y++}
+  const months=[];for(let y=startYear;;){for(let m=1;m<=12;m++){const ym=`${y}-${String(m).padStart(2,'0')}`;months.push(ym);if(ym===curYm)break}if(months[months.length-1]===curYm)break;y++}
 
   const isTrf=d=>/TRF/i.test(d['상품명']||d['품목명']||'');
   // TRF 카트리지: 품목명에서 카테고리 추출 (D-Dimer, CRP 등)
   const extractTrfKind=name=>{const m=(name||'').match(/카트리지\s+([^\s]+)/);return m?m[1]:'기타'};
-  const cartData=pt10Data.filter(d=>d['구분']==='카트리지'&&(trfOnly?isTrf(d):!isTrf(d)))
-    .map(d=>trfOnly?Object.assign({},d,{상세:extractTrfKind(d['품목명'])}):d);
+  // TRF 카트리지는 PT10 마스터에 등록 안 되어 있을 수 있어 품목명 기반 필터
+  const isTrfCart=d=>isTrf(d)&&/카트리지/.test(d['상품명']||d['품목명']||'');
+  const cartData=trfOnly
+    ?pt10Data.filter(isTrfCart).map(d=>Object.assign({},d,{상세:extractTrfKind(d['상품명']||d['품목명'])}))
+    :pt10Data.filter(d=>d['구분']==='카트리지'&&!isTrf(d));
   const details=[...new Set(cartData.map(d=>d['상세']).filter(Boolean))].sort();
 
   // Stacked bars for sales by 상세, stacked bars for qty by 상세
