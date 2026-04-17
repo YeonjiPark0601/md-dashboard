@@ -2920,19 +2920,14 @@ function renderPT10TrfTrend(){
       scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:v=>fmt(v)}}}}});
 }
 
-function renderPT10CartTrend(){renderPT10CartTrendBase('pt10CartChart','pt10',false,2025);renderPT10CartTrendBase('pt10TrfCartChart','pt10Trf',true,2026);}
-function renderPT10CartTrendBase(canvasId,chartKey,trfOnly,startYear){
+function renderPT10CartTrend(){renderPT10CartTrendBase('pt10CartChart','pt10',false,'2025-01');renderPT10CartTrendBase('pt10TrfCartChart','pt10Trf',true,'2026-04');}
+function renderPT10CartTrendBase(canvasId,chartKey,trfOnly,startYm){
   const now=new Date();const curYm=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-  const months=[];for(let y=startYear;;){for(let m=1;m<=12;m++){const ym=`${y}-${String(m).padStart(2,'0')}`;months.push(ym);if(ym===curYm)break}if(months[months.length-1]===curYm)break;y++}
+  const [sy,sm]=startYm.split('-').map(Number);
+  const months=[];let y=sy,m=sm;while(true){const ym=`${y}-${String(m).padStart(2,'0')}`;months.push(ym);if(ym===curYm)break;m++;if(m>12){m=1;y++}}
 
   const isTrf=d=>/TRF/i.test(d['상품명']||d['품목명']||'');
-  // TRF 카트리지: 품목명에서 카테고리 추출 (D-Dimer, CRP 등)
-  const extractTrfKind=name=>{const m=(name||'').match(/카트리지\s+([^\s]+)/);return m?m[1]:'기타'};
-  // TRF 카트리지는 PT10 마스터에 등록 안 되어 있을 수 있어 품목명 기반 필터
-  const isTrfCart=d=>isTrf(d)&&/카트리지/.test(d['상품명']||d['품목명']||'');
-  const cartData=trfOnly
-    ?pt10Data.filter(isTrfCart).map(d=>Object.assign({},d,{상세:extractTrfKind(d['상품명']||d['품목명'])}))
-    :pt10Data.filter(d=>d['구분']==='카트리지'&&!isTrf(d));
+  const cartData=pt10Data.filter(d=>d['구분']==='카트리지'&&(trfOnly?isTrf(d):!isTrf(d)));
   const details=[...new Set(cartData.map(d=>d['상세']).filter(Boolean))].sort();
 
   // Stacked bars for sales by 상세, stacked bars for qty by 상세
