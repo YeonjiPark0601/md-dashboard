@@ -3049,7 +3049,11 @@ function renderPT10Summary(){['2026','2025','2024','2023'].forEach(y=>{const sfx
 function renderPT10CartYear(year,headId,bodyId){
   const allMonths=['01','02','03','04','05','06','07','08','09','10','11','12'];
   const dY=pt10Data.filter(r=>r['연월']&&r['연월'].startsWith(year)&&(r['구분']==='카트리지'||r['구분']==='캐필러리 튜브'));
-  const details=[...new Set(dY.map(r=>r['상세']||r['구분']).filter(Boolean))].sort();
+  // 카트리지 정렬 순서: test9, prime9, hepatic, hba1c, crp, d-dimer (대소문자 무시, 나머지 맨 뒤)
+  const orderKeys=['test9','prime9','hepatic','hba1c','crp','d-dimer'];
+  const orderIdx=s=>{const k=(s||'').toLowerCase();const i=orderKeys.findIndex(o=>k.includes(o));return i<0?999:i};
+  const details=[...new Set(dY.map(r=>r['상세']||r['구분']).filter(Boolean))]
+    .sort((a,b)=>{const da=orderIdx(a),db=orderIdx(b);if(da!==db)return da-db;return a.localeCompare(b)});
   const rows=[];
   details.forEach(det=>{
     const qtyRow={label:det+' 수량'};const salesRow={label:det+' 매출'};
@@ -3072,6 +3076,15 @@ function renderPT10CartYear(year,headId,bodyId){
       html+=`<tr><td class="sticky-col">${i===0?det:''}</td><td class="sticky-col2">${subLabel}</td>`+allMonths.map(m=>`<td class="text-right">${r[m]?Math.round(r[m]).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(r.total).toLocaleString()}</td></tr>`;
     });
   });
+  // 합계 행 (수량 + 매출)
+  const totalQty={},totalSales={};let sumQty=0,sumSales=0;
+  allMonths.forEach(m=>{let q=0,s=0;
+    dY.forEach(r=>{if(r['연월']===year+'-'+m){q+=r['수량']||0;s+=r['매출금액']||0}});
+    totalQty[m]=q;totalSales[m]=s;sumQty+=q;sumSales+=s});
+  if(sumQty>0||sumSales>0){
+    html+=`<tr style="background:#f7f8fa;font-weight:700;"><td class="sticky-col" rowspan="2" style="background:#e8eef5 !important;">합계</td><td class="sticky-col2" style="background:#f0f3f7 !important;">수량</td>`+allMonths.map(m=>`<td class="text-right">${totalQty[m]?totalQty[m].toLocaleString():'-'}</td>`).join('')+`<td class="text-right">${sumQty.toLocaleString()}</td></tr>`;
+    html+=`<tr style="background:#f7f8fa;font-weight:700;"><td class="sticky-col2" style="background:#f0f3f7 !important;">매출</td>`+allMonths.map(m=>`<td class="text-right">${totalSales[m]?Math.round(totalSales[m]).toLocaleString():'-'}</td>`).join('')+`<td class="text-right">${Math.round(sumSales).toLocaleString()}</td></tr>`;
+  }
   document.getElementById(bodyId).innerHTML=html;
 }
 function renderPT10Cart(){['2026','2025','2024','2023'].forEach(y=>{const sfx=y==='2026'?'':y;renderPT10CartYear(y,'pt10Cart'+sfx+'Head','pt10Cart'+sfx+'Body')})}
