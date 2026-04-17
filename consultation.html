@@ -638,6 +638,88 @@ th.sortable:hover { background: #eef0f4; }
 const LS_KEY = 'md_consultations';
 var EXTERNAL_DATA = [];
 
+// ===== 시트 CRUD 동기화 =====
+const WEBHOOK_URL = 'https://n8n.datastream.co.kr/webhook/consultation-crud';
+const SHEET_ID = '1-futOM3jR32dUT3z3sOHUa-WeGiPW7Fxo7drigpiGvQ';
+const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv&sheet=%EC%8B%9C%ED%8A%B81';
+
+// form 필드명 <-> 시트 컬럼명 매핑
+const FIELD_TO_COL = {
+  source: '인입경로', customer: '고객명', phone: '연락처(클릭 시 복사)',
+  clinic: '한의원명', region: '지역', supplier: '공급처',
+  product: '상담물품', qty: '수량', price: '견적가',
+  caller: '담당자', stage: 'Stage', note: '문의내용',
+  demoDate: '데모일정', payDate: '결제일자'
+};
+const COL_TO_FIELD = Object.fromEntries(Object.entries(FIELD_TO_COL).map(function(kv){return [kv[1], kv[0]];}));
+
+function recordToSheetData(r) {
+  var d = { id: r.id };
+  Object.keys(FIELD_TO_COL).forEach(function(f){ d[FIELD_TO_COL[f]] = r[f] != null ? String(r[f]) : ''; });
+  return d;
+}
+
+function sheetRowToRecord(row) {
+  var r = { id: row.id || '', sheetRow: true };
+  Object.keys(COL_TO_FIELD).forEach(function(col){ r[COL_TO_FIELD[col]] = row[col] || ''; });
+  r.date = ''; r.consent = false; r.cid = ''; r.buyDate = ''; r.status = ''; r.rep = '';
+  return r;
+}
+
+function callWebhook(action, payload) {
+  return fetch(WEBHOOK_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(Object.assign({ action: action }, payload))
+  }).then(function(res){ return res.ok ? res.json() : Promise.reject('webhook failed: ' + res.status); })
+    .catch(function(e){ console.warn('웹훅 실패:', e); throw e; });
+}
+
+function syncCreate(record) { return callWebhook('create', { data: recordToSheetData(record) }); }
+function syncUpdate(record) { return callWebhook('update', { data: recordToSheetData(record) }); }
+function syncDelete(id)      { return callWebhook('delete', { id: id }); }
+
+// 간단한 CSV 파서
+function parseCSV(text) {
+  var rows = [], i = 0, len = text.length, cur = '', row = [], inQ = false;
+  while (i < len) {
+    var ch = text[i];
+    if (inQ) {
+      if (ch === '"' && text[i+1] === '"') { cur += '"'; i += 2; continue; }
+      if (ch === '"') { inQ = false; i++; continue; }
+      cur += ch; i++;
+    } else {
+      if (ch === '"') { inQ = true; i++; continue; }
+      if (ch === ',') { row.push(cur); cur = ''; i++; continue; }
+      if (ch === '\n') { row.push(cur); rows.push(row); row = []; cur = ''; i++; continue; }
+      if (ch === '\r') { i++; continue; }
+      cur += ch; i++;
+    }
+  }
+  if (cur !== '' || row.length) { row.push(cur); rows.push(row); }
+  if (!rows.length) return [];
+  var headers = rows[0];
+  return rows.slice(1).filter(function(r){ return r.some(function(c){ return c && c.trim(); }); })
+    .map(function(r){ var o = {}; headers.forEach(function(h, i){ o[h] = r[i] || ''; }); return o; });
+}
+
+function fetchSheetRecords() {
+  return fetch(SHEET_CSV_URL + '&_t=' + Date.now(), { cache: 'no-store' })
+    .then(function(res){ return res.text(); })
+    .then(function(csv){ return parseCSV(csv).map(sheetRowToRecord).filter(function(r){ return r.id; }); })
+    .catch(function(e){ console.warn('시트 조회 실패:', e); return []; });
+}
+
+// 시트에서 가져온 데이터를 localStorage와 병합 (sheet 우선)
+function mergeSheetIntoLocal(sheetRecords) {
+  var local = loadLocalOnly();
+  var sheetIds = new Set(sheetRecords.map(function(r){ return r.id; }));
+  // 시트에 있는 id는 시트 데이터로 덮어씀
+  var localKept = local.filter(function(r){ return !sheetIds.has(r.id); });
+  var merged = localKept.concat(sheetRecords);
+  saveData(merged);
+}
+
 function loadData() {
   try {
     var local = JSON.parse(localStorage.getItem(LS_KEY) || '[]');
@@ -868,18 +950,24 @@ function submitForm(e) {
   if (!validateForm(data)) { showToast('고객명은 필수 입력 항목입니다.', 'error'); return; }
   var allData = loadLocalOnly();
   var editId = document.getElementById('f_editId').value;
+  var record;
   if (editId) {
     var idx = allData.findIndex(function(r){ return r.id === editId; });
     if (idx !== -1) {
       allData[idx] = Object.assign({}, allData[idx], data);
+      record = allData[idx];
       saveData(allData);
-      showToast('상담 정보가 수정되었습니다.');
+      showToast('수정 중... 시트 동기화');
+      syncUpdate(record).then(function(){ showToast('상담 정보가 수정되었습니다.'); })
+        .catch(function(){ showToast('시트 동기화 실패 (로컬만 반영됨)', 'error'); });
     }
   } else {
-    var record = Object.assign({ id: Date.now().toString(), createdAt: new Date().toISOString() }, data);
+    record = Object.assign({ id: 'c_' + Date.now().toString(36) + Math.random().toString(36).slice(2,8), createdAt: new Date().toISOString() }, data);
     allData.push(record);
     saveData(allData);
-    showToast('상담이 등록되었습니다.');
+    showToast('등록 중... 시트 동기화');
+    syncCreate(record).then(function(){ showToast('상담이 등록되었습니다.'); })
+      .catch(function(){ showToast('시트 동기화 실패 (로컬만 반영됨)', 'error'); });
   }
   resetForm();
   populateRepFilter();
@@ -1329,12 +1417,15 @@ function closeModal() {
 
 document.getElementById('confirmDeleteBtn').addEventListener('click', function(){
   if (!pendingDeleteId) return;
-  var data = loadLocalOnly().filter(function(r){ return r.id !== pendingDeleteId; });
+  var targetId = pendingDeleteId;
+  var data = loadLocalOnly().filter(function(r){ return r.id !== targetId; });
   saveData(data);
   closeModal();
-  showToast('삭제되었습니다.');
   populateRepFilter();
   applyFilters();
+  showToast('삭제 중... 시트 동기화');
+  syncDelete(targetId).then(function(){ showToast('삭제되었습니다.'); })
+    .catch(function(){ showToast('시트 동기화 실패 (로컬만 반영됨)', 'error'); });
 });
 
 document.getElementById('confirmModal').addEventListener('click', function(e){
@@ -1853,6 +1944,7 @@ function startDemoEdit(td) {
         d[idx].demoDate = val;
         if (val && ['New','Follow'].indexOf(d[idx].stage) !== -1) d[idx].stage = 'Demo';
         saveData(d);
+        syncUpdate(d[idx]).catch(function(){});
       }
     }
     renderTable();
@@ -1908,7 +2000,7 @@ function startSupplierEdit(td) {
     } else {
       var d = loadLocalOnly();
       var idx = d.findIndex(function(r){ return r.id === id; });
-      if (idx !== -1) { d[idx].supplier = val; saveData(d); }
+      if (idx !== -1) { d[idx].supplier = val; saveData(d); syncUpdate(d[idx]).catch(function(){}); }
     }
     renderTable();
   }
@@ -1960,7 +2052,7 @@ document.addEventListener('change', function(e){
   } else {
     var d = loadLocalOnly();
     var idx = d.findIndex(function(r){ return r.id === id; });
-    if (idx !== -1) { d[idx].caller = val; saveData(d); }
+    if (idx !== -1) { d[idx].caller = val; saveData(d); syncUpdate(d[idx]).catch(function(){}); }
   }
   renderTable();
 });
@@ -1997,7 +2089,7 @@ document.addEventListener('change', function(e){
   } else {
     var d = loadLocalOnly();
     var idx = d.findIndex(function(r){ return r.id === id; });
-    if (idx !== -1) { d[idx].stage = val; saveData(d); }
+    if (idx !== -1) { d[idx].stage = val; saveData(d); syncUpdate(d[idx]).catch(function(){}); }
   }
   renderTable();
 });
@@ -2037,6 +2129,7 @@ function startNoteEdit(td) {
       if (idx !== -1) {
         d[idx].note = val;
         saveData(d);
+        syncUpdate(d[idx]).catch(function(){});
       }
     }
     renderTable();
@@ -2105,7 +2198,11 @@ function init() {
   applyColWidths();
   updateFilterBadge();
   updateAssignBanner();
-  fetchExternalInquiries().then(function(){
+  // 시트 데이터를 먼저 불러와 로컬과 병합
+  fetchSheetRecords().then(function(records){
+    if (records && records.length) mergeSheetIntoLocal(records);
+    return fetchExternalInquiries();
+  }).then(function(){
     populateRepFilter();
     renderTable();
     applyColWidths();
