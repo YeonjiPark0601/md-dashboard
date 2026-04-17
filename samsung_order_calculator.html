@@ -516,6 +516,8 @@ const PRODUCTS = [
 ];
 
 let MONTHLY_TARGET = 433333333; // 기본값 (시트에서 실시간 로드)
+let MONTHLY_TARGETS_SHARED = []; // 공유 저장된 12개월 목표 (SAVE_URL)
+let SHEET_TARGETS = [];          // 시트에서 로드된 12개월 기본값
 const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSg1DtcRObcFTmBS_rb2oIOj9Yp6JYAXGF7BKDUEgXdMwA5v7V2m1X00FfdmTo3h6dsJS2Aap1dnlNv/pub?gid=471725858&single=true&output=csv';
 
 // 25년 1분기 월별 발주 실적 (입고월 기준, BDTS 전체 금액 합산)
@@ -1045,6 +1047,7 @@ function saveState() {
       productQty: [...productQty],
       demoQty: [...demoQty],
       options: options.map(o => ({ model: o.model, name: o.name, cost: o.cost, qty: o.qty })),
+      monthlyTargets: (MONTHLY_TARGETS_SHARED.length === 12) ? MONTHLY_TARGETS_SHARED : null,
       savedAt: new Date().toISOString(),
     };
     // GAS POST는 302를 반환하지만 서버에서 처리는 완료됨 → redirect:'manual'로 302 무시
@@ -1069,6 +1072,9 @@ async function loadState() {
       options.length = 0;
       state.options.forEach(o => options.push({ model: o.model, name: o.name, cost: o.cost, qty: o.qty }));
     }
+    if (state.monthlyTargets && Array.isArray(state.monthlyTargets) && state.monthlyTargets.length === 12) {
+      MONTHLY_TARGETS_SHARED = state.monthlyTargets.slice();
+    }
     console.log('발주 수량 로드됨', state);
     return true;
   } catch (e) { console.warn('발주 수량 로드 실패:', e); return false; }
@@ -1076,6 +1082,16 @@ async function loadState() {
 
 // 초기 로드: 저장된 수량 → 재고 실시간 → 렌더
 loadState().then(() => {
+  if (typeof renderTargetInputs === 'function') renderTargetInputs();
+  // 공유 저장된 목표가 있으면 MONTHLY_TARGET 반영
+  if (MONTHLY_TARGETS_SHARED.length === 12 && MONTHLY_TARGETS_SHARED[CUR_MONTH] > 0) {
+    MONTHLY_TARGET = MONTHLY_TARGETS_SHARED[CUR_MONTH];
+    const sub = document.querySelector('.subtitle');
+    const annual = MONTHLY_TARGETS_SHARED.reduce((a, b, i) => a + (b || SHEET_TARGETS[i] || 0), 0);
+    if (sub && annual > 0) {
+      sub.textContent = '월 목표: ' + MONTHLY_TARGET.toLocaleString('ko-KR') + '원 (VAT 별도) | 연간 목표: ' + (annual / 100000000).toFixed(0) + '억';
+    }
+  }
   render();
   return fetchInventoryData();
 }).then(() => render());
@@ -1841,20 +1857,9 @@ window.addEventListener('scroll', () => {
   });
 });
 
-// ============ 월별 목표 관리 ============
-const TARGETS_KEY = 'samsungOrderMonthlyTargets';
-let SHEET_TARGETS = []; // 시트에서 로드된 12개월 기본값
-let USER_TARGETS = null; // 사용자 저장값 (localStorage)
-
-function loadUserTargets() {
-  try {
-    const raw = localStorage.getItem(TARGETS_KEY);
-    if (raw) USER_TARGETS = JSON.parse(raw);
-  } catch (e) { USER_TARGETS = null; }
-}
-
+// ============ 월별 목표 관리 (전사 공유 저장) ============
 function getCurrentTargets() {
-  const base = (USER_TARGETS && USER_TARGETS.length === 12) ? USER_TARGETS.slice() : SHEET_TARGETS.slice();
+  const base = (MONTHLY_TARGETS_SHARED.length === 12) ? MONTHLY_TARGETS_SHARED.slice() : SHEET_TARGETS.slice();
   while (base.length < 12) base.push(0);
   return base;
 }
@@ -1875,7 +1880,6 @@ function renderTargetInputs() {
     `;
     tbody.appendChild(tr);
   }
-  // 입력 변경시 억 환산 실시간 업데이트
   for (let i = 0; i < 12; i++) {
     const inp = document.getElementById('tgt-' + i);
     inp.addEventListener('input', () => {
@@ -1889,7 +1893,9 @@ function renderTargetInputs() {
 function updateTargetStatus() {
   const el = document.getElementById('targetStatus');
   if (!el) return;
-  el.textContent = USER_TARGETS ? '저장된 사용자 값 사용중' : '시트 기본값 사용중';
+  el.textContent = (MONTHLY_TARGETS_SHARED.length === 12)
+    ? '공유 저장된 값 사용중 (전사 공통)'
+    : '시트 기본값 사용중';
 }
 
 function applyMonthlyTargets() {
@@ -1898,12 +1904,9 @@ function applyMonthlyTargets() {
     const el = document.getElementById('tgt-' + i);
     vals.push(parseInt((el.value || '0').replace(/,/g, '')) || 0);
   }
-  USER_TARGETS = vals;
-  localStorage.setItem(TARGETS_KEY, JSON.stringify(vals));
-  // 이번 달 목표 적용
-  const cur = vals[CUR_MONTH];
+  MONTHLY_TARGETS_SHARED = vals;
+  const cur = vals[CUR_MONTH] || SHEET_TARGETS[CUR_MONTH] || 0;
   if (cur > 0) MONTHLY_TARGET = cur;
-  // 연간 목표 = 12개월 합 (0이 있으면 시트 기본값으로 대체)
   const annual = vals.reduce((a, b, i) => a + (b || SHEET_TARGETS[i] || 0), 0);
   const sub = document.querySelector('.subtitle');
   if (sub) {
@@ -1911,19 +1914,24 @@ function applyMonthlyTargets() {
     sub.style.color = '#8899aa';
   }
   render();
+  saveState(); // 전사 공유 저장
   updateTargetStatus();
+  const st = document.getElementById('targetStatus');
+  if (st) st.textContent = '✓ 적용 완료 — 모든 사용자에게 반영됩니다';
+  setTimeout(updateTargetStatus, 3000);
 }
 
 function resetMonthlyTargets() {
-  USER_TARGETS = null;
-  localStorage.removeItem(TARGETS_KEY);
-  // 시트 값으로 MONTHLY_TARGET 재설정
+  MONTHLY_TARGETS_SHARED = [];
   if (SHEET_TARGETS[CUR_MONTH]) MONTHLY_TARGET = SHEET_TARGETS[CUR_MONTH];
   renderTargetInputs();
   render();
+  saveState(); // 공유 해제도 저장 (다른 사용자에게 반영)
+  const st = document.getElementById('targetStatus');
+  if (st) st.textContent = '✓ 시트 기본값으로 복귀';
+  setTimeout(updateTargetStatus, 3000);
 }
 
-// 시트 CSV에서 12개월 목표 수집 (기존 fetch 결과 재활용)
 function parseSheetTargets(csv) {
   const lines = csv.replace(/\r/g, '').split('\n').filter(l => l.trim());
   if (lines.length < 2) return;
@@ -1935,18 +1943,16 @@ function parseSheetTargets(csv) {
     const v = idx >= 0 ? parseInt((vals[idx] || '').replace(/,/g, '')) || 0 : 0;
     SHEET_TARGETS.push(v);
   }
-  loadUserTargets();
   renderTargetInputs();
-  // 이번달 MONTHLY_TARGET 최종 결정
   const vs = getCurrentTargets();
   if (vs[CUR_MONTH] > 0) MONTHLY_TARGET = vs[CUR_MONTH];
 }
 
-// 기존 SHEET_CSV_URL fetch는 이미 있음 — 이 값을 재사용하기 위해 별도 fetch
+// 시트 기본값 로드 (MONTHLY_TARGETS_SHARED는 loadState()에서 이미 로드됨)
 fetch(SHEET_CSV_URL + '&_t=' + Date.now(), { redirect: 'follow' })
   .then(r => r.ok ? r.text() : Promise.reject())
   .then(csv => { parseSheetTargets(csv); render(); })
-  .catch(() => { loadUserTargets(); renderTargetInputs(); });
+  .catch(() => { renderTargetInputs(); });
 </script>
 </body>
 </html>
