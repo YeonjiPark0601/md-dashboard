@@ -19,7 +19,7 @@
   }
   .header h1 { font-size: 20px; font-weight: 600; }
   .header .updated { font-size: 12px; color: #8899aa; }
-  .container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 20px 30px; }
+  .container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 20px 30px 20px 170px; }
 
   .month-badge {
     display: inline-block;
@@ -259,6 +259,11 @@
   }
   .btn-close-modal:hover { background: #d0d0d0; color: #333; }
 
+  .side-nav { position: fixed; left: 0; top: 80px; width: 140px; background: #fff; border-right: 1px solid #e0e0e0; padding: 12px 0; z-index: 90; box-shadow: 1px 0 3px rgba(0,0,0,0.05); border-radius: 0 8px 8px 0; max-height: calc(100vh - 100px); overflow-y: auto; }
+  .side-nav a { display: block; padding: 8px 16px; font-size: 12px; color: #555; text-decoration: none; border-left: 3px solid transparent; transition: all 0.15s; }
+  .side-nav a:hover { background: #f0f2f5; color: #1a73e8; }
+  .side-nav a.active { border-left-color: #1a73e8; color: #1a73e8; font-weight: 600; background: #eef3ff; }
+
   @media (max-width: 600px) {
     .container { padding: 12px 16px; }
     .header { padding: 12px 16px; }
@@ -267,6 +272,7 @@
     input[type="number"] { width: 46px; padding: 6px 4px; font-size: 14px; }
     table { font-size: 12px; }
   }
+  @media (max-width: 1100px) { .side-nav { display: none; } .container { padding-left: 30px !important; } }
 </style>
 </head>
 <body>
@@ -281,8 +287,20 @@
     <button class="btn-recommend" style="background:#555" onclick="resetAll()">초기화</button>
   </div>
 </div>
+<nav class="side-nav" id="sideNav">
+  <a href="#sec-kpi" onclick="return scrollTo2('sec-kpi')">KPI 요약</a>
+  <a href="#sec-order" onclick="return scrollTo2('sec-order')">발주 입력</a>
+  <a href="#sec-option" onclick="return scrollTo2('sec-option')">옵션 발주</a>
+  <a href="#sec-stock" onclick="return scrollTo2('sec-stock')">수량/한도</a>
+  <a href="#sec-monthly" onclick="return scrollTo2('sec-monthly')">월별 내역</a>
+  <a href="#sec-model" onclick="return scrollTo2('sec-model')">모델 × 월</a>
+  <a href="#sec-quarter" onclick="return scrollTo2('sec-quarter')">분기 비교</a>
+  <a href="#sec-mileage" onclick="return scrollTo2('sec-mileage')">적립 마일리지</a>
+  <a href="#sec-target" onclick="return scrollTo2('sec-target')">월별 목표 관리</a>
+</nav>
+
 <div class="container">
-  <div style="margin-bottom:20px;">
+  <div style="margin-bottom:20px;" id="sec-kpi">
     <div style="font-size:32px;font-weight:700;color:#1a1a2e;" id="monthBadge">4월</div>
     <p class="subtitle" style="font-size:14px;color:#888;margin-top:4px;">월 목표: 433,333,333원 (VAT 별도) | 연간 목표: 52억</p>
   </div>
@@ -319,7 +337,7 @@
     </div>
   </div>
 
-  <div class="table-wrap">
+  <div class="table-wrap" id="sec-order">
     <table>
       <thead>
         <tr class="th-group">
@@ -348,7 +366,7 @@
     </table>
   </div>
 
-  <div class="section-title">옵션 발주 (S/W 등)</div>
+  <div class="section-title" id="sec-option">옵션 발주 (S/W 등)</div>
   <div class="table-wrap">
     <table>
       <thead>
@@ -366,7 +384,7 @@
   </div>
   <button class="btn-add" onclick="addOption()">+ 옵션 추가</button>
 
-  <div class="cards" style="margin-top:20px">
+  <div class="cards" style="margin-top:20px" id="sec-stock">
     <div class="card">
       <div class="label">판매 예상 (VAT포함)</div>
       <div class="val green" id="cardSales">0</div>
@@ -399,7 +417,7 @@
     </div>
   </div>
 
-  <div class="section-title" style="border-left-color:#10b981">월별 발주 내역</div>
+  <div class="section-title" style="border-left-color:#10b981" id="sec-monthly">월별 발주 내역</div>
   <div style="background:#fff; border-radius:12px; padding:14px 18px; margin-bottom:14px; box-shadow: 0 1px 3px rgba(0,0,0,.08); display:flex; gap:12px; align-items:center; flex-wrap:wrap">
     <label style="font-size:13px; color:#555; font-weight:600">시작 <input type="month" id="bdtsStart" style="margin-left:4px; padding:6px 8px; border:1px solid #d0d7de; border-radius:6px"></label>
     <label style="font-size:13px; color:#555; font-weight:600">종료 <input type="month" id="bdtsEnd" style="margin-left:4px; padding:6px 8px; border:1px solid #d0d7de; border-radius:6px"></label>
@@ -422,7 +440,7 @@
     </table>
   </div>
 
-  <div class="section-title" style="border-left-color:#f59e0b">모델별 × 월별 발주 내역 <span style="font-size:12px; color:#888; font-weight:400">(수량=시스템 기준, 금액=공급단가 합계)</span></div>
+  <div class="section-title" style="border-left-color:#f59e0b" id="sec-model">모델별 × 월별 발주 내역 <span style="font-size:12px; color:#888; font-weight:400">(수량=시스템 기준, 금액=공급단가 합계)</span></div>
   <div class="table-wrap" style="margin-bottom:24px; overflow-x:auto">
     <table id="modelMonthTable" style="min-width:1200px">
       <thead id="modelMonthHead"></thead>
@@ -430,7 +448,7 @@
     </table>
   </div>
 
-  <div class="section-title" style="border-left-color:#64748b" id="quarterTitle">분기 비교</div>
+  <div class="section-title" style="border-left-color:#64748b" id="sec-quarter">분기 비교</div>
   <div class="table-wrap">
     <table>
       <thead>
@@ -445,7 +463,7 @@
     </table>
   </div>
 
-  <div class="section-title" style="border-left-color:#f43f5e; margin-top:24px">적립 마일리지 <span style="font-size:12px; color:#888; font-weight:400">(입고월 기준, 1년 후 사용 가능)</span></div>
+  <div class="section-title" style="border-left-color:#f43f5e; margin-top:24px" id="sec-mileage">적립 마일리지 <span style="font-size:12px; color:#888; font-weight:400">(입고월 기준, 1년 후 사용 가능)</span></div>
   <div class="table-wrap">
     <table>
       <thead>
@@ -458,6 +476,25 @@
       </thead>
       <tbody id="mileageBody"></tbody>
     </table>
+  </div>
+
+  <div class="section-title" style="border-left-color:#0ea5e9; margin-top:24px" id="sec-target">월별 목표 관리 <span style="font-size:12px; color:#888; font-weight:400">(VAT별도, 이번달 값이 상단 목표/달성율에 반영)</span></div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align:left">월</th>
+          <th>목표 금액 (원)</th>
+          <th>억 환산</th>
+        </tr>
+      </thead>
+      <tbody id="targetBody"></tbody>
+    </table>
+  </div>
+  <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px; align-items:center">
+    <span id="targetStatus" style="color:#888; font-size:12px"></span>
+    <button onclick="resetMonthlyTargets()" style="background:#eee; color:#555; border:0; padding:10px 18px; border-radius:8px; cursor:pointer; font-weight:600; font-size:13px">기본값(시트)</button>
+    <button onclick="applyMonthlyTargets()" style="background:#0ea5e9; color:#fff; border:0; padding:10px 24px; border-radius:8px; cursor:pointer; font-weight:700; font-size:13px">적용</button>
   </div>
 </div>
 
@@ -950,7 +987,7 @@ function renderQuarter(thisMonthTotal) {
   const qStart = Math.floor(CUR_MONTH / 3) * 3; // 0,3,6,9
   const qMonths = [qStart, qStart + 1, qStart + 2]; // e.g. [0,1,2] for Q1
   const qLabel = Math.floor(CUR_MONTH / 3) + 1;
-  const qTitle = document.getElementById('quarterTitle');
+  const qTitle = document.getElementById('sec-quarter');
   if (qTitle) qTitle.textContent = `분기 비교 (${qLabel}Q)`;
 
   let sumLY = 0, sumTY = 0;
@@ -1610,16 +1647,21 @@ function renderMileage() {
   const tbody = document.getElementById('mileageBody');
   if (!tbody) return;
   tbody.innerHTML = '';
-  const keys = Object.keys(MILEAGE_MONTHLY).sort().filter(k => k >= '25-01');
-  if (!keys.length) {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#888; padding:20px">해당 기간 적립 마일리지 없음</td></tr>';
-    return;
-  }
   const now = new Date();
   const nowKey = String(now.getFullYear() % 100).padStart(2, '0') + '-' + String(now.getMonth() + 1).padStart(2, '0');
+  // 25-01부터 현재월까지 모든 월 생성 (빈 월은 0)
+  const keys = [];
+  let y = 25, mo = 1;
+  while (true) {
+    const k = String(y).padStart(2, '0') + '-' + String(mo).padStart(2, '0');
+    keys.push(k);
+    if (k >= nowKey) break;
+    mo++; if (mo > 12) { mo = 1; y++; }
+    if (y > 50) break;
+  }
   let sum = 0, available = 0;
   for (const k of keys) {
-    const amt = MILEAGE_MONTHLY[k];
+    const amt = MILEAGE_MONTHLY[k] || 0;
     sum += amt;
     const [yy, mm] = k.split('-').map(Number);
     // 사용가능일 = 입고월 + 1년 (다음 달 1일 기준으로 표시)
@@ -1629,9 +1671,10 @@ function renderMileage() {
     const usable = useKey <= nowKey;
     if (usable) available += amt;
     const tr = document.createElement('tr');
+    const amtCell = amt ? `<span style="color:#f43f5e; font-weight:600">${fmt(amt)}</span>` : '<span style="color:#ccc">0</span>';
     tr.innerHTML = `
       <td style="text-align:left">20${String(yy).padStart(2,'0')}-${String(mm).padStart(2,'0')}</td>
-      <td style="color:#f43f5e; font-weight:600">${fmt(amt)}</td>
+      <td>${amtCell}</td>
       <td style="color:#555">${useY}-${useMm}</td>
       <td><span style="background:${usable ? '#dcfce7' : '#fef3c7'}; color:${usable ? '#166534' : '#92400e'}; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600">${usable ? '사용 가능' : '대기'}</span></td>
     `;
@@ -1776,6 +1819,134 @@ function renderByModel(startKey, endKey) {
   if (e && !e.value) e.value = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
   fetchBdtsMonthly();
 })();
+
+// ============ 좌측 내비게이션 ============
+function scrollTo2(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    const y = el.getBoundingClientRect().top + window.scrollY - 80;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+  }
+  return false;
+}
+const NAV_SECS = ['sec-kpi', 'sec-order', 'sec-option', 'sec-stock', 'sec-monthly', 'sec-model', 'sec-quarter', 'sec-mileage', 'sec-target'];
+window.addEventListener('scroll', () => {
+  let active = NAV_SECS[0];
+  for (const id of NAV_SECS) {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top <= 120) active = id;
+  }
+  document.querySelectorAll('.side-nav a').forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + active);
+  });
+});
+
+// ============ 월별 목표 관리 ============
+const TARGETS_KEY = 'samsungOrderMonthlyTargets';
+let SHEET_TARGETS = []; // 시트에서 로드된 12개월 기본값
+let USER_TARGETS = null; // 사용자 저장값 (localStorage)
+
+function loadUserTargets() {
+  try {
+    const raw = localStorage.getItem(TARGETS_KEY);
+    if (raw) USER_TARGETS = JSON.parse(raw);
+  } catch (e) { USER_TARGETS = null; }
+}
+
+function getCurrentTargets() {
+  const base = (USER_TARGETS && USER_TARGETS.length === 12) ? USER_TARGETS.slice() : SHEET_TARGETS.slice();
+  while (base.length < 12) base.push(0);
+  return base;
+}
+
+function renderTargetInputs() {
+  const tbody = document.getElementById('targetBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  const vals = getCurrentTargets();
+  for (let i = 0; i < 12; i++) {
+    const tr = document.createElement('tr');
+    const isCurr = (i === CUR_MONTH);
+    const v = vals[i] || 0;
+    tr.innerHTML = `
+      <td style="text-align:left; ${isCurr ? 'background:#e0f2fe; font-weight:700' : ''}">${i + 1}월${isCurr ? ' (이번달)' : ''}</td>
+      <td style="text-align:center"><input type="number" id="tgt-${i}" value="${v || ''}" placeholder="0" style="width:180px; padding:6px 8px; border:1px solid #d0d7de; border-radius:6px; text-align:right; font-size:13px"></td>
+      <td id="tgt-eok-${i}" style="color:#888; font-size:12px">${v ? (v / 100000000).toFixed(2) + '억' : '-'}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+  // 입력 변경시 억 환산 실시간 업데이트
+  for (let i = 0; i < 12; i++) {
+    const inp = document.getElementById('tgt-' + i);
+    inp.addEventListener('input', () => {
+      const v = parseInt((inp.value || '0').replace(/,/g, '')) || 0;
+      document.getElementById('tgt-eok-' + i).textContent = v ? (v / 100000000).toFixed(2) + '억' : '-';
+    });
+  }
+  updateTargetStatus();
+}
+
+function updateTargetStatus() {
+  const el = document.getElementById('targetStatus');
+  if (!el) return;
+  el.textContent = USER_TARGETS ? '저장된 사용자 값 사용중' : '시트 기본값 사용중';
+}
+
+function applyMonthlyTargets() {
+  const vals = [];
+  for (let i = 0; i < 12; i++) {
+    const el = document.getElementById('tgt-' + i);
+    vals.push(parseInt((el.value || '0').replace(/,/g, '')) || 0);
+  }
+  USER_TARGETS = vals;
+  localStorage.setItem(TARGETS_KEY, JSON.stringify(vals));
+  // 이번 달 목표 적용
+  const cur = vals[CUR_MONTH];
+  if (cur > 0) MONTHLY_TARGET = cur;
+  // 연간 목표 = 12개월 합 (0이 있으면 시트 기본값으로 대체)
+  const annual = vals.reduce((a, b, i) => a + (b || SHEET_TARGETS[i] || 0), 0);
+  const sub = document.querySelector('.subtitle');
+  if (sub) {
+    sub.textContent = '월 목표: ' + MONTHLY_TARGET.toLocaleString('ko-KR') + '원 (VAT 별도) | 연간 목표: ' + (annual / 100000000).toFixed(0) + '억';
+    sub.style.color = '#8899aa';
+  }
+  render();
+  updateTargetStatus();
+}
+
+function resetMonthlyTargets() {
+  USER_TARGETS = null;
+  localStorage.removeItem(TARGETS_KEY);
+  // 시트 값으로 MONTHLY_TARGET 재설정
+  if (SHEET_TARGETS[CUR_MONTH]) MONTHLY_TARGET = SHEET_TARGETS[CUR_MONTH];
+  renderTargetInputs();
+  render();
+}
+
+// 시트 CSV에서 12개월 목표 수집 (기존 fetch 결과 재활용)
+function parseSheetTargets(csv) {
+  const lines = csv.replace(/\r/g, '').split('\n').filter(l => l.trim());
+  if (lines.length < 2) return;
+  const header = parseCSVRow(lines[0]);
+  const vals = parseCSVRow(lines[1]);
+  SHEET_TARGETS = [];
+  for (let m = 1; m <= 12; m++) {
+    const idx = header.findIndex(h => h.trim() === m + '월');
+    const v = idx >= 0 ? parseInt((vals[idx] || '').replace(/,/g, '')) || 0 : 0;
+    SHEET_TARGETS.push(v);
+  }
+  loadUserTargets();
+  renderTargetInputs();
+  // 이번달 MONTHLY_TARGET 최종 결정
+  const vs = getCurrentTargets();
+  if (vs[CUR_MONTH] > 0) MONTHLY_TARGET = vs[CUR_MONTH];
+}
+
+// 기존 SHEET_CSV_URL fetch는 이미 있음 — 이 값을 재사용하기 위해 별도 fetch
+fetch(SHEET_CSV_URL + '&_t=' + Date.now(), { redirect: 'follow' })
+  .then(r => r.ok ? r.text() : Promise.reject())
+  .then(csv => { parseSheetTargets(csv); render(); })
+  .catch(() => { loadUserTargets(); renderTargetInputs(); });
 </script>
 </body>
 </html>
