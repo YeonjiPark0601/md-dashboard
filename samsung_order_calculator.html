@@ -422,6 +422,23 @@
     </table>
   </div>
 
+  <div class="section-title" style="border-left-color:#f59e0b">모델별 발주 내역 <span style="font-size:12px; color:#888; font-weight:400">(선택 기간 합산)</span></div>
+  <div class="table-wrap" style="margin-bottom:24px">
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align:left">모델</th>
+          <th class="th-product">상품 수량</th>
+          <th class="th-product">상품 금액</th>
+          <th class="th-demo col-sep">견본 수량</th>
+          <th class="th-demo">견본 금액</th>
+          <th class="col-sep">합계</th>
+        </tr>
+      </thead>
+      <tbody id="modelBody"></tbody>
+    </table>
+  </div>
+
   <div class="section-title" style="border-left-color:#64748b" id="quarterTitle">분기 비교</div>
   <div class="table-wrap">
     <table>
@@ -1455,6 +1472,7 @@ function resetAll() {
 
 // ============ 월별 발주 내역 (BDTS 실시간) ============
 const BDTS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1Z8C_uiDHD6udIq7b9C79xlPxz4ERK5aC-vkoIbvTxic/gviz/tq?tqx=out:csv&gid=1570415089';
+let BDTS_ROWS = []; // [{ ym, model, type, cat, qty, amt }]
 let BDTS_MONTHLY = {}; // 'YY-MM' -> { p_qty, p_amt, d_qty, d_amt }
 
 function parseCSVAll(text) {
@@ -1484,6 +1502,7 @@ async function fetchBdtsMonthly() {
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const rows = parseCSVAll(await res.text());
     const agg = {};
+    const parsed = [];
     for (const r of rows) {
       if (r.length < 96) continue;
       const qty = parseInt((r[45] || '').replace(/,/g, ''));
@@ -1491,9 +1510,11 @@ async function fetchBdtsMonthly() {
       const type_ = (r[55] || '').trim();
       const cat = (r[90] || '').trim();
       const ym = (r[95] || '').trim(); // YY-MM
+      const model = (r[28] || '').trim();
       if (!ym || !/^\d{2}-\d{2}$/.test(ym)) continue;
       if (!qty || !price) continue;
       const amt = qty * price;
+      parsed.push({ ym, model, type: type_, cat, qty, amt });
       if (!agg[ym]) agg[ym] = { p_qty:0, p_amt:0, d_qty:0, d_amt:0 };
       if (type_ === '상품') {
         agg[ym].p_amt += amt;
@@ -1503,6 +1524,7 @@ async function fetchBdtsMonthly() {
         if (cat === '시스템') agg[ym].d_qty += qty;
       }
     }
+    BDTS_ROWS = parsed;
     BDTS_MONTHLY = agg;
     // 분기 비교 데이터 동기화
     for (const ym in agg) {
@@ -1550,6 +1572,69 @@ function renderMonthly() {
     tbody.appendChild(tr);
   }
   if (keys.length) {
+    const sumTr = document.createElement('tr');
+    sumTr.className = 'row-sum';
+    sumTr.innerHTML = `
+      <td style="text-align:left">합계</td>
+      <td style="color:#1a73e8">${sPQ}</td>
+      <td>${fmt(sPA)}</td>
+      <td class="col-sep" style="color:#7c3aed">${sDQ}</td>
+      <td>${fmt(sDA)}</td>
+      <td class="col-sep">${fmt(sPA + sDA)}</td>
+    `;
+    tbody.appendChild(sumTr);
+  } else {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#888; padding:20px">해당 기간 데이터 없음</td></tr>';
+  }
+
+  // 모델별 집계 렌더
+  renderByModel(startKey, endKey);
+}
+
+function renderByModel(startKey, endKey) {
+  const tbody = document.getElementById('modelBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  const byModel = {};
+  for (const row of BDTS_ROWS) {
+    if (row.ym < startKey || row.ym > endKey) continue;
+    const m = row.model || '(미지정)';
+    if (!byModel[m]) byModel[m] = { p_qty:0, p_amt:0, d_qty:0, d_amt:0 };
+    if (row.type === '상품') {
+      byModel[m].p_amt += row.amt;
+      if (row.cat === '시스템') byModel[m].p_qty += row.qty;
+    } else if (row.type === '견본') {
+      byModel[m].d_amt += row.amt;
+      if (row.cat === '시스템') byModel[m].d_qty += row.qty;
+    }
+  }
+  // PRODUCTS 순서대로 정렬, 나머지 뒤에
+  const order = PRODUCTS.map(p => p.name);
+  const keys = Object.keys(byModel).sort((a, b) => {
+    const ia = order.indexOf(a), ib = order.indexOf(b);
+    if (ia === -1 && ib === -1) return a.localeCompare(b);
+    if (ia === -1) return 1;
+    if (ib === -1) return -1;
+    return ia - ib;
+  });
+  let sPQ=0, sPA=0, sDQ=0, sDA=0;
+  for (const k of keys) {
+    const v = byModel[k];
+    if (!v.p_qty && !v.p_amt && !v.d_qty && !v.d_amt) continue;
+    sPQ += v.p_qty; sPA += v.p_amt; sDQ += v.d_qty; sDA += v.d_amt;
+    const total = v.p_amt + v.d_amt;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="text-align:left">${k}</td>
+      <td style="color:#1a73e8; font-weight:600">${v.p_qty || '-'}</td>
+      <td>${v.p_amt ? fmt(v.p_amt) : '-'}</td>
+      <td class="col-sep" style="color:#7c3aed; font-weight:600">${v.d_qty || '-'}</td>
+      <td>${v.d_amt ? fmt(v.d_amt) : '-'}</td>
+      <td class="col-sep" style="font-weight:700">${total ? fmt(total) : '-'}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+  if (sPQ || sDQ || sPA || sDA) {
     const sumTr = document.createElement('tr');
     sumTr.className = 'row-sum';
     sumTr.innerHTML = `
