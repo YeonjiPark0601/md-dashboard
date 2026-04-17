@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-17T02:01:45.805Z",
+  "updated": "2026-04-17T03:00:28.717Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -37,6 +37,24 @@
       "region": "인천시 계양구",
       "caller": "유승준",
       "supplier": "삼성메디슨",
+      "payDate": "",
+      "payAmount": null
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 17 오전 11:57:23",
+      "date": "2026-04-17",
+      "name": "허진혁",
+      "cid": "64ee9e6eedc20c0051c19473",
+      "phone": "010-4278-8313",
+      "product": "(상담하기) PT10 혈액검사기",
+      "qty": 1,
+      "price": "모름",
+      "productId": "618c881fbc63410023476154",
+      "clinic": "경희홍익한의원",
+      "region": "부산시 사하구",
+      "caller": "김태호",
+      "supplier": "이노메디케어",
       "payDate": "",
       "payAmount": null
     },
