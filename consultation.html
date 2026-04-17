@@ -676,7 +676,9 @@ function fetchExternalInquiries() {
           cid: r.cid || '',
           phone: r.phone || '',
           clinic: r.clinic || clinicOverrides[stableKey] || '',
+          clinicLocked: !!r.clinic,
           region: r.region || regionOverrides[stableKey] || '',
+          regionLocked: !!r.region,
           product: r.product || '',
           productId: r.productId || '',
           supplier: r.supplier || supplierOverrides[stableKey] || '',
@@ -1171,8 +1173,8 @@ function renderTable() {
       '<td>' + escHtml(r.source) + '</td>' +
       '<td>' + ((r.cid && r.cid !== 'N/A' && /^[a-f0-9]{24}$/.test(r.cid)) ? '<a href="https://tools.medistream.co.kr/customers/' + encodeURIComponent(r.cid) + '" target="_blank" rel="noopener" style="color:#1a73e8;text-decoration:none;font-weight:700;">' + escHtml(r.customer) + '</a>' : '<strong>' + escHtml(r.customer) + '</strong>') + '</td>' +
       '<td style="font-size:13px;letter-spacing:-0.3px;">' + (r.phone ? '<span class="copy-phone" onclick="copyPhone(this)" style="cursor:pointer;" title="클릭해서 복사">' + escHtml(r.phone) + '</span>' : '') + '</td>' +
-      '<td>' + renderInlineInput('clinic', r.clinic, r, '한의원명') + '</td>' +
-      '<td>' + renderInlineInput('region', r.region, r, '지역') + '</td>' +
+      '<td' + (r.clinicLocked ? ' title="자동 매칭 — 수정 불가"' : '') + '>' + (r.clinicLocked ? escHtml(r.clinic) : renderInlineInput('clinic', r.clinic, r, '한의원명')) + '</td>' +
+      '<td' + (r.regionLocked ? ' title="자동 매칭 — 수정 불가"' : '') + '>' + (r.regionLocked ? escHtml(r.region) : renderInlineInput('region', r.region, r, '지역')) + '</td>' +
       '<td' + (r.supplierLocked ? ' style="font-size:12px;color:#555;" title="주문이력에서 자동 매핑 — 수정 불가">' + escHtml(r.supplier || '') : '>' + renderInlineInput('supplier', r.supplier, r, '공급처')) + '</td>' +
       '<td class="td-truncate" title="' + escHtml(r.product) + '">' + ((r.productId && /^[a-f0-9]{24}$/.test(r.productId)) ? '<a href="https://market.medistream.co.kr/products/' + encodeURIComponent(r.productId) + '" target="_blank" rel="noopener" style="color:#1a73e8;text-decoration:none;">' + escHtml(r.product) + '</a>' : escHtml(r.product)) + '</td>' +
       '<td style="text-align:right;">' + (r.qty !== '' && r.qty != null ? escHtml(r.qty) : '') + '</td>' +
