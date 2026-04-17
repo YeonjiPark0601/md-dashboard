@@ -3054,7 +3054,7 @@ function renderPT10Summary(){['2026','2025','2024','2023'].forEach(y=>{const sfx
 
 function renderPT10CartYear(year,headId,bodyId){
   const allMonths=['01','02','03','04','05','06','07','08','09','10','11','12'];
-  const dY=pt10Data.filter(r=>r['연월']&&r['연월'].startsWith(year)&&(r['구분']==='카트리지'||r['구분']==='캐필러리 튜브'));
+  const dY=pt10Data.filter(r=>r['연월']&&r['연월'].startsWith(year)&&(r['구분']==='카트리지'||r['구분']==='캐필러리 튜브')&&(r['상세']||r['구분'])!=='일반');
   // 카트리지 정렬 순서: test9, prime9, hepatic, hba1c, crp, d-dimer (대소문자 무시, 나머지 맨 뒤)
   const orderKeys=['test9','prime9','hepatic','hba1c','crp','d-dimer'];
   const orderIdx=s=>{const k=(s||'').toLowerCase();const i=orderKeys.findIndex(o=>k.includes(o));return i<0?999:i};
