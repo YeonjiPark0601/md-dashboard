@@ -399,6 +399,29 @@
     </div>
   </div>
 
+  <div class="section-title" style="border-left-color:#10b981">월별 발주 내역</div>
+  <div style="background:#fff; border-radius:12px; padding:14px 18px; margin-bottom:14px; box-shadow: 0 1px 3px rgba(0,0,0,.08); display:flex; gap:12px; align-items:center; flex-wrap:wrap">
+    <label style="font-size:13px; color:#555; font-weight:600">시작 <input type="month" id="bdtsStart" style="margin-left:4px; padding:6px 8px; border:1px solid #d0d7de; border-radius:6px"></label>
+    <label style="font-size:13px; color:#555; font-weight:600">종료 <input type="month" id="bdtsEnd" style="margin-left:4px; padding:6px 8px; border:1px solid #d0d7de; border-radius:6px"></label>
+    <button onclick="renderMonthly()" style="background:#10b981; color:#fff; border:0; padding:8px 16px; border-radius:8px; cursor:pointer; font-weight:600; font-size:13px">조회</button>
+    <span id="bdtsStatus" style="color:#888; font-size:12px; margin-left:auto">로딩중...</span>
+  </div>
+  <div class="table-wrap" style="margin-bottom:24px">
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align:left">월</th>
+          <th class="th-product">상품 수량</th>
+          <th class="th-product">상품 금액</th>
+          <th class="th-demo col-sep">견본 수량</th>
+          <th class="th-demo">견본 금액</th>
+          <th class="col-sep">합계</th>
+        </tr>
+      </thead>
+      <tbody id="monthlyBody"></tbody>
+    </table>
+  </div>
+
   <div class="section-title" style="border-left-color:#64748b" id="quarterTitle">분기 비교</div>
   <div class="table-wrap">
     <table>
@@ -1429,6 +1452,133 @@ function resetAll() {
   options.length = 0;
   render(); saveState();
 }
+
+// ============ 월별 발주 내역 (BDTS 실시간) ============
+const BDTS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1Z8C_uiDHD6udIq7b9C79xlPxz4ERK5aC-vkoIbvTxic/gviz/tq?tqx=out:csv&gid=1570415089';
+let BDTS_MONTHLY = {}; // 'YY-MM' -> { p_qty, p_amt, d_qty, d_amt }
+
+function parseCSVAll(text) {
+  const rows = [];
+  let cur = '', row = [], q = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (q) {
+      if (ch === '"' && text[i+1] === '"') { cur += '"'; i++; }
+      else if (ch === '"') q = false;
+      else cur += ch;
+    } else {
+      if (ch === '"') q = true;
+      else if (ch === ',') { row.push(cur); cur = ''; }
+      else if (ch === '\n') { row.push(cur); rows.push(row); row = []; cur = ''; }
+      else if (ch !== '\r') cur += ch;
+    }
+  }
+  if (cur || row.length) { row.push(cur); rows.push(row); }
+  return rows;
+}
+
+async function fetchBdtsMonthly() {
+  const status = document.getElementById('bdtsStatus');
+  try {
+    const res = await fetch(BDTS_SHEET_URL + '&_t=' + Date.now());
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const rows = parseCSVAll(await res.text());
+    const agg = {};
+    for (const r of rows) {
+      if (r.length < 96) continue;
+      const qty = parseInt((r[45] || '').replace(/,/g, ''));
+      const price = parseInt((r[46] || '').replace(/,/g, ''));
+      const type_ = (r[55] || '').trim();
+      const cat = (r[90] || '').trim();
+      const ym = (r[95] || '').trim(); // YY-MM
+      if (!ym || !/^\d{2}-\d{2}$/.test(ym)) continue;
+      if (!qty || !price) continue;
+      const amt = qty * price;
+      if (!agg[ym]) agg[ym] = { p_qty:0, p_amt:0, d_qty:0, d_amt:0 };
+      if (type_ === '상품') {
+        agg[ym].p_amt += amt;
+        if (cat === '시스템') agg[ym].p_qty += qty;
+      } else if (type_ === '견본') {
+        agg[ym].d_amt += amt;
+        if (cat === '시스템') agg[ym].d_qty += qty;
+      }
+    }
+    BDTS_MONTHLY = agg;
+    // 분기 비교 데이터 동기화
+    for (const ym in agg) {
+      const [yy, mm] = ym.split('-').map(Number);
+      const total = agg[ym].p_amt + agg[ym].d_amt;
+      if (yy === 25) LAST_YEAR_QUARTER[mm] = total;
+      else if (yy === 26 && mm !== CUR_MONTH + 1) THIS_YEAR_QUARTER[mm] = total;
+    }
+    if (status) status.textContent = '시트 실시간 · ' + Object.keys(agg).length + '개월';
+    renderMonthly();
+    render();
+  } catch (e) {
+    console.warn('BDTS 로드 실패:', e);
+    if (status) status.textContent = '⚠ 로드 실패';
+  }
+}
+
+function renderMonthly() {
+  const tbody = document.getElementById('monthlyBody');
+  if (!tbody) return;
+  const startEl = document.getElementById('bdtsStart');
+  const endEl = document.getElementById('bdtsEnd');
+  if (!startEl.value) startEl.value = '2025-01';
+  if (!endEl.value) {
+    const now = new Date();
+    endEl.value = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+  }
+  const startKey = startEl.value.slice(2); // YY-MM
+  const endKey = endEl.value.slice(2);
+  tbody.innerHTML = '';
+  const keys = Object.keys(BDTS_MONTHLY).sort().filter(k => k >= startKey && k <= endKey);
+  let sPQ=0, sPA=0, sDQ=0, sDA=0;
+  for (const k of keys) {
+    const v = BDTS_MONTHLY[k];
+    sPQ += v.p_qty; sPA += v.p_amt; sDQ += v.d_qty; sDA += v.d_amt;
+    const total = v.p_amt + v.d_amt;
+    const [yy, mm] = k.split('-');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="text-align:left">20${yy}-${mm}</td>
+      <td style="color:#1a73e8; font-weight:600">${v.p_qty || '-'}</td>
+      <td>${v.p_amt ? fmt(v.p_amt) : '-'}</td>
+      <td class="col-sep" style="color:#7c3aed; font-weight:600">${v.d_qty || '-'}</td>
+      <td>${v.d_amt ? fmt(v.d_amt) : '-'}</td>
+      <td class="col-sep" style="font-weight:700">${total ? fmt(total) : '-'}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+  if (keys.length) {
+    const sumTr = document.createElement('tr');
+    sumTr.className = 'row-sum';
+    sumTr.innerHTML = `
+      <td style="text-align:left">합계</td>
+      <td style="color:#1a73e8">${sPQ}</td>
+      <td>${fmt(sPA)}</td>
+      <td class="col-sep" style="color:#7c3aed">${sDQ}</td>
+      <td>${fmt(sDA)}</td>
+      <td class="col-sep">${fmt(sPA + sDA)}</td>
+    `;
+    tbody.appendChild(sumTr);
+  } else {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#888; padding:20px">해당 기간 데이터 없음</td></tr>';
+  }
+}
+
+// 초기값 세팅 + 데이터 로드
+(function initMonthly() {
+  const s = document.getElementById('bdtsStart');
+  const e = document.getElementById('bdtsEnd');
+  if (s && !s.value) s.value = '2025-01';
+  if (e && !e.value) {
+    const now = new Date();
+    e.value = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+  }
+  fetchBdtsMonthly();
+})();
 </script>
 </body>
 </html>
