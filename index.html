@@ -3022,15 +3022,12 @@ function renderPT10SummaryYear(year,headId,bodyId){
       g.subs.forEach(s=>{
         const sRowCount=s.rows.length;let sShown=false;
         const isTotal=s.sub==='합계';
-        const trStyle=isTotal?' style="background:#fff7e6;font-weight:700;"':'';
-        const stickyBg=isTotal?' style="background:#ffe9b3 !important;"':'';
-        const sticky2Bg=isTotal?' style="background:#fff1cc !important;"':'';
-        const sticky3Bg=isTotal?' style="background:#fff7e6 !important;"':'';
+        const trStyle=isTotal?' style="font-weight:700;"':'';
         s.rows.forEach(r=>{
           const vals=allMonths.map(m=>r.fn(m));const total=vals.reduce((a,v)=>a+v,0);
-          const gCell=gShown?'':`<td class="sticky-col" rowspan="${gRowCount}"${stickyBg}>${g.group}</td>`;gShown=true;
-          const sCell=sShown?'':`<td class="sticky-col2" rowspan="${sRowCount}"${sticky2Bg}>${s.sub}</td>`;sShown=true;
-          html+=`<tr${trStyle}>${gCell}${sCell}<td class="sticky-col3"${sticky3Bg}>${r.metric}</td>`+vals.map(v=>`<td class="text-right">${v?Math.round(v).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(total).toLocaleString()}</td></tr>`;
+          const gCell=gShown?'':`<td class="sticky-col" rowspan="${gRowCount}">${g.group}</td>`;gShown=true;
+          const sCell=sShown?'':`<td class="sticky-col2" rowspan="${sRowCount}">${s.sub}</td>`;sShown=true;
+          html+=`<tr${trStyle}>${gCell}${sCell}<td class="sticky-col3">${r.metric}</td>`+vals.map(v=>`<td class="text-right">${v?Math.round(v).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(total).toLocaleString()}</td></tr>`;
         });
       });
     });
