@@ -46,10 +46,11 @@ body { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; b
 .chart-card h3 { font-size: 14px; font-weight: 600; color: #555; margin-bottom: 12px; }
 
 /* ===== TABLE CARDS ===== */
-.table-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); overflow-x: auto; margin-bottom: 20px; }
+.table-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 20px; }
 .table-card h3 { font-size: 14px; font-weight: 600; color: #555; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
 table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
 th { background: #f7f8fa; padding: 10px 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; white-space: nowrap; position: relative; overflow: hidden; text-overflow: ellipsis; }
+#consultTable thead th { position: sticky; top: var(--sticky-offset, 0px); z-index: 5; background: #f7f8fa; }
 .col-resizer { position: absolute; top: 0; right: 0; width: 6px; height: 100%; cursor: col-resize; user-select: none; z-index: 10; }
 .col-resizer:hover, .col-resizer.dragging { background: #1a73e8; opacity: 0.4; }
 td { padding: 8px 12px; border-bottom: 1px solid #f0f0f0; white-space: nowrap; }
@@ -2188,10 +2189,21 @@ function applyColWidths() {
 
 function setupColResizers() { /* 열 너비 고정 — 드래그 조정 비활성화 */ }
 
+function updateStickyOffset() {
+  var el = document.querySelector('.sticky-top');
+  if (!el) return;
+  document.documentElement.style.setProperty('--sticky-offset', el.offsetHeight + 'px');
+}
+
 function init() {
   document.getElementById('f_date').value = today();
   if (window.matchMedia('(max-width: 768px)').matches) {
     document.getElementById('filterBar').classList.add('filters-collapsed');
+  }
+  updateStickyOffset();
+  window.addEventListener('resize', updateStickyOffset);
+  if (window.ResizeObserver) {
+    new ResizeObserver(updateStickyOffset).observe(document.querySelector('.sticky-top'));
   }
   renderTable();
   setupColResizers();
