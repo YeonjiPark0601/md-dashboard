@@ -422,11 +422,11 @@
     </table>
   </div>
 
-  <div class="section-title" style="border-left-color:#f59e0b">월별 × 모델별 발주 수량 <span style="font-size:12px; color:#888; font-weight:400">(상품 / 견본, 시스템 기준)</span></div>
+  <div class="section-title" style="border-left-color:#f59e0b">모델별 × 월별 발주 내역 <span style="font-size:12px; color:#888; font-weight:400">(수량=시스템 기준, 금액=공급단가 합계)</span></div>
   <div class="table-wrap" style="margin-bottom:24px; overflow-x:auto">
-    <table id="pivotTable" style="min-width:900px">
-      <thead id="pivotHead"></thead>
-      <tbody id="pivotBody"></tbody>
+    <table id="modelMonthTable" style="min-width:1200px">
+      <thead id="modelMonthHead"></thead>
+      <tbody id="modelMonthBody"></tbody>
     </table>
   </div>
 
@@ -1584,18 +1584,9 @@ function renderMonthly() {
 }
 
 function renderByModel(startKey, endKey) {
-  const thead = document.getElementById('pivotHead');
-  const tbody = document.getElementById('pivotBody');
+  const thead = document.getElementById('modelMonthHead');
+  const tbody = document.getElementById('modelMonthBody');
   if (!thead || !tbody) return;
-
-  // 기간 내 등장 모델 수집 (PRODUCTS 순서)
-  const inRange = BDTS_ROWS.filter(r => r.ym >= startKey && r.ym <= endKey && r.cat === '시스템');
-  const modelSet = new Set(inRange.map(r => r.model).filter(Boolean));
-  const order = PRODUCTS.map(p => p.name);
-  const models = [
-    ...order.filter(m => modelSet.has(m)),
-    ...[...modelSet].filter(m => !order.includes(m)).sort(),
-  ];
 
   // 월 리스트
   const monthSet = new Set();
@@ -1604,47 +1595,77 @@ function renderByModel(startKey, endKey) {
   }
   const months = [...monthSet].sort();
 
-  // 피벗 집계: pivot[ym][model] = { p, d }
-  const pivot = {}, monthTotalAmt = {}, modelTotal = {};
-  for (const ym of months) { pivot[ym] = {}; monthTotalAmt[ym] = 0; }
-  for (const m of models) modelTotal[m] = { p:0, d:0 };
+  // 기간 내 등장 모델 수집 (PRODUCTS 순서)
+  const inRange = BDTS_ROWS.filter(r => r.ym >= startKey && r.ym <= endKey);
+  const modelSet = new Set(inRange.map(r => r.model).filter(Boolean));
+  const order = PRODUCTS.map(p => p.name);
+  const models = [
+    ...order.filter(m => modelSet.has(m)),
+    ...[...modelSet].filter(m => !order.includes(m)).sort(),
+  ];
+
+  // 집계: cell[model][ym] = { p_q, p_a, d_q, d_a }
+  const cell = {}, rowTotal = {}, colTotal = {};
+  for (const m of models) { cell[m] = {}; rowTotal[m] = { p_q:0, p_a:0, d_q:0, d_a:0 }; }
+  for (const ym of months) colTotal[ym] = { p_q:0, p_a:0, d_q:0, d_a:0 };
   for (const r of BDTS_ROWS) {
     if (r.ym < startKey || r.ym > endKey) continue;
-    if (!pivot[r.ym]) continue;
-    monthTotalAmt[r.ym] += r.amt;
-    if (r.cat !== '시스템' || !r.model) continue;
-    if (!pivot[r.ym][r.model]) pivot[r.ym][r.model] = { p:0, d:0 };
-    if (r.type === '상품') { pivot[r.ym][r.model].p += r.qty; modelTotal[r.model].p += r.qty; }
-    else if (r.type === '견본') { pivot[r.ym][r.model].d += r.qty; modelTotal[r.model].d += r.qty; }
+    if (!r.model || !cell[r.model]) continue;
+    if (!cell[r.model][r.ym]) cell[r.model][r.ym] = { p_q:0, p_a:0, d_q:0, d_a:0 };
+    const c = cell[r.model][r.ym];
+    if (r.type === '상품') {
+      c.p_a += r.amt; rowTotal[r.model].p_a += r.amt; colTotal[r.ym].p_a += r.amt;
+      if (r.cat === '시스템') { c.p_q += r.qty; rowTotal[r.model].p_q += r.qty; colTotal[r.ym].p_q += r.qty; }
+    } else if (r.type === '견본') {
+      c.d_a += r.amt; rowTotal[r.model].d_a += r.amt; colTotal[r.ym].d_a += r.amt;
+      if (r.cat === '시스템') { c.d_q += r.qty; rowTotal[r.model].d_q += r.qty; colTotal[r.ym].d_q += r.qty; }
+    }
   }
 
-  // 헤더
-  let head = '<tr><th style="text-align:left; position:sticky; left:0; background:#f7f8fa">월</th>';
-  for (const m of models) head += `<th style="min-width:70px">${m}</th>`;
-  head += '<th class="col-sep" style="min-width:110px">월 합계</th></tr>';
-  head += '<tr><th style="position:sticky; left:0; background:#f7f8fa; font-size:11px; color:#888">상품 / 견본</th>';
-  for (const m of models) head += `<th style="font-size:11px; color:#888">상품 / 견본</th>`;
-  head += '<th class="col-sep" style="font-size:11px; color:#888">금액</th></tr>';
+  // 헤더 2행
+  let head = '<tr><th rowspan="2" style="text-align:left; position:sticky; left:0; background:#f7f8fa; min-width:90px">모델</th>';
+  for (const ym of months) {
+    const [yy, mm] = ym.split('-');
+    head += `<th colspan="4" class="col-sep" style="min-width:280px">20${yy}-${mm}</th>`;
+  }
+  head += '<th colspan="4" class="col-sep" style="min-width:280px; background:#eef2f7">합계</th></tr>';
+  head += '<tr>';
+  const subCols = ['상품수', '상품액', '견본수', '견본액'];
+  const subColors = ['#1a73e8', '#1a73e8', '#7c3aed', '#7c3aed'];
+  for (let i = 0; i <= months.length; i++) {
+    subCols.forEach((c, j) => {
+      const sep = j === 0 ? 'col-sep ' : '';
+      head += `<th class="${sep}" style="font-size:11px; color:${subColors[j]}; min-width:70px">${c}</th>`;
+    });
+  }
+  head += '</tr>';
   thead.innerHTML = head;
 
   // 바디
-  if (!months.length) {
-    tbody.innerHTML = `<tr><td colspan="${models.length + 2}" style="text-align:center; color:#888; padding:20px">해당 기간 데이터 없음</td></tr>`;
+  if (!models.length) {
+    tbody.innerHTML = `<tr><td colspan="${months.length * 4 + 5}" style="text-align:center; color:#888; padding:20px">해당 기간 데이터 없음</td></tr>`;
     return;
   }
   tbody.innerHTML = '';
-  for (const ym of months) {
-    const [yy, mm] = ym.split('-');
+  const dim = v => v ? `<span style="font-weight:600">${v}</span>` : '<span style="color:#ddd">-</span>';
+  const dimAmt = v => v ? fmt(v) : '<span style="color:#ddd">-</span>';
+
+  for (const m of models) {
+    const rt = rowTotal[m];
+    if (!rt.p_q && !rt.p_a && !rt.d_q && !rt.d_a) continue;
     const tr = document.createElement('tr');
-    let row = `<td style="text-align:left; font-weight:700; position:sticky; left:0; background:#fff">20${yy}-${mm}</td>`;
-    for (const m of models) {
-      const v = pivot[ym][m] || { p:0, d:0 };
-      const cell = (v.p || v.d)
-        ? `<span style="color:${v.p?'#1a73e8':'#ccc'}; font-weight:600">${v.p || 0}</span><span style="color:#ccc"> / </span><span style="color:${v.d?'#7c3aed':'#ccc'}; font-weight:600">${v.d || 0}</span>`
-        : '<span style="color:#ddd">-</span>';
-      row += `<td>${cell}</td>`;
+    let row = `<td style="text-align:left; font-weight:700; position:sticky; left:0; background:#fff">${m}</td>`;
+    for (const ym of months) {
+      const c = cell[m][ym] || { p_q:0, p_a:0, d_q:0, d_a:0 };
+      row += `<td class="col-sep" style="color:#1a73e8">${dim(c.p_q)}</td>`;
+      row += `<td style="color:#555; font-size:12px">${dimAmt(c.p_a)}</td>`;
+      row += `<td style="color:#7c3aed">${dim(c.d_q)}</td>`;
+      row += `<td style="color:#555; font-size:12px">${dimAmt(c.d_a)}</td>`;
     }
-    row += `<td class="col-sep" style="font-weight:700">${monthTotalAmt[ym] ? fmt(monthTotalAmt[ym]) : '-'}</td>`;
+    row += `<td class="col-sep" style="background:#f7f9fc; color:#1a73e8; font-weight:700">${rt.p_q || '-'}</td>`;
+    row += `<td style="background:#f7f9fc; font-weight:600">${rt.p_a ? fmt(rt.p_a) : '-'}</td>`;
+    row += `<td style="background:#f7f9fc; color:#7c3aed; font-weight:700">${rt.d_q || '-'}</td>`;
+    row += `<td style="background:#f7f9fc; font-weight:600">${rt.d_a ? fmt(rt.d_a) : '-'}</td>`;
     tr.innerHTML = row;
     tbody.appendChild(tr);
   }
@@ -1653,13 +1674,19 @@ function renderByModel(startKey, endKey) {
   const sumTr = document.createElement('tr');
   sumTr.className = 'row-sum';
   let sumRow = '<td style="text-align:left; position:sticky; left:0">합계</td>';
-  let totalAmt = 0;
-  for (const m of models) {
-    const t = modelTotal[m];
-    sumRow += `<td><span style="color:#1a73e8">${t.p || 0}</span><span style="color:#ccc"> / </span><span style="color:#7c3aed">${t.d || 0}</span></td>`;
+  const grand = { p_q:0, p_a:0, d_q:0, d_a:0 };
+  for (const ym of months) {
+    const c = colTotal[ym];
+    grand.p_q += c.p_q; grand.p_a += c.p_a; grand.d_q += c.d_q; grand.d_a += c.d_a;
+    sumRow += `<td class="col-sep" style="color:#1a73e8">${c.p_q || '-'}</td>`;
+    sumRow += `<td>${c.p_a ? fmt(c.p_a) : '-'}</td>`;
+    sumRow += `<td style="color:#7c3aed">${c.d_q || '-'}</td>`;
+    sumRow += `<td>${c.d_a ? fmt(c.d_a) : '-'}</td>`;
   }
-  for (const ym of months) totalAmt += monthTotalAmt[ym];
-  sumRow += `<td class="col-sep">${fmt(totalAmt)}</td>`;
+  sumRow += `<td class="col-sep" style="color:#1a73e8">${grand.p_q || '-'}</td>`;
+  sumRow += `<td>${grand.p_a ? fmt(grand.p_a) : '-'}</td>`;
+  sumRow += `<td style="color:#7c3aed">${grand.d_q || '-'}</td>`;
+  sumRow += `<td>${grand.d_a ? fmt(grand.d_a) : '-'}</td>`;
   sumTr.innerHTML = sumRow;
   tbody.appendChild(sumTr);
 }
