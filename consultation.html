@@ -663,7 +663,16 @@ function recordToSheetData(r) {
 function sheetRowToRecord(row) {
   var r = { id: row.id || '', sheetRow: true };
   Object.keys(COL_TO_FIELD).forEach(function(col){ r[COL_TO_FIELD[col]] = row[col] || ''; });
-  r.date = ''; r.consent = false; r.cid = ''; r.buyDate = ''; r.status = ''; r.rep = '';
+  // id 형식: cid|productId|timestamp(ex: "2026. 04. 17 오전 02:13:09")
+  // 또는 수동 입력: c_xxxx (timestamp 없음)
+  var parts = (row.id || '').split('|');
+  r.cid = parts[0] || '';
+  r.productId = parts[1] || '';
+  r.timestamp = parts[2] || '';
+  // timestamp 에서 yyyy-mm-dd 추출
+  var dm = r.timestamp.match(/(\d{4})[.\-\/\s]+(\d{1,2})[.\-\/\s]+(\d{1,2})/);
+  r.date = dm ? dm[1] + '-' + String(dm[2]).padStart(2,'0') + '-' + String(dm[3]).padStart(2,'0') : '';
+  r.consent = false; r.buyDate = ''; r.status = ''; r.rep = '';
   return r;
 }
 
@@ -2210,11 +2219,9 @@ function init() {
   applyColWidths();
   updateFilterBadge();
   updateAssignBanner();
-  // 시트 데이터를 먼저 불러와 로컬과 병합
+  // 시트가 단일 소스 (n8n이 slack + 수동입력 모두 시트에 동기화)
   fetchSheetRecords().then(function(records){
     if (records && records.length) mergeSheetIntoLocal(records);
-    return fetchExternalInquiries();
-  }).then(function(){
     populateRepFilter();
     renderTable();
     applyColWidths();
