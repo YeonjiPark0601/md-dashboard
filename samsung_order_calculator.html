@@ -1525,11 +1525,9 @@ function renderMonthly() {
   if (!tbody) return;
   const startEl = document.getElementById('bdtsStart');
   const endEl = document.getElementById('bdtsEnd');
-  if (!startEl.value) startEl.value = '2025-01';
-  if (!endEl.value) {
-    const now = new Date();
-    endEl.value = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
-  }
+  const now = new Date();
+  if (!startEl.value) startEl.value = now.getFullYear() + '-01';
+  if (!endEl.value) endEl.value = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
   const startKey = startEl.value.slice(2); // YY-MM
   const endKey = endEl.value.slice(2);
   tbody.innerHTML = '';
@@ -1572,11 +1570,9 @@ function renderMonthly() {
 (function initMonthly() {
   const s = document.getElementById('bdtsStart');
   const e = document.getElementById('bdtsEnd');
-  if (s && !s.value) s.value = '2025-01';
-  if (e && !e.value) {
-    const now = new Date();
-    e.value = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
-  }
+  const now = new Date();
+  if (s && !s.value) s.value = now.getFullYear() + '-01';
+  if (e && !e.value) e.value = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
   fetchBdtsMonthly();
 })();
 </script>
