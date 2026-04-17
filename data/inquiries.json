@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-17T00:36:03.623Z",
+  "updated": "2026-04-17T00:46:04.631Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -19,6 +19,24 @@
       "region": "충청남도 천안시",
       "caller": "",
       "supplier": "한메디",
+      "payDate": "",
+      "payAmount": null
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 17 오전 09:41:18",
+      "date": "2026-04-17",
+      "name": "장종원",
+      "cid": "5de4f1d44267e105dffeeae8",
+      "phone": "010-8515-8569",
+      "product": "[특별가] 삼성메디슨 초음파 HS40",
+      "qty": 1,
+      "price": "모름",
+      "productId": "64be3d86814894001b9559ce",
+      "clinic": "고구려한방병원",
+      "region": "인천시 계양구",
+      "caller": "유승준",
+      "supplier": "삼성메디슨",
       "payDate": "",
       "payAmount": null
     },
