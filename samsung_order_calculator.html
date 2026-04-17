@@ -1649,9 +1649,9 @@ function renderMileage() {
   tbody.innerHTML = '';
   const now = new Date();
   const nowKey = String(now.getFullYear() % 100).padStart(2, '0') + '-' + String(now.getMonth() + 1).padStart(2, '0');
-  // 25-01부터 현재월까지 모든 월 생성 (빈 월은 0)
+  // 25-05부터 현재월까지 모든 월 생성 (빈 월은 0)
   const keys = [];
-  let y = 25, mo = 1;
+  let y = 25, mo = 5;
   while (true) {
     const k = String(y).padStart(2, '0') + '-' + String(mo).padStart(2, '0');
     keys.push(k);
