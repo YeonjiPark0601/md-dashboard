@@ -959,11 +959,12 @@ function render() {
   rateEl.className = 'val ' + (rate >= 1 ? 'green' : rate >= 0.8 ? 'orange' : 'red');
   document.getElementById('cardRateSub').textContent = '목표: ' + fmt(MONTHLY_TARGET);
 
-  // Quarter target rate
+  // Quarter target rate — 분기 3개월 목표 합산 (각 월 공유/시트 값, 없으면 현재 월 목표로 대체)
   const qStart = Math.floor(CUR_MONTH / 3) * 3;
   const qMonths = [qStart, qStart + 1, qStart + 2];
   const qLabel = Math.floor(CUR_MONTH / 3) + 1;
-  const qTarget = MONTHLY_TARGET * 3;
+  const _qTargets = getCurrentTargets();
+  const qTarget = qMonths.reduce((sum, m) => sum + (_qTargets[m] || MONTHLY_TARGET), 0);
   let qTotal = 0;
   qMonths.forEach(m => {
     const mNum = m + 1;
@@ -1200,7 +1201,8 @@ function generateRecommend() {
   qMonths.forEach(m => {
     if (m < CUR_MONTH) qPastTotal += (THIS_YEAR_QUARTER[m + 1] || 0);
   });
-  const qTarget = MONTHLY_TARGET * 3;
+  const _qT = getCurrentTargets();
+  const qTarget = qMonths.reduce((sum, m) => sum + (_qT[m] || MONTHLY_TARGET), 0);
 
   // 작년 동분기 합계
   const lastYearQTotal = LAST_YEAR_Q_TOTAL[qIdx] || 0;
@@ -1460,7 +1462,7 @@ function showRecommend() {
       <strong>총 발주:</strong> ${fmt(s.totalAmt)}
       &nbsp;|&nbsp; <strong>월 달성율:</strong> <span style="color:${s.monthRate >= 100 ? '#4ade80' : s.monthRate >= 80 ? '#fbbf24' : '#f87171'}">${s.monthRate}%</span>
       &nbsp;|&nbsp; <strong>분기 달성율:</strong> <span style="color:${s.qRate >= 100 ? '#4ade80' : s.qRate >= 80 ? '#fbbf24' : '#f87171'}">${s.qRate}%</span>
-      (${fmt(s.qTotal)} / ${fmt(MONTHLY_TARGET * 3)})
+      (${fmt(s.qTotal)} / ${fmt(qTarget)})
       <br><strong>작년 동분기 대비:</strong> <span style="color:${lyColor}">${s.lyRate}%</span>
       (${fmt(s.qTotal)} / ${fmt(lastYearQTotal)})
       — <span style="color:${s.qTotal >= lastYearQTotal ? '#4ade80' : '#f87171'}">${s.qTotal >= lastYearQTotal ? '✓ 작년 이상 달성' : '✗ 작년 미달'}</span>
