@@ -1041,25 +1041,31 @@ function setQty(type, idx, val) {
 const SAVE_URL = 'https://script.google.com/macros/s/AKfycbxwM-scWd4J-KG7Ot4i8Fwo8ueZYewjx-9yLKUPw7DVyQPF3skpQRSTfe3e1fwrG1E6/exec';
 let _saveTimer = null;
 
+function _doSave() {
+  const state = {
+    productQty: [...productQty],
+    demoQty: [...demoQty],
+    options: options.map(o => ({ model: o.model, name: o.name, cost: o.cost, qty: o.qty })),
+    monthlyTargets: (MONTHLY_TARGETS_SHARED.length === 12) ? MONTHLY_TARGETS_SHARED : null,
+    savedAt: new Date().toISOString(),
+  };
+  console.log('상태 저장 전송', state);
+  return fetch(SAVE_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'payload=' + encodeURIComponent(JSON.stringify(state)),
+    redirect: 'manual',
+  }).catch(() => {});
+}
+
 function saveState() {
   clearTimeout(_saveTimer);
-  _saveTimer = setTimeout(() => {
-    const state = {
-      productQty: [...productQty],
-      demoQty: [...demoQty],
-      options: options.map(o => ({ model: o.model, name: o.name, cost: o.cost, qty: o.qty })),
-      monthlyTargets: (MONTHLY_TARGETS_SHARED.length === 12) ? MONTHLY_TARGETS_SHARED : null,
-      savedAt: new Date().toISOString(),
-    };
-    // GAS POST는 302를 반환하지만 서버에서 처리는 완료됨 → redirect:'manual'로 302 무시
-    fetch(SAVE_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: 'payload=' + encodeURIComponent(JSON.stringify(state)),
-      redirect: 'manual',
-    }).catch(() => {}); // 302 opaque redirect는 무시 (저장은 이미 완료)
-    console.log('발주 수량 저장됨', state);
-  }, 800);
+  _saveTimer = setTimeout(_doSave, 800);
+}
+
+function saveStateImmediate() {
+  clearTimeout(_saveTimer);
+  return _doSave();
 }
 
 async function loadState() {
@@ -1893,7 +1899,7 @@ function applyMonthlyTargets() {
     sub.style.color = '#8899aa';
   }
   render();
-  saveState(); // 전사 공유 저장
+  saveStateImmediate(); // 전사 공유 저장 (즉시 실행)
   updateTargetStatus();
   const st = document.getElementById('targetStatus');
   if (st) st.textContent = '✓ 적용 완료 — 모든 사용자에게 반영됩니다';
@@ -1905,7 +1911,7 @@ function resetMonthlyTargets() {
   if (SHEET_TARGETS[CUR_MONTH]) MONTHLY_TARGET = SHEET_TARGETS[CUR_MONTH];
   renderTargetInputs();
   render();
-  saveState(); // 공유 해제도 저장 (다른 사용자에게 반영)
+  saveStateImmediate(); // 공유 해제도 저장 (다른 사용자에게 반영)
   const st = document.getElementById('targetStatus');
   if (st) st.textContent = '✓ 시트 기본값으로 복귀';
   setTimeout(updateTargetStatus, 3000);
