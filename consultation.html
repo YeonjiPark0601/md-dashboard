@@ -663,6 +663,7 @@ function sheetRowToRecord(row) {
   Object.keys(COL_TO_FIELD).forEach(function(col){ r[COL_TO_FIELD[col]] = row[col] || ''; });
   // id 형식: cid|productId|timestamp(ex: "2026. 04. 17 오전 02:13:09")
   // 또는 수동 입력: c_xxxx (timestamp 없음)
+  var isAutomated = (row.id || '').indexOf('|') !== -1;
   var parts = (row.id || '').split('|');
   r.cid = parts[0] || '';
   r.productId = parts[1] || '';
@@ -671,6 +672,12 @@ function sheetRowToRecord(row) {
   var dm = r.timestamp.match(/(\d{4})[.\-\/\s]+(\d{1,2})[.\-\/\s]+(\d{1,2})/);
   r.date = dm ? dm[1] + '-' + String(dm[2]).padStart(2,'0') + '-' + String(dm[3]).padStart(2,'0') : '';
   r.consent = false; r.buyDate = ''; r.status = ''; r.rep = '';
+  // 자동 매칭된 값은 수정 불가 (n8n이 CID/주문이력 기반으로 채워준 값)
+  if (isAutomated) {
+    r.clinicLocked = !!r.clinic;
+    r.regionLocked = !!r.region;
+    r.supplierLocked = !!r.supplier;
+  }
   return r;
 }
 
