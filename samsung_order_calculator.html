@@ -1602,15 +1602,15 @@ function renderMonthly() {
 
   // 모델별 집계 렌더
   renderByModel(startKey, endKey);
-  // 적립 마일리지 렌더
-  renderMileage(startKey, endKey);
+  // 적립 마일리지는 25년부터 고정 표시
+  renderMileage();
 }
 
-function renderMileage(startKey, endKey) {
+function renderMileage() {
   const tbody = document.getElementById('mileageBody');
   if (!tbody) return;
   tbody.innerHTML = '';
-  const keys = Object.keys(MILEAGE_MONTHLY).sort().filter(k => k >= startKey && k <= endKey);
+  const keys = Object.keys(MILEAGE_MONTHLY).sort().filter(k => k >= '25-01');
   if (!keys.length) {
     tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#888; padding:20px">해당 기간 적립 마일리지 없음</td></tr>';
     return;
@@ -1630,7 +1630,7 @@ function renderMileage(startKey, endKey) {
     if (usable) available += amt;
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td style="text-align:left">20${String(yy).padStart(2,'0')}-${useMm.length ? String(mm).padStart(2,'0') : mm}</td>
+      <td style="text-align:left">20${String(yy).padStart(2,'0')}-${String(mm).padStart(2,'0')}</td>
       <td style="color:#f43f5e; font-weight:600">${fmt(amt)}</td>
       <td style="color:#555">${useY}-${useMm}</td>
       <td><span style="background:${usable ? '#dcfce7' : '#fef3c7'}; color:${usable ? '#166534' : '#92400e'}; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600">${usable ? '사용 가능' : '대기'}</span></td>
