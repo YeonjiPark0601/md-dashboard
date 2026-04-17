@@ -124,6 +124,10 @@ th.sortable:hover { background: #eef0f4; }
 .copy-phone:hover { color: #1a73e8; text-decoration: underline; }
 .copy-phone.copied { color: #16a34a; }
 .note-input { width: 100%; padding: 4px 6px; border: 1px solid #1a73e8; border-radius: 4px; font-size: 13px; font-family: inherit; outline: none; }
+.inline-input { width: 100%; padding: 4px 6px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px; font-family: inherit; background: #fff; color: #333; outline: none; transition: border-color .15s, background .15s; }
+.inline-input::placeholder { color: #bbb; }
+.inline-input:hover { border-color: #b0b8c2; }
+.inline-input:focus { border-color: #1a73e8; background: #f0f7ff; }
 .th-filterable { position: relative; white-space: nowrap; }
 .col-filter-btn { background: transparent; border: none; cursor: pointer; font-size: 10px; color: #888; padding: 2px 4px; margin-left: 4px; border-radius: 3px; }
 .topbar-filter-btn { background: #fff; border: 1px solid #d0d0d0; border-radius: 6px; padding: 4px 10px; font-size: 13px; color: #333; cursor: pointer; min-width: 90px; text-align: left; }
@@ -656,6 +660,8 @@ function fetchExternalInquiries() {
       var callerOverrides = loadExtCallerOverrides();
       var supplierOverrides = loadExtSupplierOverrides();
       var demoOverrides = loadExtDemoOverrides();
+      var clinicOverrides = loadExtClinicOverrides();
+      var regionOverrides = loadExtRegionOverrides();
       EXTERNAL_DATA = data.items.map(function(r, i){
         var priceStr = (r.price || '').replace(/^견적가:\s*/, '').trim();
         var stableKey = 'ext_' + (r.timestamp || r.date || '') + '_' + (r.cid || '') + '_' + (r.name || '') + '_' + (r.product || '');
@@ -669,8 +675,8 @@ function fetchExternalInquiries() {
           customer: r.name || '',
           cid: r.cid || '',
           phone: r.phone || '',
-          clinic: r.clinic || '',
-          region: r.region || '',
+          clinic: r.clinic || clinicOverrides[stableKey] || '',
+          region: r.region || regionOverrides[stableKey] || '',
           product: r.product || '',
           productId: r.productId || '',
           supplier: r.supplier || supplierOverrides[stableKey] || '',
@@ -1165,16 +1171,16 @@ function renderTable() {
       '<td>' + escHtml(r.source) + '</td>' +
       '<td>' + ((r.cid && r.cid !== 'N/A' && /^[a-f0-9]{24}$/.test(r.cid)) ? '<a href="https://tools.medistream.co.kr/customers/' + encodeURIComponent(r.cid) + '" target="_blank" rel="noopener" style="color:#1a73e8;text-decoration:none;font-weight:700;">' + escHtml(r.customer) + '</a>' : '<strong>' + escHtml(r.customer) + '</strong>') + '</td>' +
       '<td style="font-size:13px;letter-spacing:-0.3px;">' + (r.phone ? '<span class="copy-phone" onclick="copyPhone(this)" style="cursor:pointer;" title="클릭해서 복사">' + escHtml(r.phone) + '</span>' : '') + '</td>' +
-      '<td>' + escHtml(r.clinic) + '</td>' +
-      '<td>' + escHtml(r.region) + '</td>' +
-      '<td' + (r.supplierLocked ? ' style="font-size:12px;color:#555;" title="주문이력에서 자동 매핑 — 수정 불가"' : ' class="supplier-cell editable" data-id="' + escHtml(r.id) + '" data-ext="' + (r.external?'1':'0') + '" style="font-size:12px;color:#555;cursor:text;" title="클릭해서 편집"') + '>' + (escHtml(r.supplier || '') || '<span class="note-placeholder">입력</span>') + '</td>' +
+      '<td>' + renderInlineInput('clinic', r.clinic, r, '한의원명') + '</td>' +
+      '<td>' + renderInlineInput('region', r.region, r, '지역') + '</td>' +
+      '<td' + (r.supplierLocked ? ' style="font-size:12px;color:#555;" title="주문이력에서 자동 매핑 — 수정 불가">' + escHtml(r.supplier || '') : '>' + renderInlineInput('supplier', r.supplier, r, '공급처')) + '</td>' +
       '<td class="td-truncate" title="' + escHtml(r.product) + '">' + ((r.productId && /^[a-f0-9]{24}$/.test(r.productId)) ? '<a href="https://market.medistream.co.kr/products/' + encodeURIComponent(r.productId) + '" target="_blank" rel="noopener" style="color:#1a73e8;text-decoration:none;">' + escHtml(r.product) + '</a>' : escHtml(r.product)) + '</td>' +
       '<td style="text-align:right;">' + (r.qty !== '' && r.qty != null ? escHtml(r.qty) : '') + '</td>' +
       '<td>' + escHtml(r.price) + '</td>' +
       '<td>' + renderCallerCell(r) + '</td>' +
       '<td>' + renderStageCell(r) + '</td>' +
-      '<td class="note-cell editable" data-id="' + escHtml(r.id) + '" data-ext="' + (r.external ? '1' : '0') + '" title="클릭해서 편집">' + (escHtml(r.note) || '<span class="note-placeholder">클릭해서 입력</span>') + '</td>' +
-      '<td class="demo-cell editable" data-id="' + escHtml(r.id) + '" data-ext="' + (r.external?'1':'0') + '" style="cursor:text;" title="클릭해서 편집">' + (escHtml(r.demoDate || '') || '<span class="note-placeholder">입력</span>') + '</td>' +
+      '<td class="note-cell">' + renderInlineInput('note', r.note, r, '입력') + '</td>' +
+      '<td>' + renderInlineInput('demoDate', r.demoDate, r, 'YYYY-MM-DD', 'date') + '</td>' +
       '<td>' + escHtml(r.payDate) + '</td>' +
       '<td><div class="td-actions">' + actionsCell + '</div></td>' +
     '</tr>';
@@ -1200,6 +1206,69 @@ function sortBy(col) {
   else { sortCol = col; sortDir = col === 'date' ? 'desc' : 'asc'; }
   renderTable();
 }
+
+// Inline input renderer + unified save handler
+function renderInlineInput(field, value, r, placeholder, inputType) {
+  var esc = function(s){ return escHtml(s || '').replace(/"/g,'&quot;'); };
+  var t = inputType || 'text';
+  return '<input class="inline-input" type="' + t + '" data-id="' + escHtml(r.id) + '" data-ext="' + (r.external?'1':'0') + '" data-field="' + field + '" value="' + esc(value) + '" placeholder="' + (placeholder || '') + '">';
+}
+
+var INLINE_FIELD_KEYS = {
+  supplier: 'md_consult_ext_suppliers',
+  note:     'md_consult_ext_notes',
+  demoDate: 'md_consult_ext_demos',
+  clinic:   'md_consult_ext_clinics',
+  region:   'md_consult_ext_regions'
+};
+
+function saveInlineField(inp) {
+  var id = inp.dataset.id;
+  var field = inp.dataset.field;
+  var isExt = inp.dataset.ext === '1';
+  var val = inp.value.trim();
+  if (isExt) {
+    var key = INLINE_FIELD_KEYS[field];
+    if (!key) return;
+    var ov = {};
+    try { ov = JSON.parse(localStorage.getItem(key) || '{}'); } catch(e){}
+    if (val) ov[id] = val; else delete ov[id];
+    localStorage.setItem(key, JSON.stringify(ov));
+    var idx = EXTERNAL_DATA.findIndex(function(r){ return r.id === id; });
+    if (idx !== -1) {
+      EXTERNAL_DATA[idx][field] = val;
+      if (field === 'demoDate' && val && ['New','Follow'].indexOf(EXTERNAL_DATA[idx].stage) !== -1) {
+        EXTERNAL_DATA[idx].stage = 'Demo';
+        var sOv = {};
+        try { sOv = JSON.parse(localStorage.getItem('md_consult_ext_stages') || '{}'); } catch(e){}
+        sOv[id] = 'Demo';
+        localStorage.setItem('md_consult_ext_stages', JSON.stringify(sOv));
+      }
+    }
+  } else {
+    var d = loadLocalOnly();
+    var idx = d.findIndex(function(r){ return r.id === id; });
+    if (idx !== -1) {
+      d[idx][field] = val;
+      if (field === 'demoDate' && val && ['New','Follow'].indexOf(d[idx].stage) !== -1) {
+        d[idx].stage = 'Demo';
+      }
+      saveData(d);
+    }
+  }
+  renderTable();
+}
+
+document.addEventListener('focusout', function(e){
+  var inp = e.target.closest('.inline-input');
+  if (!inp) return;
+  saveInlineField(inp);
+});
+document.addEventListener('keydown', function(e){
+  var inp = e.target.closest('.inline-input');
+  if (!inp) return;
+  if (e.key === 'Enter') { e.preventDefault(); inp.blur(); }
+});
 
 function renderPagination(total) {
   var pages = Math.ceil(total / PAGE_SIZE);
@@ -1719,6 +1788,24 @@ function loadExtDemoOverrides() {
 }
 function saveExtDemoOverrides(obj) {
   localStorage.setItem(EXT_DEMO_KEY, JSON.stringify(obj));
+}
+
+var EXT_CLINIC_KEY = 'md_consult_ext_clinics';
+function loadExtClinicOverrides() {
+  try { return JSON.parse(localStorage.getItem(EXT_CLINIC_KEY) || '{}'); }
+  catch(e) { return {}; }
+}
+function saveExtClinicOverrides(obj) {
+  localStorage.setItem(EXT_CLINIC_KEY, JSON.stringify(obj));
+}
+
+var EXT_REGION_KEY = 'md_consult_ext_regions';
+function loadExtRegionOverrides() {
+  try { return JSON.parse(localStorage.getItem(EXT_REGION_KEY) || '{}'); }
+  catch(e) { return {}; }
+}
+function saveExtRegionOverrides(obj) {
+  localStorage.setItem(EXT_REGION_KEY, JSON.stringify(obj));
 }
 
 function startDemoEdit(td) {
