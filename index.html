@@ -64,11 +64,13 @@ tr:hover { background: #f7f9fc; }
 .loading { text-align: center; padding: 60px; color: #888; font-size: 16px; }
 #monthlyTable th:first-child, #monthlyTable td:first-child { position: sticky; left: 0; background: #fff; z-index: 1; min-width: 140px; }
 #monthlyTable th:first-child { background: #f7f8fa; }
-.pt10-sticky .sticky-col{position:sticky;left:0;background:#f7f8fa !important;z-index:2;min-width:80px;font-weight:700;border-right:2px solid #e0e0e0;}
-.pt10-sticky .sticky-col2{position:sticky;left:80px;background:#fff !important;z-index:1;min-width:60px;box-shadow:4px 0 6px rgba(0,0,0,0.1);}
-.pt10-sticky th.sticky-col,.pt10-sticky th.sticky-col2{background:#f7f8fa !important;}
+.pt10-sticky .sticky-col{position:sticky;left:0;background:#f7f8fa !important;z-index:3;min-width:80px;font-weight:700;border-right:2px solid #e0e0e0;}
+.pt10-sticky .sticky-col2{position:sticky;left:80px;background:#f0f3f7 !important;z-index:2;min-width:90px;font-weight:700;border-right:1px solid #e0e0e0;}
+.pt10-sticky .sticky-col3{position:sticky;left:170px;background:#fff !important;z-index:1;min-width:80px;box-shadow:4px 0 6px rgba(0,0,0,0.1);}
+.pt10-sticky th.sticky-col,.pt10-sticky th.sticky-col2,.pt10-sticky th.sticky-col3{background:#f7f8fa !important;}
 .pt10-sticky tr:hover .sticky-col{background:#eef0f4 !important;}
-.pt10-sticky tr:hover .sticky-col2{background:#f7f9fc !important;}
+.pt10-sticky tr:hover .sticky-col2{background:#e5ebf2 !important;}
+.pt10-sticky tr:hover .sticky-col3{background:#f7f9fc !important;}
 @media (max-width: 900px) {
   .kpi-row { grid-template-columns: 1fr; }
   .chart-row { grid-template-columns: 1fr; }
@@ -2989,55 +2991,57 @@ function renderPT10SummaryYear(year,headId,bodyId){
   const pt10PuByM={};
   pt10PuData.filter(d=>d['연월']&&d['연월'].startsWith(year)).forEach(d=>{const m=d['연월'].split('-')[1];pt10PuByM[m]=(pt10PuByM[m]||0)+d['고객수']});
 
-  document.getElementById(headId).innerHTML='<th class="sticky-col">구분</th><th class="sticky-col2">항목</th>'+allMonths.map(m=>`<th class="text-right">${m}월</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
-
-  // 2026년만 PT10/TRF 분리, 나머지 해는 기존 방식
   const splitBrand=(year==='2026');
-  const groups=[];
-  const buildMetrics=brand=>[
-    {label:'본체 수량',fn:m=>sumByFilter(m,'본체','수량',brand)},
-    {label:'본체 매출',fn:m=>sumByFilter(m,'본체','매출금액',brand)},
-    {label:'카트리지 수량',fn:m=>sumByFilter(m,'카트리지','수량',brand)},
-    {label:'카트리지 매출',fn:m=>sumByFilter(m,'카트리지','매출금액',brand)},
+  const buildRows=brand=>[
+    {sub:'본체',metric:'수량',fn:m=>sumByFilter(m,'본체','수량',brand)},
+    {sub:'본체',metric:'매출',fn:m=>sumByFilter(m,'본체','매출금액',brand)},
+    {sub:'카트리지',metric:'수량',fn:m=>sumByFilter(m,'카트리지','수량',brand)},
+    {sub:'카트리지',metric:'매출',fn:m=>sumByFilter(m,'카트리지','매출금액',brand)},
     ...(brand==='pt10'||!splitBrand?[
-      {label:'PU PU',fn:m=>pt10PuByM[m]||0},
-      {label:'기타 카트리지+튜브 매출',fn:m=>sumByFilter(m,'카트리지','매출금액',brand)+sumByFilter(m,'캐필러리 튜브','매출금액',brand)},
-      {label:'기타 캐필러리 튜브 매출',fn:m=>sumByFilter(m,'캐필러리 튜브','매출금액',brand)},
-      {label:'기타 플런져 매출',fn:m=>sumByFilter(m,'플런져','매출금액',brand)},
-      {label:'기타 AS 매출',fn:m=>sumByFilter(m,'AS','매출금액',brand)},
-      {label:'기타 기타 매출',fn:m=>sumByFilter(m,'기타','매출금액',brand)}
+      {sub:'PU',metric:'PU',fn:m=>pt10PuByM[m]||0},
+      {sub:'기타',metric:'캐필러리 튜브 매출',fn:m=>sumByFilter(m,'캐필러리 튜브','매출금액',brand)},
+      {sub:'기타',metric:'플런져 매출',fn:m=>sumByFilter(m,'플런져','매출금액',brand)},
+      {sub:'기타',metric:'AS 매출',fn:m=>sumByFilter(m,'AS','매출금액',brand)},
+      {sub:'기타',metric:'기타 매출',fn:m=>sumByFilter(m,'기타','매출금액',brand)}
     ]:[])
   ];
-  const filterNonZero=mts=>mts.filter(mt=>allMonths.reduce((s,m)=>s+mt.fn(m),0)>0);
-
-  // 전체 매출
-  groups.push({group:'전체',rows:[{label:'매출',fn:m=>sumByFilter(m,null,'매출금액','all')}]});
-
-  if(splitBrand){
-    // PT10 서브그룹
-    const pt10M=filterNonZero(buildMetrics('pt10'));
-    if(pt10M.length)groups.push({group:'PT10',rows:pt10M});
-    // TRF 서브그룹
-    const trfM=filterNonZero(buildMetrics('trf'));
-    if(trfM.length)groups.push({group:'TRF',rows:trfM});
-  }else{
-    const metrics=filterNonZero(buildMetrics('all'));
-    groups.push(
-      {group:'본체',rows:metrics.filter(m=>m.label.startsWith('본체'))},
-      {group:'카트리지',rows:metrics.filter(m=>m.label.startsWith('카트리지'))},
-      {group:'PU',rows:metrics.filter(m=>m.label.startsWith('PU'))},
-      {group:'기타',rows:metrics.filter(m=>m.label.startsWith('기타'))}
-    );
-  }
-  const finalGroups=groups.filter(g=>g.rows.length>0);
+  const filterNonZero=rows=>rows.filter(r=>allMonths.reduce((s,m)=>s+r.fn(m),0)>0);
+  const groupBySub=rows=>{const map=new Map();rows.forEach(r=>{if(!map.has(r.sub))map.set(r.sub,[]);map.get(r.sub).push(r)});return[...map.entries()].map(([sub,rows])=>({sub,rows}))};
 
   let html='';
-  finalGroups.forEach(g=>{
-    g.rows.forEach((mt,i)=>{
-      const vals=allMonths.map(m=>mt.fn(m));const total=vals.reduce((s,v)=>s+v,0);
-      html+=`<tr><td class="sticky-col">${i===0?g.group:''}</td><td class="sticky-col2">${mt.label}</td>`+vals.map(v=>`<td class="text-right">${v?Math.round(v).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(total).toLocaleString()}</td></tr>`;
+  if(splitBrand){
+    // 3단: 브랜드 / 카테고리 / 항목
+    document.getElementById(headId).innerHTML='<th class="sticky-col">구분</th><th class="sticky-col2">카테고리</th><th class="sticky-col3">항목</th>'+allMonths.map(m=>`<th class="text-right">${m}월</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
+    const groups=[{group:'전체',subs:[{sub:'매출',rows:[{metric:'',fn:m=>sumByFilter(m,null,'매출금액','all')}]}]}];
+    const brandTotalSub=brand=>({sub:'합계',rows:[{metric:'매출',fn:m=>sumByFilter(m,null,'매출금액',brand)}]});
+    const pt10R=filterNonZero(buildRows('pt10'));if(pt10R.length)groups.push({group:'PT10',subs:[brandTotalSub('pt10'),...groupBySub(pt10R)]});
+    const trfR=filterNonZero(buildRows('trf'));if(trfR.length)groups.push({group:'TRF',subs:[brandTotalSub('trf'),...groupBySub(trfR)]});
+    groups.forEach(g=>{
+      const gRowCount=g.subs.reduce((s,x)=>s+x.rows.length,0);let gShown=false;
+      g.subs.forEach(s=>{
+        const sRowCount=s.rows.length;let sShown=false;
+        s.rows.forEach(r=>{
+          const vals=allMonths.map(m=>r.fn(m));const total=vals.reduce((a,v)=>a+v,0);
+          const gCell=gShown?'':`<td class="sticky-col" rowspan="${gRowCount}">${g.group}</td>`;gShown=true;
+          const sCell=sShown?'':`<td class="sticky-col2" rowspan="${sRowCount}">${s.sub}</td>`;sShown=true;
+          html+=`<tr>${gCell}${sCell}<td class="sticky-col3">${r.metric}</td>`+vals.map(v=>`<td class="text-right">${v?Math.round(v).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(total).toLocaleString()}</td></tr>`;
+        });
+      });
     });
-  });
+  }else{
+    // 2단: 카테고리 / 항목
+    document.getElementById(headId).innerHTML='<th class="sticky-col">카테고리</th><th class="sticky-col2" style="left:80px;">항목</th>'+allMonths.map(m=>`<th class="text-right">${m}월</th>`).join('')+'<th class="text-right" style="font-weight:700;">합계</th>';
+    const subs=[{sub:'전체',rows:[{metric:'매출',fn:m=>sumByFilter(m,null,'매출금액','all')}]},...groupBySub(filterNonZero(buildRows('all')))];
+    subs.forEach(s=>{
+      if(!s.rows.length)return;
+      const sRowCount=s.rows.length;let sShown=false;
+      s.rows.forEach(r=>{
+        const vals=allMonths.map(m=>r.fn(m));const total=vals.reduce((a,v)=>a+v,0);
+        const sCell=sShown?'':`<td class="sticky-col" rowspan="${sRowCount}">${s.sub}</td>`;sShown=true;
+        html+=`<tr>${sCell}<td class="sticky-col2" style="left:80px;">${r.metric}</td>`+vals.map(v=>`<td class="text-right">${v?Math.round(v).toLocaleString():'-'}</td>`).join('')+`<td class="text-right" style="font-weight:700;">${Math.round(total).toLocaleString()}</td></tr>`;
+      });
+    });
+  }
   document.getElementById(bodyId).innerHTML=html;
 }
 function renderPT10Summary(){['2026','2025','2024','2023'].forEach(y=>{const sfx=y==='2026'?'':y;renderPT10SummaryYear(y,'pt10Summary'+sfx+'Head','pt10Summary'+sfx+'Body')})}
