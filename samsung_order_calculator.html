@@ -399,7 +399,7 @@
     </div>
   </div>
 
-  <div class="section-title" style="border-left-color:#64748b">분기 비교 (1Q)</div>
+  <div class="section-title" style="border-left-color:#64748b" id="quarterTitle">분기 비교</div>
   <div class="table-wrap">
     <table>
       <thead>
@@ -904,6 +904,8 @@ function renderQuarter(thisMonthTotal) {
   const qStart = Math.floor(CUR_MONTH / 3) * 3; // 0,3,6,9
   const qMonths = [qStart, qStart + 1, qStart + 2]; // e.g. [0,1,2] for Q1
   const qLabel = Math.floor(CUR_MONTH / 3) + 1;
+  const qTitle = document.getElementById('quarterTitle');
+  if (qTitle) qTitle.textContent = `분기 비교 (${qLabel}Q)`;
 
   let sumLY = 0, sumTY = 0;
   qMonths.forEach(m => {
