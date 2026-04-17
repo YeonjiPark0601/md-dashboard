@@ -1079,8 +1079,15 @@ async function loadState() {
       options.length = 0;
       state.options.forEach(o => options.push({ model: o.model, name: o.name, cost: o.cost, qty: o.qty }));
     }
-    if (state.monthlyTargets && Array.isArray(state.monthlyTargets) && state.monthlyTargets.length === 12) {
-      MONTHLY_TARGETS_SHARED = state.monthlyTargets.slice();
+    let mt = state.monthlyTargets;
+    if (typeof mt === 'string') {
+      try { mt = JSON.parse(mt); } catch(e) { mt = null; }
+    }
+    if (mt && Array.isArray(mt) && mt.length === 12) {
+      MONTHLY_TARGETS_SHARED = mt.map(x => parseInt(x) || 0);
+      console.log('monthlyTargets 로드 완료', MONTHLY_TARGETS_SHARED);
+    } else {
+      console.log('monthlyTargets 미설정 또는 형식 오류, 원본:', state.monthlyTargets, '타입:', typeof state.monthlyTargets);
     }
     console.log('발주 수량 로드됨', state);
     return true;
