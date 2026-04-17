@@ -444,6 +444,21 @@
       <tbody id="quarterBody"></tbody>
     </table>
   </div>
+
+  <div class="section-title" style="border-left-color:#f43f5e; margin-top:24px">적립 마일리지 <span style="font-size:12px; color:#888; font-weight:400">(입고월 기준, 1년 후 사용 가능)</span></div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align:left">입고월</th>
+          <th>적립 금액</th>
+          <th>사용 가능일</th>
+          <th>상태</th>
+        </tr>
+      </thead>
+      <tbody id="mileageBody"></tbody>
+    </table>
+  </div>
 </div>
 
 <div class="modal-overlay" id="recModal" onclick="if(event.target===this)closeRecommend()">
@@ -1465,6 +1480,7 @@ function resetAll() {
 const BDTS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1Z8C_uiDHD6udIq7b9C79xlPxz4ERK5aC-vkoIbvTxic/gviz/tq?tqx=out:csv&gid=1570415089';
 let BDTS_ROWS = []; // [{ ym, model, type, cat, qty, amt }]
 let BDTS_MONTHLY = {}; // 'YY-MM' -> { p_qty, p_amt, d_qty, d_amt }
+let MILEAGE_MONTHLY = {}; // 'YY-MM' -> 적립액
 
 function parseCSVAll(text) {
   const rows = [];
@@ -1494,6 +1510,7 @@ async function fetchBdtsMonthly() {
     const rows = parseCSVAll(await res.text());
     const agg = {};
     const parsed = [];
+    const mileage = {};
     for (const r of rows) {
       if (r.length < 96) continue;
       const qty = parseInt((r[45] || '').replace(/,/g, ''));
@@ -1503,6 +1520,9 @@ async function fetchBdtsMonthly() {
       const ym = (r[95] || '').trim(); // YY-MM
       const model = (r[28] || '').trim();
       if (!ym || !/^\d{2}-\d{2}$/.test(ym)) continue;
+      // 적립 마일리지 (DB열, idx 105) — 가격 없어도 집계
+      const ml = parseInt((r[105] || '').replace(/,/g, '')) || 0;
+      if (ml > 0) mileage[ym] = (mileage[ym] || 0) + ml;
       if (!price) continue;
       const amt = price; // 공급단가만 합산 (Qty 곱하지 않음 — BDTS는 1행=1대 기준)
       const unit = qty || 1; // Qty 미입력 시 1대로 처리
@@ -1518,6 +1538,7 @@ async function fetchBdtsMonthly() {
     }
     BDTS_ROWS = parsed;
     BDTS_MONTHLY = agg;
+    MILEAGE_MONTHLY = mileage;
     // 분기 비교 데이터 동기화
     for (const ym in agg) {
       const [yy, mm] = ym.split('-').map(Number);
@@ -1581,6 +1602,49 @@ function renderMonthly() {
 
   // 모델별 집계 렌더
   renderByModel(startKey, endKey);
+  // 적립 마일리지 렌더
+  renderMileage(startKey, endKey);
+}
+
+function renderMileage(startKey, endKey) {
+  const tbody = document.getElementById('mileageBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  const keys = Object.keys(MILEAGE_MONTHLY).sort().filter(k => k >= startKey && k <= endKey);
+  if (!keys.length) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#888; padding:20px">해당 기간 적립 마일리지 없음</td></tr>';
+    return;
+  }
+  const now = new Date();
+  const nowKey = String(now.getFullYear() % 100).padStart(2, '0') + '-' + String(now.getMonth() + 1).padStart(2, '0');
+  let sum = 0, available = 0;
+  for (const k of keys) {
+    const amt = MILEAGE_MONTHLY[k];
+    sum += amt;
+    const [yy, mm] = k.split('-').map(Number);
+    // 사용가능일 = 입고월 + 1년 (다음 달 1일 기준으로 표시)
+    const useY = 2000 + yy + 1;
+    const useMm = String(mm).padStart(2, '0');
+    const useKey = String((yy + 1) % 100).padStart(2, '0') + '-' + useMm;
+    const usable = useKey <= nowKey;
+    if (usable) available += amt;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="text-align:left">20${String(yy).padStart(2,'0')}-${useMm.length ? String(mm).padStart(2,'0') : mm}</td>
+      <td style="color:#f43f5e; font-weight:600">${fmt(amt)}</td>
+      <td style="color:#555">${useY}-${useMm}</td>
+      <td><span style="background:${usable ? '#dcfce7' : '#fef3c7'}; color:${usable ? '#166534' : '#92400e'}; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600">${usable ? '사용 가능' : '대기'}</span></td>
+    `;
+    tbody.appendChild(tr);
+  }
+  const sumTr = document.createElement('tr');
+  sumTr.className = 'row-sum';
+  sumTr.innerHTML = `
+    <td style="text-align:left">합계</td>
+    <td style="color:#f43f5e">${fmt(sum)}</td>
+    <td colspan="2" style="text-align:left; color:#166534; font-size:12px">현재 사용 가능: ${fmt(available)}</td>
+  `;
+  tbody.appendChild(sumTr);
 }
 
 function renderByModel(startKey, endKey) {
