@@ -54,23 +54,21 @@
   }
 
   /* HEADER */
+  .sticky-top { position: sticky; top: 0; z-index: 100; }
   .header {
     background: linear-gradient(135deg, #1a1a2e, #16213e);
-    border: none; border-radius:0;
-    padding:16px 30px; margin-bottom:0;
-    display:flex; justify-content:space-between; align-items:center;
-    box-shadow: none;
+    color: #fff; padding: 16px 30px;
+    display: flex; justify-content: space-between; align-items: center;
     gap:14px; flex-wrap:wrap;
-    color:#fff;
   }
-  .header h1 { font-size:20px; font-weight:600; color:#fff; }
-  .header h1 span { color:#a78bfa; }
-  .header .sub { font-size:11px; color:#8899aa; margin-bottom:4px; letter-spacing:.3px; font-weight:600; }
-  .header .back-link {
-    color:#8899aa; text-decoration:none; font-size:12px; font-weight:600;
-    display:inline-block; margin-bottom:4px; transition: color .15s;
+  .header h1 { font-size: 20px; font-weight: 600; color:#fff; }
+  .header .home-btn {
+    color:#fff; text-decoration:none; font-size:18px;
+    padding:4px 8px; border-radius:6px; background:rgba(255,255,255,.1);
+    display:flex; align-items:center;
+    transition: background .15s;
   }
-  .header .back-link:hover { color:#fff; }
+  .header .home-btn:hover { background: rgba(255,255,255,.2); }
   .badge-wrap { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
   .badge { font-size:10px; font-weight:800; padding:5px 13px; border-radius:20px; letter-spacing:1.2px; white-space:nowrap; }
   .badge.red  { background:var(--red-soft);  color:var(--red);  border:1px solid #fecaca; }
@@ -350,23 +348,22 @@
 
   /* MODE TABS */
   .mode-tabs {
-    display:flex; margin-bottom:14px;
-    border:1px solid var(--border); border-radius:12px;
-    overflow:hidden; background:var(--surface); box-shadow: var(--shadow);
-    position:sticky; top:0; z-index:20;
+    display:flex; background:#fff;
+    border-bottom:2px solid #e0e0e0;
+    padding:0 30px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
   }
   .mode-tab {
-    flex:1; padding:12px 6px; text-align:center; font-size:13px; font-weight:800;
-    cursor:pointer; transition:all .2s; color:var(--text-3); background:var(--surface);
-    letter-spacing:.3px; border-right:1px solid var(--border);
-    min-height:44px; display:flex; align-items:center; justify-content:center; gap:6px;
+    padding:12px 24px; font-size:14px; font-weight:600; color:#888;
+    cursor:pointer; transition:all .2s; background:transparent;
+    border-bottom:3px solid transparent; margin-bottom:-2px;
+    display:inline-flex; align-items:center; justify-content:center; gap:6px;
   }
-  .mode-tab:last-child { border-right:none; }
-  .mode-tab:hover:not(.active) { background:var(--surface-2); color:var(--text); }
-  .mode-tab.active.lease    { background:var(--primary-soft); color:var(--primary); border-bottom:2px solid var(--primary); }
-  .mode-tab.active.discount { background:var(--green-soft);   color:var(--green);   border-bottom:2px solid var(--green); }
-  .mode-tab.active.roi      { background:var(--orange-soft);  color:var(--orange);  border-bottom:2px solid var(--orange); }
-  .mode-tab.active.manage   { background:var(--pink-soft);    color:var(--pink);    border-bottom:2px solid var(--pink); }
+  .mode-tab:hover:not(.active) { background:transparent; color:#555; }
+  .mode-tab.active.lease    { background:transparent; color:var(--primary); border-bottom-color:var(--primary); }
+  .mode-tab.active.discount { background:transparent; color:var(--green);   border-bottom-color:var(--green); }
+  .mode-tab.active.roi      { background:transparent; color:var(--orange);  border-bottom-color:var(--orange); }
+  .mode-tab.active.manage   { background:transparent; color:var(--pink);    border-bottom-color:var(--pink); }
 
   /* MANAGE TAB */
   .manage-section { display:none; }
@@ -609,22 +606,18 @@
 
 <a href="#main" class="skip-link">본문으로 건너뛰기</a>
 
-<div class="wrap">
-
+<div class="sticky-top">
   <!-- HEADER -->
   <header class="header" role="banner">
-    <div>
-      <a href="../home.html" class="back-link">← MD Squad Tools</a>
-      <div class="sub">DSE Medical Solution · 피부미용 장비</div>
-      <h1>리스 <span>견적 시뮬레이터</span></h1>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <a href="../home.html" class="home-btn" title="홈으로">&#8962;</a>
+      <h1>DSE 리스 견적 시뮬레이터</h1>
     </div>
     <div class="badge-wrap">
       <div class="badge red"  role="status" aria-label="내부용 섹션 포함">🔒 내부용</div>
       <div class="badge blue" role="status" aria-label="외부용 섹션 포함">📋 외부용 포함</div>
     </div>
   </header>
-
-  <main id="main">
 
   <!-- MODE TABS -->
   <div class="mode-tabs" role="tablist" aria-label="시뮬레이터 모드 선택">
@@ -633,6 +626,10 @@
     <div class="mode-tab roi"           id="tabRoi"      role="tab" tabindex="0" aria-selected="false" aria-controls="roiSection" onclick="setMode('roi')"     onkeydown="tabKey(event,'roi')">📊 ROI 계산</div>
     <div class="mode-tab manage"        id="tabManage"   role="tab" tabindex="0" aria-selected="false" aria-controls="manageSection" onclick="setMode('manage')" onkeydown="tabKey(event,'manage')">📦 품목 관리</div>
   </div>
+</div>
+
+<div class="wrap">
+  <main id="main">
 
   <!-- PARAMS -->
   <div class="params" id="leaseParams" role="group" aria-label="리스 조건 입력">
