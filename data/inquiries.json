@@ -1,9 +1,27 @@
 {
-  "updated": "2026-04-18T02:05:47.977Z",
+  "updated": "2026-04-18T05:15:40.670Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 18 오후 02:13:37",
+      "date": "2026-04-18",
+      "name": "이성준",
+      "cid": "5dfd5c134267e105dffefd08",
+      "phone": "010-9386-2412",
+      "product": "[메디코아] HRV : SA-3000 NEW",
+      "qty": 1,
+      "price": "700?",
+      "productId": "6899816d66efcf46326dcdba",
+      "clinic": "마디바름한의원",
+      "region": "서울시 강남구",
+      "caller": "",
+      "supplier": "메디코아",
+      "payDate": "",
+      "payAmount": null
+    },
     {
       "source": "일반",
       "timestamp": "2026. 04. 17 오전 02:13:09",
