@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-17T04:20:25.312Z",
+  "updated": "2026-04-18T02:05:47.977Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -8853,8 +8853,8 @@
       "qty": 1,
       "price": "모름",
       "productId": "6018c0c12c593a001ace93fb",
-      "clinic": "",
-      "region": "대전시 서구",
+      "clinic": "상무부부한의원",
+      "region": "광주시 서구",
       "caller": "",
       "supplier": "영일엠",
       "payDate": "",
