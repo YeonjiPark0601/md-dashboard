@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-18T05:15:40.670Z",
+  "updated": "2026-04-19T02:05:42.071Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -5038,7 +5038,7 @@
       "price": "모름",
       "productId": "618c881fbc63410023476154",
       "clinic": "경희365몸신한의원",
-      "region": "대구시 달성군",
+      "region": "대구시 수성구",
       "caller": "",
       "supplier": "이노메디케어",
       "payDate": "",
