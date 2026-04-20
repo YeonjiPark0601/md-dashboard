@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-20T01:45:49.274Z",
+  "updated": "2026-04-20T02:45:18.003Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -19,6 +19,24 @@
       "region": "서울시 강남구",
       "caller": "김태호",
       "supplier": "",
+      "payDate": "",
+      "payAmount": null
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 20 오전 11:42:42",
+      "date": "2026-04-20",
+      "name": "최한나",
+      "cid": "60368932643a8a0019f2af35",
+      "phone": "010-2045-3558",
+      "product": "[참메드] 비내시경 V1 Smart Mini (1port)",
+      "qty": 1,
+      "price": "0",
+      "productId": "67bbd1a35712128607614aa7",
+      "clinic": "",
+      "region": "대전시 서구",
+      "caller": "",
+      "supplier": "동아참메드",
       "payDate": "",
       "payAmount": null
     },
