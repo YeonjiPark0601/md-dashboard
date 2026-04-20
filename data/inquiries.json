@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-20T06:15:32.400Z",
+  "updated": "2026-04-20T06:25:50.615Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -107,7 +107,7 @@
       "productId": "6899816d66efcf46326dcdba",
       "clinic": "마디바름한의원",
       "region": "서울시 강남구",
-      "caller": "",
+      "caller": "김진석",
       "supplier": "메디코아",
       "payDate": "",
       "payAmount": null
