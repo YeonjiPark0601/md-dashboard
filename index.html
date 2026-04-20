@@ -895,12 +895,12 @@ function render(){
     document.getElementById('classTrendRow').style.display='none';
     document.getElementById('chartRow3').style.display='none';
   }
-  // 의료기기: 주별 매출 트렌드 표시, chartRow3를 detailRow 하단으로 이동
-  document.getElementById('weeklyTrendRow').style.display=isMD?'':'none';
+  // 의료기기/초음파: 주별 매출 트렌드 표시, chartRow3를 detailRow 하단으로 이동
+  document.getElementById('weeklyTrendRow').style.display=(isMD||isSono)?'':'none';
   const _chartRow3=document.getElementById('chartRow3');const _detailRow=document.getElementById('detailRow');
   if(isMD){_detailRow.after(_chartRow3)}else{document.getElementById('sec-charts').after(_chartRow3)}
   renderKPIs();renderTrendChart(data);
-  if(isMD){try{renderWeeklyTrend(data)}catch(e){console.warn('주별 트렌드 에러',e)}}
+  if(isMD||isSono){try{renderWeeklyTrend(data)}catch(e){console.warn('주별 트렌드 에러',e)}}
   if(currentTab==='클래스')renderTypeChart(data);
   if(isMD){renderTypeChart(data);renderCategoryChart(data);renderCategoryPieChart(data);renderSupplierChart(data);}
   if(isSono){renderSupplierChart(data);renderSonoQtyChart(data);renderSonoAS();try{renderSonoInventory()}catch(e){console.warn('재고 로딩 에러',e)}
