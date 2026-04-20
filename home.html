@@ -59,6 +59,24 @@ body { font-family: 'Segoe UI', -apple-system, sans-serif; background: #f0f2f5; 
   text-transform: uppercase; letter-spacing: 1px;
 }
 
+.search-wrap {
+  background: #fff; border-radius: 12px; padding: 14px 18px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  display: flex; align-items: center; gap: 12px;
+}
+.search-wrap .search-icon { font-size: 18px; color: #888; }
+.search-wrap input {
+  flex: 1; border: none; outline: none; background: transparent;
+  font-size: 15px; color: #333; font-family: inherit;
+}
+.search-wrap input::placeholder { color: #aaa; }
+
+.card.hidden { display: none; }
+.empty-state {
+  grid-column: 1 / -1; text-align: center; padding: 40px 20px;
+  color: #888; font-size: 14px;
+}
+
 @media (max-width: 600px) {
   .header { padding: 28px 20px 24px; }
   .header h1 { font-size: 22px; }
@@ -74,6 +92,11 @@ body { font-family: 'Segoe UI', -apple-system, sans-serif; background: #f0f2f5; 
 </div>
 
 <div class="container">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input id="searchInput" type="text" placeholder="도구 이름이나 설명으로 검색..." autocomplete="off">
+  </div>
+
   <div class="section-label">대시보드</div>
   <div class="card-grid">
     <a class="card" href="index.html#전체">
@@ -92,6 +115,12 @@ body { font-family: 'Segoe UI', -apple-system, sans-serif; background: #f0f2f5; 
       <div class="icon icon-blue">👥</div>
       <h3>담당자별 주문 현황</h3>
       <p>의료기기 주문서 담당자 × 월별 피벗, 연도/카테고리 필터</p>
+      <span class="badge badge-live">운영중</span>
+    </a>
+    <a class="card" href="https://demo-management-nine.vercel.app/" target="_blank" rel="noopener">
+      <div class="icon icon-green">🧪</div>
+      <h3>상담하기 대시보드</h3>
+      <p>상담 KPI 요약, BO Stage 파이프라인, 리드타임/코호트 분석</p>
       <span class="badge badge-live">운영중</span>
     </a>
   </div>
@@ -141,6 +170,30 @@ body { font-family: 'Segoe UI', -apple-system, sans-serif; background: #f0f2f5; 
     </a>
   </div>
 </div>
+
+<script>
+(function() {
+  var input = document.getElementById('searchInput');
+  if (!input) return;
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.card'));
+  var grids = Array.prototype.slice.call(document.querySelectorAll('.card-grid'));
+  var labels = Array.prototype.slice.call(document.querySelectorAll('.section-label'));
+
+  input.addEventListener('input', function() {
+    var q = input.value.trim().toLowerCase();
+    cards.forEach(function(c) {
+      if (!q) { c.classList.remove('hidden'); return; }
+      var text = c.textContent.toLowerCase();
+      c.classList.toggle('hidden', text.indexOf(q) === -1);
+    });
+    grids.forEach(function(g, i) {
+      var visible = g.querySelectorAll('.card:not(.hidden)').length;
+      g.style.display = visible ? '' : 'none';
+      if (labels[i]) labels[i].style.display = visible ? '' : 'none';
+    });
+  });
+})();
+</script>
 
 </body>
 </html>
