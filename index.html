@@ -1383,11 +1383,8 @@ function renderWeeklyTrend(data){
   function getWeekNum(dateStr){const d=new Date(dateStr);const jan1=new Date(d.getFullYear(),0,1);const days=Math.floor((d-jan1)/86400000);return Math.ceil((days+jan1.getDay()+1)/7)}
   const startDate='2025-01-01';
   const isAllTab=currentTab==='전체';
-  const isClassTab=currentTab==='클래스';
-  const isSonoTab=currentTab==='초음파';
-  const tallTab=isSonoTab;
   if(weeklyTrendChart)weeklyTrendChart.destroy();
-  var _old=document.getElementById('weeklyTrendChart');var _new=document.createElement('canvas');_new.id='weeklyTrendChart';_new.height=tallTab?130:80;_old.parentNode.replaceChild(_new,_old);
+  var _old=document.getElementById('weeklyTrendChart');var _new=document.createElement('canvas');_new.id='weeklyTrendChart';_new.height=80;_old.parentNode.replaceChild(_new,_old);
   if(isAllTab){
     // 전체 탭: 의료기기/초음파/클래스 스택바
     const weekMD={},weekSono={},weekClass={};
@@ -1411,11 +1408,11 @@ function renderWeeklyTrend(data){
       {label:'의료기기',data:allWeeks.map(w=>weekMD[w]||0),backgroundColor:'#4285f4',borderRadius:4,stack:'s'},
       {label:'초음파',data:allWeeks.map(w=>weekSono[w]||0),backgroundColor:'#34a853',borderRadius:4,stack:'s'},
       {label:'클래스',data:allWeeks.map(w=>weekClass[w]||0),backgroundColor:'#fbbc04',borderRadius:4,stack:'s'}
-    ]},plugins:[stackLabelPlugin],options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:tallTab?55:30}},
+    ]},plugins:[stackLabelPlugin],options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:20}},
       plugins:{legend:{position:'top'},datalabels:{display:false},
         tooltip:{callbacks:{label:function(ctx){return ctx.dataset.label+': '+Math.round(ctx.raw).toLocaleString()+'원'},
           afterBody:function(items){const di=items[0].dataIndex;const ds=items[0].chart.data.datasets;let total=0;ds.forEach(function(d,k){const m=items[0].chart.getDatasetMeta(k);if(!m.hidden)total+=d.data[di]||0});return total>0?['합계: '+Math.round(total).toLocaleString()+'원']:[]}}}},
-      scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:function(v){return v>=1e8?(v/1e8).toFixed(1)+'억':v>=1e4?Math.round(v/1e4)+'만':v}}}}}});
+      scales:{x:{stacked:true},y:{stacked:true,suggestedMax:Math.max(0,...allWeeks.map(w=>(weekMD[w]||0)+(weekSono[w]||0)+(weekClass[w]||0)))*1.2,ticks:{callback:function(v){return v>=1e8?(v/1e8).toFixed(1)+'억':v>=1e4?Math.round(v/1e4)+'만':v}}}}}});
     return;
   }
   const ad=getData();
@@ -1449,7 +1446,7 @@ function renderWeeklyTrend(data){
   weeklyTrendChart=new Chart(_new,{type:'bar',data:{labels:allWeeks.map(w=>{const y=w.substring(2,4);return 'WK'+String(getWeekNum(w)).padStart(2,'0')}),datasets:[
     {label:'올해',data:allWeeks.map(w=>weekTY[w]||0),backgroundColor:'#4285f4',borderRadius:4,order:2},
     {label:'전년',data:allWeeks.map(w=>weekPY[w]||0),type:'line',borderColor:'#bbb',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,borderDash:[5,3],pointRadius:2,pointBackgroundColor:'#999',order:0,fill:false}
-  ]},plugins:[wkLabelPlugin],options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:tallTab?55:30}},
+  ]},plugins:[wkLabelPlugin],options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:20}},
     plugins:{legend:{position:'top'},datalabels:{display:false},
       tooltip:{callbacks:{label:function(ctx){return ctx.dataset.label+': '+Math.round(ctx.raw).toLocaleString()+'원'},
         afterBody:function(items){
@@ -1460,7 +1457,7 @@ function renderWeeklyTrend(data){
           if(di>0){const prevW=ds[0].data[di-1]||0;if(prevW>0){const wow=((cur-prevW)/prevW*100).toFixed(1);lines.push('WoW: '+(wow>0?'+':'')+wow+'%')}}
           return lines.join('\n');
         }}}},
-    scales:{y:{ticks:{callback:function(v){return v>=1e8?(v/1e8).toFixed(1)+'억':v>=1e4?Math.round(v/1e4)+'만':v}}}}}});
+    scales:{y:{suggestedMax:Math.max(0,...allWeeks.map(w=>Math.max(weekTY[w]||0,weekPY[w]||0)))*1.2,ticks:{callback:function(v){return v>=1e8?(v/1e8).toFixed(1)+'억':v>=1e4?Math.round(v/1e4)+'만':v}}}}}});
 }
 
 function renderTypeChart(data){
