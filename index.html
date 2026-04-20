@@ -1281,7 +1281,7 @@ function renderTrendChart(data){
             for(var j=0;j<chart.data.datasets.length;j++){if(chart.data.datasets[j].stack==='thisYear'&&!chart.getDatasetMeta(j).hidden)t+=(chart.data.datasets[j].data[di]||0)}
             return fmtLabel(t);}}},
       {label:'전년',data:months.map(m=>pY[m]||0),type:'line',borderColor:'#bbb',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,borderDash:[5,3],pointRadius:3,pointBackgroundColor:'#999',order:0,fill:false,datalabels:{display:false}}
-    ]},plugins:[ChartDataLabels],options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:20}},
+    ]},plugins:[ChartDataLabels],options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:isClassTab?35:20}},
       plugins:{legend:{position:'top'},
         tooltip:{callbacks:{label:function(ctx){var v=ctx.raw;var i=ctx.dataIndex;var t=(sonoM[months[i]]||0)+(mdM[months[i]]||0)+(classM[months[i]]||0);var pct=t?(v/t*100).toFixed(1):'0';if(ctx.dataset.label==='전년')return ctx.dataset.label+': '+fmt(v);return ctx.dataset.label+': '+fmt(v)+' ('+pct+'%)'},
           afterBody:function(items){if(!items||!items.length)return'';var i=items[0].dataIndex;var t=(sonoM[months[i]]||0)+(mdM[months[i]]||0)+(classM[months[i]]||0);var lines=['합계: '+fmt(t)];
@@ -1383,8 +1383,9 @@ function renderWeeklyTrend(data){
   function getWeekNum(dateStr){const d=new Date(dateStr);const jan1=new Date(d.getFullYear(),0,1);const days=Math.floor((d-jan1)/86400000);return Math.ceil((days+jan1.getDay()+1)/7)}
   const startDate='2025-01-01';
   const isAllTab=currentTab==='전체';
+  const isClassTab=currentTab==='클래스';
   if(weeklyTrendChart)weeklyTrendChart.destroy();
-  var _old=document.getElementById('weeklyTrendChart');var _new=document.createElement('canvas');_new.id='weeklyTrendChart';_new.height=80;_old.parentNode.replaceChild(_new,_old);
+  var _old=document.getElementById('weeklyTrendChart');var _new=document.createElement('canvas');_new.id='weeklyTrendChart';_new.height=isClassTab?130:80;_old.parentNode.replaceChild(_new,_old);
   if(isAllTab){
     // 전체 탭: 의료기기/초음파/클래스 스택바
     const weekMD={},weekSono={},weekClass={};
@@ -1408,10 +1409,10 @@ function renderWeeklyTrend(data){
       {label:'의료기기',data:allWeeks.map(w=>weekMD[w]||0),backgroundColor:'#4285f4',borderRadius:4,stack:'s'},
       {label:'초음파',data:allWeeks.map(w=>weekSono[w]||0),backgroundColor:'#34a853',borderRadius:4,stack:'s'},
       {label:'클래스',data:allWeeks.map(w=>weekClass[w]||0),backgroundColor:'#fbbc04',borderRadius:4,stack:'s'}
-    ]},plugins:[stackLabelPlugin],options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:20}},
+    ]},plugins:[stackLabelPlugin],options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:isClassTab?35:20}},
       plugins:{legend:{position:'top'},datalabels:{display:false},
-        tooltip:{callbacks:{label:function(ctx){const v=ctx.raw;return ctx.dataset.label+': '+(v>=1e8?(v/1e8).toFixed(2)+'억':Math.round(v).toLocaleString())},
-          afterBody:function(items){const di=items[0].dataIndex;const ds=items[0].chart.data.datasets;let total=0;ds.forEach(function(d,k){const m=items[0].chart.getDatasetMeta(k);if(!m.hidden)total+=d.data[di]||0});return total>0?['합계: '+(total>=1e8?(total/1e8).toFixed(2)+'억':Math.round(total).toLocaleString())]:[]}}}},
+        tooltip:{callbacks:{label:function(ctx){return ctx.dataset.label+': '+Math.round(ctx.raw).toLocaleString()+'원'},
+          afterBody:function(items){const di=items[0].dataIndex;const ds=items[0].chart.data.datasets;let total=0;ds.forEach(function(d,k){const m=items[0].chart.getDatasetMeta(k);if(!m.hidden)total+=d.data[di]||0});return total>0?['합계: '+Math.round(total).toLocaleString()+'원']:[]}}}},
       scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:function(v){return v>=1e8?(v/1e8).toFixed(1)+'억':v>=1e4?Math.round(v/1e4)+'만':v}}}}}});
     return;
   }
@@ -1446,9 +1447,9 @@ function renderWeeklyTrend(data){
   weeklyTrendChart=new Chart(_new,{type:'bar',data:{labels:allWeeks.map(w=>{const y=w.substring(2,4);return 'WK'+String(getWeekNum(w)).padStart(2,'0')}),datasets:[
     {label:'올해',data:allWeeks.map(w=>weekTY[w]||0),backgroundColor:'#4285f4',borderRadius:4,order:2},
     {label:'전년',data:allWeeks.map(w=>weekPY[w]||0),type:'line',borderColor:'#bbb',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,borderDash:[5,3],pointRadius:2,pointBackgroundColor:'#999',order:0,fill:false}
-  ]},plugins:[wkLabelPlugin],options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:20}},
+  ]},plugins:[wkLabelPlugin],options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:isClassTab?35:20}},
     plugins:{legend:{position:'top'},datalabels:{display:false},
-      tooltip:{callbacks:{label:function(ctx){const v=ctx.raw;return ctx.dataset.label+': '+(v>=1e8?(v/1e8).toFixed(2)+'억':Math.round(v).toLocaleString())},
+      tooltip:{callbacks:{label:function(ctx){return ctx.dataset.label+': '+Math.round(ctx.raw).toLocaleString()+'원'},
         afterBody:function(items){
           const di=items[0].dataIndex;const ds=items[0].chart.data.datasets;
           const cur=ds[0].data[di]||0;const prev=ds[1].data[di]||0;
@@ -2940,7 +2941,7 @@ function renderPT10TrfTrend(){
   ];
   if(pt10TrfTrendChart)pt10TrfTrendChart.destroy();
   pt10TrfTrendChart=new Chart(document.getElementById('pt10TrfTrendChart'),{type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets},plugins:[ChartDataLabels],
-    options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:20}},
+    options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:isClassTab?35:20}},
       plugins:{legend:{position:'top'},
         tooltip:{callbacks:{
           label:ctx=>ctx.dataset.label+': '+fmt(ctx.raw),
@@ -3763,7 +3764,7 @@ function renderTurnkeySurvey(){
   surveyWeekChart=new Chart(_newW,{type:'bar',data:{labels:allWeeks.map(w=>toWkLabel(w)),datasets:[
     {label:'올해',data:allWeeks.map(w=>weekTY[w]||0),backgroundColor:'#9334e6',borderRadius:4,order:2},
     {label:'전년',data:allWeeks.map(w=>weekPY[w]||0),type:'line',borderColor:'#bbb',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,borderDash:[5,3],pointRadius:2,pointBackgroundColor:'#999',order:0,fill:false}
-  ]},plugins:[weekLabelPlugin],options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:20}},
+  ]},plugins:[weekLabelPlugin],options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:isClassTab?35:20}},
     plugins:{legend:{position:'top'},datalabels:{display:false},
       tooltip:{callbacks:{label:function(ctx){return ctx.dataset.label+': '+ctx.raw+'건'}}}},
     scales:{y:{ticks:{callback:function(v){return v+'건'}}}}}});
@@ -3855,7 +3856,7 @@ function renderTurnkeySurvey(){
     ctx.restore()}};
   if(consultWeekChart)consultWeekChart.destroy();
   var _oldCW=document.getElementById('consultWeekChart');var _newCW=document.createElement('canvas');_newCW.id='consultWeekChart';_newCW.height=80;_oldCW.parentNode.replaceChild(_newCW,_oldCW);
-  consultWeekChart=new Chart(_newCW,{type:'bar',data:{labels:cAllWeeks.map(w=>toWkLabel(w)),datasets:cWeekDatasets},plugins:[cWeekStackPlugin],options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:20}},
+  consultWeekChart=new Chart(_newCW,{type:'bar',data:{labels:cAllWeeks.map(w=>toWkLabel(w)),datasets:cWeekDatasets},plugins:[cWeekStackPlugin],options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:isClassTab?35:20}},
     plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:12}},datalabels:{display:false},
       tooltip:{mode:'index',callbacks:{label:function(ctx){return ctx.dataset.label+': '+ctx.raw+'건'},
         afterBody:function(items){var t=0;items.forEach(function(it){t+=it.raw});return '합계: '+t+'건'}}}},
