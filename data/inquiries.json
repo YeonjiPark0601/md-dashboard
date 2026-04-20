@@ -1,9 +1,27 @@
 {
-  "updated": "2026-04-20T03:05:20.585Z",
+  "updated": "2026-04-20T05:35:29.154Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "일반",
+      "timestamp": "2026. 04. 20 오후 02:30:54",
+      "date": "2026-04-20",
+      "name": "메디테스트",
+      "cid": "N/A",
+      "phone": "010-5012-9071",
+      "product": "N/A",
+      "qty": "N/A",
+      "price": "N/A",
+      "productId": "N/A",
+      "clinic": "",
+      "region": "",
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
+    },
     {
       "source": "총판기기",
       "timestamp": "2026. 04. 20 오전 10:37:57",
