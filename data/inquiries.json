@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-20T09:56:38.598Z",
+  "updated": "2026-04-20T10:00:11.316Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -43,6 +43,24 @@
     {
       "source": "일반",
       "timestamp": "2026. 04. 20 오후 06:37:21",
+      "date": "2026-04-20",
+      "name": "(상담하기) PT10 혈액검사기",
+      "cid": "N/A",
+      "phone": "N/A",
+      "product": "N/A",
+      "qty": "N/A",
+      "price": "N/A",
+      "productId": "N/A",
+      "clinic": "",
+      "region": "",
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 04. 20 오후 06:40:19",
       "date": "2026-04-20",
       "name": "(상담하기) PT10 혈액검사기",
       "cid": "N/A",
