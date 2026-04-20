@@ -1,11 +1,29 @@
 {
-  "updated": "2026-04-20T00:50:43.865Z",
+  "updated": "2026-04-20T01:40:47.580Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
     {
-      "source": "일반",
+      "source": "총판기기",
+      "timestamp": "2026. 04. 20 오전 10:37:57",
+      "date": "2026-04-20",
+      "name": "장재순",
+      "cid": "5d8342743f0e6805c4706718",
+      "phone": "010-3752-5937",
+      "product": "TRF PLUS 면역진단기(CRP, D-Dimer)",
+      "qty": 1,
+      "price": "모름",
+      "productId": "69e1b33e969968934a3cac48",
+      "clinic": "더쉼한방신경정신과한의원",
+      "region": "서울시 강남구",
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null
+    },
+    {
+      "source": "총판기기",
       "timestamp": "2026. 04. 19 오후 12:56:00",
       "date": "2026-04-19",
       "name": "test",
