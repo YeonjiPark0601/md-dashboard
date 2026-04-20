@@ -1385,7 +1385,7 @@ function renderWeeklyTrend(data){
   const isAllTab=currentTab==='전체';
   const isClassTab=currentTab==='클래스';
   const isSonoTab=currentTab==='초음파';
-  const tallTab=isClassTab||isSonoTab;
+  const tallTab=isSonoTab;
   if(weeklyTrendChart)weeklyTrendChart.destroy();
   var _old=document.getElementById('weeklyTrendChart');var _new=document.createElement('canvas');_new.id='weeklyTrendChart';_new.height=tallTab?130:80;_old.parentNode.replaceChild(_new,_old);
   if(isAllTab){
