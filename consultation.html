@@ -307,9 +307,10 @@ th.sortable:hover { background: #eef0f4; }
   #consultTable td:nth-of-type(11)::before { content: "담당자"; }
   #consultTable td:nth-of-type(12)::before { content: "Stage"; }
   #consultTable td:nth-of-type(13)::before { content: "문의내용"; }
-  #consultTable td:nth-of-type(14)::before { content: "데모일정"; }
-  #consultTable td:nth-of-type(15)::before { content: "결제일자"; }
-  #consultTable td:nth-of-type(16)::before { content: "수정"; }
+  #consultTable td:nth-of-type(14)::before { content: "담당자메모"; }
+  #consultTable td:nth-of-type(15)::before { content: "데모일정"; }
+  #consultTable td:nth-of-type(16)::before { content: "결제일자"; }
+  #consultTable td:nth-of-type(17)::before { content: "수정"; }
   #consultTable td:nth-of-type(3) { font-size: 15px; font-weight: 700; padding-top: 2px; padding-bottom: 6px; border-bottom: 1px solid #f0f0f0; margin-bottom: 4px; }
   #consultTable td:nth-of-type(3)::before { color: #aaa; }
   #consultTable td.td-truncate, #consultTable td.note-cell { max-width: none; white-space: normal; overflow: visible; text-overflow: clip; }
@@ -536,6 +537,7 @@ th.sortable:hover { background: #eef0f4; }
             <th>담당자</th>
             <th>Stage</th>
             <th>문의내용</th>
+            <th>담당자메모</th>
             <th>데모일정</th>
             <th>결제일자</th>
             <th>수정</th>
@@ -826,7 +828,8 @@ function fetchExternalInquiries() {
             return s;
           })(), status: '', demoDate: demoOverrides[stableKey] || '',
           payDate: r.payDate || '',
-          note: noteOverrides[stableKey] || ''
+          note: noteOverrides[stableKey] || '',
+          inquiry: r.inquiry || ''
         };
       });
     })
@@ -1332,6 +1335,7 @@ function renderTable() {
       '<td>' + escHtml(r.price) + '</td>' +
       '<td>' + renderCallerCell(r) + '</td>' +
       '<td>' + renderStageCell(r) + '</td>' +
+      '<td class="note-cell" style="font-size:12px;color:#555;" title="' + escHtml(r.inquiry || '') + '">' + escHtml(r.inquiry || '') + '</td>' +
       '<td class="note-cell">' + renderInlineInput('note', r.note, r, '입력') + '</td>' +
       '<td>' + renderInlineInput('demoDate', r.demoDate, r, 'YYYY-MM-DD', 'date') + '</td>' +
       '<td>' + escHtml(r.payDate) + '</td>' +
@@ -2170,7 +2174,7 @@ function startNoteEdit(td) {
     var rec = data.find(function(r){ return r.id === id; });
     current = rec ? (rec.note || '') : '';
   }
-  td.innerHTML = '<input type="text" class="note-input" value="' + escHtml(current).replace(/"/g,'&quot;') + '" placeholder="문의내용 입력...">';
+  td.innerHTML = '<input type="text" class="note-input" value="' + escHtml(current).replace(/"/g,'&quot;') + '" placeholder="담당자메모 입력...">';
   var input = td.querySelector('.note-input');
   input.focus();
   input.select();
@@ -2235,10 +2239,11 @@ var DEFAULT_COL_WIDTHS = {
   9: 100,  // 견적가
   10: 80,  // 담당자
   11: 80,  // Stage
-  12: 400, // 문의내용
-  13: 95,  // 데모일정
-  14: 95,  // 결제일자
-  15: 70   // 수정
+  12: 220, // 문의내용 (슬랙 문의사항)
+  13: 220, // 담당자메모 (수동 입력)
+  14: 95,  // 데모일정
+  15: 95,  // 결제일자
+  16: 70   // 수정
 };
 
 function applyColWidths() {
