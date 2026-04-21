@@ -829,6 +829,19 @@ function saveData(data) {
 // ============================================================
 function today() { return new Date().toISOString().slice(0, 10); }
 
+// "2026. 04. 17 오전 02:13:09" → ms (정렬용). timestamp 없으면 date의 00:00 반환.
+function tsToMs(r) {
+  var ts = r.timestamp || '';
+  var m = ts.match(/(\d{4})[.\-\/\s]+(\d{1,2})[.\-\/\s]+(\d{1,2})[^\d]+(오전|오후)\s*(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+  if (m) {
+    var h = parseInt(m[5], 10);
+    if (m[4] === '오후' && h < 12) h += 12;
+    if (m[4] === '오전' && h === 12) h = 0;
+    return new Date(+m[1], +m[2]-1, +m[3], h, +m[6], +(m[7]||0)).getTime();
+  }
+  return r.date ? new Date(r.date + 'T00:00:00').getTime() : 0;
+}
+
 function escHtml(s) {
   if (!s && s !== 0) return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -1253,9 +1266,15 @@ function getFilteredData() {
   }
 
   data.sort(function(a, b){
-    var va = a[sortCol] || '';
-    var vb = b[sortCol] || '';
-    if (sortCol === 'qty') { va = parseFloat(va) || 0; vb = parseFloat(vb) || 0; }
+    var va, vb;
+    if (sortCol === 'date') {
+      // 화면엔 날짜만 보이지만 timestamp(시분초)까지 반영해서 정렬
+      va = tsToMs(a); vb = tsToMs(b);
+    } else {
+      va = a[sortCol] || '';
+      vb = b[sortCol] || '';
+      if (sortCol === 'qty') { va = parseFloat(va) || 0; vb = parseFloat(vb) || 0; }
+    }
     if (va < vb) return sortDir === 'asc' ? -1 : 1;
     if (va > vb) return sortDir === 'asc' ? 1 : -1;
     return 0;
