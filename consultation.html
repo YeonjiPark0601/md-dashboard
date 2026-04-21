@@ -1247,7 +1247,7 @@ function updateColFilterIndicators() {
 }
 
 document.addEventListener('click', function(e){
-  if (!e.target.closest('.col-filter-pop') && !e.target.closest('.col-filter-btn')) closeColFilter();
+  if (!e.target.closest('.col-filter-pop') && !e.target.closest('.col-filter-btn') && !e.target.closest('.topbar-filter-btn')) closeColFilter();
 });
 
 function getFilteredData() {
