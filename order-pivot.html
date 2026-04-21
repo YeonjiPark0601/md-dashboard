@@ -86,6 +86,24 @@ td.rep-name.active { background: #e3f2fd !important; color: #0039cb; }
 }
 #detailCard .close-btn:hover { background: #f0f2f5; }
 #detailCard table tbody tr { cursor: default; }
+#detailCard .detail-search {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 10px; flex-wrap: wrap;
+}
+#detailCard .detail-search input {
+  flex: 1; min-width: 200px; max-width: 360px;
+  padding: 6px 10px; border: 1px solid #d0d0d0; border-radius: 6px;
+  font-size: 13px;
+}
+#detailCard .detail-search input:focus { outline: none; border-color: #2962ff; }
+#detailCard .detail-search .clear-search {
+  background: none; border: 1px solid #d0d0d0; border-radius: 6px;
+  padding: 5px 10px; font-size: 12px; cursor: pointer; color: #555;
+}
+#detailCard .detail-search .clear-search:hover { background: #f0f2f5; }
+#detailCard .empty-row td {
+  text-align: center; padding: 20px; color: #999; font-style: italic;
+}
 
 .pagination {
   display: flex; justify-content: center; align-items: center; gap: 4px;
@@ -333,44 +351,59 @@ function render() {
   document.getElementById('monthlyArea').innerHTML = monthlyHtml;
 
   document.querySelectorAll('td.rep-name.clickable').forEach(td => {
-    td.addEventListener('click', () => showRepDetail(td.dataset.rep));
+    td.addEventListener('click', () => {
+      const card = document.getElementById('detailCard');
+      if (card.dataset.activeRep !== td.dataset.rep) {
+        card.dataset.query = '';
+        card.dataset.page = '1';
+      }
+      showRepDetail(td.dataset.rep);
+    });
   });
 
   // 필터 바뀌었을 때 열려있던 상세 다시 그리기 (해당 담당자가 여전히 있으면)
-  const activeRep = document.querySelector('#detailCard').dataset.activeRep;
+  const card = document.getElementById('detailCard');
+  const activeRep = card.dataset.activeRep;
   if (activeRep) {
-    if (repTotals.some(r => r.rep === activeRep)) showRepDetail(activeRep);
-    else hideRepDetail();
+    if (repTotals.some(r => r.rep === activeRep)) {
+      card.dataset.page = '1';
+      showRepDetail(activeRep);
+    } else {
+      hideRepDetail();
+    }
   }
 }
 
 const DETAIL_PAGE_SIZE = 10;
 
-function showRepDetail(rep, page) {
+function getRepRows(rep) {
   const year = document.getElementById('yearSelect').value;
   const cat = document.getElementById('categorySelect').value;
-  const allRows = DATA.rows.filter(r =>
+  return DATA.rows.filter(r =>
     (r['거래월'] || '').startsWith(year) &&
     (!cat || r['카테고리명'] === cat) &&
     r['매출담당자'] === rep
   ).sort((a, b) => (b['거래일자'] || '').localeCompare(a['거래일자'] || ''));
+}
 
-  const orderSet = new Set(allRows.map(r => r['주문번호']));
-  const totalAmt = allRows.reduce((s, r) => s + r['금액'], 0);
-
-  const totalPages = Math.max(1, Math.ceil(allRows.length / DETAIL_PAGE_SIZE));
+function showRepDetail(rep) {
   const card = document.getElementById('detailCard');
   const prevRep = card.dataset.activeRep;
-  let curPage = typeof page === 'number' ? page : (prevRep === rep ? parseInt(card.dataset.page || '1', 10) : 1);
-  if (curPage < 1) curPage = 1;
-  if (curPage > totalPages) curPage = totalPages;
+  const isNewRep = prevRep !== rep;
 
   card.dataset.activeRep = rep;
-  card.dataset.page = curPage;
+  if (isNewRep) {
+    card.dataset.page = '1';
+    card.dataset.query = '';
+  }
   card.style.display = 'block';
 
-  const start = (curPage - 1) * DETAIL_PAGE_SIZE;
-  const pageRows = allRows.slice(start, start + DETAIL_PAGE_SIZE);
+  const year = document.getElementById('yearSelect').value;
+  const cat = document.getElementById('categorySelect').value;
+  const allRows = getRepRows(rep);
+  const orderSet = new Set(allRows.map(r => r['주문번호']));
+  const totalAmt = allRows.reduce((s, r) => s + r['금액'], 0);
+  const q = card.dataset.query || '';
 
   let html = '';
   html += '<div class="detail-header">';
@@ -379,44 +412,113 @@ function showRepDetail(rep, page) {
   html += `<button class="close-btn" onclick="hideRepDetail()">닫기 ✕</button>`;
   html += '</div>';
 
-  html += '<table><thead><tr>';
-  html += '<th>거래일자</th><th>주문번호</th><th>병의원명</th><th>카테고리</th><th>상품명</th><th class="text-right">금액</th>';
-  html += '</tr></thead><tbody>';
-  pageRows.forEach(r => {
-    html += `<tr><td>${r['거래일자']}</td><td>${r['주문번호']}</td><td>${r['병의원명']}</td><td>${r['카테고리명']}</td><td>${r['상품명']}</td><td class="text-right">${fmt(r['금액'])}</td></tr>`;
-  });
-  html += `<tr class="total-row"><td colspan="5">전체 합계 (${orderSet.size} 주문 / ${allRows.length} 라인)</td><td class="text-right">${fmt(totalAmt)}</td></tr>`;
-  html += '</tbody></table>';
+  html += '<div class="detail-search">';
+  html += `<input id="detailSearchInput" type="text" placeholder="병의원명 / 주문번호 / 상품명 / 카테고리 / 날짜 검색" value="${q.replace(/"/g, '&quot;')}" />`;
+  html += `<button class="clear-search" onclick="clearDetailSearch()">지우기</button>`;
+  html += '</div>';
 
-  if (totalPages > 1) {
-    html += renderPagination(rep, curPage, totalPages, allRows.length);
-  }
+  html += '<div id="detailTableWrap"></div>';
 
   card.innerHTML = html;
+
+  const input = document.getElementById('detailSearchInput');
+  input.addEventListener('input', (e) => {
+    card.dataset.query = e.target.value;
+    card.dataset.page = '1';
+    updateDetailTable();
+  });
 
   document.querySelectorAll('td.rep-name.clickable').forEach(td => {
     td.classList.toggle('active', td.dataset.rep === rep);
   });
 
-  if (prevRep !== rep) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  updateDetailTable();
+  if (isNewRep) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-function renderPagination(rep, cur, total, totalRows) {
-  const repEsc = rep.replace(/"/g, '&quot;').replace(/'/g, "\\'");
+function filterRows(rows, q) {
+  if (!q) return rows;
+  const needle = q.toLowerCase().trim();
+  if (!needle) return rows;
+  return rows.filter(r =>
+    (r['거래일자'] || '').toLowerCase().includes(needle) ||
+    (r['주문번호'] || '').toLowerCase().includes(needle) ||
+    (r['병의원명'] || '').toLowerCase().includes(needle) ||
+    (r['카테고리명'] || '').toLowerCase().includes(needle) ||
+    (r['상품명'] || '').toLowerCase().includes(needle)
+  );
+}
+
+function updateDetailTable() {
+  const card = document.getElementById('detailCard');
+  const rep = card.dataset.activeRep;
+  if (!rep) return;
+  const q = card.dataset.query || '';
+  const allRows = getRepRows(rep);
+  const rows = filterRows(allRows, q);
+
+  const totalPages = Math.max(1, Math.ceil(rows.length / DETAIL_PAGE_SIZE));
+  let curPage = parseInt(card.dataset.page || '1', 10);
+  if (curPage < 1) curPage = 1;
+  if (curPage > totalPages) curPage = totalPages;
+  card.dataset.page = curPage;
+
+  const start = (curPage - 1) * DETAIL_PAGE_SIZE;
+  const pageRows = rows.slice(start, start + DETAIL_PAGE_SIZE);
+  const filteredAmt = rows.reduce((s, r) => s + r['금액'], 0);
+  const filteredOrders = new Set(rows.map(r => r['주문번호'])).size;
+
+  let html = '<table><thead><tr>';
+  html += '<th>거래일자</th><th>주문번호</th><th>병의원명</th><th>카테고리</th><th>상품명</th><th class="text-right">금액</th>';
+  html += '</tr></thead><tbody>';
+  if (pageRows.length === 0) {
+    html += '<tr class="empty-row"><td colspan="6">검색 결과가 없습니다.</td></tr>';
+  } else {
+    pageRows.forEach(r => {
+      html += `<tr><td>${r['거래일자']}</td><td>${r['주문번호']}</td><td>${r['병의원명']}</td><td>${r['카테고리명']}</td><td>${r['상품명']}</td><td class="text-right">${fmt(r['금액'])}</td></tr>`;
+    });
+    const label = q ? `검색 결과 합계 (${filteredOrders} 주문 / ${rows.length} 라인)` : `전체 합계 (${filteredOrders} 주문 / ${rows.length} 라인)`;
+    html += `<tr class="total-row"><td colspan="5">${label}</td><td class="text-right">${fmt(filteredAmt)}</td></tr>`;
+  }
+  html += '</tbody></table>';
+
+  if (totalPages > 1) {
+    html += renderPagination(curPage, totalPages, rows.length);
+  }
+
+  document.getElementById('detailTableWrap').innerHTML = html;
+}
+
+function goDetailPage(p) {
+  const card = document.getElementById('detailCard');
+  card.dataset.page = p;
+  updateDetailTable();
+}
+
+function clearDetailSearch() {
+  const card = document.getElementById('detailCard');
+  card.dataset.query = '';
+  card.dataset.page = '1';
+  const input = document.getElementById('detailSearchInput');
+  if (input) { input.value = ''; input.focus(); }
+  updateDetailTable();
+}
+
+function renderPagination(cur, total, totalRows) {
   let html = '<div class="pagination">';
-  html += `<button ${cur === 1 ? 'disabled' : ''} onclick="showRepDetail('${repEsc}', 1)">«</button>`;
-  html += `<button ${cur === 1 ? 'disabled' : ''} onclick="showRepDetail('${repEsc}', ${cur - 1})">‹</button>`;
+  html += `<button ${cur === 1 ? 'disabled' : ''} onclick="goDetailPage(1)">«</button>`;
+  html += `<button ${cur === 1 ? 'disabled' : ''} onclick="goDetailPage(${cur - 1})">‹</button>`;
 
   const windowSize = 5;
   let start = Math.max(1, cur - Math.floor(windowSize / 2));
   let end = Math.min(total, start + windowSize - 1);
   start = Math.max(1, end - windowSize + 1);
   for (let p = start; p <= end; p++) {
-    html += `<button class="${p === cur ? 'active' : ''}" onclick="showRepDetail('${repEsc}', ${p})">${p}</button>`;
+    html += `<button class="${p === cur ? 'active' : ''}" onclick="goDetailPage(${p})">${p}</button>`;
   }
 
-  html += `<button ${cur === total ? 'disabled' : ''} onclick="showRepDetail('${repEsc}', ${cur + 1})">›</button>`;
-  html += `<button ${cur === total ? 'disabled' : ''} onclick="showRepDetail('${repEsc}', ${total})">»</button>`;
+  html += `<button ${cur === total ? 'disabled' : ''} onclick="goDetailPage(${cur + 1})">›</button>`;
+  html += `<button ${cur === total ? 'disabled' : ''} onclick="goDetailPage(${total})">»</button>`;
   html += `<span class="page-info">${cur} / ${total} 페이지 · 총 ${totalRows} 라인</span>`;
   html += '</div>';
   return html;
