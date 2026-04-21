@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-21T06:13:30.192Z",
+  "updated": "2026-04-21T07:50:53.516Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -20,7 +20,8 @@
       "caller": "",
       "supplier": "나노메딕스썸텍",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -38,7 +39,8 @@
       "caller": "김진석",
       "supplier": "굿플",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -54,9 +56,29 @@
       "clinic": "",
       "region": "경기도 남양주시",
       "caller": "조성갑",
-      "supplier": "파이주식회사",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 04. 21 오후 04:15:27",
+      "date": "2026-04-21",
+      "name": "소준수",
+      "cid": "5ddbac1d2bb59605ca3d0868",
+      "phone": "010-2680-7717",
+      "product": "아큐닉 BP210",
+      "qty": "1개",
+      "price": "N/A",
+      "productId": "5fbf45f7ce872a1a803a803a",
+      "clinic": "삼성부부한의원",
+      "region": "전라북도 전주시",
+      "caller": "",
+      "supplier": "아큐닉",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -74,7 +96,8 @@
       "caller": "",
       "supplier": "옴니씨앤에스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -92,7 +115,8 @@
       "caller": "",
       "supplier": "동아참메드",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -108,9 +132,10 @@
       "clinic": "코비한의원 인천점 ",
       "region": "인천시 남동구",
       "caller": "",
-      "supplier": "",
+      "supplier": "(주)메가메디칼",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -128,7 +153,8 @@
       "caller": "",
       "supplier": "옴니씨앤에스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -146,7 +172,8 @@
       "caller": "주봉현",
       "supplier": "에이치씨케이",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -164,7 +191,8 @@
       "caller": "이예림",
       "supplier": "이앤에스헬스케어",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -180,9 +208,10 @@
       "clinic": "더쉼한방신경정신과한의원",
       "region": "서울시 강남구",
       "caller": "김태호",
-      "supplier": "",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -200,7 +229,8 @@
       "caller": "이예림",
       "supplier": "동아참메드",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -216,9 +246,10 @@
       "clinic": "연산청담한의원",
       "region": "부산시 연제구",
       "caller": "김태호",
-      "supplier": "",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -234,9 +265,10 @@
       "clinic": "테스트병의원",
       "region": "서울시 양천구",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -252,9 +284,10 @@
       "clinic": "테스트병의원",
       "region": "서울시 양천구",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -270,9 +303,10 @@
       "clinic": "테스트병의원",
       "region": "서울시 양천구",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -288,9 +322,10 @@
       "clinic": "",
       "region": "서울시 강남구",
       "caller": "김태호",
-      "supplier": "",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -306,9 +341,10 @@
       "clinic": "마디바름한의원",
       "region": "서울시 강남구",
       "caller": "김진석",
-      "supplier": "메디코아",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -324,9 +360,10 @@
       "clinic": "청당경희365한의원",
       "region": "충청남도 천안시",
       "caller": "이예림",
-      "supplier": "한메디",
+      "supplier": "오케이차트",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -344,7 +381,8 @@
       "caller": "유승준",
       "supplier": "삼성메디슨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -360,9 +398,10 @@
       "clinic": "경희홍익한의원",
       "region": "부산시 사하구",
       "caller": "김태호",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -380,7 +419,8 @@
       "caller": "박원",
       "supplier": "대요메디",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -398,7 +438,8 @@
       "caller": "김진석",
       "supplier": "굿플",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -414,9 +455,10 @@
       "clinic": "",
       "region": "경기도 남양주시",
       "caller": "이예림",
-      "supplier": "메쉬",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -432,9 +474,10 @@
       "clinic": "",
       "region": "광주시 남구",
       "caller": "김진석",
-      "supplier": "",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -452,7 +495,8 @@
       "caller": "김진석",
       "supplier": "에이치씨케이",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -470,7 +514,8 @@
       "caller": "김진석",
       "supplier": "에이치씨케이",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -486,9 +531,10 @@
       "clinic": "365통치한의원 ",
       "region": "경기도 화성시",
       "caller": "이예림",
-      "supplier": "",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -504,9 +550,10 @@
       "clinic": "신사임당한의원",
       "region": "서울시 성동구",
       "caller": "이예림",
-      "supplier": "",
+      "supplier": "아이밸런스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -522,9 +569,10 @@
       "clinic": "365통치한의원 ",
       "region": "경기도 화성시",
       "caller": "이예림",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -540,9 +588,10 @@
       "clinic": "365통치한의원 ",
       "region": "경기도 화성시",
       "caller": "이예림",
-      "supplier": "",
+      "supplier": "디에스이아이엔씨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -558,9 +607,10 @@
       "clinic": "365통치한의원 ",
       "region": "경기도 화성시",
       "caller": "이예림",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "dse",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -576,9 +626,10 @@
       "clinic": "담비한의원",
       "region": "대전시 유성구",
       "caller": "김태호",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -594,9 +645,10 @@
       "clinic": "경희피어라한의원",
       "region": "세종시",
       "caller": "김태호",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -612,9 +664,10 @@
       "clinic": "차담한의원",
       "region": "부산시 기장군",
       "caller": "김태호",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -630,9 +683,10 @@
       "clinic": "연오재한의원",
       "region": "경기도 고양시",
       "caller": "김태호",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -648,9 +702,10 @@
       "clinic": "소가담한의원",
       "region": "부산시 사하구",
       "caller": "김태호",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -666,9 +721,10 @@
       "clinic": "다자래한의원",
       "region": "경기도 안산시",
       "caller": "김태호",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -684,9 +740,10 @@
       "clinic": "죽림한의원",
       "region": "경상남도 통영시",
       "caller": "김태호",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -702,9 +759,10 @@
       "clinic": "닥터스한의원",
       "region": "부산시 기장군",
       "caller": "김태호",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -722,7 +780,8 @@
       "caller": "김진석",
       "supplier": "선웅메디테크",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -738,9 +797,10 @@
       "clinic": "맑은숲한의원",
       "region": "서울시 동작구",
       "caller": "김진석",
-      "supplier": "굿플",
+      "supplier": "IR-VITA",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -756,9 +816,10 @@
       "clinic": "정원한의원",
       "region": "경기도 성남시",
       "caller": "김진석",
-      "supplier": "에이치씨케이",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -776,7 +837,8 @@
       "caller": "김진석",
       "supplier": "굿플",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -794,7 +856,8 @@
       "caller": "박원",
       "supplier": "옴니씨앤에스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -810,9 +873,10 @@
       "clinic": "시호한의원",
       "region": "경기도 화성시",
       "caller": "조성갑",
-      "supplier": "정메디칼",
+      "supplier": "메디스트림",
       "payDate": "2026-04-14",
-      "payAmount": 1064693
+      "payAmount": 1064693,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -830,7 +894,8 @@
       "caller": "조성갑",
       "supplier": "굿플",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -848,7 +913,8 @@
       "caller": "조성갑",
       "supplier": "굿플",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -864,9 +930,10 @@
       "clinic": "도본한의원",
       "region": "충청남도 천안시",
       "caller": "유승준",
-      "supplier": "상담하기",
+      "supplier": "삼성메디슨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -882,9 +949,10 @@
       "clinic": "",
       "region": "경기도 시흥시",
       "caller": "이예림",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -900,9 +968,10 @@
       "clinic": "김포정성한의원",
       "region": "경기도 김포시",
       "caller": "주봉현",
-      "supplier": "씨알인터네셔널",
+      "supplier": "아쿠아",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -920,7 +989,8 @@
       "caller": "주봉현",
       "supplier": "굿플",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -936,9 +1006,10 @@
       "clinic": "달려라한의원",
       "region": "경기도 안양시",
       "caller": "조성갑",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -956,7 +1027,8 @@
       "caller": "유승준",
       "supplier": "삼성메디슨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -972,9 +1044,10 @@
       "clinic": "김포정성한의원",
       "region": "경기도 김포시",
       "caller": "주봉현",
-      "supplier": "메디코아",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -990,9 +1063,10 @@
       "clinic": "경희디엠씨한의원",
       "region": "서울시 마포구",
       "caller": "김태호",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -1008,9 +1082,10 @@
       "clinic": "두일한의원",
       "region": "인천시 서구",
       "caller": "주봉현",
-      "supplier": "원효메디텍",
+      "supplier": "원효",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1026,9 +1101,10 @@
       "clinic": "365차한의원",
       "region": "전라남도 여수시",
       "caller": "조성갑",
-      "supplier": "오스테오시스",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1044,9 +1120,10 @@
       "clinic": "365차한의원",
       "region": "전라남도 여수시",
       "caller": "조성갑",
-      "supplier": "피아크",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1062,9 +1139,10 @@
       "clinic": "",
       "region": "부산시 해운대구",
       "caller": "주봉현",
-      "supplier": "메디코아",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1080,9 +1158,10 @@
       "clinic": "쓰담한의원",
       "region": "충청남도 천안시",
       "caller": "조성갑",
-      "supplier": "DSE",
+      "supplier": "디에스이아이엔씨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1098,9 +1177,10 @@
       "clinic": "쓰담한의원",
       "region": "충청남도 천안시",
       "caller": "조성갑",
-      "supplier": "아이올",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -1118,7 +1198,8 @@
       "caller": "김진석",
       "supplier": "굿플",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -1134,9 +1215,10 @@
       "clinic": "형인재한의원",
       "region": "서울시 강남구",
       "caller": "조성갑",
-      "supplier": "파이주식회사",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -1154,7 +1236,8 @@
       "caller": "주봉현",
       "supplier": "엠알",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -1170,9 +1253,10 @@
       "clinic": "",
       "region": "부산시 해운대구",
       "caller": "조성갑",
-      "supplier": "",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1188,9 +1272,10 @@
       "clinic": "설명한의원 강남",
       "region": "서울시 서초구",
       "caller": "김진석",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -1208,7 +1293,8 @@
       "caller": "김진석",
       "supplier": "에이치씨케이",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -1226,7 +1312,8 @@
       "caller": "김진석",
       "supplier": "선웅메디테크",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -1244,7 +1331,8 @@
       "caller": "박원",
       "supplier": "대요메디",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1260,9 +1348,10 @@
       "clinic": "",
       "region": "경기도 안성시",
       "caller": "이예림",
-      "supplier": "아이올",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1278,9 +1367,10 @@
       "clinic": "",
       "region": "",
       "caller": "김진석",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1296,9 +1386,10 @@
       "clinic": "리밸런스한의원",
       "region": "서울시 마포구",
       "caller": "김진석",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1314,9 +1405,10 @@
       "clinic": "리샘한의원 천안아산점",
       "region": "충청남도 천안시",
       "caller": "이예림",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1332,9 +1424,10 @@
       "clinic": "연결한의원",
       "region": "서울시 서초구",
       "caller": "유승준",
-      "supplier": "상담하기",
+      "supplier": "삼성메디슨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -1350,9 +1443,10 @@
       "clinic": "가온자리한의원",
       "region": "경기도 의정부시",
       "caller": "김진석",
-      "supplier": "원효메디텍",
+      "supplier": "원효",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -1370,7 +1464,8 @@
       "caller": "김진석",
       "supplier": "선웅메디테크",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -1388,7 +1483,8 @@
       "caller": "주봉현",
       "supplier": "스파인케어",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -1406,7 +1502,8 @@
       "caller": "주봉현",
       "supplier": "선웅메디테크",
       "payDate": "2026-04-10",
-      "payAmount": 300000
+      "payAmount": 300000,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1422,9 +1519,10 @@
       "clinic": "연신내제준한의원",
       "region": "서울시 은평구",
       "caller": "김진석",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1442,7 +1540,8 @@
       "caller": "김태호",
       "supplier": "옴니씨앤에스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1458,9 +1557,10 @@
       "clinic": "동원한의원",
       "region": "경기도 수원시",
       "caller": "유승준",
-      "supplier": "상담하기",
+      "supplier": "삼성메디슨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1476,9 +1576,10 @@
       "clinic": "경희바른한의원",
       "region": "서울시 구로구",
       "caller": "유승준",
-      "supplier": "상담하기",
+      "supplier": "삼성메디슨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1494,9 +1595,10 @@
       "clinic": "좋은아침한의원 구로디지털점",
       "region": "서울시 구로구",
       "caller": "유승준",
-      "supplier": "상담하기",
+      "supplier": "삼성메디슨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1512,9 +1614,10 @@
       "clinic": "픽스포츠한의원",
       "region": "서울시 구로구",
       "caller": "유승준",
-      "supplier": "상담하기",
+      "supplier": "삼성메디슨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1530,9 +1633,10 @@
       "clinic": "서리풀한의원",
       "region": "서울시 서초구",
       "caller": "주봉현",
-      "supplier": "메디코아",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -1548,9 +1652,10 @@
       "clinic": "",
       "region": "부산시 연제구",
       "caller": "김진석",
-      "supplier": "바디헬스케어",
+      "supplier": "아큐닉",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -1566,9 +1671,10 @@
       "clinic": "",
       "region": "부산시 연제구",
       "caller": "김진석",
-      "supplier": "영일엠",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -1584,9 +1690,10 @@
       "clinic": "위례해오름한의원",
       "region": "서울시 송파구",
       "caller": "김진석",
-      "supplier": "파이주식회사",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -1602,9 +1709,10 @@
       "clinic": "위례해오름한의원",
       "region": "서울시 송파구",
       "caller": "김진석",
-      "supplier": "파이주식회사",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -1620,9 +1728,10 @@
       "clinic": "",
       "region": "충청북도 청주시",
       "caller": "김진석",
-      "supplier": "바디헬스케어",
+      "supplier": "아큐닉",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -1640,7 +1749,8 @@
       "caller": "김진석",
       "supplier": "엠알",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -1658,7 +1768,8 @@
       "caller": "이예림",
       "supplier": "이앤에스헬스케어",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1674,9 +1785,10 @@
       "clinic": "홍제한의원",
       "region": "서울시 서대문구",
       "caller": "이예림",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1692,9 +1804,10 @@
       "clinic": "제주로운한의원",
       "region": "제주도 제주시",
       "caller": "김진석",
-      "supplier": "아이올",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1710,9 +1823,10 @@
       "clinic": "경희피어라한의원",
       "region": "세종시",
       "caller": "김진석",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1728,9 +1842,10 @@
       "clinic": "일산한의원",
       "region": "경기도 고양시",
       "caller": "김진석",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1748,7 +1863,8 @@
       "caller": "",
       "supplier": "옴니씨앤에스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1764,9 +1880,10 @@
       "clinic": "바른라인한의원",
       "region": "경기도 성남시",
       "caller": "김진석",
-      "supplier": "DSE",
+      "supplier": "디에스이아이엔씨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -1784,7 +1901,8 @@
       "caller": "김진석",
       "supplier": "굿플",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -1802,7 +1920,8 @@
       "caller": "김진석",
       "supplier": "선웅메디테크",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1818,9 +1937,10 @@
       "clinic": "맑은숲한의원",
       "region": "서울시 영등포구",
       "caller": "김태호",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1836,9 +1956,10 @@
       "clinic": "청담한의원",
       "region": "광주시 서구",
       "caller": "김진석",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1854,9 +1975,10 @@
       "clinic": "바올한의원",
       "region": "대구시 북구",
       "caller": "김진석",
-      "supplier": "DSE",
+      "supplier": "디에스이아이엔씨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1872,9 +1994,10 @@
       "clinic": "명가한의원",
       "region": "인천시 미추홀구",
       "caller": "김진석",
-      "supplier": "DSE",
+      "supplier": "디에스이아이엔씨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1890,9 +2013,10 @@
       "clinic": "경산에스(S)한의원",
       "region": "경상북도 경산시",
       "caller": "이예림",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1908,9 +2032,10 @@
       "clinic": "삼성바로튼튼한의원",
       "region": "경기도 평택시",
       "caller": "김진석",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1926,9 +2051,10 @@
       "clinic": "",
       "region": "충청북도 청주시",
       "caller": "김진석",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1944,9 +2070,10 @@
       "clinic": "원당한의원",
       "region": "경기도 오산시",
       "caller": "김진석",
-      "supplier": "오스테오시스",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1962,9 +2089,10 @@
       "clinic": "원당한의원",
       "region": "경기도 오산시",
       "caller": "김진석",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -1980,9 +2108,10 @@
       "clinic": "365경희스마일한의원",
       "region": "경기도 광명시",
       "caller": "김진석",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -1998,9 +2127,10 @@
       "clinic": "천광한의원",
       "region": "서울시 동대문구",
       "caller": "김진석",
-      "supplier": "정메디칼",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2018,7 +2148,8 @@
       "caller": "박원",
       "supplier": "옴니씨앤에스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2034,9 +2165,10 @@
       "clinic": "경희또봄한의원",
       "region": "서울시 강동구",
       "caller": "김진석",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2054,7 +2186,8 @@
       "caller": "박원",
       "supplier": "옴니씨앤에스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2070,9 +2203,10 @@
       "clinic": "푸른샘한의원",
       "region": "충청북도 청주시",
       "caller": "김진석",
-      "supplier": "아이올",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -2088,9 +2222,10 @@
       "clinic": "도본한의원",
       "region": "충청남도 천안시",
       "caller": "조성갑",
-      "supplier": "",
+      "supplier": "선웅메디테크",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -2106,9 +2241,10 @@
       "clinic": "도본한의원",
       "region": "충청남도 천안시",
       "caller": "조성갑",
-      "supplier": "선웅메디테크",
+      "supplier": "스트라텍",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -2124,9 +2260,10 @@
       "clinic": "",
       "region": "세종시",
       "caller": "조성갑",
-      "supplier": "영일엠",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -2144,7 +2281,8 @@
       "caller": "조성갑",
       "supplier": "선웅메디테크",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -2160,9 +2298,10 @@
       "clinic": "",
       "region": "세종시",
       "caller": "조성갑",
-      "supplier": "선웅메디테크",
+      "supplier": "스트라텍",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -2178,9 +2317,10 @@
       "clinic": "",
       "region": "세종시",
       "caller": "조성갑",
-      "supplier": "",
+      "supplier": "선웅메디테크",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -2198,7 +2338,8 @@
       "caller": "조성갑",
       "supplier": "에이치씨케이",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -2214,9 +2355,10 @@
       "clinic": "연세한의원",
       "region": "인천시 남동구",
       "caller": "김진석",
-      "supplier": "선웅메디테크",
+      "supplier": "스트라텍",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -2234,7 +2376,8 @@
       "caller": "김진석",
       "supplier": "선웅메디테크",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -2252,7 +2395,8 @@
       "caller": "김진석",
       "supplier": "에이치씨케이",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2268,9 +2412,10 @@
       "clinic": "푸른샘한의원",
       "region": "광주시 북구",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "dse",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2286,9 +2431,10 @@
       "clinic": "화접몽한의원",
       "region": "서울시 강남구",
       "caller": "김태호",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2304,9 +2450,10 @@
       "clinic": "리샘한의원 수원점",
       "region": "경기도 수원시",
       "caller": "김진석",
-      "supplier": "DSE",
+      "supplier": "디에스이아이엔씨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -2324,7 +2471,8 @@
       "caller": "",
       "supplier": "선웅메디테크",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -2340,9 +2488,10 @@
       "clinic": "",
       "region": "경기도 광주시",
       "caller": "",
-      "supplier": "PIE",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -2360,7 +2509,8 @@
       "caller": "조성갑",
       "supplier": "굿플",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2376,9 +2526,10 @@
       "clinic": "경희태창한의원",
       "region": "서울시 영등포구",
       "caller": "",
-      "supplier": "상담하기",
+      "supplier": "아이밸런스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2394,9 +2545,10 @@
       "clinic": "경희스마일한의원",
       "region": "서울시 종로구",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2414,7 +2566,8 @@
       "caller": "유승준",
       "supplier": "삼성메디슨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2430,9 +2583,10 @@
       "clinic": "온정한의원",
       "region": "경기도 의정부시",
       "caller": "",
-      "supplier": "아이올",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2448,9 +2602,10 @@
       "clinic": "서동한의원",
       "region": "전라북도 익산시",
       "caller": "이예림",
-      "supplier": "아이올",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2466,9 +2621,10 @@
       "clinic": "늘온한의원",
       "region": "경기도 용인시",
       "caller": "이예림",
-      "supplier": "아이올",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2484,9 +2640,10 @@
       "clinic": "",
       "region": "경상남도 양산시",
       "caller": "이예림",
-      "supplier": "아이올",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2502,9 +2659,10 @@
       "clinic": "모아한의원",
       "region": "서울시 강서구",
       "caller": "이예림",
-      "supplier": "아이올",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2520,9 +2678,10 @@
       "clinic": "",
       "region": "전라북도 전주시",
       "caller": "조성갑",
-      "supplier": "아이올",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2538,9 +2697,10 @@
       "clinic": "경희온맘한의원",
       "region": "대전시 유성구",
       "caller": "조성갑",
-      "supplier": "아이올",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2556,9 +2716,10 @@
       "clinic": "동원한의원",
       "region": "경기도 수원시",
       "caller": "조성갑",
-      "supplier": "아이올",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2574,9 +2735,10 @@
       "clinic": "온리한의원",
       "region": "경기도 남양주시",
       "caller": "조성갑",
-      "supplier": "아이올",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -2592,9 +2754,10 @@
       "clinic": "금호호랑이한의원",
       "region": "서울시 성동구",
       "caller": "",
-      "supplier": "에이치씨케이",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -2610,9 +2773,10 @@
       "clinic": "일침한의원",
       "region": "인천시 부평구",
       "caller": "",
-      "supplier": "프라임메디",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -2630,7 +2794,8 @@
       "caller": "",
       "supplier": "선웅메디테크",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -2648,7 +2813,8 @@
       "caller": "",
       "supplier": "엠알",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -2664,9 +2830,10 @@
       "clinic": "해빛한방병원",
       "region": "전라북도 전주시",
       "caller": "",
-      "supplier": "에이치비오티메디칼",
+      "supplier": "에이치비오티",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -2682,9 +2849,10 @@
       "clinic": "화가한의원",
       "region": "서울시 강동구",
       "caller": "",
-      "supplier": "바디헬스케어",
+      "supplier": "아큐닉",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -2702,7 +2870,8 @@
       "caller": "",
       "supplier": "굿플",
       "payDate": "2026-04-01",
-      "payAmount": 1092500
+      "payAmount": 1092500,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -2718,9 +2887,10 @@
       "clinic": "신침한의원",
       "region": "서울시 송파구",
       "caller": "",
-      "supplier": "",
+      "supplier": "알피니언",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -2736,9 +2906,10 @@
       "clinic": "",
       "region": "경기도 군포시",
       "caller": "",
-      "supplier": "PIE",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -2754,9 +2925,10 @@
       "clinic": "",
       "region": "경기도 여주시",
       "caller": "",
-      "supplier": "파이주식회사",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2772,9 +2944,10 @@
       "clinic": "동한의원",
       "region": "경기도 양평군",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2792,7 +2965,8 @@
       "caller": "",
       "supplier": "디알텍",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2808,9 +2982,10 @@
       "clinic": "춘의생한의원",
       "region": "경기도 부천시",
       "caller": "",
-      "supplier": "바텍",
+      "supplier": "주식회사 바텍엠시스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2828,7 +3003,8 @@
       "caller": "",
       "supplier": "옴니씨앤에스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2844,9 +3020,10 @@
       "clinic": "초곡365한의원",
       "region": "경상북도 포항시",
       "caller": "",
-      "supplier": "DSE",
+      "supplier": "디에스이아이엔씨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2862,9 +3039,10 @@
       "clinic": "통치한의원",
       "region": "부산시 강서구",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2880,9 +3058,10 @@
       "clinic": "경희성모연합한의원",
       "region": "대전시 동구",
       "caller": "",
-      "supplier": "DSE",
+      "supplier": "디에스이아이엔씨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2898,9 +3077,10 @@
       "clinic": "용한의원",
       "region": "전라북도 군산시",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2916,9 +3096,10 @@
       "clinic": "",
       "region": "서울시 성동구",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2934,9 +3115,10 @@
       "clinic": "경희궁한방병원",
       "region": "광주시 동구",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2952,9 +3134,10 @@
       "clinic": "경희궁한방병원",
       "region": "광주시 동구",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -2970,9 +3153,10 @@
       "clinic": "경희궁한방병원",
       "region": "광주시 동구",
       "caller": "",
-      "supplier": "오스테오시스",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -2988,9 +3172,10 @@
       "clinic": "",
       "region": "경기도 고양시",
       "caller": "",
-      "supplier": "스파인케어",
+      "supplier": "스파인엠티",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -3006,9 +3191,10 @@
       "clinic": "수한의원",
       "region": "부산시 사하구",
       "caller": "",
-      "supplier": "리메드",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -3026,7 +3212,8 @@
       "caller": "",
       "supplier": "굿플",
       "payDate": "2026-04-01",
-      "payAmount": 1092500
+      "payAmount": 1092500,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -3042,9 +3229,10 @@
       "clinic": "해빛한방병원",
       "region": "전라북도 전주시",
       "caller": "",
-      "supplier": "메디코넷",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -3062,7 +3250,8 @@
       "caller": "",
       "supplier": "굿플",
       "payDate": "2026-04-01",
-      "payAmount": 1092500
+      "payAmount": 1092500,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -3080,7 +3269,8 @@
       "caller": "",
       "supplier": "선웅메디테크",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -3098,7 +3288,8 @@
       "caller": "",
       "supplier": "선웅메디테크",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -3114,9 +3305,10 @@
       "clinic": "",
       "region": "경기도 고양시",
       "caller": "",
-      "supplier": "",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3132,9 +3324,10 @@
       "clinic": "경희다나은한의원",
       "region": "서울시 강서구",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3150,9 +3343,10 @@
       "clinic": "화가한의원",
       "region": "서울시 강동구",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3168,9 +3362,10 @@
       "clinic": "",
       "region": "경상남도 김해시",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3186,9 +3381,10 @@
       "clinic": "탁 한의원",
       "region": "경상남도 창원시",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3204,9 +3400,10 @@
       "clinic": "아라부부한의원",
       "region": "제주도 제주시",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -3224,7 +3421,8 @@
       "caller": "",
       "supplier": "인바디",
       "payDate": "2026-04-12",
-      "payAmount": 5868573
+      "payAmount": 5868573,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3240,9 +3438,10 @@
       "clinic": "올봄한의원",
       "region": "전라북도 전주시",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3258,9 +3457,10 @@
       "clinic": "올봄한의원",
       "region": "전라북도 전주시",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3276,9 +3476,10 @@
       "clinic": "올봄한의원",
       "region": "전라북도 전주시",
       "caller": "",
-      "supplier": "피아크",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3294,9 +3495,10 @@
       "clinic": "올봄한의원",
       "region": "전라북도 전주시",
       "caller": "",
-      "supplier": "오스테오시스",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3312,9 +3514,10 @@
       "clinic": "송한의원",
       "region": "대구시 달서구",
       "caller": "",
-      "supplier": "오스테오시스",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3330,9 +3533,10 @@
       "clinic": "햇살한의원",
       "region": "경기도 광명시",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -3348,9 +3552,10 @@
       "clinic": "",
       "region": "",
       "caller": "",
-      "supplier": "정메디칼",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -3368,7 +3573,8 @@
       "caller": "",
       "supplier": "영일엠",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3384,9 +3590,10 @@
       "clinic": "신통한의원",
       "region": "충청북도 충주시",
       "caller": "",
-      "supplier": "메디코아",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3402,9 +3609,10 @@
       "clinic": "두암경희한의원",
       "region": "경기도 수원시",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3420,9 +3628,10 @@
       "clinic": "루원봄한의원",
       "region": "인천시 서구",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3438,9 +3647,10 @@
       "clinic": "일등경희한의원",
       "region": "서울시 은평구",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3456,9 +3666,10 @@
       "clinic": "청파한의원",
       "region": "전라남도 나주시",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3474,9 +3685,10 @@
       "clinic": "동원한의원",
       "region": "경기도 수원시",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3492,9 +3704,10 @@
       "clinic": "홍한의원",
       "region": "경기도 안산시",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3510,9 +3723,10 @@
       "clinic": "경희이룸한의원",
       "region": "서울시 서초구",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3528,9 +3742,10 @@
       "clinic": "경희온담한의원",
       "region": "경기도 수원시",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "2026-04-07",
-      "payAmount": 14155000
+      "payAmount": 14155000,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3546,9 +3761,10 @@
       "clinic": "홍한의원",
       "region": "경기도 안산시",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3564,9 +3780,10 @@
       "clinic": "경희참한의원",
       "region": "인천시 계양구",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3582,9 +3799,10 @@
       "clinic": "스마일365한의원",
       "region": "대구시 북구",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3600,9 +3818,10 @@
       "clinic": "",
       "region": "경기도 수원시",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3618,9 +3837,10 @@
       "clinic": "일맥한의원",
       "region": "충청남도 천안시",
       "caller": "",
-      "supplier": "오스테오시스",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3636,9 +3856,10 @@
       "clinic": "스마일365한의원",
       "region": "대구시 북구",
       "caller": "",
-      "supplier": "오스테오시스",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3654,9 +3875,10 @@
       "clinic": "일등한의원",
       "region": "인천시 서구",
       "caller": "",
-      "supplier": "DSE",
+      "supplier": "(주)디에스이아이엔씨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -3674,7 +3896,8 @@
       "caller": "",
       "supplier": "대요메디",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -3690,9 +3913,10 @@
       "clinic": "영종바른한의원",
       "region": "인천시 중구",
       "caller": "",
-      "supplier": "굿플",
+      "supplier": "IR-VITA",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -3710,7 +3934,8 @@
       "caller": "",
       "supplier": "선웅메디테크",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -3726,9 +3951,10 @@
       "clinic": "영종바른한의원",
       "region": "인천시 중구",
       "caller": "",
-      "supplier": "선웅메디테크",
+      "supplier": "스트라텍",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -3744,9 +3970,10 @@
       "clinic": "",
       "region": "인천시 중구",
       "caller": "",
-      "supplier": "선웅메디테크",
+      "supplier": "스트라텍",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -3762,9 +3989,10 @@
       "clinic": "수이한의원",
       "region": "경기도 하남시",
       "caller": "",
-      "supplier": "정메디칼",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3780,9 +4008,10 @@
       "clinic": "나음누리한의원",
       "region": "충청남도 천안시",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3798,9 +4027,10 @@
       "clinic": "금맥한의원",
       "region": "인천시 계양구",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "dse",
       "payDate": "2026-03-26",
-      "payAmount": 1212500
+      "payAmount": 1212500,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3816,9 +4046,10 @@
       "clinic": "아클라우드한의원",
       "region": "경기도 하남시",
       "caller": "",
-      "supplier": "메가메디칼",
+      "supplier": "(주)메가메디칼",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3834,9 +4065,10 @@
       "clinic": "아클라우드한의원",
       "region": "경기도 하남시",
       "caller": "",
-      "supplier": "메가메디칼",
+      "supplier": "(주)메가메디칼",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -3852,9 +4084,10 @@
       "clinic": "경성한의원",
       "region": "서울시 중랑구",
       "caller": "",
-      "supplier": "원효메디텍",
+      "supplier": "원효",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -3870,9 +4103,10 @@
       "clinic": "경희한방병원",
       "region": "인천시 계양구",
       "caller": "",
-      "supplier": "원효메디텍",
+      "supplier": "원효",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -3888,9 +4122,10 @@
       "clinic": "경희한방병원",
       "region": "인천시 계양구",
       "caller": "",
-      "supplier": "굿플",
+      "supplier": "IR-VITA",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -3908,7 +4143,8 @@
       "caller": "",
       "supplier": "선웅메디테크",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -3924,9 +4160,10 @@
       "clinic": "새봄한의원",
       "region": "대구시 수성구",
       "caller": "",
-      "supplier": "리메드",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -3944,7 +4181,8 @@
       "caller": "",
       "supplier": "굿플",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -3960,9 +4198,10 @@
       "clinic": "청아한의원",
       "region": "서울시 마포구",
       "caller": "",
-      "supplier": "인바디부산",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -3978,9 +4217,10 @@
       "clinic": "더바른한의원",
       "region": "부산시 해운대구",
       "caller": "",
-      "supplier": "굿플",
+      "supplier": "IR-VITA",
       "payDate": "2026-03-26",
-      "payAmount": 300000
+      "payAmount": 300000,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -3998,7 +4238,8 @@
       "caller": "",
       "supplier": "옴니씨앤에스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4014,9 +4255,10 @@
       "clinic": "청아한의원",
       "region": "서울시 마포구",
       "caller": "",
-      "supplier": "메디코아",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4032,9 +4274,10 @@
       "clinic": "성남태평한의원",
       "region": "경기도 성남시",
       "caller": "",
-      "supplier": "웨버인스트루먼트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4050,9 +4293,10 @@
       "clinic": "행신365한의원",
       "region": "경기도 고양시",
       "caller": "",
-      "supplier": "DSE",
+      "supplier": "(주)디에스이아이엔씨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -4068,9 +4312,10 @@
       "clinic": "올바른경희한의원",
       "region": "경기도 김포시",
       "caller": "",
-      "supplier": "정메디칼",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4086,9 +4331,10 @@
       "clinic": "선한의원",
       "region": "서울시 영등포구",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4104,9 +4350,10 @@
       "clinic": "리뉴한의원",
       "region": "경상북도 경산시",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4122,9 +4369,10 @@
       "clinic": "공드림한의원",
       "region": "서울시 강서구",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -4140,9 +4388,10 @@
       "clinic": "",
       "region": "",
       "caller": "",
-      "supplier": "",
+      "supplier": "스트라텍",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4160,7 +4409,8 @@
       "caller": "",
       "supplier": "옴니씨앤에스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4176,9 +4426,10 @@
       "clinic": "교선한의원",
       "region": "경기도 과천시",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4194,9 +4445,10 @@
       "clinic": "365수한의원",
       "region": "광주시 서구",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -4212,9 +4464,10 @@
       "clinic": "경희정진한의원",
       "region": "경기도 군포시",
       "caller": "",
-      "supplier": "선웅메디테크",
+      "supplier": "스트라텍",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4230,9 +4483,10 @@
       "clinic": "차세대한의원",
       "region": "부산시 해운대구",
       "caller": "",
-      "supplier": "팀엘리시움",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4248,9 +4502,10 @@
       "clinic": "차세대한의원",
       "region": "부산시 해운대구",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4266,9 +4521,10 @@
       "clinic": "지인한의원",
       "region": "경기도 부천시",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4284,9 +4540,10 @@
       "clinic": "서리풀동의보감한의원",
       "region": "서울시 서초구",
       "caller": "",
-      "supplier": "상담하기",
+      "supplier": "삼성메디슨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4304,7 +4561,8 @@
       "caller": "",
       "supplier": "옴니씨앤에스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4320,9 +4578,10 @@
       "clinic": "차세대한의원",
       "region": "부산시 해운대구",
       "caller": "",
-      "supplier": "DSE",
+      "supplier": "디에스이아이엔씨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4340,7 +4599,8 @@
       "caller": "",
       "supplier": "옴니씨앤에스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4358,7 +4618,8 @@
       "caller": "",
       "supplier": "디알텍",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4374,9 +4635,10 @@
       "clinic": "지인한의원",
       "region": "경기도 부천시",
       "caller": "",
-      "supplier": "오스테오시스",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -4392,9 +4654,10 @@
       "clinic": "한중한의원",
       "region": "충청북도 청주시",
       "caller": "",
-      "supplier": "원효메디텍",
+      "supplier": "원효",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -4412,7 +4675,8 @@
       "caller": "",
       "supplier": "선웅메디테크",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -4430,7 +4694,8 @@
       "caller": "",
       "supplier": "굿플",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4446,9 +4711,10 @@
       "clinic": "",
       "region": "인천시 서구",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4464,9 +4730,10 @@
       "clinic": "지인한의원",
       "region": "경기도 부천시",
       "caller": "",
-      "supplier": "팀엘리시움",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4484,7 +4751,8 @@
       "caller": "",
       "supplier": "옴니씨앤에스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4502,7 +4770,8 @@
       "caller": "",
       "supplier": "동아참메드",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4518,9 +4787,10 @@
       "clinic": "행신365한의원",
       "region": "경기도 고양시",
       "caller": "",
-      "supplier": "DSE",
+      "supplier": "디에스이아이엔씨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4536,9 +4806,10 @@
       "clinic": "라미한의원",
       "region": "서울시 강남구",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4554,9 +4825,10 @@
       "clinic": "아현온누리한의원",
       "region": "서울시 서대문구",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4572,9 +4844,10 @@
       "clinic": "라미한의원",
       "region": "서울시 강남구",
       "caller": "",
-      "supplier": "DSE",
+      "supplier": "디에스이아이엔씨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4590,9 +4863,10 @@
       "clinic": "신침한의원",
       "region": "서울시 송파구",
       "caller": "",
-      "supplier": "상담하기",
+      "supplier": "삼성메디슨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4610,7 +4884,8 @@
       "caller": "",
       "supplier": "동아참메드",
       "payDate": "2026-03-23",
-      "payAmount": 4300000
+      "payAmount": 4300000,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -4628,7 +4903,8 @@
       "caller": "",
       "supplier": "한메드",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -4646,7 +4922,8 @@
       "caller": "",
       "supplier": "인바디",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4662,9 +4939,10 @@
       "clinic": "단아온한의원",
       "region": "부산시 해운대구",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4682,7 +4960,8 @@
       "caller": "",
       "supplier": "옴니씨앤에스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4698,9 +4977,10 @@
       "clinic": "청당경희365한의원",
       "region": "충청남도 천안시",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4718,7 +4998,8 @@
       "caller": "",
       "supplier": "동아참메드",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4734,9 +5015,10 @@
       "clinic": "청당경희365한의원",
       "region": "충청남도 천안시",
       "caller": "",
-      "supplier": "팀엘리시움",
+      "supplier": "메디스트림",
       "payDate": "2026-04-03",
-      "payAmount": 5520000
+      "payAmount": 5520000,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4752,9 +5034,10 @@
       "clinic": "청당경희365한의원",
       "region": "충청남도 천안시",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4772,7 +5055,8 @@
       "caller": "",
       "supplier": "동아참메드",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4788,9 +5072,10 @@
       "clinic": "청당경희365한의원",
       "region": "충청남도 천안시",
       "caller": "",
-      "supplier": "오스테오시스",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -4806,9 +5091,10 @@
       "clinic": "무실한의원",
       "region": "강원도 원주시",
       "caller": "",
-      "supplier": "영일엠",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -4824,9 +5110,10 @@
       "clinic": "더치유한의원",
       "region": "서울시 서초구",
       "caller": "",
-      "supplier": "한메디",
+      "supplier": "오케이차트",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4842,9 +5129,10 @@
       "clinic": "",
       "region": "서울시 송파구",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4860,9 +5148,10 @@
       "clinic": "",
       "region": "서울시 송파구",
       "caller": "",
-      "supplier": "팀엘리시움",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4878,9 +5167,10 @@
       "clinic": "",
       "region": "서울시 송파구",
       "caller": "",
-      "supplier": "팀엘리시움",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4896,9 +5186,10 @@
       "clinic": "",
       "region": "서울시 송파구",
       "caller": "",
-      "supplier": "상담하기",
+      "supplier": "아이밸런스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4916,7 +5207,8 @@
       "caller": "",
       "supplier": "옴니씨앤에스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4932,9 +5224,10 @@
       "clinic": "",
       "region": "서울시 송파구",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4950,9 +5243,10 @@
       "clinic": "",
       "region": "서울시 서초구",
       "caller": "",
-      "supplier": "메디코아",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -4970,7 +5264,8 @@
       "caller": "",
       "supplier": "동아참메드",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -4986,9 +5281,10 @@
       "clinic": "얼핏한의원",
       "region": "서울시 강남구",
       "caller": "",
-      "supplier": "",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -5004,9 +5300,10 @@
       "clinic": "얼핏한의원",
       "region": "서울시 강남구",
       "caller": "",
-      "supplier": "파이주식회사",
+      "supplier": "메디스트림",
       "payDate": "2026-04-14",
-      "payAmount": 4950000
+      "payAmount": 4950000,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5024,7 +5321,8 @@
       "caller": "",
       "supplier": "동아참메드",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5040,9 +5338,10 @@
       "clinic": "세목한의원",
       "region": "경기도 성남시",
       "caller": "",
-      "supplier": "메디코아",
+      "supplier": "메디스트림",
       "payDate": "2026-03-16",
-      "payAmount": 1650000
+      "payAmount": 1650000,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -5058,9 +5357,10 @@
       "clinic": "화명새길한의원",
       "region": "부산시 북구",
       "caller": "",
-      "supplier": "바디헬스케어",
+      "supplier": "아큐닉",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -5078,7 +5378,8 @@
       "caller": "",
       "supplier": "이앤에스헬스케어",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -5096,7 +5397,8 @@
       "caller": "",
       "supplier": "대요메디",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -5112,9 +5414,10 @@
       "clinic": "남한산성한의원",
       "region": "경기도 광주시",
       "caller": "",
-      "supplier": "정메디칼",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -5132,7 +5435,8 @@
       "caller": "",
       "supplier": "바디헬스케어",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5148,9 +5452,10 @@
       "clinic": "경희365몸신한의원",
       "region": "대구시 수성구",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5166,9 +5471,10 @@
       "clinic": "바른부부한의원",
       "region": "대전시 유성구",
       "caller": "",
-      "supplier": "",
+      "supplier": "메가메디칼",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5184,9 +5490,10 @@
       "clinic": "의료법인보성의료재단휘담메디김포한방병원",
       "region": "경기도 김포시",
       "caller": "",
-      "supplier": "오스테오시스",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -5202,9 +5509,10 @@
       "clinic": "",
       "region": "대전시 서구",
       "caller": "",
-      "supplier": "엘스메디칼",
+      "supplier": "알피니언",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -5220,9 +5528,10 @@
       "clinic": "365경희스마일한의원",
       "region": "경기도 광명시",
       "caller": "",
-      "supplier": "의료기기",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -5240,7 +5549,8 @@
       "caller": "",
       "supplier": "굿플",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -5256,9 +5566,10 @@
       "clinic": "로하스요양병원",
       "region": "경기도 동두천시",
       "caller": "",
-      "supplier": "의료기기",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -5274,9 +5585,10 @@
       "clinic": "바로고침한의원",
       "region": "경기도 성남시",
       "caller": "",
-      "supplier": "의료기기",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -5292,9 +5604,10 @@
       "clinic": "바로고침한의원",
       "region": "경기도 성남시",
       "caller": "",
-      "supplier": "의료기기",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -5310,9 +5623,10 @@
       "clinic": "바로고침한의원",
       "region": "경기도 성남시",
       "caller": "",
-      "supplier": "의료기기",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -5328,9 +5642,10 @@
       "clinic": "바로고침한의원",
       "region": "경기도 성남시",
       "caller": "",
-      "supplier": "의료기기",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -5346,9 +5661,10 @@
       "clinic": "바로고침한의원",
       "region": "경기도 성남시",
       "caller": "",
-      "supplier": "의료기기",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -5364,9 +5680,10 @@
       "clinic": "바로고침한의원",
       "region": "경기도 성남시",
       "caller": "",
-      "supplier": "의료기기",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -5382,9 +5699,10 @@
       "clinic": "이응한의원",
       "region": "세종시",
       "caller": "",
-      "supplier": "의료기기",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -5400,9 +5718,10 @@
       "clinic": "메디한의원",
       "region": "서울시 강남구",
       "caller": "",
-      "supplier": "의료기기",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -5418,9 +5737,10 @@
       "clinic": "메디한의원",
       "region": "서울시 강남구",
       "caller": "",
-      "supplier": "의료기기",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5436,9 +5756,10 @@
       "clinic": "열린한의원",
       "region": "경상북도 경주시",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5454,9 +5775,10 @@
       "clinic": "스마일365한의원",
       "region": "대구시 북구",
       "caller": "",
-      "supplier": "DSE",
+      "supplier": "디에스이아이엔씨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5472,9 +5794,10 @@
       "clinic": "스마일365한의원",
       "region": "대구시 북구",
       "caller": "",
-      "supplier": "DSE",
+      "supplier": "(주)디에스이아이엔씨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5490,9 +5813,10 @@
       "clinic": "길음한의원",
       "region": "서울시 성북구",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5508,9 +5832,10 @@
       "clinic": "",
       "region": "전라남도 순천시",
       "caller": "",
-      "supplier": "팀엘리시움",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5528,7 +5853,8 @@
       "caller": "",
       "supplier": "옴니씨앤에스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5544,9 +5870,10 @@
       "clinic": "",
       "region": "전라남도 순천시",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5562,9 +5889,10 @@
       "clinic": "",
       "region": "전라남도 순천시",
       "caller": "",
-      "supplier": "상담하기",
+      "supplier": "삼성메디슨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5580,9 +5908,10 @@
       "clinic": "",
       "region": "전라남도 순천시",
       "caller": "",
-      "supplier": "팀엘리시움",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5600,7 +5929,8 @@
       "caller": "",
       "supplier": "동아참메드",
       "payDate": "2026-03-23",
-      "payAmount": 4300000
+      "payAmount": 4300000,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5616,9 +5946,10 @@
       "clinic": "경희참한의원",
       "region": "인천시 계양구",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5636,7 +5967,8 @@
       "caller": "",
       "supplier": "동아참메드",
       "payDate": "2026-03-20",
-      "payAmount": 3970871
+      "payAmount": 3970871,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5652,9 +5984,10 @@
       "clinic": "덕산한의원 ",
       "region": "충청북도 충주시",
       "caller": "",
-      "supplier": "상담하기",
+      "supplier": "삼성메디슨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5670,9 +6003,10 @@
       "clinic": "덕산한의원 ",
       "region": "충청북도 충주시",
       "caller": "",
-      "supplier": "DSE",
+      "supplier": "디에스이아이엔씨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5688,9 +6022,10 @@
       "clinic": "외갓집한의원 제천",
       "region": "충청북도 제천시",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5706,9 +6041,10 @@
       "clinic": "",
       "region": "경상남도 창원시",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5724,9 +6060,10 @@
       "clinic": "",
       "region": "경상남도 창원시",
       "caller": "",
-      "supplier": "피아크",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5744,7 +6081,8 @@
       "caller": "",
       "supplier": "옴니씨앤에스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5760,9 +6098,10 @@
       "clinic": "",
       "region": "경상남도 창원시",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5778,9 +6117,10 @@
       "clinic": "온리한의원",
       "region": "경기도 남양주시",
       "caller": "",
-      "supplier": "DSE",
+      "supplier": "디에스이아이엔씨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5796,9 +6136,10 @@
       "clinic": "",
       "region": "서울시 강남구",
       "caller": "",
-      "supplier": "상담하기",
+      "supplier": "삼성메디슨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5816,7 +6157,8 @@
       "caller": "",
       "supplier": "옴니씨앤에스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5832,9 +6174,10 @@
       "clinic": "",
       "region": "서울시 강남구",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5850,9 +6193,10 @@
       "clinic": "",
       "region": "서울시 강남구",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5868,9 +6212,10 @@
       "clinic": "",
       "region": "경상남도 창원시",
       "caller": "",
-      "supplier": "오스테오시스",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5886,9 +6231,10 @@
       "clinic": "",
       "region": "서울시 강남구",
       "caller": "",
-      "supplier": "오스테오시스",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -5904,9 +6250,10 @@
       "clinic": "청운한의원",
       "region": "경상남도 거창군",
       "caller": "",
-      "supplier": "선웅메디테크",
+      "supplier": "스트라텍",
       "payDate": "2026-03-12",
-      "payAmount": 690000
+      "payAmount": 690000,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -5924,7 +6271,8 @@
       "caller": "",
       "supplier": "에이치씨케이",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -5940,9 +6288,10 @@
       "clinic": "은정한의원",
       "region": "부산시 동구",
       "caller": "",
-      "supplier": "PIE",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5958,9 +6307,10 @@
       "clinic": "척척마디한의원",
       "region": "충청북도 청주시",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5976,9 +6326,10 @@
       "clinic": "척척마디한의원",
       "region": "충청북도 청주시",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -5994,9 +6345,10 @@
       "clinic": "보령정한의원",
       "region": "충청남도 보령시",
       "caller": "",
-      "supplier": "팀엘리시움",
+      "supplier": "메디스트림",
       "payDate": "2026-03-23",
-      "payAmount": 6000000
+      "payAmount": 6000000,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -6012,9 +6364,10 @@
       "clinic": "후한의원",
       "region": "대구시 중구",
       "caller": "",
-      "supplier": "DSE",
+      "supplier": "(주)디에스이아이엔씨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6032,7 +6385,8 @@
       "caller": "",
       "supplier": "리메드",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6050,7 +6404,8 @@
       "caller": "",
       "supplier": "엠알",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -6066,9 +6421,10 @@
       "clinic": "명가한의원",
       "region": "인천시 미추홀구",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -6084,9 +6440,10 @@
       "clinic": "",
       "region": "",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -6102,9 +6459,10 @@
       "clinic": "이로운한의원",
       "region": "충청남도 서산시",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "2026-03-11",
-      "payAmount": 13680350
+      "payAmount": 13680350,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -6120,9 +6478,10 @@
       "clinic": "",
       "region": "서울시 강북구",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6138,9 +6497,10 @@
       "clinic": "윤한의원",
       "region": "대구시 달서구",
       "caller": "",
-      "supplier": "정메디칼",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6156,9 +6516,10 @@
       "clinic": "도닥한의원",
       "region": "대구시 수성구",
       "caller": "",
-      "supplier": "한메디",
+      "supplier": "오케이차트",
       "payDate": "2026-03-10",
-      "payAmount": 1024090
+      "payAmount": 1024090,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6174,9 +6535,10 @@
       "clinic": "경희다나은한의원",
       "region": "서울시 강서구",
       "caller": "",
-      "supplier": "",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -6192,9 +6554,10 @@
       "clinic": "태전365통쾌한의원",
       "region": "경기도 광주시",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6210,9 +6573,10 @@
       "clinic": "청운한의원",
       "region": "경상남도 거창군",
       "caller": "",
-      "supplier": "선웅메디테크",
+      "supplier": "스트라텍",
       "payDate": "2026-03-12",
-      "payAmount": 690000
+      "payAmount": 690000,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6228,9 +6592,10 @@
       "clinic": "서울한의원",
       "region": "경상남도 사천시",
       "caller": "",
-      "supplier": "메쉬",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6248,7 +6613,8 @@
       "caller": "",
       "supplier": "굿플",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -6266,7 +6632,8 @@
       "caller": "",
       "supplier": "삼성메디슨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -6282,9 +6649,10 @@
       "clinic": "서울한의원",
       "region": "경상남도 사천시",
       "caller": "",
-      "supplier": "메디코아",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -6300,9 +6668,10 @@
       "clinic": "화원365한의원",
       "region": "대구시 달성군",
       "caller": "",
-      "supplier": "동아참메드",
+      "supplier": "동아참메드 주식회사",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -6318,9 +6687,10 @@
       "clinic": "화원365한의원",
       "region": "대구시 달성군",
       "caller": "",
-      "supplier": "메가메디칼",
+      "supplier": "(주)메가메디칼",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -6336,9 +6706,10 @@
       "clinic": "화원365한의원",
       "region": "대구시 달성군",
       "caller": "",
-      "supplier": "메가메디칼",
+      "supplier": "(주)메가메디칼",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -6354,9 +6725,10 @@
       "clinic": "화원365한의원",
       "region": "대구시 달성군",
       "caller": "",
-      "supplier": "메가메디칼",
+      "supplier": "(주)메가메디칼",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6372,9 +6744,10 @@
       "clinic": "경희동행한의원",
       "region": "서울시 강남구",
       "caller": "",
-      "supplier": "",
+      "supplier": "한메드",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6390,9 +6763,10 @@
       "clinic": "경희동행한의원",
       "region": "서울시 강남구",
       "caller": "",
-      "supplier": "",
+      "supplier": "한메드",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6410,7 +6784,8 @@
       "caller": "",
       "supplier": "굿플",
       "payDate": "2026-03-09",
-      "payAmount": 670000
+      "payAmount": 670000,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6428,7 +6803,8 @@
       "caller": "",
       "supplier": "굿플",
       "payDate": "2026-03-09",
-      "payAmount": 670000
+      "payAmount": 670000,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6446,7 +6822,8 @@
       "caller": "",
       "supplier": "굿플",
       "payDate": "2026-03-09",
-      "payAmount": 670000
+      "payAmount": 670000,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6462,9 +6839,10 @@
       "clinic": "두암경희한의원",
       "region": "경기도 수원시",
       "caller": "",
-      "supplier": "원효메디텍",
+      "supplier": "원효",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6482,7 +6860,8 @@
       "caller": "",
       "supplier": "굿플",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6498,9 +6877,10 @@
       "clinic": "오산부부한의원",
       "region": "경기도 오산시",
       "caller": "",
-      "supplier": "선웅메디테크",
+      "supplier": "스트라텍",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6516,9 +6896,10 @@
       "clinic": "강한마디한의원",
       "region": "경기도 수원시",
       "caller": "",
-      "supplier": "정메디칼",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -6534,9 +6915,10 @@
       "clinic": "김용한의원",
       "region": "서울시 중랑구",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -6552,9 +6934,10 @@
       "clinic": "경희동행한의원",
       "region": "서울시 강북구",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -6570,9 +6953,10 @@
       "clinic": "",
       "region": "전라북도 남원시",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6590,7 +6974,8 @@
       "caller": "",
       "supplier": "선웅메디테크",
       "payDate": "2026-03-09",
-      "payAmount": 2715390
+      "payAmount": 2715390,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -6606,9 +6991,10 @@
       "clinic": "",
       "region": "경기도 고양시",
       "caller": "",
-      "supplier": "상담하기",
+      "supplier": "삼성메디슨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -6624,9 +7010,10 @@
       "clinic": "신정네거리한의원",
       "region": "서울시 양천구",
       "caller": "",
-      "supplier": "DSE",
+      "supplier": "(주)디에스이아이엔씨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -6642,9 +7029,10 @@
       "clinic": "해독한의원",
       "region": "경기도 오산시",
       "caller": "",
-      "supplier": "메디코아",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -6662,7 +7050,8 @@
       "caller": "",
       "supplier": "삼성메디슨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6678,9 +7067,10 @@
       "clinic": "경희탑한의원",
       "region": "경기도 구리시",
       "caller": "",
-      "supplier": "정메디칼",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6698,7 +7088,8 @@
       "caller": "",
       "supplier": "나노메딕스썸텍",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6716,7 +7107,8 @@
       "caller": "",
       "supplier": "선웅메디테크",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6734,7 +7126,8 @@
       "caller": "",
       "supplier": "선웅메디테크",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6750,9 +7143,10 @@
       "clinic": "마디엠한의원",
       "region": "경기도 파주시",
       "caller": "",
-      "supplier": "",
+      "supplier": "선웅메디테크",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -6768,9 +7162,10 @@
       "clinic": "",
       "region": "서울시 서초구",
       "caller": "",
-      "supplier": "DSE",
+      "supplier": "디에스이아이엔씨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -6786,9 +7181,10 @@
       "clinic": "올리브한의원",
       "region": "경기도 김포시",
       "caller": "",
-      "supplier": "DSE",
+      "supplier": "(주)디에스이아이엔씨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6806,7 +7202,8 @@
       "caller": "",
       "supplier": "선웅메디테크",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6824,7 +7221,8 @@
       "caller": "",
       "supplier": "선웅메디테크",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6842,7 +7240,8 @@
       "caller": "",
       "supplier": "선웅메디테크",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6858,9 +7257,10 @@
       "clinic": "",
       "region": "부산시 부산진구",
       "caller": "",
-      "supplier": "선웅메디테크",
+      "supplier": "스트라텍",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6878,7 +7278,8 @@
       "caller": "",
       "supplier": "에이치씨케이",
       "payDate": "2026-03-04",
-      "payAmount": 681600
+      "payAmount": 681600,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6896,7 +7297,8 @@
       "caller": "",
       "supplier": "에이치씨케이",
       "payDate": "2026-03-04",
-      "payAmount": 681600
+      "payAmount": 681600,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6914,7 +7316,8 @@
       "caller": "",
       "supplier": "에이치씨케이",
       "payDate": "2026-03-03",
-      "payAmount": 910000
+      "payAmount": 910000,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -6930,9 +7333,10 @@
       "clinic": "유덕경희한의원",
       "region": "경기도 안양시",
       "caller": "",
-      "supplier": "바디헬스케어",
+      "supplier": "아큐닉",
       "payDate": "2026-03-04",
-      "payAmount": 1200000
+      "payAmount": 1200000,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -6948,9 +7352,10 @@
       "clinic": "단아온한의원",
       "region": "부산시 해운대구",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -6966,9 +7371,10 @@
       "clinic": "청라리아한의원",
       "region": "인천시 서구",
       "caller": "",
-      "supplier": "웨버인스트루먼트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -6984,9 +7390,10 @@
       "clinic": "정담은한의원",
       "region": "경기도 양주시",
       "caller": "",
-      "supplier": "메가메디칼",
+      "supplier": "(주)메가메디칼",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7002,9 +7409,10 @@
       "clinic": "오송365한의원",
       "region": "충청북도 청주시",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7020,9 +7428,10 @@
       "clinic": "365명쾌한의원",
       "region": "경기도 화성시",
       "caller": "",
-      "supplier": "DSE",
+      "supplier": "디에스이아이엔씨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -7038,9 +7447,10 @@
       "clinic": "본바로한의원",
       "region": "경기도 부천시",
       "caller": "",
-      "supplier": "파이주식회사",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -7058,7 +7468,8 @@
       "caller": "",
       "supplier": "선웅메디테크",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7074,9 +7485,10 @@
       "clinic": "본바로한의원",
       "region": "경기도 부천시",
       "caller": "",
-      "supplier": "DSE",
+      "supplier": "디에스이아이엔씨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7092,9 +7504,10 @@
       "clinic": "본바로한의원",
       "region": "경기도 부천시",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -7112,7 +7525,8 @@
       "caller": "",
       "supplier": "선웅메디테크",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -7128,9 +7542,10 @@
       "clinic": "구로 끗 한의원",
       "region": "서울시 관악구",
       "caller": "",
-      "supplier": "디에프아이",
+      "supplier": "메디스트림",
       "payDate": "2026-03-03",
-      "payAmount": 779000
+      "payAmount": 779000,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7148,7 +7563,8 @@
       "caller": "",
       "supplier": "옴니씨앤에스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7166,7 +7582,8 @@
       "caller": "",
       "supplier": "옴니씨앤에스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7184,7 +7601,8 @@
       "caller": "",
       "supplier": "디알텍",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7200,9 +7618,10 @@
       "clinic": "경희 고성 한의원",
       "region": "서울시 강북구",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "2026-03-05",
-      "payAmount": 4560000
+      "payAmount": 4560000,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -7220,7 +7639,8 @@
       "caller": "",
       "supplier": "에이치씨케이",
       "payDate": "2026-03-06",
-      "payAmount": 3069998
+      "payAmount": 3069998,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7238,7 +7658,8 @@
       "caller": "",
       "supplier": "옴니씨앤에스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7254,9 +7675,10 @@
       "clinic": "구산한의원",
       "region": "서울시 은평구",
       "caller": "",
-      "supplier": "DSE",
+      "supplier": "(주)디에스이아이엔씨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7272,9 +7694,10 @@
       "clinic": "청당경희365한의원",
       "region": "충청남도 천안시",
       "caller": "",
-      "supplier": "메디코아",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7290,9 +7713,10 @@
       "clinic": "청당경희365한의원",
       "region": "충청남도 천안시",
       "caller": "",
-      "supplier": "팀엘리시움",
+      "supplier": "메디스트림",
       "payDate": "2026-04-03",
-      "payAmount": 5520000
+      "payAmount": 5520000,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7308,9 +7732,10 @@
       "clinic": "청당경희365한의원",
       "region": "충청남도 천안시",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7326,9 +7751,10 @@
       "clinic": "청당경희365한의원",
       "region": "충청남도 천안시",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7346,7 +7772,8 @@
       "caller": "",
       "supplier": "옴니씨앤에스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -7362,9 +7789,10 @@
       "clinic": "도닥한의원",
       "region": "대구시 수성구",
       "caller": "",
-      "supplier": "한메디",
+      "supplier": "오케이차트",
       "payDate": "2026-03-10",
-      "payAmount": 1024090
+      "payAmount": 1024090,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7380,9 +7808,10 @@
       "clinic": "형인재한의원",
       "region": "서울시 강남구",
       "caller": "",
-      "supplier": "DSE",
+      "supplier": "(주)디에스이아이엔씨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7398,9 +7827,10 @@
       "clinic": "보라드림한의원",
       "region": "경기도 용인시",
       "caller": "",
-      "supplier": "메디코아",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7418,7 +7848,8 @@
       "caller": "",
       "supplier": "옴니씨앤에스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7434,9 +7865,10 @@
       "clinic": "압구정대자인한의원",
       "region": "서울시 강남구",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7452,9 +7884,10 @@
       "clinic": "이림한의원",
       "region": "서울시 중구",
       "caller": "",
-      "supplier": "DSE",
+      "supplier": "(주)디에스이아이엔씨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -7472,7 +7905,8 @@
       "caller": "",
       "supplier": "굿플",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -7488,9 +7922,10 @@
       "clinic": "으뜸경희한의원",
       "region": "경기도 광주시",
       "caller": "",
-      "supplier": "에이치씨케이",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -7508,7 +7943,8 @@
       "caller": "",
       "supplier": "선웅메디테크",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -7526,7 +7962,8 @@
       "caller": "",
       "supplier": "이앤에스헬스케어",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7542,9 +7979,10 @@
       "clinic": "청파한의원",
       "region": "전라남도 나주시",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "dse",
       "payDate": "2026-02-24",
-      "payAmount": 1235000
+      "payAmount": 1235000,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -7560,9 +7998,10 @@
       "clinic": "경희신의한의원",
       "region": "경기도 성남시",
       "caller": "",
-      "supplier": "",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -7580,7 +8019,8 @@
       "caller": "",
       "supplier": "굿플",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7598,7 +8038,8 @@
       "caller": "",
       "supplier": "동아참메드",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7614,9 +8055,10 @@
       "clinic": "경희신의한의원",
       "region": "경기도 성남시",
       "caller": "",
-      "supplier": "",
+      "supplier": "메가메디칼",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7634,7 +8076,8 @@
       "caller": "",
       "supplier": "옴니씨앤에스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7650,9 +8093,10 @@
       "clinic": "성남태평한의원",
       "region": "경기도 성남시",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7668,9 +8112,10 @@
       "clinic": "경희성모연합한의원",
       "region": "대전시 동구",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7686,9 +8131,10 @@
       "clinic": "",
       "region": "서울시 강서구",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -7706,7 +8152,8 @@
       "caller": "",
       "supplier": "디에스메디",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -7724,7 +8171,8 @@
       "caller": "",
       "supplier": "선웅메디테크",
       "payDate": "2026-02-24",
-      "payAmount": 1356000
+      "payAmount": 1356000,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7742,7 +8190,8 @@
       "caller": "",
       "supplier": "옴니씨앤에스",
       "payDate": "2026-02-20",
-      "payAmount": 12990000
+      "payAmount": 12990000,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7758,9 +8207,10 @@
       "clinic": "느티나무한의원",
       "region": "전라북도 완주군",
       "caller": "",
-      "supplier": "메디코아",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -7776,9 +8226,10 @@
       "clinic": "삼대심신한의원",
       "region": "서울시 강동구",
       "caller": "",
-      "supplier": "정메디칼",
+      "supplier": "메디스트림",
       "payDate": "2026-02-19",
-      "payAmount": 1105000
+      "payAmount": 1105000,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -7796,7 +8247,8 @@
       "caller": "",
       "supplier": "원효메디텍",
       "payDate": "2026-02-20",
-      "payAmount": 126100
+      "payAmount": 126100,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -7812,9 +8264,10 @@
       "clinic": "바를연한의원",
       "region": "서울시 영등포구",
       "caller": "",
-      "supplier": "인바디부산",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -7832,7 +8285,8 @@
       "caller": "",
       "supplier": "인바디",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -7848,9 +8302,10 @@
       "clinic": "365팔팔한의원",
       "region": "경기도 김포시",
       "caller": "",
-      "supplier": "선웅메디테크",
+      "supplier": "스트라텍",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -7866,9 +8321,10 @@
       "clinic": "최한의원",
       "region": "경상북도 포항시",
       "caller": "",
-      "supplier": "원효메디텍",
+      "supplier": "원효",
       "payDate": "2026-02-20",
-      "payAmount": 725760
+      "payAmount": 725760,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7884,9 +8340,10 @@
       "clinic": "자미솔한의원",
       "region": "경기도 수원시",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "2026-04-09",
-      "payAmount": 13680916
+      "payAmount": 13680916,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -7902,9 +8359,10 @@
       "clinic": "율재한의원",
       "region": "서울시 광진구",
       "caller": "",
-      "supplier": "한메디",
+      "supplier": "오케이차트",
       "payDate": "2026-04-07",
-      "payAmount": 1052700
+      "payAmount": 1052700,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -7920,9 +8378,10 @@
       "clinic": "",
       "region": "서울시 송파구",
       "caller": "",
-      "supplier": "에이치씨케이",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -7940,7 +8399,8 @@
       "caller": "",
       "supplier": "선웅메디테크",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -7958,7 +8418,8 @@
       "caller": "",
       "supplier": "이앤에스헬스케어",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -7974,9 +8435,10 @@
       "clinic": "바르다한의원",
       "region": "대전시 서구",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "dse",
       "payDate": "2026-03-23",
-      "payAmount": 1200000
+      "payAmount": 1200000,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -7994,7 +8456,8 @@
       "caller": "",
       "supplier": "리메드",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8010,9 +8473,10 @@
       "clinic": "녹양한의원",
       "region": "서울시 중구",
       "caller": "",
-      "supplier": "바디헬스케어",
+      "supplier": "아큐닉",
       "payDate": "2026-02-19",
-      "payAmount": 1200000
+      "payAmount": 1200000,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -8028,9 +8492,10 @@
       "clinic": "청파한의원",
       "region": "전라남도 나주시",
       "caller": "",
-      "supplier": "DSE",
+      "supplier": "(주)디에스이아이엔씨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -8046,9 +8511,10 @@
       "clinic": "으뜸경희한의원",
       "region": "경기도 광주시",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -8064,9 +8530,10 @@
       "clinic": "바름온한의원 인천",
       "region": "인천시 계양구",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8084,7 +8551,8 @@
       "caller": "",
       "supplier": "인바디",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8102,7 +8570,8 @@
       "caller": "",
       "supplier": "굿플",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -8118,9 +8587,10 @@
       "clinic": "초곡365한의원",
       "region": "경상북도 포항시",
       "caller": "",
-      "supplier": "웨버인스트루먼트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -8136,9 +8606,10 @@
       "clinic": "미올한의원",
       "region": "경기도 화성시",
       "caller": "",
-      "supplier": "DSE",
+      "supplier": "(주)디에스이아이엔씨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8156,7 +8627,8 @@
       "caller": "",
       "supplier": "선웅메디테크",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -8174,7 +8646,8 @@
       "caller": "",
       "supplier": "삼성메디슨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8190,9 +8663,10 @@
       "clinic": "소래한의원",
       "region": "인천시 남동구",
       "caller": "",
-      "supplier": "바디헬스케어",
+      "supplier": "아큐닉",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -8208,9 +8682,10 @@
       "clinic": "여천한의원",
       "region": "전라남도 여수시",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -8226,9 +8701,10 @@
       "clinic": "압구정경희한의원",
       "region": "서울시 강남구",
       "caller": "",
-      "supplier": "상담하기",
+      "supplier": "(주)메가메디칼",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -8244,9 +8720,10 @@
       "clinic": "미소부부한의원",
       "region": "경상남도 양산시",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8264,7 +8741,8 @@
       "caller": "",
       "supplier": "선웅메디테크",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -8280,9 +8758,10 @@
       "clinic": "경희진심한의원",
       "region": "서울시 성북구",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "2026-02-13",
-      "payAmount": 4900000
+      "payAmount": 4900000,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -8298,9 +8777,10 @@
       "clinic": "가까이한의원",
       "region": "경기도 성남시",
       "caller": "",
-      "supplier": "웨버인스트루먼트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8316,9 +8796,10 @@
       "clinic": "기세한의원",
       "region": "부산시 남구",
       "caller": "",
-      "supplier": "메디코넷",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8334,9 +8815,10 @@
       "clinic": "경희구암한의원",
       "region": "경기도 광명시",
       "caller": "",
-      "supplier": "굿플",
+      "supplier": "IR-VITA",
       "payDate": "2026-02-11",
-      "payAmount": 158395
+      "payAmount": 158395,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8352,9 +8834,10 @@
       "clinic": "김범한의원",
       "region": "서울시 동작구",
       "caller": "",
-      "supplier": "인바디부산",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -8372,7 +8855,8 @@
       "caller": "",
       "supplier": "삼성메디슨",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8388,9 +8872,10 @@
       "clinic": "박서현한의원",
       "region": "경기도 성남시",
       "caller": "",
-      "supplier": "정메디칼",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8406,9 +8891,10 @@
       "clinic": "분당 경희온도한의원",
       "region": "경기도 성남시",
       "caller": "",
-      "supplier": "디에프아이",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8426,7 +8912,8 @@
       "caller": "",
       "supplier": "인바디",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8444,7 +8931,8 @@
       "caller": "",
       "supplier": "인바디",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8460,9 +8948,10 @@
       "clinic": "김범한의원",
       "region": "서울시 동작구",
       "caller": "",
-      "supplier": "굿플",
+      "supplier": "IR-VITA",
       "payDate": "2026-02-09",
-      "payAmount": 405000
+      "payAmount": 405000,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -8480,7 +8969,8 @@
       "caller": "",
       "supplier": "옴니씨앤에스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -8496,9 +8986,10 @@
       "clinic": "잘봄한의원",
       "region": "서울시 강서구",
       "caller": "",
-      "supplier": "웨버",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8516,7 +9007,8 @@
       "caller": "",
       "supplier": "에이치씨케이",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8532,9 +9024,10 @@
       "clinic": "도본한의원",
       "region": "충청남도 천안시",
       "caller": "",
-      "supplier": "",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -8550,9 +9043,10 @@
       "clinic": "소통부부한의원",
       "region": "경기도 고양시",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -8568,9 +9062,10 @@
       "clinic": "도본한의원",
       "region": "충청남도 천안시",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -8586,9 +9081,10 @@
       "clinic": "도본한의원",
       "region": "충청남도 천안시",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -8604,9 +9100,10 @@
       "clinic": "",
       "region": "서울시 강북구",
       "caller": "",
-      "supplier": "팀엘리시움",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -8622,9 +9119,10 @@
       "clinic": "루원봄한의원",
       "region": "인천시 서구",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -8640,9 +9138,10 @@
       "clinic": "루원봄한의원",
       "region": "인천시 서구",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -8658,9 +9157,10 @@
       "clinic": "가로세로한의원",
       "region": "경기도 안양시",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "2026-02-09",
-      "payAmount": 143000
+      "payAmount": 143000,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8678,7 +9178,8 @@
       "caller": "",
       "supplier": "인바디",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8694,9 +9195,10 @@
       "clinic": "수한의원",
       "region": "경기도 고양시",
       "caller": "",
-      "supplier": "인바디부산",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8714,7 +9216,8 @@
       "caller": "",
       "supplier": "인바디",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8730,9 +9233,10 @@
       "clinic": "마디엠한의원",
       "region": "경기도 파주시",
       "caller": "",
-      "supplier": "영일엠",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8748,9 +9252,10 @@
       "clinic": "압구정대자인한의원",
       "region": "서울시 강남구",
       "caller": "",
-      "supplier": "",
+      "supplier": "엠코니",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8768,7 +9273,8 @@
       "caller": "",
       "supplier": "선웅메디테크",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8784,9 +9290,10 @@
       "clinic": "온기한의원",
       "region": "경기도 남양주시",
       "caller": "",
-      "supplier": "원효메디텍",
+      "supplier": "원효",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8804,7 +9311,8 @@
       "caller": "",
       "supplier": "영일엠",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8820,9 +9328,10 @@
       "clinic": "스마일365한의원",
       "region": "대구시 북구",
       "caller": "",
-      "supplier": "",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8838,9 +9347,10 @@
       "clinic": "스마일365한의원",
       "region": "대구시 북구",
       "caller": "",
-      "supplier": "",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8856,9 +9366,10 @@
       "clinic": "스마일365한의원",
       "region": "대구시 북구",
       "caller": "",
-      "supplier": "영일엠",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8874,9 +9385,10 @@
       "clinic": "스마일365한의원",
       "region": "대구시 북구",
       "caller": "",
-      "supplier": "영일엠",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8892,9 +9404,10 @@
       "clinic": "노아한의원",
       "region": "경기도 용인시",
       "caller": "",
-      "supplier": "한일TM",
+      "supplier": "한일",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -8910,9 +9423,10 @@
       "clinic": "라인한의원",
       "region": "서울시 송파구",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -8928,9 +9442,10 @@
       "clinic": "경희솔한의원",
       "region": "울산시 울주군",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -8946,9 +9461,10 @@
       "clinic": "경희고덕탑한의원",
       "region": "서울시 강동구",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8964,9 +9480,10 @@
       "clinic": "상무부부한의원",
       "region": "광주시 서구",
       "caller": "",
-      "supplier": "영일엠",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -8984,7 +9501,8 @@
       "caller": "",
       "supplier": "에이치씨케이",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -9000,9 +9518,10 @@
       "clinic": "빌리브한의원 신천역",
       "region": "대구시 동구",
       "caller": "",
-      "supplier": "팀엘리시움",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -9018,9 +9537,10 @@
       "clinic": "튼튼몸 한의원",
       "region": "경기도 하남시",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -9038,7 +9558,8 @@
       "caller": "",
       "supplier": "옴니씨앤에스",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -9054,9 +9575,10 @@
       "clinic": "라온한의원",
       "region": "대전시 동구",
       "caller": "",
-      "supplier": "이노메디케어",
+      "supplier": "PT10",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -9072,9 +9594,10 @@
       "clinic": "풀의우주 한의원",
       "region": "부산시 해운대구",
       "caller": "",
-      "supplier": "정메디칼",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -9090,9 +9613,10 @@
       "clinic": "신길봄한의원",
       "region": "서울시 영등포구",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -9108,9 +9632,10 @@
       "clinic": "365탄탄한의원",
       "region": "서울시 영등포구",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "dse",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "총판기기",
@@ -9126,9 +9651,10 @@
       "clinic": "의인한의원",
       "region": "경기도 화성시",
       "caller": "",
-      "supplier": "네오펙트",
+      "supplier": "메디스트림",
       "payDate": "",
-      "payAmount": null
+      "payAmount": null,
+      "inquiry": ""
     }
   ]
 }
