@@ -753,10 +753,15 @@ function mergeSheetIntoLocal(sheetRecords) {
   saveData(merged);
 }
 
+// 화면에서 견적가 표시를 강제로 비울 cid 목록 (테스트 계정 등)
+var PRICE_SUPPRESS_CIDS = { '5f33869ca0b91001bf48c428': true };
+
 function loadData() {
   try {
     var local = JSON.parse(localStorage.getItem(LS_KEY) || '[]');
     var all = local.concat(EXTERNAL_DATA);
+    // 테스트 계정 cid의 견적가는 노이즈라 비움 (원본 데이터는 유지)
+    all.forEach(function(r){ if (r && r.cid && PRICE_SUPPRESS_CIDS[r.cid]) r.price = ''; });
     // 앞단 파서 실패로 생성된 N/A|N/A|ts 오염 행 중, 동일 timestamp의 정상 짝이 있으면 화면에서 숨김.
     // 짝이 없는 단독 N/A 행은 그대로 표시. (localStorage 캐시의 구 오염 레코드도 여기서 차단됨)
     var validTs = {};
