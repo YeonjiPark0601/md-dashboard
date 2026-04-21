@@ -1347,7 +1347,7 @@ function renderTable() {
       '<td>' + renderStageCell(r) + '</td>' +
       '<td class="note-cell" style="font-size:12px;color:#555;" title="' + escHtml(r.inquiry || '') + '">' + escHtml(r.inquiry || '') + '</td>' +
       '<td class="note-cell">' + renderInlineInput('note', r.note, r, '입력') + '</td>' +
-      '<td>' + (r.stage === 'Demo' ? renderInlineInput('demoDate', r.demoDate, r, 'YYYY-MM-DD', 'date') : '<span style="color:#bbb;font-size:12px;" title="Stage를 Demo로 변경하면 입력 가능">—</span>') + '</td>' +
+      '<td>' + (r.stage === 'Demo' ? renderInlineInput('demoDate', r.demoDate, r, 'YYYY-MM-DD', 'date') : '') + '</td>' +
       '<td>' + escHtml(r.payDate) + '</td>' +
     '</tr>';
   }).join('');
