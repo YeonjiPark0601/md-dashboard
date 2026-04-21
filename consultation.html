@@ -754,7 +754,20 @@ function mergeSheetIntoLocal(sheetRecords) {
 function loadData() {
   try {
     var local = JSON.parse(localStorage.getItem(LS_KEY) || '[]');
-    return local.concat(EXTERNAL_DATA);
+    var all = local.concat(EXTERNAL_DATA);
+    // 앞단 파서 실패로 생성된 N/A|N/A|ts 오염 행 중, 동일 timestamp의 정상 짝이 있으면 화면에서 숨김.
+    // 짝이 없는 단독 N/A 행은 그대로 표시. (localStorage 캐시의 구 오염 레코드도 여기서 차단됨)
+    var validTs = {};
+    all.forEach(function(r){
+      var id = r.id || '';
+      if (id.indexOf('N/A|N/A|') === 0) return;
+      if (r.timestamp) validTs[r.timestamp] = true;
+    });
+    return all.filter(function(r){
+      var id = r.id || '';
+      if (id.indexOf('N/A|N/A|') === 0 && r.timestamp && validTs[r.timestamp]) return false;
+      return true;
+    });
   } catch (e) { console.error('loadData error', e); return EXTERNAL_DATA.slice(); }
 }
 
