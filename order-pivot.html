@@ -68,7 +68,24 @@ tr:hover { background: #f7f9fc; }
 .text-center { text-align: center; }
 tbody tr.total-row td { background: #f7f8fa; font-weight: 700; border-top: 2px solid #e0e0e0; }
 td.rep-name { font-weight: 600; color: #1a1a2e; min-width: 90px; }
+td.rep-name.clickable { cursor: pointer; color: #2962ff; text-decoration: underline; text-underline-offset: 2px; }
+td.rep-name.clickable:hover { color: #0039cb; }
+td.rep-name.active { background: #e3f2fd !important; color: #0039cb; }
 .muted { color: #ccc; }
+
+#detailCard { display: none; scroll-margin-top: 20px; }
+#detailCard .detail-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 12px; flex-wrap: wrap; gap: 8px;
+}
+#detailCard .detail-header h3 { font-size: 15px; font-weight: 600; color: #1a1a2e; margin: 0; }
+#detailCard .detail-header .meta { font-size: 12px; color: #888; }
+#detailCard .close-btn {
+  background: none; border: 1px solid #d0d0d0; border-radius: 6px;
+  padding: 4px 10px; font-size: 12px; cursor: pointer; color: #555;
+}
+#detailCard .close-btn:hover { background: #f0f2f5; }
+#detailCard table tbody tr { cursor: default; }
 
 .loading { text-align: center; padding: 60px; color: #888; font-size: 16px; }
 
@@ -105,6 +122,7 @@ td.rep-name { font-weight: 600; color: #1a1a2e; min-width: 90px; }
 
 <div class="container">
   <div id="content" class="loading">데이터 불러오는 중…</div>
+  <div id="detailCard" class="table-card"></div>
 </div>
 
 <script>
@@ -257,7 +275,8 @@ function render() {
   let grandCount = 0, grandAmount = 0;
 
   repTotals.forEach(({ rep, byMonth, count, amount }) => {
-    html += `<tr><td class="rep-name">${rep}</td><td class="text-right"><b>${count}</b></td><td class="text-right"><b>${fmt(amount)}</b></td>`;
+    const repEsc = rep.replace(/"/g, '&quot;');
+    html += `<tr><td class="rep-name clickable" data-rep="${repEsc}">${rep}</td><td class="text-right"><b>${count}</b></td><td class="text-right"><b>${fmt(amount)}</b></td>`;
     months.forEach(m => {
       const cell = byMonth[m];
       if (cell) {
@@ -295,6 +314,67 @@ function render() {
   html += '</tbody></table></div>';
 
   document.getElementById('content').innerHTML = html;
+
+  document.querySelectorAll('td.rep-name.clickable').forEach(td => {
+    td.addEventListener('click', () => showRepDetail(td.dataset.rep));
+  });
+
+  // 필터 바뀌었을 때 열려있던 상세 다시 그리기 (해당 담당자가 여전히 있으면)
+  const activeRep = document.querySelector('#detailCard').dataset.activeRep;
+  if (activeRep) {
+    if (repTotals.some(r => r.rep === activeRep)) showRepDetail(activeRep);
+    else hideRepDetail();
+  }
+}
+
+function showRepDetail(rep) {
+  const year = document.getElementById('yearSelect').value;
+  const cat = document.getElementById('categorySelect').value;
+  const rows = DATA.rows.filter(r =>
+    (r['거래월'] || '').startsWith(year) &&
+    (!cat || r['카테고리명'] === cat) &&
+    r['매출담당자'] === rep
+  ).sort((a, b) => (b['거래일자'] || '').localeCompare(a['거래일자'] || ''));
+
+  const orderSet = new Set(rows.map(r => r['주문번호']));
+  const totalAmt = rows.reduce((s, r) => s + r['금액'], 0);
+
+  const card = document.getElementById('detailCard');
+  card.dataset.activeRep = rep;
+  card.style.display = 'block';
+
+  let html = '';
+  html += '<div class="detail-header">';
+  html += `<h3>${rep} 상세 내역</h3>`;
+  html += `<div class="meta">${year}년${cat ? ' · ' + cat : ''} · ${orderSet.size}건 · ${fmt(totalAmt)}원</div>`;
+  html += `<button class="close-btn" onclick="hideRepDetail()">닫기 ✕</button>`;
+  html += '</div>';
+
+  html += '<table><thead><tr>';
+  html += '<th>거래일자</th><th>주문번호</th><th>병의원명</th><th>카테고리</th><th>상품명</th><th class="text-right">금액</th>';
+  html += '</tr></thead><tbody>';
+  rows.forEach(r => {
+    html += `<tr><td>${r['거래일자']}</td><td>${r['주문번호']}</td><td>${r['병의원명']}</td><td>${r['카테고리명']}</td><td>${r['상품명']}</td><td class="text-right">${fmt(r['금액'])}</td></tr>`;
+  });
+  html += `<tr class="total-row"><td colspan="5">합계 (${orderSet.size} 주문 / ${rows.length} 라인)</td><td class="text-right">${fmt(totalAmt)}</td></tr>`;
+  html += '</tbody></table>';
+
+  card.innerHTML = html;
+
+  // active 하이라이트
+  document.querySelectorAll('td.rep-name.clickable').forEach(td => {
+    td.classList.toggle('active', td.dataset.rep === rep);
+  });
+
+  card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function hideRepDetail() {
+  const card = document.getElementById('detailCard');
+  card.style.display = 'none';
+  card.innerHTML = '';
+  delete card.dataset.activeRep;
+  document.querySelectorAll('td.rep-name.clickable.active').forEach(td => td.classList.remove('active'));
 }
 
 loadData();
