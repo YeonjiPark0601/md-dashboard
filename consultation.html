@@ -22,7 +22,7 @@ body { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; b
 .filter-count-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 10px; background: #1a73e8; color: #fff; font-size: 11px; font-weight: 700; }
 .filter-toggle-arrow { transition: transform 0.2s; display: inline-block; }
 .filter-toggle-mobile[aria-expanded="true"] .filter-toggle-arrow { transform: rotate(180deg); }
-.filter-group { display: flex; align-items: center; gap: 6px; }
+.filter-group { position: relative; display: flex; align-items: center; gap: 6px; }
 .filter-group label { font-size: 13px; font-weight: 600; color: #555; }
 .filter-group select, .filter-group input { padding: 5px 10px; border: 1px solid #d0d0d0; border-radius: 6px; font-size: 13px; background: #fff; }
 .count-badge { margin-left: auto; padding: 5px 14px; background: #e8f0fe; border-radius: 16px; font-size: 12px; font-weight: 600; color: #1967d2; white-space: nowrap; }
@@ -310,7 +310,6 @@ th.sortable:hover { background: #eef0f4; }
   #consultTable td:nth-of-type(14)::before { content: "담당자메모"; }
   #consultTable td:nth-of-type(15)::before { content: "데모일정"; }
   #consultTable td:nth-of-type(16)::before { content: "결제일자"; }
-  #consultTable td:nth-of-type(17)::before { content: "수정"; }
   #consultTable td:nth-of-type(3) { font-size: 15px; font-weight: 700; padding-top: 2px; padding-bottom: 6px; border-bottom: 1px solid #f0f0f0; margin-bottom: 4px; }
   #consultTable td:nth-of-type(3)::before { color: #aaa; }
   #consultTable td.td-truncate, #consultTable td.note-cell { max-width: none; white-space: normal; overflow: visible; text-overflow: clip; }
@@ -540,7 +539,6 @@ th.sortable:hover { background: #eef0f4; }
             <th>담당자메모</th>
             <th>데모일정</th>
             <th>결제일자</th>
-            <th>수정</th>
           </tr>
         </thead>
         <tbody id="tableBody"></tbody>
@@ -1324,9 +1322,6 @@ function renderTable() {
   empty.style.display = 'none';
 
   tbody.innerHTML = pageData.map(function(r){
-    var actionsCell = r.external
-      ? '<span style="font-size:11px;color:#888;">시트(' + escHtml(r.externalSource) + ')</span>'
-      : '<button class="btn btn-sm btn-edit" onclick="editRecord(\'' + r.id + '\')">수정</button>';
     return '<tr' + (r.external ? ' style="background:#fafbfc;"' : '') + '>' +
       '<td>' + escHtml(r.date) + '</td>' +
       '<td>' + escHtml(r.source) + '</td>' +
@@ -1344,7 +1339,6 @@ function renderTable() {
       '<td class="note-cell">' + renderInlineInput('note', r.note, r, '입력') + '</td>' +
       '<td>' + renderInlineInput('demoDate', r.demoDate, r, 'YYYY-MM-DD', 'date') + '</td>' +
       '<td>' + escHtml(r.payDate) + '</td>' +
-      '<td><div class="td-actions">' + actionsCell + '</div></td>' +
     '</tr>';
   }).join('');
 
@@ -2235,20 +2229,19 @@ var DEFAULT_COL_WIDTHS = {
   0: 78,   // 인입시점
   1: 80,   // 인입경로
   2: 72,   // 고객명
-  3: 120,  // 연락처
-  4: 120,  // 한의원명
+  3: 110,  // 연락처 (120→110)
+  4: 110,  // 한의원명 (120→110)
   5: 100,  // 지역
   6: 110,  // 공급처
-  7: 240,  // 상담물품
+  7: 220,  // 상담물품 (240→220)
   8: 60,   // 수량
-  9: 100,  // 견적가
+  9: 90,   // 견적가 (100→90)
   10: 80,  // 담당자
   11: 80,  // Stage
-  12: 220, // 문의내용 (슬랙 문의사항)
-  13: 220, // 담당자메모 (수동 입력)
+  12: 260, // 문의내용 (220→260)
+  13: 260, // 담당자메모 (220→260)
   14: 95,  // 데모일정
-  15: 95,  // 결제일자
-  16: 70   // 수정
+  15: 95   // 결제일자
 };
 
 function applyColWidths() {
