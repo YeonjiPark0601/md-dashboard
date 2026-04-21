@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-21T07:50:53.516Z",
+  "updated": "2026-04-21T09:30:28.215Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -152,6 +152,25 @@
       "region": "서울시 관악구",
       "caller": "",
       "supplier": "옴니씨앤에스",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": ""
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 21 오후 06:25:24",
+      "date": "2026-04-21",
+      "name": "장경진",
+      "cid": "5eb4c3f209982e0735b2d4b7",
+      "phone": "010-7226-7706",
+      "product": "[메디코아] HRV : SA-3000 NEW",
+      "qty": 1,
+      "price": "모름",
+      "productId": "6899816d66efcf46326dcdba",
+      "clinic": "일산한의원",
+      "region": "경기도 고양시",
+      "caller": "",
+      "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
