@@ -724,13 +724,20 @@ function parseCSV(text) {
 function fetchSheetRecords() {
   return fetch(SHEET_CSV_URL + '&_t=' + Date.now(), { cache: 'no-store' })
     .then(function(res){ return res.text(); })
-    .then(function(csv){ return parseCSV(csv).map(sheetRowToRecord).filter(function(r){
-      if (!r.id) return false;
-      // 앞단 파서 실패로 cid/productId가 비어 들어온 오염 행 렌더 제외
-      if (r.id.indexOf('N/A|N/A|') === 0) return false;
-      if (r.id.indexOf('||') === 0) return false;
-      return true;
-    }); })
+    .then(function(csv){
+      var records = parseCSV(csv).map(sheetRowToRecord).filter(function(r){ return r.id; });
+      // 정상 id(cid|pid|ts) 행과 동일 timestamp의 N/A|N/A|ts 짝은 중복이므로 화면에서 숨김.
+      // 짝이 없는 단독 N/A 행은 그대로 표시.
+      var validTs = {};
+      records.forEach(function(r){
+        if (r.id.indexOf('N/A|N/A|') === 0) return;
+        if (r.timestamp) validTs[r.timestamp] = true;
+      });
+      return records.filter(function(r){
+        if (r.id.indexOf('N/A|N/A|') === 0 && r.timestamp && validTs[r.timestamp]) return false;
+        return true;
+      });
+    })
     .catch(function(e){ console.warn('시트 조회 실패:', e); return []; });
 }
 
