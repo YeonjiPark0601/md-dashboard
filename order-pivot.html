@@ -87,6 +87,20 @@ td.rep-name.active { background: #e3f2fd !important; color: #0039cb; }
 #detailCard .close-btn:hover { background: #f0f2f5; }
 #detailCard table tbody tr { cursor: default; }
 
+.pagination {
+  display: flex; justify-content: center; align-items: center; gap: 4px;
+  margin-top: 12px; flex-wrap: wrap;
+}
+.pagination button {
+  background: #fff; border: 1px solid #d0d0d0; border-radius: 6px;
+  padding: 5px 10px; font-size: 12px; cursor: pointer; color: #555;
+  min-width: 32px;
+}
+.pagination button:hover:not(:disabled) { background: #f0f2f5; }
+.pagination button.active { background: #2962ff; color: #fff; border-color: #2962ff; font-weight: 600; }
+.pagination button:disabled { color: #ccc; cursor: not-allowed; }
+.pagination .page-info { font-size: 12px; color: #888; margin: 0 8px; }
+
 .loading { text-align: center; padding: 60px; color: #888; font-size: 16px; }
 
 @media (max-width: 900px) {
@@ -121,8 +135,11 @@ td.rep-name.active { background: #e3f2fd !important; color: #0039cb; }
 </div>
 
 <div class="container">
-  <div id="content" class="loading">데이터 불러오는 중…</div>
+  <div id="loadingBox" class="loading">데이터 불러오는 중…</div>
+  <div id="kpiArea"></div>
+  <div id="pivotArea"></div>
   <div id="detailCard" class="table-card"></div>
+  <div id="monthlyArea"></div>
 </div>
 
 <script>
@@ -177,10 +194,10 @@ async function loadData() {
     }));
     DATA = { updated_at: new Date().toISOString(), source: 'Google Sheets 담당자별주문', rows: parsed };
   } catch (e) {
-    document.getElementById('content').innerHTML =
-      '<div class="loading">데이터 로드 실패: ' + e.message + '</div>';
+    document.getElementById('loadingBox').textContent = '데이터 로드 실패: ' + e.message;
     return;
   }
+  document.getElementById('loadingBox').style.display = 'none';
   initFilters();
   render();
 }
@@ -252,16 +269,16 @@ function render() {
   const top = repTotals[0] || { rep: '-', amount: 0 };
   const activeReps = repTotals.length;
 
-  let html = '';
-  html += '<div class="kpi-row">';
-  html += `<div class="kpi-card"><div class="label">총 매출</div><div class="value">${fmt(totalAmount)}원</div><div class="sub">${year}년</div></div>`;
-  html += `<div class="kpi-card"><div class="label">총 주문건수</div><div class="value">${totalCount}</div><div class="sub">유니크 주문번호</div></div>`;
-  html += `<div class="kpi-card"><div class="label">활동 담당자</div><div class="value">${activeReps}명</div><div class="sub">매출 발생 기준</div></div>`;
-  html += `<div class="kpi-card"><div class="label">1위 담당자</div><div class="value">${top.rep}</div><div class="sub">${fmt(top.amount)}원</div></div>`;
-  html += '</div>';
+  let kpiHtml = '<div class="kpi-row">';
+  kpiHtml += `<div class="kpi-card"><div class="label">총 매출</div><div class="value">${fmt(totalAmount)}원</div><div class="sub">${year}년</div></div>`;
+  kpiHtml += `<div class="kpi-card"><div class="label">총 주문건수</div><div class="value">${totalCount}</div><div class="sub">유니크 주문번호</div></div>`;
+  kpiHtml += `<div class="kpi-card"><div class="label">활동 담당자</div><div class="value">${activeReps}명</div><div class="sub">매출 발생 기준</div></div>`;
+  kpiHtml += `<div class="kpi-card"><div class="label">1위 담당자</div><div class="value">${top.rep}</div><div class="sub">${fmt(top.amount)}원</div></div>`;
+  kpiHtml += '</div>';
+  document.getElementById('kpiArea').innerHTML = kpiHtml;
 
   // pivot table
-  html += '<div class="table-card">';
+  let html = '<div class="table-card">';
   html += `<h3><span>담당자 × 월별 피벗 (${year}년${cat ? ' / ' + cat : ''})</span><span style="font-size:12px;color:#888;font-weight:400;">건수 = 주문번호 유니크 / 금액 = 포인트제외결제공급가액(원)</span></h3>`;
   html += '<table><thead><tr><th>담당자</th><th class="text-right">합계 건수</th><th class="text-right">합계 금액</th>';
   months.forEach(m => {
@@ -299,21 +316,21 @@ function render() {
     html += `<td class="text-right">${colCount[m]}</td><td class="text-right">${fmt(colAmount[m])}</td>`;
   });
   html += '</tr></tbody></table></div>';
+  document.getElementById('pivotArea').innerHTML = html;
 
   // monthly summary chart-like table
-  html += '<div class="table-card">';
-  html += '<h3><span>월별 요약</span></h3>';
-  html += '<table><thead><tr><th>월</th><th class="text-right">건수</th><th class="text-right">금액</th><th class="text-right">건당 평균</th></tr></thead><tbody>';
+  let monthlyHtml = '<div class="table-card">';
+  monthlyHtml += '<h3><span>월별 요약</span></h3>';
+  monthlyHtml += '<table><thead><tr><th>월</th><th class="text-right">건수</th><th class="text-right">금액</th><th class="text-right">건당 평균</th></tr></thead><tbody>';
   months.forEach(m => {
     const c = colCount[m];
     const a = colAmount[m];
     const avg = c ? a / c : 0;
-    html += `<tr><td>${m}</td><td class="text-right">${c}</td><td class="text-right">${fmt(a)}</td><td class="text-right">${fmt(avg)}</td></tr>`;
+    monthlyHtml += `<tr><td>${m}</td><td class="text-right">${c}</td><td class="text-right">${fmt(a)}</td><td class="text-right">${fmt(avg)}</td></tr>`;
   });
-  html += `<tr class="total-row"><td>합계</td><td class="text-right">${grandCount}</td><td class="text-right">${fmt(grandAmount)}</td><td class="text-right">${grandCount ? fmt(grandAmount / grandCount) : '-'}</td></tr>`;
-  html += '</tbody></table></div>';
-
-  document.getElementById('content').innerHTML = html;
+  monthlyHtml += `<tr class="total-row"><td>합계</td><td class="text-right">${grandCount}</td><td class="text-right">${fmt(grandAmount)}</td><td class="text-right">${grandCount ? fmt(grandAmount / grandCount) : '-'}</td></tr>`;
+  monthlyHtml += '</tbody></table></div>';
+  document.getElementById('monthlyArea').innerHTML = monthlyHtml;
 
   document.querySelectorAll('td.rep-name.clickable').forEach(td => {
     td.addEventListener('click', () => showRepDetail(td.dataset.rep));
@@ -327,46 +344,82 @@ function render() {
   }
 }
 
-function showRepDetail(rep) {
+const DETAIL_PAGE_SIZE = 10;
+
+function showRepDetail(rep, page) {
   const year = document.getElementById('yearSelect').value;
   const cat = document.getElementById('categorySelect').value;
-  const rows = DATA.rows.filter(r =>
+  const allRows = DATA.rows.filter(r =>
     (r['거래월'] || '').startsWith(year) &&
     (!cat || r['카테고리명'] === cat) &&
     r['매출담당자'] === rep
   ).sort((a, b) => (b['거래일자'] || '').localeCompare(a['거래일자'] || ''));
 
-  const orderSet = new Set(rows.map(r => r['주문번호']));
-  const totalAmt = rows.reduce((s, r) => s + r['금액'], 0);
+  const orderSet = new Set(allRows.map(r => r['주문번호']));
+  const totalAmt = allRows.reduce((s, r) => s + r['금액'], 0);
 
+  const totalPages = Math.max(1, Math.ceil(allRows.length / DETAIL_PAGE_SIZE));
   const card = document.getElementById('detailCard');
+  const prevRep = card.dataset.activeRep;
+  let curPage = typeof page === 'number' ? page : (prevRep === rep ? parseInt(card.dataset.page || '1', 10) : 1);
+  if (curPage < 1) curPage = 1;
+  if (curPage > totalPages) curPage = totalPages;
+
   card.dataset.activeRep = rep;
+  card.dataset.page = curPage;
   card.style.display = 'block';
+
+  const start = (curPage - 1) * DETAIL_PAGE_SIZE;
+  const pageRows = allRows.slice(start, start + DETAIL_PAGE_SIZE);
 
   let html = '';
   html += '<div class="detail-header">';
   html += `<h3>${rep} 상세 내역</h3>`;
-  html += `<div class="meta">${year}년${cat ? ' · ' + cat : ''} · ${orderSet.size}건 · ${fmt(totalAmt)}원</div>`;
+  html += `<div class="meta">${year}년${cat ? ' · ' + cat : ''} · ${orderSet.size}건 · ${allRows.length} 라인 · ${fmt(totalAmt)}원</div>`;
   html += `<button class="close-btn" onclick="hideRepDetail()">닫기 ✕</button>`;
   html += '</div>';
 
   html += '<table><thead><tr>';
   html += '<th>거래일자</th><th>주문번호</th><th>병의원명</th><th>카테고리</th><th>상품명</th><th class="text-right">금액</th>';
   html += '</tr></thead><tbody>';
-  rows.forEach(r => {
+  pageRows.forEach(r => {
     html += `<tr><td>${r['거래일자']}</td><td>${r['주문번호']}</td><td>${r['병의원명']}</td><td>${r['카테고리명']}</td><td>${r['상품명']}</td><td class="text-right">${fmt(r['금액'])}</td></tr>`;
   });
-  html += `<tr class="total-row"><td colspan="5">합계 (${orderSet.size} 주문 / ${rows.length} 라인)</td><td class="text-right">${fmt(totalAmt)}</td></tr>`;
+  html += `<tr class="total-row"><td colspan="5">전체 합계 (${orderSet.size} 주문 / ${allRows.length} 라인)</td><td class="text-right">${fmt(totalAmt)}</td></tr>`;
   html += '</tbody></table>';
+
+  if (totalPages > 1) {
+    html += renderPagination(rep, curPage, totalPages, allRows.length);
+  }
 
   card.innerHTML = html;
 
-  // active 하이라이트
   document.querySelectorAll('td.rep-name.clickable').forEach(td => {
     td.classList.toggle('active', td.dataset.rep === rep);
   });
 
-  card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (prevRep !== rep) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderPagination(rep, cur, total, totalRows) {
+  const repEsc = rep.replace(/"/g, '&quot;').replace(/'/g, "\\'");
+  let html = '<div class="pagination">';
+  html += `<button ${cur === 1 ? 'disabled' : ''} onclick="showRepDetail('${repEsc}', 1)">«</button>`;
+  html += `<button ${cur === 1 ? 'disabled' : ''} onclick="showRepDetail('${repEsc}', ${cur - 1})">‹</button>`;
+
+  const windowSize = 5;
+  let start = Math.max(1, cur - Math.floor(windowSize / 2));
+  let end = Math.min(total, start + windowSize - 1);
+  start = Math.max(1, end - windowSize + 1);
+  for (let p = start; p <= end; p++) {
+    html += `<button class="${p === cur ? 'active' : ''}" onclick="showRepDetail('${repEsc}', ${p})">${p}</button>`;
+  }
+
+  html += `<button ${cur === total ? 'disabled' : ''} onclick="showRepDetail('${repEsc}', ${cur + 1})">›</button>`;
+  html += `<button ${cur === total ? 'disabled' : ''} onclick="showRepDetail('${repEsc}', ${total})">»</button>`;
+  html += `<span class="page-info">${cur} / ${total} 페이지 · 총 ${totalRows} 라인</span>`;
+  html += '</div>';
+  return html;
 }
 
 function hideRepDetail() {
@@ -374,6 +427,7 @@ function hideRepDetail() {
   card.style.display = 'none';
   card.innerHTML = '';
   delete card.dataset.activeRep;
+  delete card.dataset.page;
   document.querySelectorAll('td.rep-name.clickable.active').forEach(td => td.classList.remove('active'));
 }
 
