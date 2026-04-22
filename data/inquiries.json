@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-22T01:45:59.304Z",
+  "updated": "2026-04-22T02:01:15.998Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -529,7 +529,7 @@
       "price": "모름",
       "productId": "5da995310dabe405b156ed53",
       "clinic": "",
-      "region": "경기도 남양주시",
+      "region": "제주도 제주시",
       "caller": "이예림",
       "supplier": "메디스트림",
       "payDate": "",
