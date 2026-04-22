@@ -836,6 +836,7 @@ function fetchExternalInquiries() {
 
           qty: r.qty || '',
           price: priceStr,
+          leadGrade: r.leadGrade || '',
           payAmount: r.payAmount != null ? r.payAmount : null,
           caller: r.caller || callerOverrides[stableKey] || '', buyDate: '', rep: '',
           stage: (function(){
@@ -866,6 +867,19 @@ function saveData(data) {
 // UTILS
 // ============================================================
 function today() { return new Date().toISOString().slice(0, 10); }
+
+// 리드등급 신호등 뱃지 (브리핑 AI 판정값 기반)
+function renderLeadBadge(grade) {
+  if (!grade) return '';
+  var map = {
+    '고가망': { color: '#e53935', label: '고가망' },
+    '가망':   { color: '#fbc02d', label: '가망' },
+    '관심':   { color: '#bdbdbd', label: '관심' }
+  };
+  var spec = map[grade];
+  if (!spec) return '';
+  return '<span title="' + spec.label + '" style="display:inline-block;width:10px;height:10px;border-radius:50%;background:' + spec.color + ';margin-left:6px;vertical-align:middle;box-shadow:0 0 0 1px rgba(0,0,0,0.08);"></span>';
+}
 
 // "2026. 04. 17 오전 02:13:09" → ms (정렬용). timestamp 없으면 date의 00:00 반환.
 function tsToMs(r) {
@@ -1361,7 +1375,7 @@ function renderTable() {
       '<td' + (r.supplierLocked ? ' style="font-size:12px;color:#555;" title="주문이력에서 자동 매핑 — 수정 불가">' + escHtml(r.supplier || '') : '>' + renderInlineInput('supplier', r.supplier, r, '공급처')) + '</td>' +
       '<td class="td-truncate" title="' + escHtml(r.product) + '">' + ((r.productId && /^[a-f0-9]{24}$/.test(r.productId)) ? '<a href="https://market.medistream.co.kr/products/' + encodeURIComponent(r.productId) + '" target="_blank" rel="noopener" style="color:#1a73e8;text-decoration:none;">' + escHtml(r.product) + '</a>' : escHtml(r.product)) + '</td>' +
       '<td style="text-align:right;">' + (r.qty !== '' && r.qty != null ? escHtml(r.qty) : '') + '</td>' +
-      '<td>' + escHtml(r.price) + '</td>' +
+      '<td>' + escHtml(r.price) + renderLeadBadge(r.leadGrade) + '</td>' +
       '<td>' + renderCallerCell(r) + '</td>' +
       '<td>' + renderStageCell(r) + '</td>' +
       '<td class="note-cell" style="font-size:12px;color:#555;" title="' + escHtml(r.inquiry || '') + '">' + escHtml(r.inquiry || '') + '</td>' +
@@ -1542,7 +1556,7 @@ function openDetailModal(id) {
     ['공급처', r.supplier || ''],
     ['상담물품', r.product || ''],
     ['수량', r.qty || ''],
-    ['견적가', r.price || ''],
+    ['견적가', (r.price || '') + (r.leadGrade ? '  · ' + r.leadGrade : '')],
     ['담당자', r.caller || ''],
     ['Stage', r.stage || ''],
     ['데모일정', r.demoDate || ''],
