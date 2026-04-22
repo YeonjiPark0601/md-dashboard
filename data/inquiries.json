@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-22T02:55:47.293Z",
+  "updated": "2026-04-22T03:01:34.794Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -3267,7 +3267,7 @@
       "clinic": "",
       "region": "경기도 고양시",
       "caller": "",
-      "supplier": "스파인엠티",
+      "supplier": "스파인케어",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
