@@ -1,9 +1,29 @@
 {
-  "updated": "2026-04-22T07:36:40.907Z",
+  "updated": "2026-04-22T07:41:46.606Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "일반",
+      "timestamp": "2026. 04. 22 오후 04:36:41",
+      "date": "2026-04-22",
+      "name": "심창래",
+      "cid": "5da080d50dabe405b156e76d",
+      "phone": "010-5163-3923",
+      "product": "[웰코멧] LDM ECO10",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "69dc792afe738d9beeb4db2a",
+      "clinic": "안심부부한의원",
+      "region": "충청북도 제천시",
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "3번째 사진에는 19MHz 가 있다고 적혀있는데, 밑에 상세내용에는 없어서요. 1/3/10만 있나요?",
+      "leadGrade": ""
+    },
     {
       "source": "총판기기",
       "timestamp": "2026. 04. 22 오전 09:54:09",
