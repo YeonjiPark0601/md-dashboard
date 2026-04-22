@@ -636,6 +636,8 @@ th.sortable:hover { background: #eef0f4; }
 // ============================================================
 const LS_KEY = 'md_consultations';
 var EXTERNAL_DATA = [];
+// 원본 문의사항 맵: id(cid|pid|timestamp) → inquiry 문자열. data/inquiries.json에서 init 시점에 로드.
+var INQUIRY_MAP = {};
 
 // ===== 시트 CRUD 동기화 =====
 const WEBHOOK_URL = 'https://n8n.datastream.co.kr/webhook/consultation-crud';
@@ -772,6 +774,10 @@ function loadData() {
       var id = r.id || '';
       if (id.indexOf('N/A|N/A|') === 0 && r.timestamp && validTs[r.timestamp]) return false;
       return true;
+    }).map(function(r){
+      // inquiry 주입: data/inquiries.json 맵에서 id 매칭 (시트에는 문의사항 컬럼이 없어서 별도 소스 사용)
+      if (!r.inquiry && r.id && INQUIRY_MAP[r.id]) r.inquiry = INQUIRY_MAP[r.id];
+      return r;
     });
   } catch (e) { console.error('loadData error', e); return EXTERNAL_DATA.slice(); }
 }
@@ -2286,8 +2292,21 @@ function init() {
   updateFilterBadge();
   updateAssignBanner();
   // 시트가 단일 소스 (n8n이 slack + 수동입력 모두 시트에 동기화)
-  fetchSheetRecords().then(function(records){
+  // 단, 원본 문의사항은 시트에 없으므로 data/inquiries.json에서 병렬로 받아와서 주입
+  Promise.all([
+    fetchSheetRecords(),
+    fetch('data/inquiries.json', { cache: 'no-store' })
+      .then(function(res){ return res.ok ? res.json() : null; })
+      .catch(function(){ return null; })
+  ]).then(function(results){
+    var records = results[0], inqData = results[1];
     if (records && records.length) mergeSheetIntoLocal(records);
+    if (inqData && inqData.items) {
+      inqData.items.forEach(function(it){
+        var key = (it.cid || '') + '|' + (it.productId || '') + '|' + (it.timestamp || '');
+        if (it.inquiry) INQUIRY_MAP[key] = it.inquiry;
+      });
+    }
     populateRepFilter();
     renderTable();
     applyColWidths();
