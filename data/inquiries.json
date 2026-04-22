@@ -1,9 +1,28 @@
 {
-  "updated": "2026-04-21T11:00:56.095Z",
+  "updated": "2026-04-22T00:55:41.803Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 22 오전 09:54:09",
+      "date": "2026-04-22",
+      "name": "박종철",
+      "cid": "5d6f797f19efa30eb29140fd",
+      "phone": "010-3567-5672",
+      "product": "TRF PLUS 면역진단기(CRP, D-Dimer)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "69e1b33e969968934a3cac48",
+      "clinic": "박종철한의원",
+      "region": "경상남도 창원시",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": ""
+    },
     {
       "source": "일반",
       "timestamp": "2026. 04. 21 오후 12:07:56",
