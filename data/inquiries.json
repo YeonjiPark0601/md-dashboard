@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-22T00:55:41.803Z",
+  "updated": "2026-04-22T01:03:08.813Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -17,11 +17,11 @@
       "productId": "69e1b33e969968934a3cac48",
       "clinic": "박종철한의원",
       "region": "경상남도 창원시",
-      "caller": "",
+      "caller": "김태호",
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "PT10 사용자 구매조건 문의"
     },
     {
       "source": "일반",
@@ -221,7 +221,7 @@
       "cid": "5f72e49a48060c52caf15bba",
       "phone": "010-7269-7897",
       "product": "HCK 엘리베이션베드 (E100)",
-      "qty": "",
+      "qty": "0",
       "price": "N/A",
       "productId": "610cd88909c63a06ed1489fe",
       "clinic": "경희송산한의원",
@@ -230,7 +230,7 @@
       "supplier": "에이치씨케이",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "예전에 메디 통해서 구매했는데 담당자 분 연락처가 소실되서요. 베드 하나가 온열기능이 고장나서 문의드립니다"
     },
     {
       "source": "일반",
@@ -249,7 +249,7 @@
       "supplier": "이앤에스헬스케어",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "가격"
     },
     {
       "source": "총판기기",
@@ -325,7 +325,7 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "테스트해보고싶어요 customerId: `5f33869ca0b91001bf48c428`"
     },
     {
       "source": "총판기기",
@@ -335,7 +335,7 @@
       "cid": "5f33869ca0b91001bf48c428",
       "phone": "010-7458-7654",
       "product": "(상담하기) PT10 혈액검사기",
-      "qty": "",
+      "qty": "0",
       "price": "모름 customerId: `5f33869ca0b91001bf48c428`",
       "productId": "618c881fbc63410023476154",
       "clinic": "테스트병의원",
@@ -344,7 +344,7 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "테스트"
     },
     {
       "source": "총판기기",
@@ -363,7 +363,7 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "죄송합니다 ㅜ"
     },
     {
       "source": "총판기기",
