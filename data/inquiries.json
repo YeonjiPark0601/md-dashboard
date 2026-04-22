@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-22T06:11:20.000Z",
+  "updated": "2026-04-22T07:31:54.006Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -157,7 +157,7 @@
       "productId": "5fbf45f7ce872a1a803a803a",
       "clinic": "삼성부부한의원",
       "region": "전라북도 전주시",
-      "caller": "",
+      "caller": "김진석",
       "supplier": "아큐닉",
       "payDate": "",
       "payAmount": null,
