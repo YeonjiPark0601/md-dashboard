@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-22T03:01:34.794Z",
+  "updated": "2026-04-22T03:16:11.290Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -60,6 +60,25 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 22 오후 12:11:06",
+      "date": "2026-04-22",
+      "name": "공민기",
+      "cid": "5e887474bfe4260944784b8c",
+      "phone": "010-9070-6817",
+      "product": "[네오펙트] 제우스웨이브 체외충격파 (ESWT Piezo+Airgun-type)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "6911d93b35ae28ff04ea58a0",
+      "clinic": "차담한의원",
+      "region": "부산시 기장군",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "충격파 도입문의. 종류 및 제품별 특징 등"
     },
     {
       "source": "일반",
