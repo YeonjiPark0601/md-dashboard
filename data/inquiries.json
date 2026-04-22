@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-22T02:01:15.998Z",
+  "updated": "2026-04-22T02:50:46.914Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -41,6 +41,25 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "PT10 기존 구입자 가격이 어떻게 되는지 알고 싶습니다."
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 22 오전 11:49:13",
+      "date": "2026-04-22",
+      "name": "조효진",
+      "cid": "69d30fb2a2514a7cea78d2c9",
+      "phone": "010-7605-1221",
+      "product": "옴니핏 마인드케어 메디칼 맥파분석기 MK2",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "67da79fb98299a4d627dd8cd",
+      "clinic": "",
+      "region": "",
+      "caller": "",
+      "supplier": "옴니씨앤에스",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": ""
     },
     {
       "source": "일반",
@@ -170,7 +189,7 @@
       "clinic": "코비한의원 인천점 ",
       "region": "인천시 남동구",
       "caller": "",
-      "supplier": "(주)메가메디칼",
+      "supplier": "메가메디칼",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -664,7 +683,7 @@
       "clinic": "365통치한의원 ",
       "region": "경기도 화성시",
       "caller": "이예림",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -683,7 +702,7 @@
       "clinic": "365통치한의원 ",
       "region": "경기도 화성시",
       "caller": "이예림",
-      "supplier": "dse",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -1158,7 +1177,7 @@
       "clinic": "두일한의원",
       "region": "인천시 서구",
       "caller": "주봉현",
-      "supplier": "원효",
+      "supplier": "원효메디텍",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -1234,7 +1253,7 @@
       "clinic": "쓰담한의원",
       "region": "충청남도 천안시",
       "caller": "조성갑",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -1519,7 +1538,7 @@
       "clinic": "가온자리한의원",
       "region": "경기도 의정부시",
       "caller": "김진석",
-      "supplier": "원효",
+      "supplier": "원효메디텍",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -1956,7 +1975,7 @@
       "clinic": "바른라인한의원",
       "region": "경기도 성남시",
       "caller": "김진석",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -2051,7 +2070,7 @@
       "clinic": "바올한의원",
       "region": "대구시 북구",
       "caller": "김진석",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -2070,7 +2089,7 @@
       "clinic": "명가한의원",
       "region": "인천시 미추홀구",
       "caller": "김진석",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -2317,7 +2336,7 @@
       "clinic": "도본한의원",
       "region": "충청남도 천안시",
       "caller": "조성갑",
-      "supplier": "스트라텍",
+      "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -2374,7 +2393,7 @@
       "clinic": "",
       "region": "세종시",
       "caller": "조성갑",
-      "supplier": "스트라텍",
+      "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -2431,7 +2450,7 @@
       "clinic": "연세한의원",
       "region": "인천시 남동구",
       "caller": "김진석",
-      "supplier": "스트라텍",
+      "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -2488,7 +2507,7 @@
       "clinic": "푸른샘한의원",
       "region": "광주시 북구",
       "caller": "",
-      "supplier": "dse",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -2526,7 +2545,7 @@
       "clinic": "리샘한의원 수원점",
       "region": "경기도 수원시",
       "caller": "김진석",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -3058,7 +3077,7 @@
       "clinic": "춘의생한의원",
       "region": "경기도 부천시",
       "caller": "",
-      "supplier": "주식회사 바텍엠시스",
+      "supplier": "바텍엠시스",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -3096,7 +3115,7 @@
       "clinic": "초곡365한의원",
       "region": "경상북도 포항시",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -3134,7 +3153,7 @@
       "clinic": "경희성모연합한의원",
       "region": "대전시 동구",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -3951,7 +3970,7 @@
       "clinic": "일등한의원",
       "region": "인천시 서구",
       "caller": "",
-      "supplier": "(주)디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -4027,7 +4046,7 @@
       "clinic": "영종바른한의원",
       "region": "인천시 중구",
       "caller": "",
-      "supplier": "스트라텍",
+      "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -4046,7 +4065,7 @@
       "clinic": "",
       "region": "인천시 중구",
       "caller": "",
-      "supplier": "스트라텍",
+      "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -4103,7 +4122,7 @@
       "clinic": "금맥한의원",
       "region": "인천시 계양구",
       "caller": "",
-      "supplier": "dse",
+      "supplier": "DSE",
       "payDate": "2026-03-26",
       "payAmount": 1212500,
       "inquiry": ""
@@ -4122,7 +4141,7 @@
       "clinic": "아클라우드한의원",
       "region": "경기도 하남시",
       "caller": "",
-      "supplier": "(주)메가메디칼",
+      "supplier": "메가메디칼",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -4141,7 +4160,7 @@
       "clinic": "아클라우드한의원",
       "region": "경기도 하남시",
       "caller": "",
-      "supplier": "(주)메가메디칼",
+      "supplier": "메가메디칼",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -4160,7 +4179,7 @@
       "clinic": "경성한의원",
       "region": "서울시 중랑구",
       "caller": "",
-      "supplier": "원효",
+      "supplier": "원효메디텍",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -4179,7 +4198,7 @@
       "clinic": "경희한방병원",
       "region": "인천시 계양구",
       "caller": "",
-      "supplier": "원효",
+      "supplier": "원효메디텍",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -4369,7 +4388,7 @@
       "clinic": "행신365한의원",
       "region": "경기도 고양시",
       "caller": "",
-      "supplier": "(주)디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -4464,7 +4483,7 @@
       "clinic": "",
       "region": "",
       "caller": "",
-      "supplier": "스트라텍",
+      "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -4540,7 +4559,7 @@
       "clinic": "경희정진한의원",
       "region": "경기도 군포시",
       "caller": "",
-      "supplier": "스트라텍",
+      "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -4654,7 +4673,7 @@
       "clinic": "차세대한의원",
       "region": "부산시 해운대구",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -4730,7 +4749,7 @@
       "clinic": "한중한의원",
       "region": "충청북도 청주시",
       "caller": "",
-      "supplier": "원효",
+      "supplier": "원효메디텍",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -4863,7 +4882,7 @@
       "clinic": "행신365한의원",
       "region": "경기도 고양시",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -4920,7 +4939,7 @@
       "clinic": "라미한의원",
       "region": "서울시 강남구",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -5851,7 +5870,7 @@
       "clinic": "스마일365한의원",
       "region": "대구시 북구",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -5870,7 +5889,7 @@
       "clinic": "스마일365한의원",
       "region": "대구시 북구",
       "caller": "",
-      "supplier": "(주)디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -6079,7 +6098,7 @@
       "clinic": "덕산한의원 ",
       "region": "충청북도 충주시",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -6193,7 +6212,7 @@
       "clinic": "온리한의원",
       "region": "경기도 남양주시",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -6326,7 +6345,7 @@
       "clinic": "청운한의원",
       "region": "경상남도 거창군",
       "caller": "",
-      "supplier": "스트라텍",
+      "supplier": "선웅메디테크",
       "payDate": "2026-03-12",
       "payAmount": 690000,
       "inquiry": ""
@@ -6440,7 +6459,7 @@
       "clinic": "후한의원",
       "region": "대구시 중구",
       "caller": "",
-      "supplier": "(주)디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -6649,7 +6668,7 @@
       "clinic": "청운한의원",
       "region": "경상남도 거창군",
       "caller": "",
-      "supplier": "스트라텍",
+      "supplier": "선웅메디테크",
       "payDate": "2026-03-12",
       "payAmount": 690000,
       "inquiry": ""
@@ -6744,7 +6763,7 @@
       "clinic": "화원365한의원",
       "region": "대구시 달성군",
       "caller": "",
-      "supplier": "동아참메드 주식회사",
+      "supplier": "동아참메드",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -6763,7 +6782,7 @@
       "clinic": "화원365한의원",
       "region": "대구시 달성군",
       "caller": "",
-      "supplier": "(주)메가메디칼",
+      "supplier": "메가메디칼",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -6782,7 +6801,7 @@
       "clinic": "화원365한의원",
       "region": "대구시 달성군",
       "caller": "",
-      "supplier": "(주)메가메디칼",
+      "supplier": "메가메디칼",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -6801,7 +6820,7 @@
       "clinic": "화원365한의원",
       "region": "대구시 달성군",
       "caller": "",
-      "supplier": "(주)메가메디칼",
+      "supplier": "메가메디칼",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -6915,7 +6934,7 @@
       "clinic": "두암경희한의원",
       "region": "경기도 수원시",
       "caller": "",
-      "supplier": "원효",
+      "supplier": "원효메디텍",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -6953,7 +6972,7 @@
       "clinic": "오산부부한의원",
       "region": "경기도 오산시",
       "caller": "",
-      "supplier": "스트라텍",
+      "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -7086,7 +7105,7 @@
       "clinic": "신정네거리한의원",
       "region": "서울시 양천구",
       "caller": "",
-      "supplier": "(주)디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -7238,7 +7257,7 @@
       "clinic": "",
       "region": "서울시 서초구",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -7257,7 +7276,7 @@
       "clinic": "올리브한의원",
       "region": "경기도 김포시",
       "caller": "",
-      "supplier": "(주)디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -7333,7 +7352,7 @@
       "clinic": "",
       "region": "부산시 부산진구",
       "caller": "",
-      "supplier": "스트라텍",
+      "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -7466,7 +7485,7 @@
       "clinic": "정담은한의원",
       "region": "경기도 양주시",
       "caller": "",
-      "supplier": "(주)메가메디칼",
+      "supplier": "메가메디칼",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -7504,7 +7523,7 @@
       "clinic": "365명쾌한의원",
       "region": "경기도 화성시",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -7561,7 +7580,7 @@
       "clinic": "본바로한의원",
       "region": "경기도 부천시",
       "caller": "",
-      "supplier": "디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -7751,7 +7770,7 @@
       "clinic": "구산한의원",
       "region": "서울시 은평구",
       "caller": "",
-      "supplier": "(주)디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -7884,7 +7903,7 @@
       "clinic": "형인재한의원",
       "region": "서울시 강남구",
       "caller": "",
-      "supplier": "(주)디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -7960,7 +7979,7 @@
       "clinic": "이림한의원",
       "region": "서울시 중구",
       "caller": "",
-      "supplier": "(주)디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -8055,7 +8074,7 @@
       "clinic": "청파한의원",
       "region": "전라남도 나주시",
       "caller": "",
-      "supplier": "dse",
+      "supplier": "DSE",
       "payDate": "2026-02-24",
       "payAmount": 1235000,
       "inquiry": ""
@@ -8378,7 +8397,7 @@
       "clinic": "365팔팔한의원",
       "region": "경기도 김포시",
       "caller": "",
-      "supplier": "스트라텍",
+      "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -8397,7 +8416,7 @@
       "clinic": "최한의원",
       "region": "경상북도 포항시",
       "caller": "",
-      "supplier": "원효",
+      "supplier": "원효메디텍",
       "payDate": "2026-02-20",
       "payAmount": 725760,
       "inquiry": ""
@@ -8511,7 +8530,7 @@
       "clinic": "바르다한의원",
       "region": "대전시 서구",
       "caller": "",
-      "supplier": "dse",
+      "supplier": "DSE",
       "payDate": "2026-03-23",
       "payAmount": 1200000,
       "inquiry": ""
@@ -8568,7 +8587,7 @@
       "clinic": "청파한의원",
       "region": "전라남도 나주시",
       "caller": "",
-      "supplier": "(주)디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -8682,7 +8701,7 @@
       "clinic": "미올한의원",
       "region": "경기도 화성시",
       "caller": "",
-      "supplier": "(주)디에스이아이엔씨",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -8777,7 +8796,7 @@
       "clinic": "압구정경희한의원",
       "region": "서울시 강남구",
       "caller": "",
-      "supplier": "(주)메가메디칼",
+      "supplier": "메가메디칼",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -9366,7 +9385,7 @@
       "clinic": "온기한의원",
       "region": "경기도 남양주시",
       "caller": "",
-      "supplier": "원효",
+      "supplier": "원효메디텍",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
@@ -9708,7 +9727,7 @@
       "clinic": "365탄탄한의원",
       "region": "서울시 영등포구",
       "caller": "",
-      "supplier": "dse",
+      "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
       "inquiry": ""
