@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-22T07:41:46.606Z",
+  "updated": "2026-04-22T07:46:44.097Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -22,7 +22,7 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "3번째 사진에는 19MHz 가 있다고 적혀있는데, 밑에 상세내용에는 없어서요. 1/3/10만 있나요?",
-      "leadGrade": ""
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
@@ -9802,7 +9802,7 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "",
-      "leadGrade": ""
+      "leadGrade": "고가망"
     },
     {
       "source": "일반",
