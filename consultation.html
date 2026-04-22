@@ -46,7 +46,10 @@ body { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; b
 .chart-card h3 { font-size: 14px; font-weight: 600; color: #555; margin-bottom: 12px; }
 
 /* ===== TABLE CARDS ===== */
-.table-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 20px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.table-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 20px; }
+.consult-scroll { overflow: auto; -webkit-overflow-scrolling: touch; }
+.consult-scroll > #consultTable thead th { top: 0 !important; }
+@media (min-width: 769px) { .consult-scroll { max-height: calc(100vh - 200px); } }
 .table-card h3 { font-size: 14px; font-weight: 600; color: #555; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
 table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
 th { background: #f7f8fa; padding: 10px 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; white-space: nowrap; position: relative; overflow: hidden; text-overflow: ellipsis; }
@@ -408,14 +411,6 @@ th.sortable:hover { background: #eef0f4; }
 <div id="tab-reg" class="tab-panel active">
 <div class="container">
 
-  <!-- Assign Reminder Banner -->
-  <div id="assignBanner" class="assign-banner">
-    <span class="icon">⚠️</span>
-    <div class="msg">담당자 배정이 필요한 상담건이 <b id="assignBannerCount">0</b>건 있어요</div>
-    <button type="button" id="assignBannerBtn" class="btn-show" onclick="toggleAssignReminderFilter()">해당 건만 보기</button>
-    <button type="button" class="btn-close" onclick="dismissAssignBanner()" title="오늘은 숨기기">×</button>
-  </div>
-
   <!-- Registration Form -->
   <div class="form-card" id="formCard" style="display:none;">
     <div id="formSection" class="form-section open">
@@ -521,6 +516,7 @@ th.sortable:hover { background: #eef0f4; }
 
   <!-- Data Table -->
   <div class="table-card">
+      <div class="consult-scroll">
       <table id="consultTable">
         <thead>
           <tr>
@@ -545,6 +541,7 @@ th.sortable:hover { background: #eef0f4; }
         </thead>
         <tbody id="tableBody"></tbody>
       </table>
+      </div>
     <div id="emptyState" class="empty-state" style="display:none;">
       <p>등록된 상담 데이터가 없습니다.<br>상단의 '새 상담 등록' 버튼으로 추가하세요.</p>
     </div>
@@ -1219,11 +1216,15 @@ function dismissAssignBanner() {
 function getColumnValues(col) {
   var data = loadData();
   var vals = {};
+  var hasEmpty = false;
   data.forEach(function(r){
     var v = col === 'caller' ? (r.caller || r.rep || '') : (r[col] || '');
     if (v !== '' && v != null) vals[String(v)] = true;
+    else if (col === 'caller') hasEmpty = true;
   });
-  return Object.keys(vals).sort();
+  var out = Object.keys(vals).sort();
+  if (col === 'caller' && hasEmpty) out.push('(미지정)');
+  return out;
 }
 
 function openTopFilter(btn, col) {
@@ -1319,6 +1320,7 @@ function getFilteredData() {
     if (!picked) return;
     data = data.filter(function(r){
       var v = col === 'caller' ? (r.caller || r.rep || '') : (r[col] || '');
+      if (col === 'caller' && v === '') return picked.has('(미지정)');
       return picked.has(String(v));
     });
   });
