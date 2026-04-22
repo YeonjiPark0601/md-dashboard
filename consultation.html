@@ -875,7 +875,7 @@ function renderLeadBadge(grade) {
   };
   var spec = map[grade];
   if (!spec) return '';
-  return '<span title="' + spec.label + '" style="display:inline-block;width:10px;height:10px;border-radius:50%;background:' + spec.color + ';margin-left:6px;vertical-align:middle;box-shadow:0 0 0 1px rgba(0,0,0,0.08);"></span>';
+  return '<span title="' + spec.label + '" style="display:inline-block;width:14px;height:14px;border-radius:50%;background:' + spec.color + ';margin-left:8px;vertical-align:-3px;box-shadow:0 0 0 2px #fff,0 0 0 3px ' + spec.color + '33;"></span>';
 }
 
 // "2026. 04. 17 오전 02:13:09" → ms (정렬용). timestamp 없으면 date의 00:00 반환.
