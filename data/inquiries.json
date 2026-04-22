@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-22T08:52:53.111Z",
+  "updated": "2026-04-22T09:21:06.705Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -42,6 +42,26 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "야누스 세개중에 뭔지 몰라서 일단 상담해보고 싶습니다",
+      "leadGrade": ""
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 04. 22 오후 06:01:10",
+      "date": "2026-04-22",
+      "name": "팽보경",
+      "cid": "5f49fb12a0b91001bf48e142",
+      "phone": "010-6503-5361",
+      "product": "[웰코멧] LDM ECO10",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "69dc792afe738d9beeb4db2a",
+      "clinic": "데이릴한의원",
+      "region": "충청북도 청주시",
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
       "leadGrade": ""
     },
     {
