@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-22T01:28:24.701Z",
+  "updated": "2026-04-22T01:30:34.498Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -24,6 +24,25 @@
       "inquiry": "PT10 사용자 구매조건 문의"
     },
     {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 22 오전 10:26:23",
+      "date": "2026-04-22",
+      "name": "배효상",
+      "cid": "60e7c89509c63a06ed1464e8",
+      "phone": "010-6359-5369",
+      "product": "TRF PLUS 면역진단기(CRP, D-Dimer)",
+      "qty": "TRF plus 면역진단기 (PT10 기존 구입자)",
+      "price": "N/A",
+      "productId": "69e1b33e969968934a3cac48",
+      "clinic": "동산한의원",
+      "region": "서울시 동작구",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "PT10 기존 구입자 가격이 어떻게 되는지 알고 싶습니다."
+    },
+    {
       "source": "일반",
       "timestamp": "2026. 04. 21 오후 12:07:56",
       "date": "2026-04-21",
@@ -40,7 +59,7 @@
       "supplier": "나노메딕스썸텍",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "비내시경 구매 안내부탁드립니다."
     },
     {
       "source": "일반",
@@ -116,7 +135,7 @@
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "테스트"
     },
     {
       "source": "총판기기",
@@ -173,7 +192,7 @@
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "test"
     },
     {
       "source": "총판기기",
@@ -192,7 +211,7 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "신품가격이 궁금합니다."
     },
     {
       "source": "총판기기",
@@ -211,7 +230,7 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "이 제품의 장점, 단점, 한의원에서 어떻게 적용하면 좋은지(추나 약침 패키지 녹이기 등), 환자분들께 홍보가 될 안내자료가 있는지 등 문의드립니다."
     },
     {
       "source": "일반",
