@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-22T04:21:11.315Z",
+  "updated": "2026-04-22T06:11:20.000Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -21,7 +21,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": "PT10 사용자 구매조건 문의"
+      "inquiry": "PT10 사용자 구매조건 문의",
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
@@ -40,7 +41,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": "PT10 기존 구입자 가격이 어떻게 되는지 알고 싶습니다."
+      "inquiry": "PT10 기존 구입자 가격이 어떻게 되는지 알고 싶습니다.",
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
@@ -59,7 +61,8 @@
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -78,7 +81,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": "충격파 도입문의. 종류 및 제품별 특징 등"
+      "inquiry": "충격파 도입문의. 종류 및 제품별 특징 등",
+      "leadGrade": "고가망"
     },
     {
       "source": "일반",
@@ -97,7 +101,8 @@
       "supplier": "나노메딕스썸텍",
       "payDate": "",
       "payAmount": null,
-      "inquiry": "비내시경 구매 안내부탁드립니다."
+      "inquiry": "비내시경 구매 안내부탁드립니다.",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -116,7 +121,8 @@
       "supplier": "굿플",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -135,7 +141,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -154,7 +161,8 @@
       "supplier": "아큐닉",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -173,7 +181,8 @@
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": "테스트"
+      "inquiry": "테스트",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -192,7 +201,8 @@
       "supplier": "동아참메드",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -211,7 +221,8 @@
       "supplier": "메가메디칼",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -230,7 +241,8 @@
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": "test"
+      "inquiry": "test",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -249,7 +261,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": "신품가격이 궁금합니다."
+      "inquiry": "신품가격이 궁금합니다.",
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
@@ -268,7 +281,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": "이 제품의 장점, 단점, 한의원에서 어떻게 적용하면 좋은지(추나 약침 패키지 녹이기 등), 환자분들께 홍보가 될 안내자료가 있는지 등 문의드립니다."
+      "inquiry": "이 제품의 장점, 단점, 한의원에서 어떻게 적용하면 좋은지(추나 약침 패키지 녹이기 등), 환자분들께 홍보가 될 안내자료가 있는지 등 문의드립니다.",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -287,7 +301,8 @@
       "supplier": "에이치씨케이",
       "payDate": "",
       "payAmount": null,
-      "inquiry": "예전에 메디 통해서 구매했는데 담당자 분 연락처가 소실되서요. 베드 하나가 온열기능이 고장나서 문의드립니다"
+      "inquiry": "예전에 메디 통해서 구매했는데 담당자 분 연락처가 소실되서요. 베드 하나가 온열기능이 고장나서 문의드립니다",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -306,7 +321,8 @@
       "supplier": "이앤에스헬스케어",
       "payDate": "",
       "payAmount": null,
-      "inquiry": "가격"
+      "inquiry": "가격",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -325,7 +341,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -344,7 +361,8 @@
       "supplier": "동아참메드",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -363,7 +381,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -382,7 +401,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": "테스트해보고싶어요 customerId: `5f33869ca0b91001bf48c428`"
+      "inquiry": "테스트해보고싶어요 customerId: `5f33869ca0b91001bf48c428`",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -401,7 +421,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": "테스트"
+      "inquiry": "테스트",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -420,7 +441,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": "죄송합니다 ㅜ"
+      "inquiry": "죄송합니다 ㅜ",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -439,7 +461,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
@@ -458,7 +481,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": "고가망"
     },
     {
       "source": "일반",
@@ -477,7 +501,8 @@
       "supplier": "오케이차트",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -496,7 +521,8 @@
       "supplier": "삼성메디슨",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -515,7 +541,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -534,7 +561,8 @@
       "supplier": "대요메디",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -553,7 +581,8 @@
       "supplier": "굿플",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": "가망"
     },
     {
       "source": "일반",
@@ -572,7 +601,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -591,7 +621,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -610,7 +641,8 @@
       "supplier": "에이치씨케이",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -629,7 +661,8 @@
       "supplier": "에이치씨케이",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -648,7 +681,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -667,7 +701,8 @@
       "supplier": "아이밸런스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": "가망"
     },
     {
       "source": "총판기기",
@@ -686,7 +721,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -705,7 +741,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -724,7 +761,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -743,7 +781,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -762,7 +801,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -781,7 +821,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
@@ -800,7 +841,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -819,7 +861,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -838,7 +881,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -857,7 +901,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -876,7 +921,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -895,7 +941,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -914,7 +961,8 @@
       "supplier": "IR-VITA",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -933,7 +981,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": "가망"
     },
     {
       "source": "일반",
@@ -952,7 +1001,8 @@
       "supplier": "굿플",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": "가망"
     },
     {
       "source": "총판기기",
@@ -971,7 +1021,8 @@
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": "가망"
     },
     {
       "source": "일반",
@@ -990,7 +1041,8 @@
       "supplier": "메디스트림",
       "payDate": "2026-04-14",
       "payAmount": 1064693,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": "가망"
     },
     {
       "source": "일반",
@@ -1009,7 +1061,8 @@
       "supplier": "굿플",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": "고가망"
     },
     {
       "source": "일반",
@@ -1028,7 +1081,8 @@
       "supplier": "굿플",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
@@ -1047,7 +1101,8 @@
       "supplier": "삼성메디슨",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
@@ -1066,7 +1121,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -1085,7 +1141,8 @@
       "supplier": "아쿠아",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -1104,7 +1161,8 @@
       "supplier": "굿플",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -1123,7 +1181,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -1142,7 +1201,8 @@
       "supplier": "삼성메디슨",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -1161,7 +1221,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -1180,7 +1241,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -1199,7 +1261,8 @@
       "supplier": "원효메디텍",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -1218,7 +1281,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -1237,7 +1301,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -1256,7 +1321,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -1275,7 +1341,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -1294,7 +1361,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -1313,7 +1381,8 @@
       "supplier": "굿플",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -1332,7 +1401,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -1351,7 +1421,8 @@
       "supplier": "엠알",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -1370,7 +1441,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -1389,7 +1461,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -1408,7 +1481,8 @@
       "supplier": "에이치씨케이",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -1427,7 +1501,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -1446,7 +1521,8 @@
       "supplier": "대요메디",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -1465,7 +1541,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -1484,7 +1561,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -1503,7 +1581,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -1522,7 +1601,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -1541,7 +1621,8 @@
       "supplier": "삼성메디슨",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -1560,7 +1641,8 @@
       "supplier": "원효메디텍",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -1579,7 +1661,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -1598,7 +1681,8 @@
       "supplier": "스파인케어",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -1617,7 +1701,8 @@
       "supplier": "선웅메디테크",
       "payDate": "2026-04-10",
       "payAmount": 300000,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -1636,7 +1721,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -1655,7 +1741,8 @@
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -1674,7 +1761,8 @@
       "supplier": "삼성메디슨",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -1693,7 +1781,8 @@
       "supplier": "삼성메디슨",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -1712,7 +1801,8 @@
       "supplier": "삼성메디슨",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -1731,7 +1821,8 @@
       "supplier": "삼성메디슨",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -1750,7 +1841,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -1769,7 +1861,8 @@
       "supplier": "아큐닉",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -1788,7 +1881,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -1807,7 +1901,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -1826,7 +1921,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -1845,7 +1941,8 @@
       "supplier": "아큐닉",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -1864,7 +1961,8 @@
       "supplier": "엠알",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -1883,7 +1981,8 @@
       "supplier": "이앤에스헬스케어",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -1902,7 +2001,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -1921,7 +2021,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -1940,7 +2041,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -1959,7 +2061,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
@@ -1978,7 +2081,8 @@
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -1997,7 +2101,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -2016,7 +2121,8 @@
       "supplier": "굿플",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -2035,7 +2141,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -2054,7 +2161,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -2073,7 +2181,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -2092,7 +2201,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -2111,7 +2221,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -2130,7 +2241,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -2149,7 +2261,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -2168,7 +2281,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -2187,7 +2301,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -2206,7 +2321,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -2225,7 +2341,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -2244,7 +2361,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -2263,7 +2381,8 @@
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -2282,7 +2401,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -2301,7 +2421,8 @@
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -2320,7 +2441,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -2339,7 +2461,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": "고가망"
     },
     {
       "source": "일반",
@@ -2358,7 +2481,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": "고가망"
     },
     {
       "source": "일반",
@@ -2377,7 +2501,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -2396,7 +2521,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -2415,7 +2541,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -2434,7 +2561,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -2453,7 +2581,8 @@
       "supplier": "에이치씨케이",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -2472,7 +2601,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -2491,7 +2621,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -2510,7 +2641,8 @@
       "supplier": "에이치씨케이",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -2529,7 +2661,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -2548,7 +2681,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -2567,7 +2701,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -2586,7 +2721,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -2605,7 +2741,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -2624,7 +2761,8 @@
       "supplier": "굿플",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -2643,7 +2781,8 @@
       "supplier": "아이밸런스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -2662,7 +2801,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -2681,7 +2821,8 @@
       "supplier": "삼성메디슨",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -2700,7 +2841,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -2719,7 +2861,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -2738,7 +2881,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": "가망"
     },
     {
       "source": "총판기기",
@@ -2757,7 +2901,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": "가망"
     },
     {
       "source": "총판기기",
@@ -2776,7 +2921,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -2795,7 +2941,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -2814,7 +2961,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -2833,7 +2981,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -2852,7 +3001,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -2871,7 +3021,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -2890,7 +3041,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -2909,7 +3061,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -2928,7 +3081,8 @@
       "supplier": "엠알",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -2947,7 +3101,8 @@
       "supplier": "에이치비오티",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -2966,7 +3121,8 @@
       "supplier": "아큐닉",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -2985,7 +3141,8 @@
       "supplier": "굿플",
       "payDate": "2026-04-01",
       "payAmount": 1092500,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -3004,7 +3161,8 @@
       "supplier": "알피니언",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -3023,7 +3181,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -3042,7 +3201,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3061,7 +3221,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3080,7 +3241,8 @@
       "supplier": "디알텍",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3099,7 +3261,8 @@
       "supplier": "바텍엠시스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3118,7 +3281,8 @@
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3137,7 +3301,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3156,7 +3321,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3175,7 +3341,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3194,7 +3361,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3213,7 +3381,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3232,7 +3401,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3251,7 +3421,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3270,7 +3441,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -3289,7 +3461,8 @@
       "supplier": "스파인케어",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -3308,7 +3481,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -3327,7 +3501,8 @@
       "supplier": "굿플",
       "payDate": "2026-04-01",
       "payAmount": 1092500,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -3346,7 +3521,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -3365,7 +3541,8 @@
       "supplier": "굿플",
       "payDate": "2026-04-01",
       "payAmount": 1092500,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -3384,7 +3561,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -3403,7 +3581,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -3422,7 +3601,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3441,7 +3621,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3460,7 +3641,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3479,7 +3661,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3498,7 +3681,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3517,7 +3701,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -3536,7 +3721,8 @@
       "supplier": "인바디",
       "payDate": "2026-04-12",
       "payAmount": 5868573,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3555,7 +3741,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3574,7 +3761,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3593,7 +3781,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3612,7 +3801,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3631,7 +3821,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3650,7 +3841,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -3669,7 +3861,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -3688,7 +3881,8 @@
       "supplier": "영일엠",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3707,7 +3901,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3726,7 +3921,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3745,7 +3941,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3764,7 +3961,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3783,7 +3981,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3802,7 +4001,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3821,7 +4021,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3840,7 +4041,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3859,7 +4061,8 @@
       "supplier": "메디스트림",
       "payDate": "2026-04-07",
       "payAmount": 14155000,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3878,7 +4081,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3897,7 +4101,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3916,7 +4121,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3935,7 +4141,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3954,7 +4161,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3973,7 +4181,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -3992,7 +4201,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -4011,7 +4221,8 @@
       "supplier": "대요메디",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -4030,7 +4241,8 @@
       "supplier": "IR-VITA",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -4049,7 +4261,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -4068,7 +4281,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -4087,7 +4301,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -4106,7 +4321,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4125,7 +4341,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4144,7 +4361,8 @@
       "supplier": "DSE",
       "payDate": "2026-03-26",
       "payAmount": 1212500,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4163,7 +4381,8 @@
       "supplier": "메가메디칼",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4182,7 +4401,8 @@
       "supplier": "메가메디칼",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -4201,7 +4421,8 @@
       "supplier": "원효메디텍",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -4220,7 +4441,8 @@
       "supplier": "원효메디텍",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -4239,7 +4461,8 @@
       "supplier": "IR-VITA",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -4258,7 +4481,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -4277,7 +4501,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -4296,7 +4521,8 @@
       "supplier": "굿플",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -4315,7 +4541,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -4334,7 +4561,8 @@
       "supplier": "IR-VITA",
       "payDate": "2026-03-26",
       "payAmount": 300000,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4353,7 +4581,8 @@
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4372,7 +4601,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4391,7 +4621,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4410,7 +4641,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -4429,7 +4661,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4448,7 +4681,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4467,7 +4701,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4486,7 +4721,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -4505,7 +4741,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4524,7 +4761,8 @@
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4543,7 +4781,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4562,7 +4801,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -4581,7 +4821,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4600,7 +4841,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4619,7 +4861,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4638,7 +4881,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4657,7 +4901,8 @@
       "supplier": "삼성메디슨",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4676,7 +4921,8 @@
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4695,7 +4941,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4714,7 +4961,8 @@
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4733,7 +4981,8 @@
       "supplier": "디알텍",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4752,7 +5001,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -4771,7 +5021,8 @@
       "supplier": "원효메디텍",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -4790,7 +5041,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -4809,7 +5061,8 @@
       "supplier": "굿플",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4828,7 +5081,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4847,7 +5101,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4866,7 +5121,8 @@
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4885,7 +5141,8 @@
       "supplier": "동아참메드",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4904,7 +5161,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4923,7 +5181,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4942,7 +5201,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4961,7 +5221,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4980,7 +5241,8 @@
       "supplier": "삼성메디슨",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -4999,7 +5261,8 @@
       "supplier": "동아참메드",
       "payDate": "2026-03-23",
       "payAmount": 4300000,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -5018,7 +5281,8 @@
       "supplier": "한메드",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -5037,7 +5301,8 @@
       "supplier": "인바디",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -5056,7 +5321,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -5075,7 +5341,8 @@
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -5094,7 +5361,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -5113,7 +5381,8 @@
       "supplier": "동아참메드",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -5132,7 +5401,8 @@
       "supplier": "메디스트림",
       "payDate": "2026-04-03",
       "payAmount": 5520000,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -5151,7 +5421,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -5170,7 +5441,8 @@
       "supplier": "동아참메드",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -5189,7 +5461,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -5208,7 +5481,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -5227,7 +5501,8 @@
       "supplier": "오케이차트",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -5246,7 +5521,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -5265,7 +5541,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -5284,7 +5561,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -5303,7 +5581,8 @@
       "supplier": "아이밸런스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -5322,7 +5601,8 @@
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -5341,7 +5621,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -5360,7 +5641,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -5379,7 +5661,8 @@
       "supplier": "동아참메드",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -5398,7 +5681,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -5417,7 +5701,8 @@
       "supplier": "메디스트림",
       "payDate": "2026-04-14",
       "payAmount": 4950000,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -5436,7 +5721,8 @@
       "supplier": "동아참메드",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -5455,7 +5741,8 @@
       "supplier": "메디스트림",
       "payDate": "2026-03-16",
       "payAmount": 1650000,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -5474,7 +5761,8 @@
       "supplier": "아큐닉",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -5493,7 +5781,8 @@
       "supplier": "이앤에스헬스케어",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -5512,7 +5801,8 @@
       "supplier": "대요메디",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -5531,7 +5821,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -5550,7 +5841,8 @@
       "supplier": "바디헬스케어",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -5569,7 +5861,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -5588,7 +5881,8 @@
       "supplier": "메가메디칼",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -5607,7 +5901,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -5626,7 +5921,8 @@
       "supplier": "알피니언",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -5645,7 +5941,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -5664,7 +5961,8 @@
       "supplier": "굿플",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -5683,7 +5981,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -5702,7 +6001,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -5721,7 +6021,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -5740,7 +6041,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -5759,7 +6061,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -5778,7 +6081,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -5797,7 +6101,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -5816,7 +6121,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -5835,7 +6141,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -5854,7 +6161,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -5873,7 +6181,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -5892,7 +6201,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -5911,7 +6221,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -5930,7 +6241,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -5949,7 +6261,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -5968,7 +6281,8 @@
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -5987,7 +6301,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6006,7 +6321,8 @@
       "supplier": "삼성메디슨",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6025,7 +6341,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6044,7 +6361,8 @@
       "supplier": "동아참메드",
       "payDate": "2026-03-23",
       "payAmount": 4300000,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6063,7 +6381,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6082,7 +6401,8 @@
       "supplier": "동아참메드",
       "payDate": "2026-03-20",
       "payAmount": 3970871,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6101,7 +6421,8 @@
       "supplier": "삼성메디슨",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6120,7 +6441,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6139,7 +6461,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6158,7 +6481,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6177,7 +6501,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6196,7 +6521,8 @@
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6215,7 +6541,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6234,7 +6561,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6253,7 +6581,8 @@
       "supplier": "삼성메디슨",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6272,7 +6601,8 @@
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6291,7 +6621,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6310,7 +6641,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6329,7 +6661,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6348,7 +6681,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -6367,7 +6701,8 @@
       "supplier": "선웅메디테크",
       "payDate": "2026-03-12",
       "payAmount": 690000,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -6386,7 +6721,8 @@
       "supplier": "에이치씨케이",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -6405,7 +6741,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6424,7 +6761,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6443,7 +6781,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6462,7 +6801,8 @@
       "supplier": "메디스트림",
       "payDate": "2026-03-23",
       "payAmount": 6000000,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6481,7 +6821,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -6500,7 +6841,8 @@
       "supplier": "리메드",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -6519,7 +6861,8 @@
       "supplier": "엠알",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6538,7 +6881,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6557,7 +6901,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6576,7 +6921,8 @@
       "supplier": "메디스트림",
       "payDate": "2026-03-11",
       "payAmount": 13680350,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6595,7 +6941,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -6614,7 +6961,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -6633,7 +6981,8 @@
       "supplier": "오케이차트",
       "payDate": "2026-03-10",
       "payAmount": 1024090,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -6652,7 +7001,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6671,7 +7021,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -6690,7 +7041,8 @@
       "supplier": "선웅메디테크",
       "payDate": "2026-03-12",
       "payAmount": 690000,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -6709,7 +7061,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -6728,7 +7081,8 @@
       "supplier": "굿플",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6747,7 +7101,8 @@
       "supplier": "삼성메디슨",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6766,7 +7121,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6785,7 +7141,8 @@
       "supplier": "동아참메드",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6804,7 +7161,8 @@
       "supplier": "메가메디칼",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6823,7 +7181,8 @@
       "supplier": "메가메디칼",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -6842,7 +7201,8 @@
       "supplier": "메가메디칼",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -6861,7 +7221,8 @@
       "supplier": "한메드",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -6880,7 +7241,8 @@
       "supplier": "한메드",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -6899,7 +7261,8 @@
       "supplier": "굿플",
       "payDate": "2026-03-09",
       "payAmount": 670000,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -6918,7 +7281,8 @@
       "supplier": "굿플",
       "payDate": "2026-03-09",
       "payAmount": 670000,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -6937,7 +7301,8 @@
       "supplier": "굿플",
       "payDate": "2026-03-09",
       "payAmount": 670000,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -6956,7 +7321,8 @@
       "supplier": "원효메디텍",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -6975,7 +7341,8 @@
       "supplier": "굿플",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -6994,7 +7361,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -7013,7 +7381,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7032,7 +7401,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7051,7 +7421,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7070,7 +7441,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -7089,7 +7461,8 @@
       "supplier": "선웅메디테크",
       "payDate": "2026-03-09",
       "payAmount": 2715390,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7108,7 +7481,8 @@
       "supplier": "삼성메디슨",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7127,7 +7501,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7146,7 +7521,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7165,7 +7541,8 @@
       "supplier": "삼성메디슨",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -7184,7 +7561,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -7203,7 +7581,8 @@
       "supplier": "나노메딕스썸텍",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -7222,7 +7601,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -7241,7 +7621,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -7260,7 +7641,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7279,7 +7661,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7298,7 +7681,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -7317,7 +7701,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -7336,7 +7721,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -7355,7 +7741,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -7374,7 +7761,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -7393,7 +7781,8 @@
       "supplier": "에이치씨케이",
       "payDate": "2026-03-04",
       "payAmount": 681600,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -7412,7 +7801,8 @@
       "supplier": "에이치씨케이",
       "payDate": "2026-03-04",
       "payAmount": 681600,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -7431,7 +7821,8 @@
       "supplier": "에이치씨케이",
       "payDate": "2026-03-03",
       "payAmount": 910000,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -7450,7 +7841,8 @@
       "supplier": "아큐닉",
       "payDate": "2026-03-04",
       "payAmount": 1200000,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7469,7 +7861,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7488,7 +7881,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7507,7 +7901,8 @@
       "supplier": "메가메디칼",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7526,7 +7921,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7545,7 +7941,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -7564,7 +7961,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -7583,7 +7981,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7602,7 +8001,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7621,7 +8021,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -7640,7 +8041,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -7659,7 +8061,8 @@
       "supplier": "메디스트림",
       "payDate": "2026-03-03",
       "payAmount": 779000,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7678,7 +8081,8 @@
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7697,7 +8101,8 @@
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7716,7 +8121,8 @@
       "supplier": "디알텍",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7735,7 +8141,8 @@
       "supplier": "메디스트림",
       "payDate": "2026-03-05",
       "payAmount": 4560000,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -7754,7 +8161,8 @@
       "supplier": "에이치씨케이",
       "payDate": "2026-03-06",
       "payAmount": 3069998,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7773,7 +8181,8 @@
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7792,7 +8201,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7811,7 +8221,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7830,7 +8241,8 @@
       "supplier": "메디스트림",
       "payDate": "2026-04-03",
       "payAmount": 5520000,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7849,7 +8261,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7868,7 +8281,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7887,7 +8301,8 @@
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -7906,7 +8321,8 @@
       "supplier": "오케이차트",
       "payDate": "2026-03-10",
       "payAmount": 1024090,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7925,7 +8341,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7944,7 +8361,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7963,7 +8381,8 @@
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -7982,7 +8401,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -8001,7 +8421,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -8020,7 +8441,8 @@
       "supplier": "굿플",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -8039,7 +8461,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -8058,7 +8481,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -8077,7 +8501,8 @@
       "supplier": "이앤에스헬스케어",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -8096,7 +8521,8 @@
       "supplier": "DSE",
       "payDate": "2026-02-24",
       "payAmount": 1235000,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -8115,7 +8541,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -8134,7 +8561,8 @@
       "supplier": "굿플",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -8153,7 +8581,8 @@
       "supplier": "동아참메드",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -8172,7 +8601,8 @@
       "supplier": "메가메디칼",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -8191,7 +8621,8 @@
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -8210,7 +8641,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -8229,7 +8661,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -8248,7 +8681,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -8267,7 +8701,8 @@
       "supplier": "디에스메디",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -8286,7 +8721,8 @@
       "supplier": "선웅메디테크",
       "payDate": "2026-02-24",
       "payAmount": 1356000,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -8305,7 +8741,8 @@
       "supplier": "옴니씨앤에스",
       "payDate": "2026-02-20",
       "payAmount": 12990000,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -8324,7 +8761,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -8343,7 +8781,8 @@
       "supplier": "메디스트림",
       "payDate": "2026-02-19",
       "payAmount": 1105000,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -8362,7 +8801,8 @@
       "supplier": "원효메디텍",
       "payDate": "2026-02-20",
       "payAmount": 126100,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -8381,7 +8821,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -8400,7 +8841,8 @@
       "supplier": "인바디",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -8419,7 +8861,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -8438,7 +8881,8 @@
       "supplier": "원효메디텍",
       "payDate": "2026-02-20",
       "payAmount": 725760,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -8457,7 +8901,8 @@
       "supplier": "메디스트림",
       "payDate": "2026-04-09",
       "payAmount": 13680916,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -8476,7 +8921,8 @@
       "supplier": "오케이차트",
       "payDate": "2026-04-07",
       "payAmount": 1052700,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -8495,7 +8941,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -8514,7 +8961,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -8533,7 +8981,8 @@
       "supplier": "이앤에스헬스케어",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -8552,7 +9001,8 @@
       "supplier": "DSE",
       "payDate": "2026-03-23",
       "payAmount": 1200000,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -8571,7 +9021,8 @@
       "supplier": "리메드",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -8590,7 +9041,8 @@
       "supplier": "아큐닉",
       "payDate": "2026-02-19",
       "payAmount": 1200000,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -8609,7 +9061,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -8628,7 +9081,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -8647,7 +9101,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -8666,7 +9121,8 @@
       "supplier": "인바디",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -8685,7 +9141,8 @@
       "supplier": "굿플",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -8704,7 +9161,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -8723,7 +9181,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -8742,7 +9201,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -8761,7 +9221,8 @@
       "supplier": "삼성메디슨",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -8780,7 +9241,8 @@
       "supplier": "아큐닉",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -8799,7 +9261,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -8818,7 +9281,8 @@
       "supplier": "메가메디칼",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -8837,7 +9301,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -8856,7 +9321,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -8875,7 +9341,8 @@
       "supplier": "DSE",
       "payDate": "2026-02-13",
       "payAmount": 4900000,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -8894,7 +9361,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -8913,7 +9381,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -8932,7 +9401,8 @@
       "supplier": "IR-VITA",
       "payDate": "2026-02-11",
       "payAmount": 158395,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -8951,7 +9421,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -8970,7 +9441,8 @@
       "supplier": "삼성메디슨",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -8989,7 +9461,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -9008,7 +9481,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -9027,7 +9501,8 @@
       "supplier": "인바디",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -9046,7 +9521,8 @@
       "supplier": "인바디",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -9065,7 +9541,8 @@
       "supplier": "IR-VITA",
       "payDate": "2026-02-09",
       "payAmount": 405000,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -9084,7 +9561,8 @@
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -9103,7 +9581,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -9122,7 +9601,8 @@
       "supplier": "에이치씨케이",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -9141,7 +9621,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
@@ -9160,7 +9641,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -9179,7 +9661,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
@@ -9198,7 +9681,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
@@ -9217,7 +9701,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -9236,7 +9721,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -9255,7 +9741,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -9274,7 +9761,8 @@
       "supplier": "DSE",
       "payDate": "2026-02-09",
       "payAmount": 143000,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -9293,7 +9781,8 @@
       "supplier": "인바디",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -9312,7 +9801,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -9331,7 +9821,8 @@
       "supplier": "인바디",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -9350,7 +9841,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -9369,7 +9861,8 @@
       "supplier": "엠코니",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -9388,7 +9881,8 @@
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -9407,7 +9901,8 @@
       "supplier": "원효메디텍",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -9426,7 +9921,8 @@
       "supplier": "영일엠",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": "고가망"
     },
     {
       "source": "일반",
@@ -9445,7 +9941,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -9464,7 +9961,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -9483,7 +9981,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -9502,7 +10001,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -9521,7 +10021,8 @@
       "supplier": "한일",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -9540,7 +10041,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -9559,7 +10061,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -9578,7 +10081,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -9597,7 +10101,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -9616,7 +10121,8 @@
       "supplier": "에이치씨케이",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -9635,7 +10141,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -9654,7 +10161,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -9673,7 +10181,8 @@
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -9692,7 +10201,8 @@
       "supplier": "PT10",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
@@ -9711,7 +10221,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -9730,7 +10241,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -9749,7 +10261,8 @@
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
@@ -9768,7 +10281,8 @@
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
-      "inquiry": ""
+      "inquiry": "",
+      "leadGrade": ""
     }
   ]
 }
