@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>상담 관리 | MD Squad</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 /* ===== RESET & BASE ===== */
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -407,6 +408,8 @@ th.sortable:hover { background: #eef0f4; }
     </div>
     <span class="count-badge" id="totalCount">0건</span>
     <button class="form-toggle-btn" id="formToggleBtn" onclick="toggleForm()" style="margin-left:8px;">+ 새 상담 등록</button>
+    <button class="form-toggle-btn" id="bulkUploadBtn" onclick="openBulkUpload()" style="margin-left:4px;">📥 엑셀 업로드</button>
+    <input type="file" id="bulkFileInput" accept=".xlsx,.xls" style="display:none;" onchange="onBulkFileSelected(event)">
   </div>
 </div>
 
@@ -633,6 +636,46 @@ th.sortable:hover { background: #eef0f4; }
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="closeModal()">취소</button>
       <button class="btn btn-primary" id="confirmDeleteBtn" style="background:#991b1b;">삭제</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BULK UPLOAD MODAL ===== -->
+<div class="modal-backdrop" id="bulkModal">
+  <div class="modal" style="max-width: 900px; width: 95%;">
+    <h3 id="bulkModalTitle">엑셀 대량 등록</h3>
+    <div id="bulkModalBody" style="font-size: 13px; color: #333; line-height: 1.5;">
+      <div id="bulkIntro">
+        <p style="margin-bottom:12px;">엑셀 파일(.xlsx)의 첫 시트를 불러옵니다. 템플릿에 맞춰 작성해주세요.</p>
+        <div style="display:flex;gap:8px;margin-bottom:14px;">
+          <button type="button" class="btn btn-secondary" onclick="downloadBulkTemplate()">📄 템플릿 다운로드</button>
+          <button type="button" class="btn btn-primary" onclick="document.getElementById('bulkFileInput').click()">📂 엑셀 파일 선택</button>
+        </div>
+        <div style="background:#f6f8fa;border:1px solid #e5e7eb;border-radius:8px;padding:10px 14px;font-size:12px;color:#555;line-height:1.7;">
+          <strong>컬럼</strong>: 인입시점 / 인입경로 / 수신동의 / <strong style="color:#d33;">고객명(필수)</strong> / CID / 전화번호 / 한의원명 / 지역 / 상담물품 / 수량 / 견적가 / 담당자 / 구매예정일 / Stage / 영업현황 / 데모일정<br>
+          <strong>날짜</strong>: YYYY-MM-DD 또는 엑셀 날짜 형식 / <strong>수신동의</strong>: Y 또는 빈칸 / <strong>Stage</strong>: New / Follow / Demo / Turn-key / Done / Drop
+        </div>
+      </div>
+      <div id="bulkPreview" style="display:none;">
+        <div id="bulkPreviewSummary" style="margin-bottom:10px;"></div>
+        <div style="max-height:50vh;overflow:auto;border:1px solid #e5e7eb;border-radius:8px;">
+          <table id="bulkPreviewTable" style="width:100%;border-collapse:collapse;font-size:12px;">
+            <thead style="position:sticky;top:0;background:#f6f8fa;"></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div id="bulkProgress" style="display:none;">
+        <p id="bulkProgressText" style="margin-bottom:10px;font-weight:600;">등록 중...</p>
+        <div style="background:#e5e7eb;border-radius:10px;height:16px;overflow:hidden;">
+          <div id="bulkProgressBar" style="background:#1a73e8;height:100%;width:0%;transition:width 0.2s;"></div>
+        </div>
+        <p id="bulkProgressDetail" style="margin-top:10px;font-size:12px;color:#666;"></p>
+      </div>
+    </div>
+    <div class="modal-actions" style="margin-top: 16px;">
+      <button class="btn btn-secondary" id="bulkCancelBtn" onclick="closeBulkModal()">닫기</button>
+      <button class="btn btn-primary" id="bulkConfirmBtn" onclick="confirmBulkUpload()" style="display:none;">등록 실행</button>
     </div>
   </div>
 </div>
@@ -2420,6 +2463,201 @@ function applyZoom(z) {
     });
   });
 })();
+
+// ============================================================
+// BULK EXCEL UPLOAD
+// ============================================================
+var BULK_HEADERS = ['인입시점','인입경로','수신동의','고객명','CID','전화번호','한의원명','지역','상담물품','수량','견적가','담당자','구매예정일','Stage','영업현황','데모일정'];
+var bulkParsedRows = [];
+
+function openBulkUpload() {
+  bulkParsedRows = [];
+  document.getElementById('bulkIntro').style.display = '';
+  document.getElementById('bulkPreview').style.display = 'none';
+  document.getElementById('bulkProgress').style.display = 'none';
+  document.getElementById('bulkConfirmBtn').style.display = 'none';
+  document.getElementById('bulkCancelBtn').textContent = '닫기';
+  document.getElementById('bulkModal').classList.add('open');
+}
+
+function closeBulkModal() {
+  document.getElementById('bulkModal').classList.remove('open');
+  document.getElementById('bulkFileInput').value = '';
+  bulkParsedRows = [];
+}
+
+function downloadBulkTemplate() {
+  var example = ['2026-04-23','아웃바운드','Y','홍길동','','010-1234-5678','길동한의원','서울 강남','V7','1','3,500,000','박연지','','New','유선상담',''];
+  var wb = XLSX.utils.book_new();
+  var ws = XLSX.utils.aoa_to_sheet([BULK_HEADERS, example]);
+  ws['!cols'] = BULK_HEADERS.map(function(){ return { wch: 14 }; });
+  XLSX.utils.book_append_sheet(wb, ws, '상담건');
+  XLSX.writeFile(wb, '상담_대량등록_템플릿.xlsx');
+}
+
+function excelDateToISO(v) {
+  if (!v) return '';
+  if (v instanceof Date) {
+    var y = v.getFullYear(), m = String(v.getMonth()+1).padStart(2,'0'), d = String(v.getDate()).padStart(2,'0');
+    return y + '-' + m + '-' + d;
+  }
+  var s = String(v).trim();
+  if (!s) return '';
+  var m = s.match(/^(\d{4})[.\-\/](\d{1,2})[.\-\/](\d{1,2})/);
+  if (m) return m[1] + '-' + String(m[2]).padStart(2,'0') + '-' + String(m[3]).padStart(2,'0');
+  return s;
+}
+
+function onBulkFileSelected(event) {
+  var file = event.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array', cellDates: true });
+      var sheet = wb.Sheets[wb.SheetNames[0]];
+      var rows = XLSX.utils.sheet_to_json(sheet, { defval: '', raw: true });
+      parseBulkRows(rows);
+    } catch (err) {
+      showToast('엑셀 파일을 읽을 수 없습니다.', 'error');
+      console.error(err);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+  event.target.value = '';
+}
+
+function parseBulkRows(rawRows) {
+  var truthy = ['Y','y','예','true','TRUE','1','동의','O','o'];
+  bulkParsedRows = rawRows.map(function(row, idx) {
+    var r = {
+      _rowNum: idx + 2,
+      date:     excelDateToISO(row['인입시점']) || today(),
+      source:   String(row['인입경로'] || '').trim(),
+      consent:  truthy.indexOf(String(row['수신동의'] || '').trim()) !== -1,
+      customer: String(row['고객명'] || '').trim(),
+      cid:      String(row['CID'] || '').trim(),
+      phone:    String(row['전화번호'] || '').trim(),
+      clinic:   String(row['한의원명'] || '').trim(),
+      region:   String(row['지역'] || '').trim(),
+      product:  String(row['상담물품'] || '').trim(),
+      qty:      row['수량'] === '' || row['수량'] == null ? '' : String(row['수량']).trim(),
+      price:    row['견적가'] === '' || row['견적가'] == null ? '' : String(row['견적가']).trim(),
+      caller:   String(row['담당자'] || '').trim(),
+      buyDate:  excelDateToISO(row['구매예정일']),
+      stage:    String(row['Stage'] || '').trim() || 'New',
+      status:   String(row['영업현황'] || '').trim(),
+      demoDate: excelDateToISO(row['데모일정'])
+    };
+    r._error = r.customer ? '' : '고객명 누락';
+    r._valid = !r._error;
+    return r;
+  }).filter(function(r){
+    // 완전 빈 행 제외
+    return r.customer || r.phone || r.cid || r.clinic || r.product;
+  });
+  renderBulkPreview();
+}
+
+function renderBulkPreview() {
+  var valid = bulkParsedRows.filter(function(r){ return r._valid; });
+  var invalid = bulkParsedRows.filter(function(r){ return !r._valid; });
+  document.getElementById('bulkIntro').style.display = 'none';
+  document.getElementById('bulkPreview').style.display = '';
+  document.getElementById('bulkProgress').style.display = 'none';
+  var summary = document.getElementById('bulkPreviewSummary');
+  summary.innerHTML =
+    '<span style="font-weight:600;">총 ' + bulkParsedRows.length + '건</span> ' +
+    '<span style="color:#137333;margin-left:8px;">✓ 등록 가능 ' + valid.length + '건</span>' +
+    (invalid.length ? ' <span style="color:#c5221f;margin-left:8px;">✗ 오류 ' + invalid.length + '건 (스킵됨)</span>' : '') +
+    ' <button type="button" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;margin-left:10px;" onclick="openBulkUpload()">다시 선택</button>';
+
+  var thead = document.querySelector('#bulkPreviewTable thead');
+  var tbody = document.querySelector('#bulkPreviewTable tbody');
+  var cols = ['행','상태','고객명','인입시점','인입경로','한의원명','지역','상담물품','수량','견적가','담당자','Stage'];
+  thead.innerHTML = '<tr>' + cols.map(function(c){ return '<th style="padding:6px 8px;border-bottom:1px solid #e5e7eb;text-align:left;white-space:nowrap;">'+c+'</th>'; }).join('') + '</tr>';
+  // 상위 30행만 표시 (오류 먼저)
+  var sorted = invalid.concat(valid).slice(0, 30);
+  tbody.innerHTML = sorted.map(function(r){
+    var bg = r._valid ? '' : 'background:#fef2f2;';
+    var status = r._valid ? '<span style="color:#137333;">✓</span>' : '<span style="color:#c5221f;" title="'+r._error+'">✗ '+r._error+'</span>';
+    var td = function(v){ return '<td style="padding:5px 8px;border-bottom:1px solid #f0f0f0;white-space:nowrap;max-width:140px;overflow:hidden;text-overflow:ellipsis;">'+(v==null?'':String(v).replace(/</g,'&lt;'))+'</td>'; };
+    return '<tr style="'+bg+'">'+
+      td(r._rowNum) + '<td style="padding:5px 8px;border-bottom:1px solid #f0f0f0;">'+status+'</td>' +
+      td(r.customer) + td(r.date) + td(r.source) + td(r.clinic) + td(r.region) +
+      td(r.product) + td(r.qty) + td(r.price) + td(r.caller) + td(r.stage) +
+      '</tr>';
+  }).join('');
+  if (bulkParsedRows.length > 30) {
+    tbody.innerHTML += '<tr><td colspan="'+cols.length+'" style="padding:8px;text-align:center;color:#888;font-size:12px;">... 외 ' + (bulkParsedRows.length - 30) + '건</td></tr>';
+  }
+
+  var confirmBtn = document.getElementById('bulkConfirmBtn');
+  if (valid.length > 0) {
+    confirmBtn.style.display = '';
+    confirmBtn.textContent = valid.length + '건 등록 실행';
+    confirmBtn.disabled = false;
+  } else {
+    confirmBtn.style.display = 'none';
+  }
+}
+
+function confirmBulkUpload() {
+  var valid = bulkParsedRows.filter(function(r){ return r._valid; });
+  if (!valid.length) return;
+  document.getElementById('bulkPreview').style.display = 'none';
+  document.getElementById('bulkProgress').style.display = '';
+  document.getElementById('bulkConfirmBtn').style.display = 'none';
+  document.getElementById('bulkCancelBtn').disabled = true;
+  document.getElementById('bulkCancelBtn').textContent = '진행 중...';
+
+  var total = valid.length;
+  var success = 0, failed = 0;
+  var idx = 0;
+
+  function updateUI() {
+    var pct = Math.round(((success + failed) / total) * 100);
+    document.getElementById('bulkProgressBar').style.width = pct + '%';
+    document.getElementById('bulkProgressText').textContent = '등록 중... ' + (success + failed) + ' / ' + total;
+    document.getElementById('bulkProgressDetail').textContent = '성공 ' + success + '건 · 실패 ' + failed + '건';
+  }
+
+  function processNext() {
+    if (idx >= total) {
+      document.getElementById('bulkProgressText').textContent = '완료';
+      document.getElementById('bulkProgressDetail').textContent = '✓ 성공 ' + success + '건' + (failed ? ' · ✗ 실패 ' + failed + '건 (로컬 저장됨, 시트 동기화 실패)' : '');
+      document.getElementById('bulkCancelBtn').disabled = false;
+      document.getElementById('bulkCancelBtn').textContent = '닫기';
+      showToast(success + '건 등록 완료' + (failed ? ' (시트 동기화 실패 ' + failed + '건)' : ''), failed ? 'error' : 'success');
+      populateRepFilter();
+      applyFilters();
+      return;
+    }
+    var data = valid[idx++];
+    // 내부 필드 제거
+    var clean = Object.assign({}, data);
+    delete clean._rowNum; delete clean._valid; delete clean._error;
+    var record = Object.assign({
+      id: 'c_' + Date.now().toString(36) + Math.random().toString(36).slice(2,8) + idx,
+      createdAt: new Date().toISOString()
+    }, clean);
+    var allData = loadLocalOnly();
+    allData.push(record);
+    saveData(allData);
+    updateUI();
+    syncCreate(record).then(function(){
+      success++;
+      updateUI();
+      processNext();
+    }).catch(function(){
+      failed++;
+      updateUI();
+      processNext();
+    });
+  }
+  updateUI();
+  processNext();
+}
 
 init();
 </script>
