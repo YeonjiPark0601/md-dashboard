@@ -6,62 +6,20 @@
 <title>MD Squad 칸반보드</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { width: 100%; height: 100%; overflow: hidden; background: #f0f2f5; font-family: 'Segoe UI', -apple-system, 'Malgun Gothic', sans-serif; }
-  body { display: flex; flex-direction: column; }
-
-  .header {
-    flex: 0 0 auto; z-index: 10;
-    background: linear-gradient(135deg, #1a1a2e, #16213e);
-    color: #fff; padding: 16px 30px;
-    display: flex; align-items: center; justify-content: space-between;
-    flex-wrap: wrap; gap: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,.15);
-  }
-  .header h1 { font-size: 20px; font-weight: 600; }
-  .header .home-btn {
-    color: #fff; text-decoration: none; font-size: 18px;
-    padding: 4px 8px; border-radius: 6px;
-    background: rgba(255,255,255,.1);
-    display: flex; align-items: center;
-  }
-  .iframe-wrap {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow: hidden;
-    position: relative;
-    background: #f0f2f5;
-  }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #f0f2f5; }
   iframe {
-    position: absolute;
-    top: -60px; left: 0;
-    width: 100%; height: calc(100% + 60px);
-    border: 0; background: #f0f2f5;
-    display: block;
-  }
-
-  @media (max-width: 600px) {
-    .header { padding: 12px 16px; }
-    .header h1 { font-size: 18px; }
+    width: 100%; height: 100%; border: 0; background: #f0f2f5; display: block;
   }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div style="display:flex;align-items:center;gap:12px;">
-    <a href="home.html" class="home-btn" title="홈으로">&#8962;</a>
-    <h1>MD Squad 칸반보드</h1>
-  </div>
-</div>
-
-<div class="iframe-wrap">
-  <iframe
-    id="kanbanFrame"
-    src="https://script.google.com/a/macros/medistream.co.kr/s/AKfycbxPzbK5T8i_ArkUd5LGjPfI--XwxdYRb8KkuARKlU6lTuAd94TJxVtuJYTu6kINSAV_GQ/exec"
-    title="MD Squad 칸반보드"
-    referrerpolicy="no-referrer-when-downgrade"
-    allow="clipboard-read; clipboard-write"></iframe>
-</div>
+<iframe
+  id="kanbanFrame"
+  src="https://script.google.com/a/macros/medistream.co.kr/s/AKfycbxPzbK5T8i_ArkUd5LGjPfI--XwxdYRb8KkuARKlU6lTuAd94TJxVtuJYTu6kINSAV_GQ/exec"
+  title="MD Squad 칸반보드"
+  referrerpolicy="no-referrer-when-downgrade"
+  allow="clipboard-read; clipboard-write"></iframe>
 
 </body>
 </html>
