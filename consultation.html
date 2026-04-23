@@ -50,6 +50,9 @@ body { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; b
 .consult-scroll { overflow: auto; -webkit-overflow-scrolling: touch; }
 .consult-scroll > #consultTable thead th { top: 0 !important; }
 @media (min-width: 769px) { .consult-scroll { max-height: calc(100vh - 200px); } }
+.zoom-btn { padding: 3px 10px; border: 1px solid #d0d5dd; background: #fff; border-radius: 4px; cursor: pointer; font-size: 12px; color: #374151; }
+.zoom-btn:hover { background: #f3f4f6; }
+.zoom-btn.active { background: #1a1a2e; color: #fff; border-color: #1a1a2e; }
 .table-card h3 { font-size: 14px; font-weight: 600; color: #555; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
 table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
 th { background: #f7f8fa; padding: 10px 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; white-space: nowrap; position: relative; overflow: hidden; text-overflow: ellipsis; }
@@ -516,6 +519,12 @@ th.sortable:hover { background: #eef0f4; }
 
   <!-- Data Table -->
   <div class="table-card">
+      <div id="zoomControl" style="display:flex;justify-content:flex-end;align-items:center;gap:6px;padding:6px 8px;font-size:12px;color:#6b7280;">
+        <span>배율</span>
+        <button type="button" class="zoom-btn" data-zoom="0.75">75%</button>
+        <button type="button" class="zoom-btn" data-zoom="0.85">85%</button>
+        <button type="button" class="zoom-btn" data-zoom="1">100%</button>
+      </div>
       <div class="consult-scroll">
       <table id="consultTable">
         <thead>
@@ -2385,6 +2394,30 @@ function init() {
     updateAssignBanner();
   });
 }
+
+// ============================================================
+// ZOOM CONTROL (table scale for narrow laptop screens)
+// ============================================================
+var ZOOM_KEY = 'md_consult_zoom';
+function applyZoom(z) {
+  var el = document.querySelector('.consult-scroll');
+  if (!el) return;
+  el.style.zoom = z;
+  document.querySelectorAll('.zoom-btn').forEach(function(b){
+    b.classList.toggle('active', parseFloat(b.dataset.zoom) === parseFloat(z));
+  });
+}
+(function initZoom(){
+  var saved = parseFloat(localStorage.getItem(ZOOM_KEY) || '1') || 1;
+  applyZoom(saved);
+  document.querySelectorAll('.zoom-btn').forEach(function(b){
+    b.addEventListener('click', function(){
+      var z = parseFloat(b.dataset.zoom);
+      localStorage.setItem(ZOOM_KEY, String(z));
+      applyZoom(z);
+    });
+  });
+})();
 
 init();
 </script>
