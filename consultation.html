@@ -2214,21 +2214,17 @@ document.addEventListener('change', function(e){
   renderTable();
 });
 
-// Stage 전환 허용 규칙: 현재 Stage → 가능한 다음 Stage 목록
-var STAGE_TRANSITIONS = {
-  'New':      ['New','Follow','Demo','Turn-key','Drop','Done'],
-  'Follow':   ['Follow','Demo','Turn-key','Drop','Done'],
-  'Demo':     ['Demo','Drop']
-};
+// Stage 전환 허용 규칙: Done만 잠금, 나머지는 모든 단계로 자유 변경 가능
+var ALL_STAGES = ['New','Follow','Demo','Turn-key','Drop','Done'];
 function renderStageCell(r) {
-  var allowed = STAGE_TRANSITIONS[r.stage];
-  if (!allowed) {
+  if (r.stage === 'Done') {
     return '<span class="badge ' + getStageBadgeClass(r.stage) + '">' + escHtml(r.stage) + '</span>';
   }
-  var opts = allowed.map(function(s){
-    return '<option value="' + s + '"' + (s===r.stage?' selected':'') + '>' + s + '</option>';
+  var current = r.stage && ALL_STAGES.indexOf(r.stage) !== -1 ? r.stage : 'New';
+  var opts = ALL_STAGES.map(function(s){
+    return '<option value="' + s + '"' + (s===current?' selected':'') + '>' + s + '</option>';
   }).join('');
-  return '<select class="stage-select ' + getStageBadgeClass(r.stage) + '" data-id="' + escHtml(r.id) + '" data-ext="' + (r.external?'1':'0') + '" style="width:100%;padding:3px 4px;border:1px solid #d0d5dd;border-radius:4px;font-size:12px;">' + opts + '</select>';
+  return '<select class="stage-select ' + getStageBadgeClass(current) + '" data-id="' + escHtml(r.id) + '" data-ext="' + (r.external?'1':'0') + '" style="width:100%;padding:3px 4px;border:1px solid #d0d5dd;border-radius:4px;font-size:12px;">' + opts + '</select>';
 }
 
 document.addEventListener('change', function(e){
