@@ -1,9 +1,29 @@
 {
-  "updated": "2026-04-23T01:14:12.396Z",
+  "updated": "2026-04-23T04:16:52.201Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "일반",
+      "timestamp": "2026. 04. 23 오후 01:11:02",
+      "date": "2026-04-23",
+      "name": "박현경",
+      "cid": "6066e7fbc1908b001a63d152",
+      "phone": "010-3642-6744",
+      "product": "HCK 치료실 베드 (N100)",
+      "qty": 4,
+      "price": "N/A",
+      "productId": "61162ddad26af90681b1f6fd",
+      "clinic": "올리브한의원",
+      "region": "경기도 김포시",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "190x70 혹은 80x 50 규격도 되는지, 되면 얼만지 가격문의",
+      "leadGrade": ""
+    },
     {
       "source": "총판기기",
       "timestamp": "2026. 04. 23 오전 08:08:22",
