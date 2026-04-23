@@ -441,13 +441,6 @@ th.sortable:hover { background: #eef0f4; }
             </select>
           </div>
           <div class="form-group">
-            <label>수신동의</label>
-            <label class="checkbox-wrap">
-              <input type="checkbox" id="f_consent" name="consent">
-              <span>마케팅/영업 연락 동의</span>
-            </label>
-          </div>
-          <div class="form-group">
             <label>고객명 <span class="req">*</span></label>
             <input type="text" id="f_customer" name="customer" placeholder="고객 이름">
           </div>
@@ -653,8 +646,8 @@ th.sortable:hover { background: #eef0f4; }
           <button type="button" class="btn btn-primary" onclick="document.getElementById('bulkFileInput').click()">📂 엑셀 파일 선택</button>
         </div>
         <div style="background:#f6f8fa;border:1px solid #e5e7eb;border-radius:8px;padding:10px 14px;font-size:12px;color:#555;line-height:1.7;">
-          <strong>컬럼</strong>: 인입시점 / 인입경로 / 수신동의 / <strong style="color:#d33;">고객명(필수)</strong> / CID / 전화번호 / 한의원명 / 지역 / 상담물품 / 수량 / 견적가 / 담당자 / Stage / 데모일정<br>
-          <strong>템플릿 드롭다운</strong>: 인입경로 / 수신동의(Y,N) / Stage 는 셀 클릭 시 선택 가능 · <strong>날짜</strong>: YYYY-MM-DD 또는 엑셀 날짜 형식
+          <strong>컬럼</strong>: 인입시점 / 인입경로 / <strong style="color:#d33;">고객명(필수)</strong> / CID / 전화번호 / 한의원명 / 지역 / 상담물품 / 수량 / 견적가 / 담당자 / Stage / 데모일정<br>
+          <strong>템플릿 드롭다운</strong>: 인입경로 / Stage 는 셀 클릭 시 선택 가능 · <strong>날짜</strong>: YYYY-MM-DD 또는 엑셀 날짜 형식
         </div>
       </div>
       <div id="bulkPreview" style="display:none;">
@@ -1051,7 +1044,6 @@ function getFormData() {
   return {
     date:     document.getElementById('f_date').value || today(),
     source:   document.getElementById('f_source').value,
-    consent:  document.getElementById('f_consent').checked,
     customer: document.getElementById('f_customer').value.trim(),
     cid:      document.getElementById('f_cid').value.trim(),
     phone:    document.getElementById('f_phone').value.trim(),
@@ -1071,7 +1063,6 @@ function getFormData() {
 function populateForm(record) {
   document.getElementById('f_date').value     = record.date || '';
   document.getElementById('f_source').value   = record.source || '';
-  document.getElementById('f_consent').checked = record.consent || false;
   document.getElementById('f_customer').value = record.customer || '';
   document.getElementById('f_cid').value      = record.cid || '';
   document.getElementById('f_phone').value    = record.phone || '';
@@ -2468,7 +2459,7 @@ function applyZoom(z) {
 // ============================================================
 // BULK EXCEL UPLOAD
 // ============================================================
-var BULK_HEADERS = ['인입시점','인입경로','수신동의','고객명','CID','전화번호','한의원명','지역','상담물품','수량','견적가','담당자','Stage','데모일정'];
+var BULK_HEADERS = ['인입시점','인입경로','고객명','CID','전화번호','한의원명','지역','상담물품','수량','견적가','담당자','Stage','데모일정'];
 var bulkParsedRows = [];
 
 function openBulkUpload() {
@@ -2488,7 +2479,7 @@ function closeBulkModal() {
 }
 
 function downloadBulkTemplate() {
-  var example = ['2026-04-23','아웃바운드','Y','홍길동','','010-1234-5678','길동한의원','서울 강남','V7','1','3,500,000','박연지','New',''];
+  var example = ['2026-04-23','아웃바운드','홍길동','','010-1234-5678','길동한의원','서울 강남','V7','1','3,500,000','박연지','New',''];
   var wb = new ExcelJS.Workbook();
   var ws = wb.addWorksheet('상담건');
   ws.addRow(BULK_HEADERS);
@@ -2496,15 +2487,12 @@ function downloadBulkTemplate() {
   ws.columns = BULK_HEADERS.map(function(h){ return { width: Math.max(10, h.length * 2 + 4) }; });
   ws.getRow(1).font = { bold: true };
   ws.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE8F0FE' } };
-  // 드롭다운 (B=인입경로, C=수신동의, M=Stage) — 2~1000행 적용
+  // 드롭다운 (B=인입경로, L=Stage) — 2~1000행 적용
   ws.dataValidations.add('B2:B1000', {
     type: 'list', allowBlank: true,
     formulae: ['"아웃바운드,자체행사,외부행사,강의,상담신청,1:1문의(CX포함),소개건"']
   });
-  ws.dataValidations.add('C2:C1000', {
-    type: 'list', allowBlank: true, formulae: ['"Y,N"']
-  });
-  ws.dataValidations.add('M2:M1000', {
+  ws.dataValidations.add('L2:L1000', {
     type: 'list', allowBlank: true,
     formulae: ['"New,Follow,Demo,Turn-key,Done,Drop"']
   });
@@ -2553,13 +2541,11 @@ function onBulkFileSelected(event) {
 }
 
 function parseBulkRows(rawRows) {
-  var truthy = ['Y','y','예','true','TRUE','1','동의','O','o'];
   bulkParsedRows = rawRows.map(function(row, idx) {
     var r = {
       _rowNum: idx + 2,
       date:     excelDateToISO(row['인입시점']) || today(),
       source:   String(row['인입경로'] || '').trim(),
-      consent:  truthy.indexOf(String(row['수신동의'] || '').trim()) !== -1,
       customer: String(row['고객명'] || '').trim(),
       cid:      String(row['CID'] || '').trim(),
       phone:    String(row['전화번호'] || '').trim(),
