@@ -712,6 +712,8 @@ const LS_KEY = 'md_consultations';
 var EXTERNAL_DATA = [];
 // 원본 문의사항 맵: id(cid|pid|timestamp) → inquiry 문자열. data/inquiries.json에서 init 시점에 로드.
 var INQUIRY_MAP = {};
+// 총판/비총판 맵: id → '총판기기' | '일반'. inquiries.json의 source 필드 기반.
+var DIST_SOURCE_MAP = {};
 
 // ===== 시트 CRUD 동기화 =====
 const WEBHOOK_URL = 'https://n8n.datastream.co.kr/webhook/consultation-crud';
@@ -1402,9 +1404,14 @@ function getFilteredData() {
   var distSel = document.getElementById('distFilter');
   var distVal = distSel ? distSel.value : '';
   if (distVal === 'dist') {
-    data = data.filter(function(r){ return r.externalSource === '총판기기'; });
+    data = data.filter(function(r){
+      return DIST_SOURCE_MAP[r.id] === '총판기기' || r.externalSource === '총판기기';
+    });
   } else if (distVal === 'nondist') {
-    data = data.filter(function(r){ return r.externalSource !== '총판기기'; });
+    data = data.filter(function(r){
+      var s = DIST_SOURCE_MAP[r.id] || r.externalSource;
+      return s !== '총판기기';
+    });
   }
 
   if (assignReminderFilter) {
@@ -2463,6 +2470,7 @@ function init() {
       inqData.items.forEach(function(it){
         var key = (it.cid || '') + '|' + (it.productId || '') + '|' + (it.timestamp || '');
         if (it.inquiry) INQUIRY_MAP[key] = it.inquiry;
+        if (it.source === '총판기기' || it.source === '일반') DIST_SOURCE_MAP[key] = it.source;
       });
     }
     populateRepFilter();
