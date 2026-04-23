@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>상담 관리 | MD Squad</title>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
 <style>
 /* ===== RESET & BASE ===== */
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -652,8 +653,8 @@ th.sortable:hover { background: #eef0f4; }
           <button type="button" class="btn btn-primary" onclick="document.getElementById('bulkFileInput').click()">📂 엑셀 파일 선택</button>
         </div>
         <div style="background:#f6f8fa;border:1px solid #e5e7eb;border-radius:8px;padding:10px 14px;font-size:12px;color:#555;line-height:1.7;">
-          <strong>컬럼</strong>: 인입시점 / 인입경로 / 수신동의 / <strong style="color:#d33;">고객명(필수)</strong> / CID / 전화번호 / 한의원명 / 지역 / 상담물품 / 수량 / 견적가 / 담당자 / 구매예정일 / Stage / 영업현황 / 데모일정<br>
-          <strong>날짜</strong>: YYYY-MM-DD 또는 엑셀 날짜 형식 / <strong>수신동의</strong>: Y 또는 빈칸 / <strong>Stage</strong>: New / Follow / Demo / Turn-key / Done / Drop
+          <strong>컬럼</strong>: 인입시점 / 인입경로 / 수신동의 / <strong style="color:#d33;">고객명(필수)</strong> / CID / 전화번호 / 한의원명 / 지역 / 상담물품 / 수량 / 견적가 / 담당자 / Stage / 데모일정<br>
+          <strong>템플릿 드롭다운</strong>: 인입경로 / 수신동의(Y,N) / Stage 는 셀 클릭 시 선택 가능 · <strong>날짜</strong>: YYYY-MM-DD 또는 엑셀 날짜 형식
         </div>
       </div>
       <div id="bulkPreview" style="display:none;">
@@ -2467,7 +2468,7 @@ function applyZoom(z) {
 // ============================================================
 // BULK EXCEL UPLOAD
 // ============================================================
-var BULK_HEADERS = ['인입시점','인입경로','수신동의','고객명','CID','전화번호','한의원명','지역','상담물품','수량','견적가','담당자','구매예정일','Stage','영업현황','데모일정'];
+var BULK_HEADERS = ['인입시점','인입경로','수신동의','고객명','CID','전화번호','한의원명','지역','상담물품','수량','견적가','담당자','Stage','데모일정'];
 var bulkParsedRows = [];
 
 function openBulkUpload() {
@@ -2487,12 +2488,36 @@ function closeBulkModal() {
 }
 
 function downloadBulkTemplate() {
-  var example = ['2026-04-23','아웃바운드','Y','홍길동','','010-1234-5678','길동한의원','서울 강남','V7','1','3,500,000','박연지','','New','유선상담',''];
-  var wb = XLSX.utils.book_new();
-  var ws = XLSX.utils.aoa_to_sheet([BULK_HEADERS, example]);
-  ws['!cols'] = BULK_HEADERS.map(function(){ return { wch: 14 }; });
-  XLSX.utils.book_append_sheet(wb, ws, '상담건');
-  XLSX.writeFile(wb, '상담_대량등록_템플릿.xlsx');
+  var example = ['2026-04-23','아웃바운드','Y','홍길동','','010-1234-5678','길동한의원','서울 강남','V7','1','3,500,000','박연지','New',''];
+  var wb = new ExcelJS.Workbook();
+  var ws = wb.addWorksheet('상담건');
+  ws.addRow(BULK_HEADERS);
+  ws.addRow(example);
+  ws.columns = BULK_HEADERS.map(function(h){ return { width: Math.max(10, h.length * 2 + 4) }; });
+  ws.getRow(1).font = { bold: true };
+  ws.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE8F0FE' } };
+  // 드롭다운 (B=인입경로, C=수신동의, M=Stage) — 2~1000행 적용
+  ws.dataValidations.add('B2:B1000', {
+    type: 'list', allowBlank: true,
+    formulae: ['"아웃바운드,자체행사,외부행사,강의,상담신청,1:1문의(CX포함),소개건"']
+  });
+  ws.dataValidations.add('C2:C1000', {
+    type: 'list', allowBlank: true, formulae: ['"Y,N"']
+  });
+  ws.dataValidations.add('M2:M1000', {
+    type: 'list', allowBlank: true,
+    formulae: ['"New,Follow,Demo,Turn-key,Done,Drop"']
+  });
+  wb.xlsx.writeBuffer().then(function(buf){
+    var blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = '상담_대량등록_템플릿.xlsx';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+  }).catch(function(e){
+    console.error(e); showToast('템플릿 생성 실패', 'error');
+  });
 }
 
 function excelDateToISO(v) {
@@ -2544,9 +2569,7 @@ function parseBulkRows(rawRows) {
       qty:      row['수량'] === '' || row['수량'] == null ? '' : String(row['수량']).trim(),
       price:    row['견적가'] === '' || row['견적가'] == null ? '' : String(row['견적가']).trim(),
       caller:   String(row['담당자'] || '').trim(),
-      buyDate:  excelDateToISO(row['구매예정일']),
       stage:    String(row['Stage'] || '').trim() || 'New',
-      status:   String(row['영업현황'] || '').trim(),
       demoDate: excelDateToISO(row['데모일정'])
     };
     r._error = r.customer ? '' : '고객명 누락';
