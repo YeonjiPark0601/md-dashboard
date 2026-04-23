@@ -403,6 +403,14 @@ th.sortable:hover { background: #eef0f4; }
       <label>Stage</label>
       <button class="topbar-filter-btn" data-col="stage" onclick="openTopFilter(this,'stage')">전체 ▾</button>
     </div>
+    <div class="filter-group filter-collapsible">
+      <label>총판구분</label>
+      <select id="distFilter" onchange="applyFilters()" style="padding:5px 10px;border:1px solid #d0d0d0;border-radius:6px;font-size:13px;background:#fff;">
+        <option value="">전체</option>
+        <option value="dist">총판</option>
+        <option value="nondist">비총판</option>
+      </select>
+    </div>
     <div class="filter-group">
       <label>검색</label>
       <input type="text" id="searchInput" placeholder="고객/한의원/물품/담당자/전화..." oninput="applyFilters()" style="width:200px;">
@@ -1194,6 +1202,8 @@ function updateFilterBadge() {
     var s = columnFilters[col];
     if (s && s.size > 0) count++;
   });
+  var distSel = document.getElementById('distFilter');
+  if (distSel && distSel.value) count++;
   var search = document.getElementById('searchInput');
   if (search && search.value.trim()) count++;
   var badge = document.getElementById('filterCountBadge');
@@ -1388,6 +1398,14 @@ function getFilteredData() {
       return picked.has(String(v));
     });
   });
+
+  var distSel = document.getElementById('distFilter');
+  var distVal = distSel ? distSel.value : '';
+  if (distVal === 'dist') {
+    data = data.filter(function(r){ return r.externalSource === '총판기기'; });
+  } else if (distVal === 'nondist') {
+    data = data.filter(function(r){ return r.externalSource !== '총판기기'; });
+  }
 
   if (assignReminderFilter) {
     data = data.filter(isUnassignedNew);
