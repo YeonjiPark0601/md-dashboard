@@ -552,6 +552,15 @@ th.sortable:hover { background: #eef0f4; }
       <p>등록된 상담 데이터가 없습니다.<br>상단의 '새 상담 등록' 버튼으로 추가하세요.</p>
     </div>
     <div id="paginationWrap" class="pagination"></div>
+    <div id="pageSizeWrap" style="display:flex;justify-content:center;align-items:center;gap:8px;padding:8px 0;font-size:12px;color:#666;">
+      <span>페이지당</span>
+      <select id="pageSizeSelect" onchange="changePageSize(this.value)" style="padding:3px 8px;border:1px solid #d0d0d0;border-radius:6px;font-size:12px;background:#fff;">
+        <option value="20">20</option>
+        <option value="50" selected>50</option>
+        <option value="100">100</option>
+      </select>
+      <span>건</span>
+    </div>
   </div>
 
 </div>
@@ -1128,7 +1137,17 @@ function submitForm(e) {
 var sortCol = 'date';
 var sortDir = 'desc';
 var currentPage = 1;
-var PAGE_SIZE = 50;
+var PAGE_SIZE_KEY = 'md_consult_page_size';
+var PAGE_SIZE = parseInt(localStorage.getItem(PAGE_SIZE_KEY) || '50', 10) || 50;
+
+function changePageSize(v) {
+  var n = parseInt(v, 10) || 50;
+  if ([20, 50, 100].indexOf(n) === -1) n = 50;
+  PAGE_SIZE = n;
+  localStorage.setItem(PAGE_SIZE_KEY, String(n));
+  currentPage = 1;
+  renderTable();
+}
 
 // ============================================================
 // REP FILTER POPULATION
@@ -2397,6 +2416,8 @@ function updateStickyOffset() {
 
 function init() {
   document.getElementById('f_date').value = today();
+  var ps = document.getElementById('pageSizeSelect');
+  if (ps) ps.value = String(PAGE_SIZE);
   if (window.matchMedia('(max-width: 768px)').matches) {
     document.getElementById('filterBar').classList.add('filters-collapsed');
   }
