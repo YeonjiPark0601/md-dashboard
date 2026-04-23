@@ -24,9 +24,17 @@
     background: rgba(255,255,255,.1);
     display: flex; align-items: center;
   }
-  iframe {
+  .iframe-wrap {
     flex: 1 1 auto;
-    width: 100%; border: 0; background: #f0f2f5;
+    overflow: hidden;
+    position: relative;
+    background: #f0f2f5;
+  }
+  iframe {
+    position: absolute;
+    top: -60px; left: 0;
+    width: 100%; height: calc(100% + 60px);
+    border: 0; background: #f0f2f5;
     display: block;
   }
 
@@ -45,12 +53,14 @@
   </div>
 </div>
 
-<iframe
-  id="kanbanFrame"
-  src="https://script.google.com/a/macros/medistream.co.kr/s/AKfycbxPzbK5T8i_ArkUd5LGjPfI--XwxdYRb8KkuARKlU6lTuAd94TJxVtuJYTu6kINSAV_GQ/exec"
-  title="MD Squad 칸반보드"
-  referrerpolicy="no-referrer-when-downgrade"
-  allow="clipboard-read; clipboard-write"></iframe>
+<div class="iframe-wrap">
+  <iframe
+    id="kanbanFrame"
+    src="https://script.google.com/a/macros/medistream.co.kr/s/AKfycbxPzbK5T8i_ArkUd5LGjPfI--XwxdYRb8KkuARKlU6lTuAd94TJxVtuJYTu6kINSAV_GQ/exec"
+    title="MD Squad 칸반보드"
+    referrerpolicy="no-referrer-when-downgrade"
+    allow="clipboard-read; clipboard-write"></iframe>
+</div>
 
 </body>
 </html>
