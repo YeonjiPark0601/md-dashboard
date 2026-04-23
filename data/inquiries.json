@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-23T07:40:47.016Z",
+  "updated": "2026-04-23T09:04:59.304Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -82,6 +82,26 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "시연 체험 희망",
+      "leadGrade": ""
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 23 오후 05:54:47",
+      "date": "2026-04-23",
+      "name": "유동원",
+      "cid": "5d60d0a94e77525ec5ca1446",
+      "phone": "010-4830-5225",
+      "product": "[은성] V-메타쉐이프 (Meta Shape)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "693960a721009623ac43112a",
+      "clinic": "동원한의원",
+      "region": "경기도 수원시",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
       "leadGrade": ""
     },
     {
