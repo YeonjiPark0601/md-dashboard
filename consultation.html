@@ -1455,6 +1455,7 @@ function saveInlineField(inp) {
         sOv[id] = 'Demo';
         localStorage.setItem('md_consult_ext_stages', JSON.stringify(sOv));
       }
+      syncUpdate(EXTERNAL_DATA[idx]).catch(function(){});
     }
   } else {
     var d = loadLocalOnly();
@@ -1465,6 +1466,7 @@ function saveInlineField(inp) {
         d[idx].stage = 'Demo';
       }
       saveData(d);
+      syncUpdate(d[idx]).catch(function(){});
     }
   }
   renderTable();
