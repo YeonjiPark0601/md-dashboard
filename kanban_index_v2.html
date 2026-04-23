@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<base target="_top">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MD Squad 칸반보드</title>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', -apple-system, 'Malgun Gothic', sans-serif; background: #f0f2f5; color: #333; min-height: 100vh; }
+
+/* Header */
+.sticky-top { position: sticky; top: 0; z-index: 100; }
+.header { background: linear-gradient(135deg, #1a1a2e, #16213e); color: #fff; padding: 16px 30px; display: flex; justify-content: space-between; align-items: center; }
+.header h1 { font-size: 20px; font-weight: 600; }
+.header .updated { font-size: 12px; color: #8899aa; }
+
+/* Board */
+.board-wrap { padding: 20px; max-width: 1600px; margin: 0 auto; }
+
+/* Tabs */
+.tabs { display: flex; gap: 4px; border-bottom: 2px solid #e5e7eb; margin-bottom: 14px; }
+.tab { background: transparent; border: none; padding: 11px 20px; font-size: 13.5px; font-weight: 600; color: #6b7280; cursor: pointer; font-family: inherit; border-radius: 8px 8px 0 0; border-bottom: 2px solid transparent; margin-bottom: -2px; display: inline-flex; align-items: center; gap: 8px; transition: color 0.15s, background 0.15s; }
+.tab:hover { color: #1a73e8; background: #f8fafc; }
+.tab.active { color: #1a73e8; border-bottom-color: #1a73e8; background: #eff6ff; }
+.tab-badge { background: #e5e7eb; color: #4b5563; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; min-width: 22px; text-align: center; }
+.tab.active .tab-badge { background: #dbeafe; color: #1e40af; }
+.view { display: none; }
+.view.active { display: block; }
+
+/* Toolbar */
+.toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.toolbar-left { display: flex; align-items: center; gap: 10px; }
+.btn-new { background: #1a73e8; color: #fff; border: none; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 1px 3px rgba(26,115,232,0.25); transition: all 0.12s; font-family: inherit; }
+.btn-new:hover { background: #1557b0; transform: translateY(-1px); box-shadow: 0 3px 8px rgba(26,115,232,0.35); }
+.btn-new .plus { font-size: 16px; font-weight: 700; line-height: 1; }
+.btn-refresh { background: #fff; border: 1px solid #d5d9e0; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; color: #4b5563; cursor: pointer; font-family: inherit; transition: background 0.15s; }
+.btn-refresh:hover { background: #f3f4f6; }
+.toolbar-right { font-size: 12px; color: #6b7280; }
+
+/* Filter bar */
+.filters { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+.filter-dropdown { position: relative; }
+.filter-trigger { padding: 8px 12px; border: 1px solid #d5d9e0; border-radius: 8px; font-size: 12px; font-weight: 600; color: #4b5563; background: #fff; cursor: pointer; font-family: inherit; min-width: 140px; display: flex; justify-content: space-between; align-items: center; gap: 8px; transition: border-color 0.15s, background 0.15s; }
+.filter-trigger:hover { border-color: #4285f4; }
+.filter-trigger.active { border-color: #4285f4; color: #1a73e8; background: #eff6ff; }
+.filter-caret { font-size: 10px; color: #9ca3af; }
+.filter-trigger.active .filter-caret { color: #1a73e8; }
+.filter-panel { display: none; position: absolute; top: calc(100% + 4px); left: 0; z-index: 50; background: #fff; border: 1px solid #d5d9e0; border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,0.12); min-width: 180px; max-height: 320px; overflow-y: auto; padding: 6px; }
+.filter-dropdown.open .filter-panel { display: block; }
+.filter-options { display: flex; flex-direction: column; gap: 2px; }
+.filter-option { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 6px; cursor: pointer; font-size: 12.5px; color: #4b5563; user-select: none; }
+.filter-option:hover { background: #f3f4f6; }
+.filter-option input[type="checkbox"] { accent-color: #4285f4; cursor: pointer; margin: 0; }
+.filter-empty { padding: 10px; color: #9ca3af; font-size: 12px; text-align: center; }
+.btn-clear-filters { background: transparent; border: none; padding: 6px 10px; font-size: 12px; font-weight: 600; color: #6b7280; cursor: pointer; font-family: inherit; border-radius: 6px; }
+.btn-clear-filters:hover { background: #f3f4f6; color: #1a73e8; }
+
+/* Tip bar */
+.tip-bar {
+  display: flex; align-items: center; gap: 8px;
+  background: #eef4fe; color: #1e40af;
+  padding: 10px 14px; border-radius: 10px;
+  font-size: 12.5px; margin-bottom: 14px;
+  border-left: 3px solid #4285f4;
+}
+.tip-bar.tip-archive { background: #f3f4f6; color: #4b5563; border-left-color: #9ca3af; }
+.tip-bar .tip-icon { font-size: 14px; }
+.tip-bar strong { font-weight: 700; }
+
+/* Dashboard */
+.dashboard { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 18px; }
+.dash-card { background: #fff; border-radius: 10px; padding: 12px 14px 10px 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border-top: 3px solid #d5d9e0; }
+.dash-card[data-status="backlog"] { border-top-color: #94a3b8; }
+.dash-card[data-status="week"]    { border-top-color: #4285f4; }
+.dash-card[data-status="doing"]   { border-top-color: #fbbc04; }
+.dash-card[data-status="review"]  { border-top-color: #34a853; }
+.dash-card[data-status="drop"]    { border-top-color: #9ca3af; }
+.dash-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+.dash-title { font-size: 12px; font-weight: 700; color: #4b5563; }
+.dash-count { font-size: 24px; font-weight: 700; color: #1a1a2e; line-height: 1; }
+.dash-subs { display: flex; flex-wrap: wrap; gap: 3px 7px; font-size: 10.5px; color: #9ca3af; min-height: 14px; margin-top: 4px; }
+.dash-sub { display: inline-flex; align-items: center; gap: 3px; }
+.dash-sub-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+.dash-empty { color: #d5d9e0; font-style: italic; }
+
+.board { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; align-items: start; }
+
+/* Column */
+.column { background: #eef0f4; border-radius: 12px; padding: 12px; min-height: calc(100vh - 200px); display: flex; flex-direction: column; gap: 10px; }
+.column-header { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px 10px 8px; border-bottom: 2px solid transparent; }
+.column-title { font-size: 13px; font-weight: 700; color: #333; display: flex; align-items: center; gap: 8px; }
+.column-badge { background: rgba(0,0,0,0.08); color: #555; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
+.column-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.col-backlog .column-dot { background: #94a3b8; } .col-week .column-dot { background: #4285f4; } .col-doing .column-dot { background: #fbbc04; } .col-review .column-dot { background: #34a853; } .col-drop .column-dot { background: #9ca3af; }
+.col-backlog .column-header { border-bottom-color: #94a3b8; } .col-week .column-header { border-bottom-color: #4285f4; } .col-doing .column-header { border-bottom-color: #fbbc04; } .col-review .column-header { border-bottom-color: #34a853; } .col-drop .column-header { border-bottom-color: #9ca3af; }
+
+/* Cards container */
+.cards { display: flex; flex-direction: column; gap: 10px; flex: 1; min-height: 80px; }
+
+/* Card */
+.card { background: #fff; border-radius: 10px; padding: 12px 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); cursor: grab; transition: box-shadow 0.15s, transform 0.15s; border-left: 4px solid #d5d9e0; position: relative; user-select: none; }
+.card:active { cursor: grabbing; }
+.card:hover { box-shadow: 0 3px 10px rgba(0,0,0,0.12); transform: translateY(-1px); }
+.card.sortable-ghost { opacity: 0.25; background: #eef4fe; box-shadow: inset 0 0 0 2px rgba(66,133,244,0.45); }
+.card.sortable-ghost > * { visibility: hidden; }
+.card.sortable-chosen { cursor: grabbing; }
+.card.sortable-drag { box-shadow: 0 18px 38px rgba(20, 30, 80, 0.22), 0 4px 10px rgba(0,0,0,0.08); opacity: 1; cursor: grabbing; border-left-width: 4px; }
+.card[data-priority="긴급"] { border-left-color: #dc2626; } .card[data-priority="높음"] { border-left-color: #ea580c; } .card[data-priority="중간"] { border-left-color: #2563eb; } .card[data-priority="낮음"] { border-left-color: #6b7280; }
+
+.card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; gap: 6px; flex-wrap: wrap; }
+.card-top .card-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+.card-priority, .card-category { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 8px; letter-spacing: 0.2px; white-space: nowrap; }
+.card-priority[data-p="긴급"] { background: #fef2f2; color: #dc2626; }
+.card-priority[data-p="높음"] { background: #fff7ed; color: #ea580c; }
+.card-priority[data-p="중간"] { background: #eff6ff; color: #2563eb; }
+.card-priority[data-p="낮음"] { background: #f3f4f6; color: #6b7280; }
+.card-category[data-c="클래스"]   { background: #f3e8ff; color: #7c3aed; }
+.card-category[data-c="초음파"]   { background: #e0f2fe; color: #0369a1; }
+.card-category[data-c="턴키"]     { background: #d1fae5; color: #047857; }
+.card-category[data-c="피부미용"] { background: #fce7f3; color: #be185d; }
+.card-category[data-c="일반기기"] { background: #fef3c7; color: #b45309; }
+.card-category[data-c="기타"]     { background: #e5e7eb; color: #374151; }
+
+.card-title { font-size: 13.5px; font-weight: 600; color: #1a1a2e; line-height: 1.35; margin-bottom: 10px; word-break: break-word; }
+.card-meta { display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; color: #6b7280; gap: 6px; }
+.card-assignee { font-weight: 600; color: #4b5563; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 60%; }
+.card-due { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.card-due .due-date { color: #9ca3af; }
+.card-due .dday { font-weight: 700; padding: 2px 7px; border-radius: 8px; background: #f3f4f6; color: #6b7280; }
+.card-due .dday.urgent { background: #fef2f2; color: #dc2626; }
+.card-due .dday.warn { background: #fff7ed; color: #ea580c; }
+.card-due .dday.ok { background: #ecfdf5; color: #059669; }
+.card-due .dday.overdue { background: #7f1d1d; color: #fff; }
+
+/* Add card (+) */
+.card-add { background: transparent; border: 2px dashed #c8ccd2; border-radius: 10px; padding: 18px; color: #8a94a3; font-size: 22px; font-weight: 500; text-align: center; cursor: pointer; transition: all 0.15s; user-select: none; }
+.card-add:hover { border-color: #4285f4; color: #4285f4; background: rgba(66,133,244,0.04); }
+
+/* Archive list */
+.archive-wrap { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); overflow: hidden; }
+.archive-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.archive-table thead th { text-align: left; padding: 12px 14px; font-size: 11px; font-weight: 700; color: #6b7280; letter-spacing: 0.3px; border-bottom: 1px solid #e5e7eb; background: #f9fafb; text-transform: uppercase; }
+.archive-table tbody tr { cursor: pointer; transition: background 0.1s; }
+.archive-table tbody tr:hover { background: #f9fafb; }
+.archive-table tbody td { padding: 12px 14px; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
+.archive-table tbody tr:last-child td { border-bottom: none; }
+.archive-title-cell { font-weight: 600; color: #1a1a2e; max-width: 420px; }
+.archive-meta-badges { display: inline-flex; gap: 4px; flex-wrap: wrap; }
+.archive-overdue { display: inline-block; font-size: 11px; color: #6b7280; font-weight: 600; background: #f3f4f6; padding: 2px 8px; border-radius: 8px; }
+.archive-empty { padding: 60px 20px; text-align: center; color: #9ca3af; font-size: 13.5px; }
+
+/* Modal */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(20, 24, 34, 0.55); backdrop-filter: blur(2px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+.modal-backdrop.show { display: flex; }
+.modal { background: #fff; border-radius: 14px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.25); animation: modalIn 0.18s ease-out; }
+@keyframes modalIn { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.modal-header { padding: 18px 22px; border-bottom: 1px solid #eef0f4; display: flex; justify-content: space-between; align-items: center; }
+.modal-header h2 { font-size: 16px; font-weight: 700; color: #1a1a2e; }
+.status-hint { font-size: 12px; color: #6b7280; background: #f3f4f6; padding: 3px 10px; border-radius: 12px; }
+.modal-close { background: none; border: none; font-size: 20px; color: #9ca3af; cursor: pointer; line-height: 1; padding: 0 6px; }
+.modal-close:hover { color: #333; }
+.modal-body { padding: 20px 22px; display: flex; flex-direction: column; gap: 16px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.field label { font-size: 12px; font-weight: 600; color: #4b5563; }
+.field label .req { color: #e53e3e; margin-left: 3px; }
+.field input[type="text"], .field input[type="date"], .field textarea { padding: 9px 11px; border: 1px solid #d5d9e0; border-radius: 8px; font-size: 13px; font-family: inherit; color: #1a1a2e; background: #fff; transition: border-color 0.15s, box-shadow 0.15s; }
+.field input:focus, .field textarea:focus { outline: none; border-color: #4285f4; box-shadow: 0 0 0 3px rgba(66,133,244,0.15); }
+.field textarea { resize: vertical; min-height: 70px; }
+
+/* Status group */
+.status-group { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.status-btn { padding: 8px 4px; border: 1.5px solid #d5d9e0; border-radius: 8px; font-size: 12px; font-weight: 600; background: #fff; color: #6b7280; cursor: pointer; transition: all 0.12s; user-select: none; text-align: center; }
+.status-btn:hover { border-color: #4285f4; color: #4285f4; }
+.status-btn.active { color: #fff; border-color: transparent; }
+.status-btn[data-value="backlog"].active { background: #94a3b8; }
+.status-btn[data-value="week"].active    { background: #4285f4; }
+.status-btn[data-value="doing"].active   { background: #fbbc04; color: #1a1a2e; }
+.status-btn[data-value="review"].active  { background: #34a853; }
+.status-btn[data-value="drop"].active    { background: #9ca3af; }
+
+.category-group { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+.category-btn { padding: 8px 4px; border: 1.5px solid #d5d9e0; border-radius: 8px; font-size: 12px; font-weight: 600; background: #fff; color: #6b7280; cursor: pointer; transition: all 0.12s; user-select: none; text-align: center; }
+.category-btn:hover { border-color: #4285f4; color: #4285f4; }
+.category-btn.active { color: #fff; border-color: transparent; }
+.category-btn[data-value="클래스"].active { background: #7c3aed; }
+.category-btn[data-value="초음파"].active { background: #0ea5e9; }
+.category-btn[data-value="턴키"].active { background: #059669; }
+.category-btn[data-value="피부미용"].active { background: #db2777; }
+.category-btn[data-value="일반기기"].active { background: #d97706; }
+.category-btn[data-value="기타"].active { background: #4b5563; }
+
+.category-hint { font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 12px; background: #f3f4f6; color: #9ca3af; border: 1px solid transparent; }
+.category-hint[data-c="클래스"]   { background: #f3e8ff; color: #7c3aed; }
+.category-hint[data-c="초음파"]   { background: #e0f2fe; color: #0369a1; }
+.category-hint[data-c="턴키"]     { background: #d1fae5; color: #047857; }
+.category-hint[data-c="피부미용"] { background: #fce7f3; color: #be185d; }
+.category-hint[data-c="일반기기"] { background: #fef3c7; color: #b45309; }
+.category-hint[data-c="기타"]     { background: #e5e7eb; color: #374151; }
+
+.maincat-group { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.maincat-btn { padding: 8px 4px; border: 1.5px solid #d5d9e0; border-radius: 8px; font-size: 12px; font-weight: 600; background: #fff; color: #6b7280; cursor: pointer; transition: all 0.12s; user-select: none; text-align: center; }
+.maincat-btn:hover { border-color: #4285f4; color: #4285f4; }
+.maincat-btn.active { color: #fff; border-color: transparent; }
+.maincat-btn[data-value="운영"].active   { background: #2563eb; }
+.maincat-btn[data-value="마케팅"].active { background: #db2777; }
+.maincat-btn[data-value="영업"].active   { background: #059669; }
+.maincat-btn[data-value="교육"].active   { background: #d97706; }
+.maincat-btn[data-value="기타"].active   { background: #4b5563; }
+
+.card-maincat { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 8px; letter-spacing: 0.2px; white-space: nowrap; }
+.card-maincat[data-m="운영"]   { background: #dbeafe; color: #1e40af; }
+.card-maincat[data-m="마케팅"] { background: #fce7f3; color: #be185d; }
+.card-maincat[data-m="영업"]   { background: #d1fae5; color: #047857; }
+.card-maincat[data-m="교육"]   { background: #fef3c7; color: #b45309; }
+.card-maincat[data-m="기타"]   { background: #e5e7eb; color: #374151; }
+
+.priority-group { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.priority-btn { padding: 9px 6px; border: 1.5px solid #d5d9e0; border-radius: 8px; font-size: 13px; font-weight: 600; background: #fff; color: #6b7280; cursor: pointer; transition: all 0.12s; user-select: none; }
+.priority-btn:hover { border-color: #9ca3af; }
+.priority-btn.active { color: #fff; border-color: transparent; }
+.priority-btn[data-value="긴급"].active { background: #dc2626; }
+.priority-btn[data-value="높음"].active { background: #ea580c; }
+.priority-btn[data-value="중간"].active { background: #2563eb; }
+.priority-btn[data-value="낮음"].active { background: #6b7280; }
+.priority-btn[data-value="긴급"]:hover:not(.active) { border-color: #dc2626; color: #dc2626; }
+.priority-btn[data-value="높음"]:hover:not(.active) { border-color: #ea580c; color: #ea580c; }
+.priority-btn[data-value="중간"]:hover:not(.active) { border-color: #2563eb; color: #2563eb; }
+.priority-btn[data-value="낮음"]:hover:not(.active) { border-color: #6b7280; color: #6b7280; }
+
+.modal-footer { padding: 14px 22px 20px 22px; display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #eef0f4; }
+.btn { padding: 9px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; transition: all 0.12s; font-family: inherit; }
+.btn-secondary { background: #f3f4f6; color: #4b5563; }
+.btn-secondary:hover { background: #e5e7eb; }
+.btn-primary { background: #1a73e8; color: #fff; }
+.btn-primary:hover { background: #1557b0; }
+.btn-primary:disabled { background: #9ca3af; cursor: not-allowed; }
+
+.audit-row { padding: 10px 22px; font-size: 11.5px; color: #9ca3af; border-top: 1px dashed #eef0f4; background: #fafbfc; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.audit-row .audit-label { font-weight: 600; color: #6b7280; margin-right: 4px; }
+.audit-row .audit-empty { font-style: italic; }
+
+/* Loading overlay */
+.loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.85); display: flex; align-items: center; justify-content: center; z-index: 2000; font-size: 14px; color: #4b5563; }
+.loading-overlay.hidden { display: none; }
+.spinner { width: 30px; height: 30px; border: 3px solid #e5e7eb; border-top-color: #1a73e8; border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 12px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Responsive */
+@media (max-width: 1200px) { .board { grid-template-columns: repeat(3, 1fr); } .dashboard { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 800px) { .board { grid-template-columns: 1fr; } .dashboard { grid-template-columns: repeat(2, 1fr); } .column { min-height: auto; } .field-row { grid-template-columns: 1fr; } .status-group { grid-template-columns: repeat(3, 1fr); } .archive-table thead { display: none; } .archive-table, .archive-table tbody, .archive-table tr, .archive-table td { display: block; width: 100%; } .archive-table tr { padding: 10px 14px; border-bottom: 1px solid #f3f4f6; } .archive-table td { padding: 4px 0; border: none; } }
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div>서버에서 불러오는 중...</div>
+
+<div class="sticky-top">
+  <div class="header">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <a href="https://yeonjipark0601.github.io/md-dashboard/home.html" target="_top" title="홈으로" style="font-size:18px;padding:4px 10px;border-radius:6px;background:rgba(255,255,255,.1);color:#fff;text-decoration:none;display:inline-flex;align-items:center;">&#8962;</a>
+      <h1>MD Squad 칸반보드</h1>
+    </div>
+    <div class="updated" id="lastUpdated">MD Squad · 업무현황판</div>
+  </div>
+</div>
+
+<div class="board-wrap">
+
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <button type="button" class="btn-new" id="newCardBtn"><span class="plus">+</span> 새 카드</button>
+      <button type="button" class="btn-refresh" id="refreshBtn">↻ 새로고침</button>
+    </div>
+    <div class="toolbar-right" id="toolbarRight"></div>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button type="button" class="tab active" data-view="kanban">칸반 보드</button>
+    <button type="button" class="tab" data-view="archive">완료 리스트 <span class="tab-badge" id="archiveBadge">0</span></button>
+  </div>
+
+  <div class="filters" id="filters">
+    <div class="filter-dropdown" data-filter="assignee">
+      <button type="button" class="filter-trigger"><span class="filter-label">담당자 전체</span><span class="filter-caret">▾</span></button>
+      <div class="filter-panel"><div class="filter-options"></div></div>
+    </div>
+    <div class="filter-dropdown" data-filter="category">
+      <button type="button" class="filter-trigger"><span class="filter-label">파트 전체</span><span class="filter-caret">▾</span></button>
+      <div class="filter-panel"><div class="filter-options"></div></div>
+    </div>
+    <div class="filter-dropdown" data-filter="mainCategory">
+      <button type="button" class="filter-trigger"><span class="filter-label">카테고리 전체</span><span class="filter-caret">▾</span></button>
+      <div class="filter-panel"><div class="filter-options"></div></div>
+    </div>
+    <button type="button" class="btn-clear-filters" id="clearFiltersBtn" style="display:none;">× 필터 초기화</button>
+  </div>
+
+  <div class="view active" data-view="kanban">
+    <div class="tip-bar">
+      <span class="tip-icon">💡</span>
+      <span><strong>카드 드래그</strong>해서 컬럼 이동, <strong>카드 클릭</strong>해서 내용·상태 수정 — 두 가지 방식 모두 가능해요. <strong>완료 및 리뷰</strong> 상태에서 기한일이 <strong>2주 경과</strong>하면 자동으로 완료 리스트 탭으로 이동합니다.</span>
+    </div>
+
+    <div class="dashboard" id="dashboard">
+      <div class="dash-card" data-status="backlog"><div class="dash-head"><span class="dash-title">팀과업</span><span class="dash-count" data-dash-count>0</span></div><div class="dash-subs" data-subs></div></div>
+      <div class="dash-card" data-status="week"><div class="dash-head"><span class="dash-title">이번주 할일</span><span class="dash-count" data-dash-count>0</span></div><div class="dash-subs" data-subs></div></div>
+      <div class="dash-card" data-status="doing"><div class="dash-head"><span class="dash-title">진행중</span><span class="dash-count" data-dash-count>0</span></div><div class="dash-subs" data-subs></div></div>
+      <div class="dash-card" data-status="review"><div class="dash-head"><span class="dash-title">완료 및 리뷰</span><span class="dash-count" data-dash-count>0</span></div><div class="dash-subs" data-subs></div></div>
+      <div class="dash-card" data-status="drop"><div class="dash-head"><span class="dash-title">드랍</span><span class="dash-count" data-dash-count>0</span></div><div class="dash-subs" data-subs></div></div>
+    </div>
+
+    <div class="board">
+      <div class="column col-backlog" data-status="backlog"><div class="column-header"><div class="column-title"><span class="column-dot"></span>팀과업</div><span class="column-badge" data-count>0</span></div><div class="cards" data-cards></div></div>
+      <div class="column col-week" data-status="week"><div class="column-header"><div class="column-title"><span class="column-dot"></span>이번주 할일</div><span class="column-badge" data-count>0</span></div><div class="cards" data-cards></div></div>
+      <div class="column col-doing" data-status="doing"><div class="column-header"><div class="column-title"><span class="column-dot"></span>진행중</div><span class="column-badge" data-count>0</span></div><div class="cards" data-cards></div></div>
+      <div class="column col-review" data-status="review"><div class="column-header"><div class="column-title"><span class="column-dot"></span>완료 및 리뷰</div><span class="column-badge" data-count>0</span></div><div class="cards" data-cards></div></div>
+      <div class="column col-drop" data-status="drop"><div class="column-header"><div class="column-title"><span class="column-dot"></span>드랍</div><span class="column-badge" data-count>0</span></div><div class="cards" data-cards></div></div>
+    </div>
+  </div>
+
+  <div class="view" data-view="archive">
+    <div class="tip-bar tip-archive">
+      <span class="tip-icon">📦</span>
+      <span><strong>완료 및 리뷰</strong> 상태에서 기한일이 <strong>2주 이상 경과</strong>한 카드들입니다. 행을 클릭하면 수정할 수 있고, 상태나 기한을 변경하면 다시 칸반으로 돌아갑니다.</span>
+    </div>
+    <div class="archive-wrap" id="archiveList"></div>
+  </div>
+</div>
+
+<!-- 카드 생성/수정 모달 -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal" role="dialog" aria-labelledby="modalTitle">
+    <div class="modal-header">
+      <h2 id="modalTitle">새 업무 카드</h2>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="category-hint" id="categoryHint">파트 미선택</span>
+        <span class="status-hint" id="statusHint">팀과업</span>
+        <button type="button" class="modal-close" id="modalClose" aria-label="닫기">&times;</button>
+      </div>
+    </div>
+    <form id="cardForm" autocomplete="off">
+      <div class="modal-body">
+        <div class="field">
+          <label>상태<span class="req">*</span></label>
+          <div class="status-group" id="statusGroup">
+            <div class="status-btn" data-value="backlog">팀과업</div>
+            <div class="status-btn" data-value="week">이번주 할일</div>
+            <div class="status-btn" data-value="doing">진행중</div>
+            <div class="status-btn" data-value="review">완료 및 리뷰</div>
+            <div class="status-btn" data-value="drop">드랍</div>
+          </div>
+          <input type="hidden" id="f-status" name="status" required>
+        </div>
+        <div class="field">
+          <label>파트<span class="req">*</span></label>
+          <div class="category-group" id="categoryGroup">
+            <div class="category-btn" data-value="클래스">클래스</div>
+            <div class="category-btn" data-value="초음파">초음파</div>
+            <div class="category-btn" data-value="턴키">턴키</div>
+            <div class="category-btn" data-value="피부미용">피부미용</div>
+            <div class="category-btn" data-value="일반기기">일반기기</div>
+            <div class="category-btn" data-value="기타">기타</div>
+          </div>
+          <input type="hidden" id="f-category" name="category" required>
+        </div>
+        <div class="field">
+          <label>카테고리<span class="req">*</span></label>
+          <div class="maincat-group" id="maincatGroup">
+            <div class="maincat-btn" data-value="운영">운영</div>
+            <div class="maincat-btn" data-value="마케팅">마케팅</div>
+            <div class="maincat-btn" data-value="영업">영업</div>
+            <div class="maincat-btn" data-value="교육">교육</div>
+            <div class="maincat-btn" data-value="기타">기타</div>
+          </div>
+          <input type="hidden" id="f-mainCategory" name="mainCategory" required>
+        </div>
+        <div class="field"><label for="f-title">제목<span class="req">*</span></label><input type="text" id="f-title" name="title" placeholder="예) KIMES 현장강의 기획" required></div>
+        <div class="field">
+          <label>중요도<span class="req">*</span></label>
+          <div class="priority-group" id="priorityGroup">
+            <div class="priority-btn" data-value="긴급">긴급</div>
+            <div class="priority-btn" data-value="높음">높음</div>
+            <div class="priority-btn" data-value="중간">중간</div>
+            <div class="priority-btn" data-value="낮음">낮음</div>
+          </div>
+          <input type="hidden" id="f-priority" name="priority" required>
+        </div>
+        <div class="field"><label for="f-memo">메모</label><textarea id="f-memo" name="memo" rows="6" placeholder="1. 이 과업의 key result는 무엇인가요?&#10;2. 프로젝트의 상세 내용을 5W1H 형식에 맞게 작성해주세요."></textarea></div>
+        <div class="field-row">
+          <div class="field"><label for="f-assignee">담당자<span class="req">*</span></label><input type="text" id="f-assignee" name="assignee" placeholder="예) 조대현" required></div>
+          <div class="field"><label for="f-due">기한</label><input type="date" id="f-due" name="due"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label for="f-requester">요청자</label><input type="text" id="f-requester" name="requester" placeholder="예) 조대현"></div>
+          <div class="field"><label for="f-requestDate">요청일</label><input type="date" id="f-requestDate" name="requestDate"></div>
+        </div>
+        <div class="field"><label for="f-thread">스레드 링크</label><input type="text" id="f-thread" name="thread" placeholder="https://integration-all.slack.com/archives/... (선택)"></div>
+        <div class="field"><label for="f-related">관련업무</label><input type="text" id="f-related" name="related" placeholder="예) 피부미용 10+3 - 2번"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="modalCancel">취소</button>
+        <button type="submit" class="btn btn-primary" id="modalSave">저장</button>
+      </div>
+      <div class="audit-row" id="auditRow" style="display:none;">
+        <div><span class="audit-label">생성</span><span id="auditCreated" class="audit-empty">—</span></div>
+        <div><span class="audit-label">마지막 수정</span><span id="auditUpdated" class="audit-empty">—</span></div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+// ===== Apps Script 서버 호출 래퍼 (Promise 기반) =====
+function runServer(fnName, ...args) {
+  return new Promise((resolve, reject) => {
+    google.script.run
+      .withSuccessHandler(resolve)
+      .withFailureHandler(err => reject(new Error((err && err.message) || String(err))))
+      [fnName](...args);
+  });
+}
+
+const api = {
+  load:        ()              => runServer('listCards'),
+  createCard:  (card)          => runServer('createCard', JSON.stringify(card)),
+  updateCard:  (card)          => runServer('updateCard', JSON.stringify(card)),
+  moveCard:    (id, status)    => runServer('moveCard', id, status),
+};
+
+let serverUser = null;
+let lastSyncAt = null;
+
+// ===== 상태 라벨 / 아카이브 기준 =====
+const STATUS_LABELS = { backlog: '팀과업', week: '이번주 할일', doing: '진행중', review: '완료 및 리뷰', drop: '드랍' };
+const ARCHIVE_STATUS = 'review';
+const ARCHIVE_DAYS = 14;
+
+// ===== DOM 참조 =====
+const modal = document.getElementById('modalBackdrop');
+const form = document.getElementById('cardForm');
+const statusHint = document.getElementById('statusHint');
+const categoryHint = document.getElementById('categoryHint');
+const priorityGroup = document.getElementById('priorityGroup');
+const priorityInput = document.getElementById('f-priority');
+const categoryGroup = document.getElementById('categoryGroup');
+const categoryInput = document.getElementById('f-category');
+const maincatGroup = document.getElementById('maincatGroup');
+const maincatInput = document.getElementById('f-mainCategory');
+const statusGroup = document.getElementById('statusGroup');
+const statusInput = document.getElementById('f-status');
+const modalTitle = document.getElementById('modalTitle');
+const auditRow = document.getElementById('auditRow');
+const auditCreated = document.getElementById('auditCreated');
+const auditUpdated = document.getElementById('auditUpdated');
+const boardEl = document.querySelector('.board');
+const archiveListEl = document.getElementById('archiveList');
+const loadingOverlay = document.getElementById('loadingOverlay');
+let currentStatus = null;
+let editingId = null;
+let sortableInstances = [];
+let isDragging = false;
+let currentView = 'kanban';
+const cards = [];
+const filters = { assignee: [], category: [], mainCategory: [] };
+const FILTER_ORDER = {
+  category: ['클래스', '초음파', '턴키', '피부미용', '일반기기', '기타'],
+  mainCategory: ['운영', '마케팅', '영업', '교육', '기타']
+};
+
+function getCurrentUser() { return serverUser || '익명'; }
+
+function fmtDateTime(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (isNaN(d)) return iso;
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function escapeHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+// ===== 아카이브 판정 =====
+function daysSinceDue(dueStr) {
+  if (!dueStr) return null;
+  const due = new Date(dueStr); due.setHours(0, 0, 0, 0);
+  if (isNaN(due)) return null;
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  return Math.round((today - due) / 86400000);
+}
+
+function isArchivedCard(c) {
+  if (c.status !== ARCHIVE_STATUS) return false;
+  const d = daysSinceDue(c.due);
+  return d !== null && d >= ARCHIVE_DAYS;
+}
+
+// ===== 탭 전환 =====
+document.querySelectorAll('#tabs .tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    if (tab.classList.contains('active')) return;
+    currentView = tab.dataset.view;
+    render();
+  });
+});
+
+// ===== 모달 제어 =====
+document.getElementById('newCardBtn').addEventListener('click', () => { currentStatus = 'backlog'; openModal(currentStatus); });
+document.getElementById('refreshBtn').addEventListener('click', () => reloadFromServer());
+
+document.querySelectorAll('.filter-dropdown').forEach(dd => {
+  const trigger = dd.querySelector('.filter-trigger');
+  trigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    document.querySelectorAll('.filter-dropdown.open').forEach(other => {
+      if (other !== dd) other.classList.remove('open');
+    });
+    dd.classList.toggle('open');
+  });
+  dd.querySelector('.filter-options').addEventListener('change', (e) => {
+    const cb = e.target.closest('input[type="checkbox"]');
+    if (!cb) return;
+    const key = dd.dataset.filter;
+    const val = cb.value;
+    if (cb.checked) {
+      if (!filters[key].includes(val)) filters[key].push(val);
+    } else {
+      filters[key] = filters[key].filter(v => v !== val);
+    }
+    render();
+  });
+});
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.filter-dropdown')) {
+    document.querySelectorAll('.filter-dropdown.open').forEach(dd => dd.classList.remove('open'));
+  }
+});
+
+document.getElementById('clearFiltersBtn').addEventListener('click', () => {
+  Object.keys(filters).forEach(k => { filters[k] = []; });
+  render();
+});
+
+function openModal(status, cardData = null) {
+  form.reset();
+  priorityGroup.querySelectorAll('.priority-btn').forEach(b => b.classList.remove('active'));
+  categoryGroup.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+  maincatGroup.querySelectorAll('.maincat-btn').forEach(b => b.classList.remove('active'));
+  statusGroup.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active'));
+  priorityInput.value = '';
+  categoryInput.value = '';
+  maincatInput.value = '';
+  statusInput.value = '';
+  categoryHint.textContent = '파트 미선택';
+  categoryHint.removeAttribute('data-c');
+  statusHint.textContent = STATUS_LABELS[status] || status;
+
+  if (cardData) {
+    editingId = cardData.id;
+    modalTitle.textContent = '카드 수정';
+    document.getElementById('f-title').value       = cardData.title       || '';
+    document.getElementById('f-memo').value        = cardData.memo        || '';
+    document.getElementById('f-assignee').value    = cardData.assignee    || '';
+    document.getElementById('f-due').value         = (cardData.due || '').slice(0, 10);
+    document.getElementById('f-requester').value   = cardData.requester   || '';
+    document.getElementById('f-requestDate').value = (cardData.requestDate || '').slice(0, 10);
+    document.getElementById('f-thread').value      = cardData.thread      || '';
+    document.getElementById('f-related').value     = cardData.related     || '';
+
+    if (cardData.priority) {
+      const pBtn = priorityGroup.querySelector(`[data-value="${cardData.priority}"]`);
+      if (pBtn) { pBtn.classList.add('active'); priorityInput.value = cardData.priority; }
+    }
+    if (cardData.category) {
+      const cBtn = categoryGroup.querySelector(`[data-value="${cardData.category}"]`);
+      if (cBtn) {
+        cBtn.classList.add('active');
+        categoryInput.value = cardData.category;
+        categoryHint.textContent = cardData.category;
+        categoryHint.setAttribute('data-c', cardData.category);
+      }
+    }
+    if (cardData.mainCategory) {
+      const mBtn = maincatGroup.querySelector(`[data-value="${cardData.mainCategory}"]`);
+      if (mBtn) {
+        mBtn.classList.add('active');
+        maincatInput.value = cardData.mainCategory;
+      }
+    }
+    auditRow.style.display = 'flex';
+    const createdText = cardData.createdBy ? `${cardData.createdBy} · ${fmtDateTime(cardData.createdAt)}` : fmtDateTime(cardData.createdAt) || '—';
+    const updatedText = cardData.updatedBy ? `${cardData.updatedBy} · ${fmtDateTime(cardData.updatedAt)}` : (cardData.updatedAt ? fmtDateTime(cardData.updatedAt) : '—');
+    auditCreated.textContent = createdText;
+    auditCreated.classList.toggle('audit-empty', createdText === '—');
+    auditUpdated.textContent = updatedText;
+    auditUpdated.classList.toggle('audit-empty', updatedText === '—');
+  } else {
+    editingId = null;
+    modalTitle.textContent = '새 업무 카드';
+    auditRow.style.display = 'none';
+    document.getElementById('f-requestDate').value = new Date().toISOString().slice(0, 10);
+  }
+
+  // 상태 버튼 초기값 세팅
+  const initialStatus = (cardData && cardData.status) ? cardData.status : status;
+  const sBtn = statusGroup.querySelector(`[data-value="${initialStatus}"]`);
+  if (sBtn) {
+    sBtn.classList.add('active');
+    statusInput.value = initialStatus;
+    statusHint.textContent = STATUS_LABELS[initialStatus] || initialStatus;
+  }
+
+  modal.classList.add('show');
+  setTimeout(() => document.getElementById('f-title').focus(), 60);
+}
+
+function closeModal() { modal.classList.remove('show'); currentStatus = null; editingId = null; }
+
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('modalCancel').addEventListener('click', closeModal);
+// 배경 클릭으로는 닫히지 않음 — 취소/X 버튼으로만 닫기
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('show')) closeModal(); });
+
+priorityGroup.querySelectorAll('.priority-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    priorityGroup.querySelectorAll('.priority-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    priorityInput.value = btn.dataset.value;
+  });
+});
+
+categoryGroup.querySelectorAll('.category-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    categoryGroup.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    categoryInput.value = btn.dataset.value;
+    categoryHint.textContent = btn.dataset.value;
+    categoryHint.setAttribute('data-c', btn.dataset.value);
+  });
+});
+
+maincatGroup.querySelectorAll('.maincat-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    maincatGroup.querySelectorAll('.maincat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    maincatInput.value = btn.dataset.value;
+  });
+});
+
+statusGroup.querySelectorAll('.status-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    statusGroup.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    statusInput.value = btn.dataset.value;
+    statusHint.textContent = STATUS_LABELS[btn.dataset.value] || btn.dataset.value;
+  });
+});
+
+// ===== 렌더링 =====
+const CAT_COLORS = { '클래스': '#7c3aed', '초음파': '#0ea5e9', '턴키': '#059669', '피부미용': '#db2777', '일반기기': '#d97706', '기타': '#4b5563' };
+
+function updateDashboard(kanbanCards) {
+  document.querySelectorAll('.dash-card').forEach(dc => {
+    const status = dc.dataset.status;
+    const list = kanbanCards.filter(c => c.status === status);
+    dc.querySelector('[data-dash-count]').textContent = list.length;
+    const catCounts = {};
+    list.forEach(c => { if (c.category) catCounts[c.category] = (catCounts[c.category] || 0) + 1; });
+    const subsEl = dc.querySelector('[data-subs]');
+    const entries = Object.entries(catCounts);
+    if (entries.length === 0) {
+      subsEl.innerHTML = '<span class="dash-empty">—</span>';
+    } else {
+      subsEl.innerHTML = entries.map(([cat, n]) =>
+        `<span class="dash-sub"><span class="dash-sub-dot" style="background:${CAT_COLORS[cat] || '#9ca3af'}"></span>${escapeHtml(cat)} ${n}</span>`
+      ).join('');
+    }
+  });
+}
+
+function getDday(dueStr) {
+  if (!dueStr) return { text: '기한 없음', cls: '' };
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const due = new Date(dueStr); due.setHours(0, 0, 0, 0);
+  const diffDays = Math.round((due - today) / 86400000);
+  if (diffDays < 0)   return { text: `D+${-diffDays} 지남`, cls: 'overdue' };
+  if (diffDays === 0) return { text: 'D-Day', cls: 'urgent' };
+  if (diffDays <= 3)  return { text: `D-${diffDays}`, cls: 'urgent' };
+  if (diffDays <= 7)  return { text: `D-${diffDays}`, cls: 'warn' };
+  if (diffDays <= 30) return { text: `D-${diffDays}`, cls: 'ok' };
+  return { text: `D-${diffDays}`, cls: '' };
+}
+
+function cardHtml(c) {
+  const dd = getDday(c.due);
+  const dueDate = c.due ? c.due.slice(5, 10).replace('-', '/') : '';
+  return `
+    <div class="card" data-id="${c.id}" data-priority="${escapeHtml(c.priority)}">
+      <div class="card-top">
+        <span class="card-priority" data-p="${escapeHtml(c.priority)}">${escapeHtml(c.priority)}</span>
+        <div class="card-badges">
+          ${c.category ? `<span class="card-category" data-c="${escapeHtml(c.category)}">${escapeHtml(c.category)}</span>` : ''}
+          ${c.mainCategory ? `<span class="card-maincat" data-m="${escapeHtml(c.mainCategory)}">${escapeHtml(c.mainCategory)}</span>` : ''}
+        </div>
+      </div>
+      <div class="card-title">${escapeHtml(c.title)}</div>
+      <div class="card-meta">
+        <div class="card-assignee">👤 ${escapeHtml(c.assignee)}</div>
+        <div class="card-due">
+          ${dueDate ? `<span class="due-date">${dueDate}</span>` : ''}
+          <span class="dday ${dd.cls}">${dd.text}</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+function splitAssignees(s) {
+  return (s || '').split(/[,、·/]/).map(x => x.trim()).filter(Boolean);
+}
+
+function sortByOrder(key, values) {
+  const order = FILTER_ORDER[key];
+  if (!order) return values.sort((a, b) => a.localeCompare(b, 'ko'));
+  return values.sort((a, b) => {
+    const ai = order.indexOf(a);
+    const bi = order.indexOf(b);
+    if (ai === -1 && bi === -1) return a.localeCompare(b, 'ko');
+    if (ai === -1) return 1;
+    if (bi === -1) return -1;
+    return ai - bi;
+  });
+}
+
+function hasActiveFilter(key) {
+  return Array.isArray(filters[key]) && filters[key].length > 0;
+}
+
+function applyFilters(list) {
+  return list.filter(c => {
+    if (hasActiveFilter('assignee')) {
+      const alist = splitAssignees(c.assignee);
+      if (!alist.some(a => filters.assignee.includes(a))) return false;
+    }
+    if (hasActiveFilter('category') && !filters.category.includes(c.category)) return false;
+    if (hasActiveFilter('mainCategory') && !filters.mainCategory.includes(c.mainCategory)) return false;
+    return true;
+  });
+}
+
+function getKanbanCards() {
+  return applyFilters(cards.filter(c => !isArchivedCard(c)));
+}
+
+function getArchiveCards() {
+  return applyFilters(cards.filter(isArchivedCard));
+}
+
+function populateFilterOptions() {
+  const labels = { assignee: '담당자', category: '파트', mainCategory: '카테고리' };
+  document.querySelectorAll('.filter-dropdown').forEach(dd => {
+    const key = dd.dataset.filter;
+    const selected = filters[key] || [];
+    let uniqueVals;
+    if (key === 'assignee') {
+      uniqueVals = [...new Set(cards.flatMap(c => splitAssignees(c.assignee)))];
+    } else {
+      uniqueVals = [...new Set(cards.map(c => c[key]).filter(Boolean))];
+    }
+    uniqueVals = sortByOrder(key, uniqueVals);
+
+    const trigger = dd.querySelector('.filter-trigger');
+    const labelEl = trigger.querySelector('.filter-label');
+    const triggerText = selected.length === 0 ? `${labels[key]} 전체`
+                       : selected.length === 1 ? selected[0]
+                       : `${labels[key]} ${selected.length}개`;
+    labelEl.textContent = triggerText;
+    trigger.classList.toggle('active', selected.length > 0);
+
+    const optionsBox = dd.querySelector('.filter-options');
+    if (uniqueVals.length === 0) {
+      optionsBox.innerHTML = '<div class="filter-empty">옵션 없음</div>';
+    } else {
+      optionsBox.innerHTML = uniqueVals.map(v => `
+        <label class="filter-option">
+          <input type="checkbox" value="${escapeHtml(v)}"${selected.includes(v) ? ' checked' : ''}>
+          <span>${escapeHtml(v)}</span>
+        </label>`).join('');
+    }
+  });
+  const anyActive = Object.keys(filters).some(hasActiveFilter);
+  document.getElementById('clearFiltersBtn').style.display = anyActive ? '' : 'none';
+}
+
+function renderKanban() {
+  const visible = getKanbanCards();
+  document.querySelectorAll('.column').forEach(col => {
+    const status = col.dataset.status;
+    const box = col.querySelector('[data-cards]');
+    const list = visible.filter(c => c.status === status);
+    box.innerHTML = list.map(cardHtml).join('') + '<div class="card-add" data-add-card>+</div>';
+    col.querySelector('[data-count]').textContent = list.length;
+  });
+  updateDashboard(visible);
+  initSortables();
+}
+
+function renderArchive() {
+  const visible = getArchiveCards().slice().sort((a, b) => (b.due || '').localeCompare(a.due || ''));
+  if (visible.length === 0) {
+    archiveListEl.innerHTML = '<div class="archive-empty">조건에 맞는 완료 카드가 없습니다.</div>';
+    return;
+  }
+  const rows = visible.map(c => {
+    const daysPast = daysSinceDue(c.due) || 0;
+    const dueLabel = c.due ? c.due.slice(0, 10) : '—';
+    return `
+      <tr data-id="${c.id}">
+        <td class="archive-title-cell">${escapeHtml(c.title)}</td>
+        <td>${escapeHtml(c.assignee)}</td>
+        <td>
+          <span class="archive-meta-badges">
+            ${c.category ? `<span class="card-category" data-c="${escapeHtml(c.category)}">${escapeHtml(c.category)}</span>` : ''}
+            ${c.mainCategory ? `<span class="card-maincat" data-m="${escapeHtml(c.mainCategory)}">${escapeHtml(c.mainCategory)}</span>` : ''}
+          </span>
+        </td>
+        <td><span class="card-priority" data-p="${escapeHtml(c.priority)}">${escapeHtml(c.priority)}</span></td>
+        <td>${dueLabel}</td>
+        <td><span class="archive-overdue">D+${daysPast}일 지남</span></td>
+      </tr>`;
+  }).join('');
+  archiveListEl.innerHTML = `
+    <table class="archive-table">
+      <thead><tr>
+        <th>제목</th><th>담당자</th><th>파트 / 카테고리</th><th>중요도</th><th>기한일</th><th>경과</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function render() {
+  // 탭/뷰 토글
+  document.querySelectorAll('#tabs .tab').forEach(t => t.classList.toggle('active', t.dataset.view === currentView));
+  document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.dataset.view === currentView));
+  // 아카이브 배지 (필터 적용 기준)
+  document.getElementById('archiveBadge').textContent = getArchiveCards().length;
+  // 필터 옵션 업데이트
+  populateFilterOptions();
+  // 뷰별 렌더
+  if (currentView === 'archive') {
+    renderArchive();
+  } else {
+    renderKanban();
+  }
+}
+
+// 하위 호환: 기존 코드에서 renderBoard 참조하는 경우 대비
+function renderBoard() { render(); }
+
+// ===== 저장 =====
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (!statusInput.value)   { alert('상태를 선택해주세요.'); return; }
+  if (!categoryInput.value) { alert('파트를 선택해주세요.'); return; }
+  if (!maincatInput.value)  { alert('카테고리를 선택해주세요.'); return; }
+  if (!priorityInput.value) { alert('중요도를 선택해주세요.'); return; }
+
+  const saveBtn = document.getElementById('modalSave');
+  saveBtn.disabled = true;
+  saveBtn.textContent = '저장 중...';
+
+  const data = Object.fromEntries(new FormData(form).entries());
+
+  try {
+    if (editingId) {
+      const idx = cards.findIndex(c => c.id === editingId);
+      if (idx < 0) throw new Error('편집 중인 카드를 찾을 수 없습니다');
+      const merged = { ...cards[idx], ...data };
+      const result = await api.updateCard(merged);
+      cards[idx] = result;
+    } else {
+      data.id = 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+      if (!data.status) data.status = currentStatus;
+      const result = await api.createCard(data);
+      cards.push(result);
+    }
+    render();
+    updateSyncStatus();
+    closeModal();
+  } catch (err) {
+    alert('저장 실패: ' + err.message);
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = '저장';
+  }
+});
+
+// ===== 보드 클릭 =====
+boardEl.addEventListener('click', (e) => {
+  if (isDragging) return;
+  const addBtn = e.target.closest('[data-add-card]');
+  if (addBtn) {
+    currentStatus = addBtn.closest('.column').dataset.status;
+    openModal(currentStatus);
+    return;
+  }
+  const card = e.target.closest('.card');
+  if (!card) return;
+  const cardData = cards.find(c => c.id === card.dataset.id);
+  if (cardData) openModal(cardData.status, cardData);
+});
+
+// ===== 아카이브 리스트 클릭 =====
+archiveListEl.addEventListener('click', (e) => {
+  const tr = e.target.closest('tr[data-id]');
+  if (!tr) return;
+  const cardData = cards.find(c => c.id === tr.dataset.id);
+  if (cardData) openModal(cardData.status, cardData);
+});
+
+// ===== 드래그 앤 드롭 =====
+function initSortables() {
+  sortableInstances.forEach(s => { try { s.destroy(); } catch (_) {} });
+  sortableInstances = [];
+  document.querySelectorAll('.column [data-cards]').forEach(box => {
+    const instance = new Sortable(box, {
+      group: 'kanban',
+      animation: 180,
+      easing: 'cubic-bezier(0.2, 0, 0, 1)',
+      draggable: '.card',
+      filter: '.card-add',
+      preventOnFilter: false,
+      ghostClass: 'sortable-ghost',
+      chosenClass: 'sortable-chosen',
+      dragClass: 'sortable-drag',
+      emptyInsertThreshold: 40,
+      delay: 50,
+      delayOnTouchOnly: true,
+      touchStartThreshold: 3,
+      onStart: () => { isDragging = true; },
+      onEnd: async (evt) => {
+        // + 버튼을 항상 컬럼 최하단으로 유지
+        [evt.from, evt.to].forEach(box => {
+          const addBtn = box.querySelector('.card-add');
+          if (addBtn) box.appendChild(addBtn);
+        });
+
+        const id = evt.item.dataset.id;
+        const newStatus = evt.to.closest('.column').dataset.status;
+        const card = cards.find(c => c.id === id);
+        const prevStatus = card ? card.status : null;
+        if (card && card.status !== newStatus) {
+          // 낙관적 업데이트 - 서버 응답 전에 UI 즉시 반영
+          card.status = newStatus;
+          updateColumnCounts();
+          updateDashboard(getKanbanCards());
+          document.getElementById('archiveBadge').textContent = getArchiveCards().length;
+          try {
+            const result = await api.moveCard(id, newStatus);
+            card.status = result.status;
+            card.updatedAt = result.updatedAt;
+            card.updatedBy = result.updatedBy;
+            updateSyncStatus();
+          } catch (err) {
+            card.status = prevStatus;
+            render();
+            alert('이동 실패: ' + err.message);
+          }
+        } else {
+          updateColumnCounts();
+          updateDashboard(getKanbanCards());
+        }
+        setTimeout(() => { isDragging = false; }, 120);
+      }
+    });
+    sortableInstances.push(instance);
+  });
+}
+
+function updateColumnCounts() {
+  document.querySelectorAll('.column').forEach(col => {
+    col.querySelector('[data-count]').textContent = col.querySelectorAll('.card').length;
+  });
+}
+
+// ===== 동기화 =====
+function updateSyncStatus() {
+  const el = document.getElementById('toolbarRight');
+  if (!el) return;
+  lastSyncAt = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  const t = `${pad(lastSyncAt.getHours())}:${pad(lastSyncAt.getMinutes())}:${pad(lastSyncAt.getSeconds())}`;
+  el.innerHTML = `<span style="color:#059669;">● 동기화됨</span> <span style="color:#9ca3af;">${t}${serverUser ? ' · ' + serverUser : ''}</span>`;
+}
+
+async function reloadFromServer() {
+  const el = document.getElementById('toolbarRight');
+  if (el) el.innerHTML = '<span style="color:#6b7280;">동기화 중...</span>';
+  try {
+    const res = await api.load();
+    serverUser = res.user;
+    cards.length = 0;
+    (res.cards || []).forEach(c => cards.push(c));
+    render();
+    updateSyncStatus();
+    loadingOverlay.classList.add('hidden');
+  } catch (err) {
+    if (el) el.innerHTML = `<span style="color:#dc2626;">● 동기화 실패: ${err.message}</span>`;
+    loadingOverlay.classList.add('hidden');
+  }
+}
+
+// 안전망: 드래그 클론이 body에 남아 있으면 제거 (stuck card 방지)
+function cleanupStuckDragClones() {
+  document.querySelectorAll('body > .sortable-drag, body > .sortable-fallback').forEach(el => el.remove());
+  isDragging = false;
+}
+document.addEventListener('mouseup', () => setTimeout(cleanupStuckDragClones, 50));
+document.addEventListener('dragend', cleanupStuckDragClones);
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') cleanupStuckDragClones(); });
+
+// 초기 구동
+render();
+reloadFromServer();
+window.addEventListener('focus', () => { cleanupStuckDragClones(); reloadFromServer(); });
+</script>
+
+</body>
+</html>
