@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-24T09:41:56.921Z",
+  "updated": "2026-04-24T10:26:31.517Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -62,6 +62,26 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "가격",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 24 오후 07:23:51",
+      "date": "2026-04-24",
+      "name": "이교빈",
+      "cid": "610cf32209c63a06ed148a25",
+      "phone": "010-5936-3524",
+      "product": "(상담하기) PT10 혈액검사기",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "618c881fbc63410023476154",
+      "clinic": "순수의뜰 한의원",
+      "region": "대구시 달서구",
+      "caller": "",
+      "supplier": "PT10",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "시약이나 소모품이 필요한지",
       "leadGrade": "고가망"
     },
     {
