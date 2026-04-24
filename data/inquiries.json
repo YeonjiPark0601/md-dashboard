@@ -1,9 +1,29 @@
 {
-  "updated": "2026-04-24T10:53:29.836Z",
+  "updated": "2026-04-24T11:07:17.720Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "일반",
+      "timestamp": "2026. 04. 24 오후 08:00:29",
+      "date": "2026-04-24",
+      "name": "백라원",
+      "cid": "5fcada321c6ef3001a11493d",
+      "phone": "010-9811-5896",
+      "product": "[웰코멧] LDM ECO10",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "69dc792afe738d9beeb4db2a",
+      "clinic": "리샘한의원 수원점",
+      "region": "경기도 수원시",
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
+    },
     {
       "source": "총판기기",
       "timestamp": "2026. 04. 24 오후 02:16:56",
