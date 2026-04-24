@@ -166,7 +166,7 @@ tr:hover { background: #f7f9fc; }
       <div class="kpi-card" id="kpiWeekCard" style="cursor:pointer;" onclick="toggleKpiDetail('week')">
         <div class="label" style="display:flex;justify-content:space-between;">이번 주 매출 (월~일)<span id="kpiWeekDates" style="font-weight:400;color:#aaa;"></span></div>
         <div class="main-row"><div class="value" id="kpiWeekSales">-</div><div class="rate" id="kpiWeekRate">-</div></div>
-        <div class="sub-row"><span id="kpiWeekTarget">목표: -</span><span id="kpiWeekYoy"></span></div>
+        <div class="sub-row"><span><span id="kpiWeekTarget">목표: -</span> <a href="https://docs.google.com/spreadsheets/d/1MGm8lbvYnXOb5KnKUlDODrCPrMiiidHo8mVcsVIYmKU/edit?gid=1201277991#gid=1201277991" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="목표 출처 시트" style="color:#888;text-decoration:none;font-size:11px;">↗</a></span><span id="kpiWeekYoy"></span></div>
         <div class="sub-row" id="kpiWeekCountRow" style="display:none;"><span id="kpiWeekCount"></span></div>
         <div class="sub-row" id="kpiWeekProfitRow" style="display:none;"><span id="kpiWeekProfit"></span></div>
         <div class="progress-bar"><div class="progress-fill" id="kpiWeekBar" style="width:0;background:#4285f4;"></div></div>
@@ -174,7 +174,7 @@ tr:hover { background: #f7f9fc; }
       <div class="kpi-card" id="kpiMonthCard" style="cursor:pointer;" onclick="toggleKpiDetail('month')">
         <div class="label">이번 달 매출</div>
         <div class="main-row"><div class="value" id="kpiMonthSales">-</div><div class="rate" id="kpiMonthRate">-</div></div>
-        <div class="sub-row"><span id="kpiMonthTarget">목표: -</span><span id="kpiMonthYoy"></span></div>
+        <div class="sub-row"><span><span id="kpiMonthTarget">목표: -</span> <a href="https://docs.google.com/spreadsheets/d/1MGm8lbvYnXOb5KnKUlDODrCPrMiiidHo8mVcsVIYmKU/edit?gid=1201277991#gid=1201277991" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="목표 출처 시트" style="color:#888;text-decoration:none;font-size:11px;">↗</a></span><span id="kpiMonthYoy"></span></div>
         <div class="sub-row" id="kpiMonthCountRow" style="display:none;"><span id="kpiMonthCount"></span></div>
         <div class="sub-row" id="kpiMonthProfitRow" style="display:none;"><span id="kpiMonthProfit"></span></div>
         <div class="progress-bar"><div class="progress-fill" id="kpiMonthBar" style="width:0;background:#34a853;"></div></div>
@@ -182,7 +182,7 @@ tr:hover { background: #f7f9fc; }
       <div class="kpi-card" id="kpiQtrCard" style="cursor:pointer;" onclick="toggleKpiDetail('quarter')">
         <div class="label">이번 분기 매출</div>
         <div class="main-row"><div class="value" id="kpiQtrSales">-</div><div class="rate" id="kpiQtrRate">-</div></div>
-        <div class="sub-row"><span id="kpiQtrTarget">목표: -</span><span id="kpiQtrYoy"></span></div>
+        <div class="sub-row"><span><span id="kpiQtrTarget">목표: -</span> <a href="https://docs.google.com/spreadsheets/d/1MGm8lbvYnXOb5KnKUlDODrCPrMiiidHo8mVcsVIYmKU/edit?gid=1201277991#gid=1201277991" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="목표 출처 시트" style="color:#888;text-decoration:none;font-size:11px;">↗</a></span><span id="kpiQtrYoy"></span></div>
         <div class="sub-row" id="kpiQtrCountRow" style="display:none;"><span id="kpiQtrCount"></span></div>
         <div class="sub-row" id="kpiQtrProfitRow" style="display:none;"><span id="kpiQtrProfit"></span></div>
         <div class="progress-bar"><div class="progress-fill" id="kpiQtrBar" style="width:0;background:#fbbc04;"></div></div>
@@ -1027,7 +1027,8 @@ function renderAllKPI(){
   ];
 
   // 헤더
-  document.getElementById('allKpiHead').innerHTML = '<th>구분</th><th class="text-right">이번주 매출</th><th class="text-right">이번주 목표</th><th class="text-right">달성률</th><th class="text-right">이번달 매출</th><th class="text-right">이번달 목표</th><th class="text-right">달성률</th><th class="text-right">이번분기 매출</th><th class="text-right">이번분기 목표</th><th class="text-right">달성률</th>';
+  const targetLink = ' <a href="https://docs.google.com/spreadsheets/d/1MGm8lbvYnXOb5KnKUlDODrCPrMiiidHo8mVcsVIYmKU/edit?gid=1201277991#gid=1201277991" target="_blank" rel="noopener" title="목표 출처 시트" style="color:#888;text-decoration:none;font-size:11px;">↗</a>';
+  document.getElementById('allKpiHead').innerHTML = '<th>구분</th><th class="text-right">이번주 매출</th><th class="text-right">이번주 목표'+targetLink+'</th><th class="text-right">달성률</th><th class="text-right">이번달 매출</th><th class="text-right">이번달 목표'+targetLink+'</th><th class="text-right">달성률</th><th class="text-right">이번분기 매출</th><th class="text-right">이번분기 목표'+targetLink+'</th><th class="text-right">달성률</th>';
 
   let html = '';
   let totalW=0,totalWT=0,totalM=0,totalMT=0,totalQ=0,totalQT=0;
