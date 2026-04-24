@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-24T08:31:19.616Z",
+  "updated": "2026-04-24T09:41:56.921Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -43,6 +43,26 @@
       "payAmount": null,
       "inquiry": "보상판매여부 및 린다이어트 혜택가여부",
       "leadGrade": "가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 24 오후 06:37:59",
+      "date": "2026-04-24",
+      "name": "안지명",
+      "cid": "5d944e700dabe405b156d7e5",
+      "phone": "010-3340-1198",
+      "product": "[은성] V-메타쉐이프 (Meta Shape)",
+      "qty": 1,
+      "price": "1200",
+      "productId": "693960a721009623ac43112a",
+      "clinic": "설명한의원",
+      "region": "경상북도 구미시",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격",
+      "leadGrade": "고가망"
     },
     {
       "source": "일반",
