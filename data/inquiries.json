@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-24T05:21:19.719Z",
+  "updated": "2026-04-24T08:31:19.616Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -23,6 +23,26 @@
       "payAmount": null,
       "inquiry": "",
       "leadGrade": ""
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 24 오후 05:28:54",
+      "date": "2026-04-24",
+      "name": "황현숙",
+      "cid": "637aff8aeba95800231b414e",
+      "phone": "010-9004-2926",
+      "product": "(상담하기) PT10 혈액검사기",
+      "qty": 1,
+      "price": "450",
+      "productId": "618c881fbc63410023476154",
+      "clinic": "약선당 부부한의원",
+      "region": "인천시 연수구",
+      "caller": "",
+      "supplier": "PT10",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "보상판매여부 및 린다이어트 혜택가여부",
+      "leadGrade": "가망"
     },
     {
       "source": "일반",
