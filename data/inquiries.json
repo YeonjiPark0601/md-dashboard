@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-27T08:55:49.308Z",
+  "updated": "2026-04-27T09:05:45.928Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -43,6 +43,26 @@
       "payAmount": null,
       "inquiry": "안녕하세요, 제품 관련 문의와 견적서를 받아보고 싶습니다!",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 04. 27 오후 06:01:18",
+      "date": "2026-04-27",
+      "name": "최현수",
+      "cid": "5dad10140dabe405b156eec6",
+      "phone": "010-8910-7202",
+      "product": "굿플 윌트리 LT 3000",
+      "qty": 8,
+      "price": "없음",
+      "productId": "613ee5446b61d0001afbbc52",
+      "clinic": "",
+      "region": "경상북도 구미시",
+      "caller": "",
+      "supplier": "굿플",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
