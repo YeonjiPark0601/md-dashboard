@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-27T01:55:47.126Z",
+  "updated": "2026-04-27T02:10:51.726Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -42,6 +42,26 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "파이오니어 보상판매 가능여부",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 27 오전 11:09:45",
+      "date": "2026-04-27",
+      "name": "박찬규",
+      "cid": "5db8da230dabe405b156f85b",
+      "phone": "010-4220-1027",
+      "product": "[메디코아] HRV : Max Pulse",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "5dde05fb2bb59605ca3d09b9",
+      "clinic": "경희두드림한의원",
+      "region": "경기도 광명시",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "맥스펄스 가격이랑 SA-3000 가격이 궁금합니다~",
       "leadGrade": "고가망"
     },
     {
