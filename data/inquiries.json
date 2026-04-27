@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-27T08:40:48.511Z",
+  "updated": "2026-04-27T08:55:49.308Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -163,6 +163,26 @@
       "payAmount": null,
       "inquiry": "co2레이저  하나 사려고 합니다.",
       "leadGrade": "가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 27 오후 05:52:45",
+      "date": "2026-04-27",
+      "name": "최현수",
+      "cid": "5dad10140dabe405b156eec6",
+      "phone": "010-8910-7202",
+      "product": "[상담하기] 체형진단기 아이밸런스 iBalance",
+      "qty": 1,
+      "price": "없음.",
+      "productId": "66ab3b65e149e95e3c878664",
+      "clinic": "",
+      "region": "경상북도 구미시",
+      "caller": "",
+      "supplier": "아이밸런스",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
