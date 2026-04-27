@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-27T10:35:48.309Z",
+  "updated": "2026-04-27T12:40:49.106Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -83,6 +83,26 @@
       "payAmount": null,
       "inquiry": "약탕기 풍선 교체해야 합니다. 소모품 구매만 하면 자체적으로 교체 가능합니다",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 04. 27 오후 09:38:09",
+      "date": "2026-04-27",
+      "name": "한선용",
+      "cid": "5e3bdf014267e105dfff138b",
+      "phone": "010-6580-3391",
+      "product": "엠알 자기장 치료기 Neuro-MSL",
+      "qty": "1대",
+      "price": "550만",
+      "productId": "5ea28350f1c8cc684388d210",
+      "clinic": "금손한의원",
+      "region": "경상북도 포항시",
+      "caller": "",
+      "supplier": "엠알",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
