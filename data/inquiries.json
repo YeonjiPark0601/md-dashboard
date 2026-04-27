@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-27T08:05:48.915Z",
+  "updated": "2026-04-27T08:25:54.524Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -17,7 +17,7 @@
       "productId": "617b4cd2bc63410023471ef3",
       "clinic": "권철한한의원",
       "region": "경상북도 안동시",
-      "caller": "",
+      "caller": "주봉현",
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
