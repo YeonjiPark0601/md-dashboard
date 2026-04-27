@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-27T06:40:51.411Z",
+  "updated": "2026-04-27T07:31:03.225Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -103,6 +103,26 @@
       "payAmount": null,
       "inquiry": "안녕하세요, 제품 관련 문의와 견적서를 받아보고 싶습니다!",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 27 오후 04:29:23",
+      "date": "2026-04-27",
+      "name": "박정준",
+      "cid": "5d9a899a0dabe405b156df93",
+      "phone": "010-6440-8792",
+      "product": "[DSE] CO2 레이저 (DS-40U B)",
+      "qty": "야누스프로 대신co2 흡입기 각1",
+      "price": "대신co2 케이맥스 메디스트림부스:495, 야누스프로 공동구매 858, 각 부가세포함",
+      "productId": "67bc1cd05a4f59cacd7839f8",
+      "clinic": "방화경희한의원",
+      "region": "서울시 강서구",
+      "caller": "",
+      "supplier": "DSE",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
