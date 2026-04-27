@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-27T02:20:48.210Z",
+  "updated": "2026-04-27T06:40:51.411Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -23,6 +23,26 @@
       "payAmount": null,
       "inquiry": "",
       "leadGrade": ""
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 04. 27 오후 03:36:52",
+      "date": "2026-04-27",
+      "name": "박수영",
+      "cid": "624e6631d6b3320023ddcd98",
+      "phone": "010-6664-4385",
+      "product": "아쿠아필 (Aqua Peel)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "685b73335c71a5d66aa83127",
+      "clinic": "",
+      "region": "대구시 수성구",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "안녕하세요, 제품 관련 문의와 견적서를 받아보고 싶습니다!",
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
@@ -62,6 +82,26 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "맥스펄스 가격이랑 SA-3000 가격이 궁금합니다~",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 27 오후 03:38:18",
+      "date": "2026-04-27",
+      "name": "박수영",
+      "cid": "624e6631d6b3320023ddcd98",
+      "phone": "010-6664-4385",
+      "product": "[DSE] 의료용 석션기 (SSB EVA)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "67e2322d9d6aa764d124103e",
+      "clinic": "",
+      "region": "대구시 수성구",
+      "caller": "",
+      "supplier": "DSE",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "안녕하세요, 제품 관련 문의와 견적서를 받아보고 싶습니다!",
       "leadGrade": "고가망"
     },
     {
