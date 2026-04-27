@@ -1,9 +1,29 @@
 {
-  "updated": "2026-04-26T14:20:46.538Z",
+  "updated": "2026-04-27T01:15:53.623Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "일반",
+      "timestamp": "2026. 04. 27 오전 10:12:58",
+      "date": "2026-04-27",
+      "name": "권철한",
+      "cid": "634f7c6df0f7e100231c38f4",
+      "phone": "010-5381-5325",
+      "product": "스트라텍 전침기 STN-330",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "617b4cd2bc63410023471ef3",
+      "clinic": "권철한한의원",
+      "region": "경상북도 안동시",
+      "caller": "",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
+    },
     {
       "source": "총판기기",
       "timestamp": "2026. 04. 26 오후 11:17:09",
