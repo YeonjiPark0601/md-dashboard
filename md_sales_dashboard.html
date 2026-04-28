@@ -571,7 +571,8 @@ async function fetchData(){
         const isProbe=/프로브|미니프로브|미니 프로브/i.test(pn);
         const isOption=/옵션|ADVR|AUTOIMT|EZHRI|NEEDLEMATE|BatteryAssist|ECG|PANORAMIC|Foot|ONTPKG/i.test(pn);
         const cat=isAS?'AS':isProbe?'프로브':isOption?'옵션':'누락';
-        if(cat==='누락')return; // 본 장비는 메인 초음파 시트와 중복되므로 제외
+        // 본장비/옵션/프로브 결제는 메인 초음파 시트의 패키지 계약을 분할결제한 것으로 이중카운트됨. AS만 별도 매출로 인정.
+        if(!isAS)return;
         sonoArr.push({주문일:fixDate(r['결제일']||''),연월:fixYm(r['연월']||''),한의원명:r['주문자']||'',품목명:cat,공급업체:cat,카테고리:cat,매출금액:parseNum(r['매출액(real_rev)'])/1.1,공급가:parseNum(r['공급가(VAT제외)']),_isAS:isAS})})}}
       sonoData=sonoArr;
     }catch(e){console.warn('초음파 에러',e)}
