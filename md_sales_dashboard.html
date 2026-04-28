@@ -554,8 +554,8 @@ async function fetchData(){
         // A7부터 읽으므로 헤더 없음 — 전부 데이터
         for(let li=0;li<lines.length;li++){
           const cols=parseCSVRow(lines[li]);
-          const dt=cols[13]||'';if(!dt||!dt.match(/^\d{4}/))continue; // N열(13)=계약금입금일자
-          const amt=parseNum(cols[30]); // AE열(30)=계약금액(vat제외)
+          const dt=cols[14]||'';if(!dt||!dt.match(/^\d{4}/))continue; // O열(14)=계약금입금일자
+          const amt=parseNum(cols[32]); // AG열(32)=실매출금액(vat제외)
           if(!amt)continue;
           const ym=fixYm(dt.substring(0,7));
           const model=(cols[6]||'').replace(/\s*\(.*?\)/g,'').trim(); // 장비명에서 괄호 제거
@@ -571,6 +571,7 @@ async function fetchData(){
         const isProbe=/프로브|미니프로브|미니 프로브/i.test(pn);
         const isOption=/옵션|ADVR|AUTOIMT|EZHRI|NEEDLEMATE|BatteryAssist|ECG|PANORAMIC|Foot|ONTPKG/i.test(pn);
         const cat=isAS?'AS':isProbe?'프로브':isOption?'옵션':'누락';
+        if(cat==='누락')return; // 본 장비는 메인 초음파 시트와 중복되므로 제외
         sonoArr.push({주문일:fixDate(r['결제일']||''),연월:fixYm(r['연월']||''),한의원명:r['주문자']||'',품목명:cat,공급업체:cat,카테고리:cat,매출금액:parseNum(r['매출액(real_rev)'])/1.1,공급가:parseNum(r['공급가(VAT제외)']),_isAS:isAS})})}}
       sonoData=sonoArr;
     }catch(e){console.warn('초음파 에러',e)}

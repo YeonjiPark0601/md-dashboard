@@ -682,7 +682,7 @@ async function fetchData(){
         for(let li=0;li<lines.length;li++){
           const cols=parseCSVRow(lines[li]);
           const dt=cols[14]||'';if(!dt||!dt.match(/^\d{4}/))continue; // O열(14)=계약금입금일자
-          const amt=parseNum(cols[31]); // AF열(31)=계약금액(vat제외)
+          const amt=parseNum(cols[32]); // AG열(32)=실매출금액(vat제외, 선취수수료 제외)
           if(!amt)continue;
           const ym=fixYm(dt.substring(0,7));
           const model=(cols[6]||'').replace(/\s*\(.*?\)/g,'').trim(); // 장비명에서 괄호 제거
