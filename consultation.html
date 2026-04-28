@@ -722,6 +722,7 @@ const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/g
 
 // form 필드명 <-> 시트 컬럼명 매핑
 const FIELD_TO_COL = {
+  date: '인입일자',
   source: '인입경로', customer: '고객명', phone: '연락처(클릭 시 복사)',
   clinic: '한의원명', region: '지역', supplier: '공급처',
   product: '상담물품', qty: '수량', price: '견적가',
@@ -749,9 +750,11 @@ function sheetRowToRecord(row) {
   r.cid = parts[0] || '';
   r.productId = parts[1] || '';
   r.timestamp = parts[2] || '';
-  // timestamp 에서 yyyy-mm-dd 추출
-  var dm = r.timestamp.match(/(\d{4})[.\-\/\s]+(\d{1,2})[.\-\/\s]+(\d{1,2})/);
-  r.date = dm ? dm[1] + '-' + String(dm[2]).padStart(2,'0') + '-' + String(dm[3]).padStart(2,'0') : '';
+  // 인입일자 컬럼 우선, 없으면 timestamp 에서 yyyy-mm-dd 추출
+  if (!r.date) {
+    var dm = r.timestamp.match(/(\d{4})[.\-\/\s]+(\d{1,2})[.\-\/\s]+(\d{1,2})/);
+    r.date = dm ? dm[1] + '-' + String(dm[2]).padStart(2,'0') + '-' + String(dm[3]).padStart(2,'0') : '';
+  }
   r.consent = false; r.buyDate = ''; r.status = ''; r.rep = '';
   // 자동 매칭된 값은 수정 불가 (n8n이 CID/주문이력 기반으로 채워준 값)
   if (isAutomated) {
