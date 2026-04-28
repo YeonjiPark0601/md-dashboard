@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-28T05:26:45.243Z",
+  "updated": "2026-04-28T07:14:43.558Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -85,6 +85,26 @@
       "leadGrade": "고가망"
     },
     {
+      "source": "일반",
+      "timestamp": "2026. 04. 28 오후 04:03:28",
+      "date": "2026-04-28",
+      "name": "이다정",
+      "cid": "5ef470b0e510ee503167d5a9",
+      "phone": "010-8286-2351",
+      "product": "스트라텍 ICT pmi-3000",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "5e4a2cd34267e105dfff1d6b",
+      "clinic": "온정한의원",
+      "region": "경기도 평택시",
+      "caller": "",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "금액 및 설치일정",
+      "leadGrade": "고가망"
+    },
+    {
       "source": "총판기기",
       "timestamp": "2026. 04. 28 오전 09:56:14",
       "date": "2026-04-28",
@@ -137,7 +157,7 @@
       "productId": "69dc792afe738d9beeb4db2a",
       "clinic": "피비한의원",
       "region": "서울시 광진구",
-      "caller": "",
+      "caller": "조성갑",
       "supplier": "",
       "payDate": "",
       "payAmount": null,
