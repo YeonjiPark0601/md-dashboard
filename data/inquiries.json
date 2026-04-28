@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-28T01:46:06.430Z",
+  "updated": "2026-04-28T03:36:34.204Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -97,7 +97,7 @@
       "productId": "6911d93b35ae28ff04ea58a0",
       "clinic": "바로나음한의원",
       "region": "경기도 고양시",
-      "caller": "",
+      "caller": "김진석",
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
