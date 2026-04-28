@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-28T03:36:34.204Z",
+  "updated": "2026-04-28T03:41:25.715Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -217,7 +217,7 @@
       "productId": "5ea28350f1c8cc684388d210",
       "clinic": "금손한의원",
       "region": "경상북도 포항시",
-      "caller": "",
+      "caller": "김진석",
       "supplier": "엠알",
       "payDate": "",
       "payAmount": null,
