@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-29T04:35:56.193Z",
+  "updated": "2026-04-29T08:30:23.747Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -43,6 +43,26 @@
       "payAmount": null,
       "inquiry": "금액이 궁금합니다.",
       "leadGrade": "가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 04. 29 오후 05:16:49",
+      "date": "2026-04-29",
+      "name": "박원식",
+      "cid": "5d96ff2d0dabe405b156dc5d",
+      "phone": "010-3152-2023",
+      "product": "스파인엠티 코어",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "6153ca3f4cf9a5002287c4c2",
+      "clinic": "우리집한의원",
+      "region": "충청남도 천안시",
+      "caller": "",
+      "supplier": "스파인케어",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "비용과 설치 시 필요한 공간이 궁금합니다.",
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
