@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-29T03:26:02.016Z",
+  "updated": "2026-04-29T04:35:56.193Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -22,6 +22,26 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "전반적으로 잘나가는 아쿠아베드 관련 문의",
+      "leadGrade": "가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 04. 29 오후 01:33:59",
+      "date": "2026-04-29",
+      "name": "정미경",
+      "cid": "69e1fa3f03ea9b43cbead97a",
+      "phone": "010-9626-1792",
+      "product": "스트라텍 의료용조합자극기 ELS-100",
+      "qty": "3개",
+      "price": "N/A",
+      "productId": "60f1157909c63a06ed147125",
+      "clinic": "홍성운한의원",
+      "region": "전라남도 여수시",
+      "caller": "",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "금액이 궁금합니다.",
       "leadGrade": "가망"
     },
     {
