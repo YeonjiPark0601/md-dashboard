@@ -1,9 +1,29 @@
 {
-  "updated": "2026-04-29T02:50:55.427Z",
+  "updated": "2026-04-29T03:26:02.016Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "일반",
+      "timestamp": "2026. 04. 29 오후 12:20:31",
+      "date": "2026-04-29",
+      "name": "박철이",
+      "cid": "5d8a12560dabe405b156d4d9",
+      "phone": "010-9828-6203",
+      "product": "아쿠아 힐링베드 수치료기 아이언 2종",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "5fc8a12ace872a1a803a95cd",
+      "clinic": "기독한의원",
+      "region": "전라남도 영광군",
+      "caller": "",
+      "supplier": "아쿠아",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "전반적으로 잘나가는 아쿠아베드 관련 문의",
+      "leadGrade": "가망"
+    },
     {
       "source": "총판기기",
       "timestamp": "2026. 04. 29 오전 11:06:59",
