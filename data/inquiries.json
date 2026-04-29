@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-29T02:25:49.151Z",
+  "updated": "2026-04-29T02:50:55.427Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -22,6 +22,26 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "가격 및 구매 방법",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 29 오전 11:45:37",
+      "date": "2026-04-29",
+      "name": "이문원",
+      "cid": "5fcde2f01c6ef3001a114af3",
+      "phone": "010-6289-2903",
+      "product": "(상담하기) PT10 혈액검사기",
+      "qty": "1개",
+      "price": "N/A",
+      "productId": "618c881fbc63410023476154",
+      "clinic": "이문원한의원",
+      "region": "서울시 강남구",
+      "caller": "김태호",
+      "supplier": "PT10",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "구매를 결정하기 전에 가격 (카트리지 포함)이 궁금합니다.",
       "leadGrade": "고가망"
     },
     {
