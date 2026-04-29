@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-29T10:31:19.688Z",
+  "updated": "2026-04-29T14:51:17.352Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -103,6 +103,26 @@
       "payAmount": null,
       "inquiry": "구매를 결정하기 전에 가격 (카트리지 포함)이 궁금합니다.",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 29 오후 11:48:41",
+      "date": "2026-04-29",
+      "name": "권오준",
+      "cid": "5e5376f5bfe4260944782781",
+      "phone": "010-2498-0481",
+      "product": "[네오펙트] 제우스웨이브 체외충격파 (ESWT Piezo+Airgun-type)",
+      "qty": 1,
+      "price": "-",
+      "productId": "6911d93b35ae28ff04ea58a0",
+      "clinic": "올바른경희한의원",
+      "region": "경기도 김포시",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "금액이 궁금합니다.",
+      "leadGrade": "가망"
     },
     {
       "source": "일반",
@@ -5542,7 +5562,7 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "",
-      "leadGrade": ""
+      "leadGrade": "가망"
     },
     {
       "source": "총판기기",
