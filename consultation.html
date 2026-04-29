@@ -2449,8 +2449,10 @@ function init() {
   document.getElementById('f_date').value = today();
   var ps = document.getElementById('pageSizeSelect');
   if (ps) ps.value = String(PAGE_SIZE);
-  if (window.matchMedia('(max-width: 768px)').matches) {
+  if (window.matchMedia('(max-width: 720px)').matches) {
     document.getElementById('filterBar').classList.add('filters-collapsed');
+    var ftBtn = document.getElementById('filterToggleBtn');
+    if (ftBtn) ftBtn.setAttribute('aria-expanded', 'false');
   }
   updateStickyOffset();
   window.addEventListener('resize', updateStickyOffset);
