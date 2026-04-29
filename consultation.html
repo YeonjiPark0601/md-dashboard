@@ -251,6 +251,9 @@ th.sortable:hover { background: #eef0f4; }
   #searchInput { width: 100% !important; }
   .count-badge { flex: 1 1 100%; text-align: center; margin-left: 0; }
   .form-toggle-btn { flex: 1 1 100%; min-height: 40px; margin-left: 0 !important; }
+  #formToggleBtn { flex: 1 1 auto; order: -1; min-height: 38px; margin-left: 0 !important; }
+  #bulkUploadBtn, #bulkFileInput { display: none !important; }
+  #zoomControl { display: none !important; }
   #customPeriodWrap { display: flex; flex-wrap: wrap; gap: 4px; }
 
   .container { padding: 10px; }
@@ -2490,6 +2493,10 @@ var ZOOM_KEY = 'md_consult_zoom';
 function applyZoom(z) {
   var el = document.querySelector('.consult-scroll');
   if (!el) return;
+  if (window.matchMedia && window.matchMedia('(max-width: 720px)').matches) {
+    el.style.zoom = '';
+    return;
+  }
   el.style.zoom = z;
   document.querySelectorAll('.zoom-btn').forEach(function(b){
     b.classList.toggle('active', parseFloat(b.dataset.zoom) === parseFloat(z));
