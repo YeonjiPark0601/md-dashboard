@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-30T05:14:20.224Z",
+  "updated": "2026-04-30T05:46:29.184Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -263,6 +263,26 @@
       "payAmount": null,
       "inquiry": ".",
       "leadGrade": "가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 30 오후 02:35:21",
+      "date": "2026-04-30",
+      "name": "한경선",
+      "cid": "5fdb6d20329d0c001aca6613",
+      "phone": "010-7250-8158",
+      "product": "[상담하기] 체형진단기 아이밸런스 iBalance",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "66ab3b65e149e95e3c878664",
+      "clinic": "",
+      "region": "서울시 성동구",
+      "caller": "",
+      "supplier": "아이밸런스",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
