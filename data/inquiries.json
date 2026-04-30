@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-30T01:30:52.709Z",
+  "updated": "2026-04-30T02:01:35.853Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -22,6 +22,26 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "ST-10A과 비교",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 30 오전 10:56:17",
+      "date": "2026-04-30",
+      "name": "유윤선",
+      "cid": "5d6661d44e77525ec5ca1795",
+      "phone": "010-9877-3815",
+      "product": "[DSE] 네오젝 전동식 의료용 주입기 (NEOJECT)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "685bb9fab7ac8d6f02415834",
+      "clinic": "도란도란한의원",
+      "region": "광주시 북구",
+      "caller": "이예림",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "안녕하세요~ 네오젝 구입조건이 어떻게 될까요? as와 설치, 교육은 어떻게 해주시는지 궁금합니다!",
       "leadGrade": "고가망"
     },
     {
