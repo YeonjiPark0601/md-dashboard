@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-30T03:13:51.090Z",
+  "updated": "2026-04-30T03:17:27.626Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -23,6 +23,26 @@
       "payAmount": null,
       "inquiry": "ST-10A과 비교",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 04. 30 오후 12:11:00",
+      "date": "2026-04-30",
+      "name": "최무환",
+      "cid": "5dcd18c02bb59605ca3cfe5e",
+      "phone": "010-5296-1075",
+      "product": "아쿠아 힐링베드 수치료기 아이언 2종",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "5fc8a12ace872a1a803a95cd",
+      "clinic": "나비한의원",
+      "region": "경기도 안양시",
+      "caller": "",
+      "supplier": "아쿠아",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
