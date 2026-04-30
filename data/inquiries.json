@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-30T04:09:46.645Z",
+  "updated": "2026-04-30T05:08:47.502Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -37,7 +37,7 @@
       "productId": "5fc8a12ace872a1a803a95cd",
       "clinic": "나비한의원",
       "region": "경기도 안양시",
-      "caller": "",
+      "caller": "주봉현",
       "supplier": "아쿠아",
       "payDate": "",
       "payAmount": null,
@@ -177,7 +177,7 @@
       "productId": "693960a721009623ac43112a",
       "clinic": "연경손길한의원",
       "region": "대구시 북구",
-      "caller": "",
+      "caller": "이예림",
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
@@ -197,7 +197,7 @@
       "productId": "693960a721009623ac43112a",
       "clinic": "김선욱한의원",
       "region": "제주도 제주시",
-      "caller": "",
+      "caller": "이예림",
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
@@ -243,6 +243,26 @@
       "payAmount": null,
       "inquiry": "금액대가 궁금하고 데모가 가능한가요?",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 30 오후 02:01:11",
+      "date": "2026-04-30",
+      "name": "김경민",
+      "cid": "5e15c6114267e105dfff06b1",
+      "phone": "010-4313-4735",
+      "product": "[은성] V-메타쉐이프 (Meta Shape)",
+      "qty": 1,
+      "price": ".",
+      "productId": "693960a721009623ac43112a",
+      "clinic": "연오재한의원",
+      "region": "경기도 고양시",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": ".",
+      "leadGrade": "가망"
     },
     {
       "source": "일반",
@@ -1982,7 +2002,7 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "",
-      "leadGrade": ""
+      "leadGrade": "가망"
     },
     {
       "source": "총판기기",
