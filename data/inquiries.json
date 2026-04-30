@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-30T12:15:16.902Z",
+  "updated": "2026-04-30T13:05:47.402Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -62,6 +62,26 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "개인적으로 공부하고 스터디할 때 사용하려고 하는데 가격대가 궁금합니다..!",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 04. 30 오후 10:04:50",
+      "date": "2026-04-30",
+      "name": "허은주",
+      "cid": "60eed22609c63a06ed146dd6",
+      "phone": "010-3659-8215",
+      "product": "스트라텍 전침기 STN-330",
+      "qty": 4,
+      "price": "N/A",
+      "productId": "617b4cd2bc63410023471ef3",
+      "clinic": "",
+      "region": "서울시 서초구",
+      "caller": "",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
       "leadGrade": "고가망"
     },
     {
@@ -383,6 +403,46 @@
       "payAmount": null,
       "inquiry": "결과지 서비스 등 궁금합니다",
       "leadGrade": "가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 30 오후 10:02:47",
+      "date": "2026-04-30",
+      "name": "허은주",
+      "cid": "60eed22609c63a06ed146dd6",
+      "phone": "010-3659-8215",
+      "product": "[웰코멧] LDM ECO10",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "69dc792afe738d9beeb4db2a",
+      "clinic": "",
+      "region": "서울시 서초구",
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "다른기종도 구매가능한가요?",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 30 오후 10:04:24",
+      "date": "2026-04-30",
+      "name": "허은주",
+      "cid": "60eed22609c63a06ed146dd6",
+      "phone": "010-3659-8215",
+      "product": "[상담하기] 체형진단기 아이밸런스 iBalance",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "66ab3b65e149e95e3c878664",
+      "clinic": "",
+      "region": "서울시 서초구",
+      "caller": "",
+      "supplier": "아이밸런스",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": "고가망"
     },
     {
       "source": "일반",
@@ -8942,7 +9002,7 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "",
-      "leadGrade": ""
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
