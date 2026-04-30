@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-30T15:00:48.181Z",
+  "updated": "2026-04-30T15:05:47.964Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -462,6 +462,26 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 04. 30 오후 11:59:42",
+      "date": "2026-04-30",
+      "name": "류지미",
+      "cid": "5dad0e340dabe405b156eeb0",
+      "phone": "010-9995-5795",
+      "product": "체형진단기 아이밸런스 iBalance (v2)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "687efbcf3d86dc978b0ead48",
+      "clinic": "대성류한의원",
+      "region": "부산시 동구",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "타사 체형검사기의 보상판매여부, 재현성, 시연이 가능한지",
       "leadGrade": "고가망"
     },
     {
