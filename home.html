@@ -47,12 +47,19 @@ body { font-family: 'Segoe UI', -apple-system, sans-serif; background: #f0f2f5; 
 
 .card h3 { font-size: 16px; font-weight: 700; color: #1a1a2e; }
 .card p { font-size: 13px; color: #888; line-height: 1.5; }
+.card .meta {
+  display: flex; align-items: center; gap: 8px; margin-top: auto;
+}
 .card .badge {
   display: inline-block; padding: 3px 10px; border-radius: 12px;
-  font-size: 11px; font-weight: 600; align-self: flex-start;
+  font-size: 11px; font-weight: 600;
 }
 .badge-live { background: #e6f4ea; color: #0d9488; }
 .badge-soon { background: #fff3e0; color: #e65100; }
+.card .author {
+  font-size: 11px; color: #aaa; margin-left: auto;
+}
+.card .author::before { content: "👤 "; }
 
 .section-label {
   font-size: 13px; font-weight: 700; color: #888; margin: 32px 0 16px;
@@ -75,6 +82,13 @@ body { font-family: 'Segoe UI', -apple-system, sans-serif; background: #f0f2f5; 
 .empty-state {
   grid-column: 1 / -1; text-align: center; padding: 40px 20px;
   color: #888; font-size: 14px;
+}
+
+.footer-note {
+  margin-top: 32px; padding: 16px 20px; text-align: center;
+  background: #fff; border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  font-size: 13px; color: #666;
 }
 
 @media (max-width: 600px) {
@@ -103,19 +117,28 @@ body { font-family: 'Segoe UI', -apple-system, sans-serif; background: #f0f2f5; 
       <div class="icon icon-blue">📊</div>
       <h3>MD 매출 대시보드</h3>
       <p>카테고리별 매출 실적, KPI, 트렌드 분석</p>
-      <span class="badge badge-live">운영중</span>
+      <div class="meta">
+        <span class="badge badge-live">운영중</span>
+        <span class="author">박연지</span>
+      </div>
     </a>
     <a class="card" href="kanban.html">
       <div class="icon icon-purple">▦</div>
       <h3>MD Squad 칸반보드</h3>
       <p>팀 업무 카드 관리, 드래그앤드롭 상태 변경, 담당자/기한 추적</p>
-      <span class="badge badge-live">운영중</span>
+      <div class="meta">
+        <span class="badge badge-live">운영중</span>
+        <span class="author">박연지</span>
+      </div>
     </a>
     <a class="card" href="order-pivot.html">
       <div class="icon icon-blue">👥</div>
       <h3>담당자별 주문 현황</h3>
       <p>의료기기 주문서 담당자 × 월별 피벗, 연도/카테고리 필터</p>
-      <span class="badge badge-live">운영중</span>
+      <div class="meta">
+        <span class="badge badge-live">운영중</span>
+        <span class="author">박연지</span>
+      </div>
     </a>
   </div>
 
@@ -125,50 +148,85 @@ body { font-family: 'Segoe UI', -apple-system, sans-serif; background: #f0f2f5; 
       <div class="icon icon-green">🧪</div>
       <h3>데모 현황 관리</h3>
       <p>데모 일정 추적, 진행 상태 관리</p>
-      <span class="badge badge-live">운영중</span>
+      <div class="meta">
+        <span class="badge badge-live">운영중</span>
+        <span class="author">?</span>
+      </div>
     </a>
 
     <a class="card" href="samsung_order_calculator.html">
       <div class="icon icon-green">🧮</div>
       <h3>삼성메디슨 발주 계산기</h3>
       <p>월별 발주 시뮬레이션, 추천 발주 엔진, 작년 동월 비교</p>
-      <span class="badge badge-live">운영중</span>
+      <div class="meta">
+        <span class="badge badge-live">운영중</span>
+        <span class="author">박연지</span>
+      </div>
     </a>
 
     <a class="card" href="https://yelimlee-cmyk.github.io/dse-lease-calc/" target="_blank" rel="noopener">
       <div class="icon icon-green">💰</div>
       <h3>리스/ROI 계산기</h3>
       <p>피부미용 장비 리스/할인/ROI 견적 시뮬레이터</p>
-      <span class="badge badge-live">운영중</span>
+      <div class="meta">
+        <span class="badge badge-live">운영중</span>
+        <span class="author">이예림</span>
+      </div>
+    </a>
+
+    <a class="card" href="https://turnkey-compare.vercel.app/calculator" target="_blank" rel="noopener">
+      <div class="icon icon-blue">🧾</div>
+      <h3>턴키 비교 계산기</h3>
+      <p>턴키 견적 비교, 항목별 단가 계산</p>
+      <div class="meta">
+        <span class="badge badge-live">운영중</span>
+        <span class="author">?</span>
+      </div>
     </a>
 
     <a class="card" href="price-list.html" style="opacity: 0.6; pointer-events: none;">
       <div class="icon icon-purple">💊</div>
       <h3>의료기기 가격표</h3>
       <p>제품별 정가/공급가/프로모션가 한눈에 보기</p>
-      <span class="badge badge-soon">준비중</span>
+      <div class="meta">
+        <span class="badge badge-soon">준비중</span>
+        <span class="author">박연지</span>
+      </div>
     </a>
 
     <a class="card" href="installation-scheduler/">
       <div class="icon icon-orange">🗓️</div>
       <h3>의료기기 설치건 관리</h3>
       <p>설치 일정 관리, 캘린더/리스트 뷰, 설치 정보 업데이트</p>
-      <span class="badge badge-soon">준비중</span>
+      <div class="meta">
+        <span class="badge badge-soon">준비중</span>
+        <span class="author">박연지</span>
+      </div>
     </a>
 
     <a class="card" href="consultation.html">
       <div class="icon icon-orange">💬</div>
       <h3>의료기기 상담 관리</h3>
       <p>고객별 상담 내역 기록, 진행 상태 추적, Q&A 관리</p>
-      <span class="badge badge-soon">준비중</span>
+      <div class="meta">
+        <span class="badge badge-soon">준비중</span>
+        <span class="author">박연지</span>
+      </div>
     </a>
 
     <a class="card" href="견본_재고관리.html" style="opacity: 0.6; pointer-events: none;">
       <div class="icon icon-purple">📦</div>
       <h3>견본 재고 관리</h3>
       <p>견본 기기 위치 추적, 이력 로그, 데모 타임라인</p>
-      <span class="badge badge-soon">준비중</span>
+      <div class="meta">
+        <span class="badge badge-soon">준비중</span>
+        <span class="author">박연지</span>
+      </div>
     </a>
+  </div>
+
+  <div class="footer-note">
+    도구 모음에 추가 필요한 링크가 있다면 박연지에게 알려주세요!
   </div>
 </div>
 
