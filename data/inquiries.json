@@ -1,9 +1,29 @@
 {
-  "updated": "2026-04-30T15:05:47.964Z",
+  "updated": "2026-04-30T22:00:25.495Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 05. 01 오전 06:56:39",
+      "date": "2026-05-01",
+      "name": "허은주",
+      "cid": "60eed22609c63a06ed146dd6",
+      "phone": "010-3659-8215",
+      "product": "[웰코멧] LDM ECO10",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "69dc792afe738d9beeb4db2a",
+      "clinic": "",
+      "region": "서울시 서초구",
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": "고가망"
+    },
     {
       "source": "일반",
       "timestamp": "2026. 04. 30 오전 10:05:49",
