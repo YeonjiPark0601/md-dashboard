@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-30T09:32:15.184Z",
+  "updated": "2026-04-30T12:09:35.937Z",
   "month": "2026-04",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -43,6 +43,26 @@
       "payAmount": null,
       "inquiry": "",
       "leadGrade": ""
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 04. 30 오후 08:57:12",
+      "date": "2026-04-30",
+      "name": "김현기",
+      "cid": "6231d069f967570023faebc7",
+      "phone": "010-3975-9074",
+      "product": "필립스 초음파기기 루미파이  Lumify",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "63edb3cd86095b0031e5ef71",
+      "clinic": "",
+      "region": "경기도 고양시",
+      "caller": "",
+      "supplier": "이앤에스헬스케어",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "개인적으로 공부하고 스터디할 때 사용하려고 하는데 가격대가 궁금합니다..!",
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
