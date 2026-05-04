@@ -971,17 +971,25 @@ function renderTrendChart(data){
       if(d['카테고리']==='온라인')onData[ym]=(onData[ym]||0)+d['매출금액'];
       else if(d['카테고리']==='오프라인')offData[ym]=(offData[ym]||0)+d['매출금액'];
     });
-    const classStackTotalPlugin={id:'classStackTotal',afterDatasetsDraw:function(chart){
-      const ctx=chart.ctx;ctx.save();ctx.font='bold 10px Segoe UI, sans-serif';ctx.fillStyle='#333';ctx.textAlign='center';ctx.textBaseline='bottom';
+    const classStackTotalPlugin={id:'classStackTotal',afterDraw:function(chart){
+      const ctx=chart.ctx;const yScale=chart.scales.y;if(!yScale)return;
+      let xMeta=null;
+      for(let j=0;j<chart.data.datasets.length;j++){
+        if(chart.data.datasets[j].stack!=='thisYear')continue;
+        if(!chart.isDatasetVisible(j))continue;
+        xMeta=chart.getDatasetMeta(j);break;
+      }
+      if(!xMeta)return;
+      ctx.save();ctx.font='bold 10px Segoe UI, sans-serif';ctx.fillStyle='#333';ctx.textAlign='center';ctx.textBaseline='bottom';
       const labels=chart.data.labels;
       for(let di=0;di<labels.length;di++){
-        let t=0,lastMeta=null;
-        for(let j=0;j<chart.data.datasets.length;j++){
-          if(chart.data.datasets[j].stack!=='thisYear')continue;
-          const m=chart.getDatasetMeta(j);if(m.hidden)continue;
-          t+=(chart.data.datasets[j].data[di]||0);lastMeta=m;
+        let t=0;
+        for(let k=0;k<chart.data.datasets.length;k++){
+          if(chart.data.datasets[k].stack!=='thisYear')continue;
+          if(!chart.isDatasetVisible(k))continue;
+          t+=(chart.data.datasets[k].data[di]||0);
         }
-        if(t>0&&lastMeta&&lastMeta.data[di])ctx.fillText(fmtLabel(t),lastMeta.data[di].x,lastMeta.data[di].y-5);
+        if(t>0&&xMeta.data[di])ctx.fillText(fmtLabel(t),xMeta.data[di].x,yScale.getPixelForValue(t)-5);
       }
       ctx.restore();
     }};
@@ -1003,17 +1011,25 @@ function renderTrendChart(data){
     allData.forEach(d=>{const ym=d['연월'];if(!ym||!months.includes(ym))return;mdM[ym]=(mdM[ym]||0)+d['매출금액']});
     sonoData.filter(d=>!d._isAS).forEach(d=>{const ym=d['연월'];if(!ym||!months.includes(ym))return;sonoM[ym]=(sonoM[ym]||0)+d['매출금액']});
     classData.forEach(d=>{const ym=d['연월'];if(!ym||!months.includes(ym))return;classM[ym]=(classM[ym]||0)+d['매출금액']});
-    var stackTotalPlugin={id:'stackTotal',afterDatasetsDraw:function(chart){
-      var ctx=chart.ctx;ctx.save();ctx.font='bold 10px Segoe UI, sans-serif';ctx.fillStyle='#333';ctx.textAlign='center';ctx.textBaseline='bottom';
+    var stackTotalPlugin={id:'stackTotal',afterDraw:function(chart){
+      var ctx=chart.ctx;var yScale=chart.scales.y;if(!yScale)return;
+      var xMeta=null;
+      for(var j=0;j<chart.data.datasets.length;j++){
+        if(chart.data.datasets[j].stack!=='thisYear')continue;
+        if(!chart.isDatasetVisible(j))continue;
+        xMeta=chart.getDatasetMeta(j);break;
+      }
+      if(!xMeta)return;
+      ctx.save();ctx.font='bold 10px Segoe UI, sans-serif';ctx.fillStyle='#333';ctx.textAlign='center';ctx.textBaseline='bottom';
       var labels=chart.data.labels;
       for(var di=0;di<labels.length;di++){
-        var t=0,lastMeta=null;
-        for(var j=0;j<chart.data.datasets.length;j++){
-          if(chart.data.datasets[j].stack!=='thisYear')continue;
-          var m=chart.getDatasetMeta(j);if(m.hidden)continue;
-          t+=(chart.data.datasets[j].data[di]||0);lastMeta=m;
+        var t=0;
+        for(var k=0;k<chart.data.datasets.length;k++){
+          if(chart.data.datasets[k].stack!=='thisYear')continue;
+          if(!chart.isDatasetVisible(k))continue;
+          t+=(chart.data.datasets[k].data[di]||0);
         }
-        if(t>0&&lastMeta&&lastMeta.data[di])ctx.fillText(fmtLabel(t),lastMeta.data[di].x,lastMeta.data[di].y-5);
+        if(t>0&&xMeta.data[di])ctx.fillText(fmtLabel(t),xMeta.data[di].x,yScale.getPixelForValue(t)-5);
       }
       ctx.restore();
     }};
