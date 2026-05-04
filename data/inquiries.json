@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-04T03:25:36.951Z",
+  "updated": "2026-05-04T05:05:37.923Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -22,6 +22,26 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "404랑 606 가격 궁긍합니다.",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 05. 04 오후 02:02:53",
+      "date": "2026-05-04",
+      "name": "김정진",
+      "cid": "607d32bbc1908b001a63ea61",
+      "phone": "010-2067-0980",
+      "product": "메가메디칼 비내시경 NET-290F",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "677fa0ab31f6a090cbbc503e",
+      "clinic": "설명한의원",
+      "region": "인천시 계양구",
+      "caller": "",
+      "supplier": "메가메디칼",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격과 썸텍과의 차이",
       "leadGrade": "고가망"
     },
     {
