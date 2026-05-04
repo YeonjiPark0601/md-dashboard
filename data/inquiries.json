@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-04T06:35:38.940Z",
+  "updated": "2026-05-04T09:15:38.736Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -43,6 +43,26 @@
       "payAmount": null,
       "inquiry": "장비회사와 가격대 궁금합니다.",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 04 오후 06:10:29",
+      "date": "2026-05-04",
+      "name": "유호상",
+      "cid": "5fa3b1a65120316334321d09",
+      "phone": "010-2867-3573",
+      "product": "[인바디] 낙상위험 예방 시스템 (밸런스계 FRA)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "684790d912d37abf7dc8358f",
+      "clinic": "소생한의원",
+      "region": "서울시 강북구",
+      "caller": "",
+      "supplier": "인바디",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
