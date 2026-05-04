@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-04T05:25:37.244Z",
+  "updated": "2026-05-04T06:35:38.940Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -22,6 +22,26 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "404랑 606 가격 궁긍합니다.",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 04 오후 03:32:45",
+      "date": "2026-05-04",
+      "name": "민상홍",
+      "cid": "5d75ebef19efa30eb29143a1",
+      "phone": "010-5386-6450",
+      "product": "PLM 모세혈관측정기",
+      "qty": 1,
+      "price": "현미경 종류에 따라 다양한것 같네요. 말씀 주세요~",
+      "productId": "6557257044521d00196da97f",
+      "clinic": "에스튼튼한의원",
+      "region": "서울시 양천구",
+      "caller": "",
+      "supplier": "PLM",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "장비회사와 가격대 궁금합니다.",
       "leadGrade": "고가망"
     },
     {
