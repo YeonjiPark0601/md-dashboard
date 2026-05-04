@@ -972,7 +972,7 @@ function renderTrendChart(data){
       else if(d['카테고리']==='오프라인')offData[ym]=(offData[ym]||0)+d['매출금액'];
     });
     const classStackTotalPlugin={id:'classStackTotal',afterDraw:function(chart){
-      const ctx=chart.ctx;const yScale=chart.scales.y;if(!yScale)return;
+      const ctx=chart.ctx;
       let xMeta=null;
       for(let j=0;j<chart.data.datasets.length;j++){
         if(chart.data.datasets[j].stack!=='thisYear')continue;
@@ -983,13 +983,15 @@ function renderTrendChart(data){
       ctx.save();ctx.font='bold 10px Segoe UI, sans-serif';ctx.fillStyle='#333';ctx.textAlign='center';ctx.textBaseline='bottom';
       const labels=chart.data.labels;
       for(let di=0;di<labels.length;di++){
-        let t=0;
+        let t=0,topY=null;
         for(let k=0;k<chart.data.datasets.length;k++){
           if(chart.data.datasets[k].stack!=='thisYear')continue;
           if(!chart.isDatasetVisible(k))continue;
           t+=(chart.data.datasets[k].data[di]||0);
+          const m=chart.getDatasetMeta(k);
+          if(m.data[di]&&typeof m.data[di].y==='number'&&(topY===null||m.data[di].y<topY))topY=m.data[di].y;
         }
-        if(t>0&&xMeta.data[di])ctx.fillText(fmtLabel(t),xMeta.data[di].x,yScale.getPixelForValue(t)-5);
+        if(t>0&&topY!==null&&xMeta.data[di])ctx.fillText(fmtLabel(t),xMeta.data[di].x,topY-5);
       }
       ctx.restore();
     }};
@@ -1012,7 +1014,7 @@ function renderTrendChart(data){
     sonoData.filter(d=>!d._isAS).forEach(d=>{const ym=d['연월'];if(!ym||!months.includes(ym))return;sonoM[ym]=(sonoM[ym]||0)+d['매출금액']});
     classData.forEach(d=>{const ym=d['연월'];if(!ym||!months.includes(ym))return;classM[ym]=(classM[ym]||0)+d['매출금액']});
     var stackTotalPlugin={id:'stackTotal',afterDraw:function(chart){
-      var ctx=chart.ctx;var yScale=chart.scales.y;if(!yScale)return;
+      var ctx=chart.ctx;
       var xMeta=null;
       for(var j=0;j<chart.data.datasets.length;j++){
         if(chart.data.datasets[j].stack!=='thisYear')continue;
@@ -1023,13 +1025,15 @@ function renderTrendChart(data){
       ctx.save();ctx.font='bold 10px Segoe UI, sans-serif';ctx.fillStyle='#333';ctx.textAlign='center';ctx.textBaseline='bottom';
       var labels=chart.data.labels;
       for(var di=0;di<labels.length;di++){
-        var t=0;
+        var t=0,topY=null;
         for(var k=0;k<chart.data.datasets.length;k++){
           if(chart.data.datasets[k].stack!=='thisYear')continue;
           if(!chart.isDatasetVisible(k))continue;
           t+=(chart.data.datasets[k].data[di]||0);
+          var m=chart.getDatasetMeta(k);
+          if(m.data[di]&&typeof m.data[di].y==='number'&&(topY===null||m.data[di].y<topY))topY=m.data[di].y;
         }
-        if(t>0&&xMeta.data[di])ctx.fillText(fmtLabel(t),xMeta.data[di].x,yScale.getPixelForValue(t)-5);
+        if(t>0&&topY!==null&&xMeta.data[di])ctx.fillText(fmtLabel(t),xMeta.data[di].x,topY-5);
       }
       ctx.restore();
     }};
