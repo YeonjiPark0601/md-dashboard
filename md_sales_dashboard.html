@@ -971,21 +971,22 @@ function renderTrendChart(data){
       if(d['카테고리']==='온라인')onData[ym]=(onData[ym]||0)+d['매출금액'];
       else if(d['카테고리']==='오프라인')offData[ym]=(offData[ym]||0)+d['매출금액'];
     });
+    const classStackedTotalLabel={anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',
+      display:function(ctx){
+        const chart=ctx.chart;const di=ctx.dataIndex;let t=0,lastVisible=-1;
+        for(let j=0;j<chart.data.datasets.length;j++){if(chart.data.datasets[j].stack==='thisYear'&&!chart.getDatasetMeta(j).hidden){t+=(chart.data.datasets[j].data[di]||0);lastVisible=j}}
+        return ctx.datasetIndex===lastVisible&&t>0;
+      },
+      formatter:function(v,ctx){
+        const chart=ctx.chart;const di=ctx.dataIndex;let t=0;
+        for(let j=0;j<chart.data.datasets.length;j++){if(chart.data.datasets[j].stack==='thisYear'&&!chart.getDatasetMeta(j).hidden)t+=(chart.data.datasets[j].data[di]||0)}
+        return fmtLabel(t);
+      }};
     cfg={type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets:[
       {label:'온라인',data:months.map(m=>onData[m]||0),backgroundColor:'#4285f4',borderRadius:0,stack:'thisYear',order:2,
-        datalabels:{display:false}},
+        datalabels:classStackedTotalLabel},
       {label:'오프라인',data:months.map(m=>offData[m]||0),backgroundColor:'#fbbc04',borderRadius:0,stack:'thisYear',order:2,
-        datalabels:{anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',
-          display:function(ctx){
-            const chart=ctx.chart;const di=ctx.dataIndex;let t=0,lastVisible=-1;
-            for(let j=0;j<chart.data.datasets.length;j++){if(chart.data.datasets[j].stack==='thisYear'&&!chart.getDatasetMeta(j).hidden){t+=(chart.data.datasets[j].data[di]||0);lastVisible=j}}
-            return ctx.datasetIndex===lastVisible&&t>0;
-          },
-          formatter:function(v,ctx){
-            const chart=ctx.chart;const di=ctx.dataIndex;let t=0;
-            for(let j=0;j<chart.data.datasets.length;j++){if(chart.data.datasets[j].stack==='thisYear'&&!chart.getDatasetMeta(j).hidden)t+=(chart.data.datasets[j].data[di]||0)}
-            return fmtLabel(t);
-          }}},
+        datalabels:classStackedTotalLabel},
       {label:'전년',data:months.map(m=>pY[m]||0),type:'line',borderColor:'#bbb',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,borderDash:[5,3],pointRadius:3,pointBackgroundColor:'#999',order:0,fill:false,
         datalabels:{display:false}}
     ]},plugins:[ChartDataLabels],options:{responsive:true,interaction:{mode:'index',intersect:false},
@@ -1002,17 +1003,17 @@ function renderTrendChart(data){
     allData.forEach(d=>{const ym=d['연월'];if(!ym||!months.includes(ym))return;mdM[ym]=(mdM[ym]||0)+d['매출금액']});
     sonoData.filter(d=>!d._isAS).forEach(d=>{const ym=d['연월'];if(!ym||!months.includes(ym))return;sonoM[ym]=(sonoM[ym]||0)+d['매출금액']});
     classData.forEach(d=>{const ym=d['연월'];if(!ym||!months.includes(ym))return;classM[ym]=(classM[ym]||0)+d['매출금액']});
+    var stackedTotalLabel={anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',
+      display:function(ctx){var chart=ctx.chart;var di=ctx.dataIndex;var t=0,lastVisible=-1;
+        for(var j=0;j<chart.data.datasets.length;j++){if(chart.data.datasets[j].stack==='thisYear'&&!chart.getDatasetMeta(j).hidden){t+=(chart.data.datasets[j].data[di]||0);lastVisible=j}}
+        return ctx.datasetIndex===lastVisible&&t>0;},
+      formatter:function(v,ctx){var chart=ctx.chart;var di=ctx.dataIndex;var t=0;
+        for(var j=0;j<chart.data.datasets.length;j++){if(chart.data.datasets[j].stack==='thisYear'&&!chart.getDatasetMeta(j).hidden)t+=(chart.data.datasets[j].data[di]||0)}
+        return fmtLabel(t);}};
     cfg={type:'bar',data:{labels:months.map(m=>m.substring(2)),datasets:[
-      {label:'초음파',data:months.map(m=>sonoM[m]||0),backgroundColor:'#4285f4',borderRadius:0,stack:'thisYear',order:2,datalabels:{display:false}},
-      {label:'의료기기',data:months.map(m=>mdM[m]||0),backgroundColor:'#34a853',borderRadius:0,stack:'thisYear',order:2,datalabels:{display:false}},
-      {label:'클래스',data:months.map(m=>classM[m]||0),backgroundColor:'#fbbc04',borderRadius:0,stack:'thisYear',order:2,
-        datalabels:{anchor:'end',align:'end',font:{size:10,weight:'bold'},color:'#333',
-          display:function(ctx){var chart=ctx.chart;var di=ctx.dataIndex;var t=0,lastVisible=-1;
-            for(var j=0;j<chart.data.datasets.length;j++){if(chart.data.datasets[j].stack==='thisYear'&&!chart.getDatasetMeta(j).hidden){t+=(chart.data.datasets[j].data[di]||0);lastVisible=j}}
-            return ctx.datasetIndex===lastVisible&&t>0;},
-          formatter:function(v,ctx){var chart=ctx.chart;var di=ctx.dataIndex;var t=0;
-            for(var j=0;j<chart.data.datasets.length;j++){if(chart.data.datasets[j].stack==='thisYear'&&!chart.getDatasetMeta(j).hidden)t+=(chart.data.datasets[j].data[di]||0)}
-            return fmtLabel(t);}}},
+      {label:'초음파',data:months.map(m=>sonoM[m]||0),backgroundColor:'#4285f4',borderRadius:0,stack:'thisYear',order:2,datalabels:stackedTotalLabel},
+      {label:'의료기기',data:months.map(m=>mdM[m]||0),backgroundColor:'#34a853',borderRadius:0,stack:'thisYear',order:2,datalabels:stackedTotalLabel},
+      {label:'클래스',data:months.map(m=>classM[m]||0),backgroundColor:'#fbbc04',borderRadius:0,stack:'thisYear',order:2,datalabels:stackedTotalLabel},
       {label:'전년',data:months.map(m=>pY[m]||0),type:'line',borderColor:'#bbb',backgroundColor:'rgba(0,0,0,0)',borderWidth:2,borderDash:[5,3],pointRadius:3,pointBackgroundColor:'#999',order:0,fill:false,datalabels:{display:false}}
     ]},plugins:[ChartDataLabels],options:{responsive:true,interaction:{mode:'index',intersect:false},layout:{padding:{top:20}},
       plugins:{legend:{position:'top'},
