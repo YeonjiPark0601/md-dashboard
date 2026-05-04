@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-04T09:15:38.736Z",
+  "updated": "2026-05-04T11:00:38.375Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -83,6 +83,26 @@
       "payAmount": null,
       "inquiry": "가격과 썸텍과의 차이",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 05. 04 오후 07:58:08",
+      "date": "2026-05-04",
+      "name": "장승원",
+      "cid": "5d84be770dabe405b156d3ea",
+      "phone": "010-2846-7883",
+      "product": "[웰코멧] LDM ECO10",
+      "qty": "미용기초패키지B",
+      "price": "N/A",
+      "productId": "69dc792afe738d9beeb4db2a",
+      "clinic": "경희365한의원",
+      "region": "경상남도 김해시",
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
