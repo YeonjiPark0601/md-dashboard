@@ -907,7 +907,7 @@ function fetchExternalInquiries() {
           price: priceStr,
           leadGrade: r.leadGrade || '',
           payAmount: r.payAmount != null ? r.payAmount : null,
-          caller: r.caller || callerOverrides[stableKey] || '', buyDate: '', rep: '',
+          caller: (callerOverrides[stableKey] !== undefined ? callerOverrides[stableKey] : (r.caller || '')), buyDate: '', rep: '',
           stage: (function(){
             // 결제 완료가 최우선: payDate 있으면 무조건 Done (이전 Drop이었어도 복구)
             if (r.payDate) return 'Done';
@@ -1675,8 +1675,26 @@ function openDetailModal(id) {
     '<div style="font-weight:700;font-size:12px;color:#b87b00;margin-bottom:6px;">담당자 메모</div>' +
     '<div style="white-space:pre-wrap;word-break:break-word;">' + escHtml(note) + '</div>' +
     '</div>') : '';
+  // 담당자 변경 이력
+  var histMap = (typeof loadCallerHistory === 'function') ? loadCallerHistory() : {};
+  var histList = histMap[r.id] || [];
+  var histHtml = '';
+  if (histList.length) {
+    var rows = histList.slice().reverse().map(function(h){
+      var when = h.at ? new Date(h.at).toLocaleString('ko-KR', { hour12: false }) : '';
+      var fromTxt = h.from || '미지정';
+      var toTxt = h.to || '미지정';
+      return '<div style="font-size:12px;color:#444;padding:3px 0;">' +
+        '<span style="color:#888;">' + escHtml(when) + '</span> · ' +
+        escHtml(fromTxt) + ' → <strong>' + escHtml(toTxt) + '</strong>' +
+        '</div>';
+    }).join('');
+    histHtml = '<div style="margin-top:12px;padding:12px;background:#f4f7fc;border-left:3px solid #6b8cce;border-radius:4px;">' +
+      '<div style="font-weight:700;font-size:12px;color:#3a5d9f;margin-bottom:6px;">담당자 변경 이력 (' + histList.length + '건)</div>' +
+      rows + '</div>';
+  }
   document.getElementById('detailModalTitle').textContent = (r.customer || '상담') + ' 상세';
-  document.getElementById('detailModalBody').innerHTML = infoHtml + inquiryHtml + noteHtml;
+  document.getElementById('detailModalBody').innerHTML = infoHtml + inquiryHtml + noteHtml + histHtml;
   document.getElementById('detailModal').classList.add('open');
 }
 function closeDetailModal() {
@@ -2280,14 +2298,37 @@ function saveExtCallerOverrides(obj) {
 }
 
 var CALLER_OPTIONS = ['주봉현','김태호','조성갑','유승준','박원','이예림','김진석','류창희'];
+var CALLER_HISTORY_KEY = 'md_consult_caller_history';
+function loadCallerHistory() {
+  try { return JSON.parse(localStorage.getItem(CALLER_HISTORY_KEY) || '{}'); }
+  catch(e) { return {}; }
+}
+function saveCallerHistory(obj) {
+  localStorage.setItem(CALLER_HISTORY_KEY, JSON.stringify(obj));
+}
+function appendCallerHistory(id, fromVal, toVal) {
+  if ((fromVal || '') === (toVal || '')) return;
+  var h = loadCallerHistory();
+  if (!h[id]) h[id] = [];
+  h[id].push({ at: new Date().toISOString(), from: fromVal || '', to: toVal || '' });
+  // 최근 20개만 유지
+  if (h[id].length > 20) h[id] = h[id].slice(-20);
+  saveCallerHistory(h);
+}
 function renderCallerCell(r) {
-  // 이미 배정된 담당자(슬랙 리액션 or 수동 저장)는 텍스트로 표시
-  if (r.caller) return escHtml(r.caller);
-  // 비어있으면 드롭다운으로 선택 가능
-  var opts = '<option value="">미지정</option>' + CALLER_OPTIONS.map(function(n){
-    return '<option value="' + n + '">' + n + '</option>';
-  }).join('');
-  return '<select class="caller-select" data-id="' + escHtml(r.id) + '" data-ext="' + (r.external?'1':'0') + '" style="width:100%;padding:3px 4px;border:1px solid #d0d5dd;border-radius:4px;font-size:12px;background:#fff;">' + opts + '</select>';
+  var current = r.caller || '';
+  var hist = loadCallerHistory();
+  var hasHistory = hist[r.id] && hist[r.id].length > 0;
+  var opts = '<option value=""' + (current === '' ? ' selected' : '') + '>미지정</option>' +
+    CALLER_OPTIONS.map(function(n){
+      return '<option value="' + n + '"' + (n === current ? ' selected' : '') + '>' + n + '</option>';
+    }).join('');
+  // current가 CALLER_OPTIONS에 없는 값이면(과거 슬랙 리액션 등) 그 값도 옵션에 추가
+  if (current && CALLER_OPTIONS.indexOf(current) === -1) {
+    opts += '<option value="' + escHtml(current) + '" selected>' + escHtml(current) + '</option>';
+  }
+  var marker = hasHistory ? '<span title="변경 이력 있음 (상세 클릭)" style="color:#888;font-size:10px;margin-left:2px;">●</span>' : '';
+  return '<select class="caller-select" data-id="' + escHtml(r.id) + '" data-ext="' + (r.external?'1':'0') + '" data-prev="' + escHtml(current).replace(/"/g,'&quot;') + '" style="width:100%;padding:3px 4px;border:1px solid #d0d5dd;border-radius:4px;font-size:12px;background:#fff;">' + opts + '</select>' + marker;
 }
 
 document.addEventListener('change', function(e){
@@ -2296,10 +2337,12 @@ document.addEventListener('change', function(e){
   var id = sel.dataset.id;
   var isExt = sel.dataset.ext === '1';
   var val = sel.value;
-  if (!val) return;
+  var prev = sel.dataset.prev || '';
+  if (val === prev) return;
+  appendCallerHistory(id, prev, val);
   if (isExt) {
     var ov = loadExtCallerOverrides();
-    ov[id] = val;
+    ov[id] = val; // 빈 문자열도 명시적으로 저장 (json default 덮어쓰기 위함)
     saveExtCallerOverrides(ov);
     var idx = EXTERNAL_DATA.findIndex(function(r){ return r.id === id; });
     if (idx !== -1) EXTERNAL_DATA[idx].caller = val;
