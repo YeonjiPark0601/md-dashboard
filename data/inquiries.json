@@ -1,9 +1,29 @@
 {
-  "updated": "2026-05-06T08:30:37.350Z",
+  "updated": "2026-05-06T22:05:38.458Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 07 오전 07:02:51",
+      "date": "2026-05-07",
+      "name": "이하일",
+      "cid": "5d7059f619efa30eb29141e0",
+      "phone": "010-2798-2124",
+      "product": "[세이버] 면역약탕기 25L",
+      "qty": 2,
+      "price": "N/A",
+      "productId": "6285fcf29d938800240654f7",
+      "clinic": "바른부부한의원",
+      "region": "대전시 유성구",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "면역약탕기와 일반약탕기의 차이점",
+      "leadGrade": "가망"
+    },
     {
       "source": "일반",
       "timestamp": "2026. 05. 06 오전 08:14:50",
@@ -82,7 +102,7 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "견적",
-      "leadGrade": "고가망"
+      "leadGrade": "가망"
     },
     {
       "source": "총판기기",
@@ -7622,7 +7642,7 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "",
-      "leadGrade": "고가망"
+      "leadGrade": "가망"
     },
     {
       "source": "총판기기",
