@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-06T06:35:37.652Z",
+  "updated": "2026-05-06T08:20:38.083Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -103,6 +103,26 @@
       "payAmount": null,
       "inquiry": "데모가 가능한지 궁금합니다!",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 05. 06 오후 05:19:28",
+      "date": "2026-05-06",
+      "name": "박연진",
+      "cid": "5dee107b4267e105dffef189",
+      "phone": "010-5057-4665",
+      "product": "[은성] V-메타쉐이프 (Meta Shape)",
+      "qty": 1,
+      "price": "1493만원",
+      "productId": "693960a721009623ac43112a",
+      "clinic": "비타민한의원",
+      "region": "서울시 서초구",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
