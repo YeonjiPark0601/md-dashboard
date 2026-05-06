@@ -3167,9 +3167,9 @@ const DIO_PRODUCTS=[
   {id:'MEETPEURIS2B0010B001',name:'플런져(압축패드)',moq:1,moqLabel:'1'},
   {id:'GEETPEURIS780007B001',name:'캐필러리 튜브 25개입',moq:800,moqLabel:'800set',fixedRop:500},
   {id:'MEDOMEDISED80035B001',name:'HbA1c 캐필러리튜브 100pcs',moq:0,moqLabel:'-'},
-  {id:'01KP56CFRG1GXXXDVSPWK42XG2',name:'TRF Plus 본체',moq:1,moqLabel:'1'},
-  {id:'01KP56NV4DRRR9NP2R511HQA7M',name:'TRF Plus D-Dimer',moq:1,moqLabel:'1'},
-  {id:'01KP56HF7RYEGVWN4MM2A82PM6',name:'TRF Plus CRP',moq:1,moqLabel:'1'}
+  {id:'01KP56CFRG1GXXXDVSPWK42XG2',salesId:'01KP56A33TZRW0ZPYX899DEJS1',name:'TRF Plus 본체',moq:1,moqLabel:'1'},
+  {id:'01KP56NV4DRRR9NP2R511HQA7M',salesId:'01KP56J1V7MXV4J7SHQM4BYDNG',name:'TRF Plus D-Dimer',moq:1,moqLabel:'1'},
+  {id:'01KP56HF7RYEGVWN4MM2A82PM6',salesId:'01KP56GBD07S01E2NX7PMB90J4',name:'TRF Plus CRP',moq:1,moqLabel:'1'}
 ];
 
 async function renderPT10DIO(){
@@ -3221,7 +3221,8 @@ async function renderPT10DIO(){
 
     DIO_PRODUCTS.forEach(p=>{
       const stock=invMap[p.id]||0;
-      const sales3m=m3.reduce((s,ym)=>s+((salesMap[p.id]||{})[ym]||0),0);
+      const salesKey=p.salesId||p.id;
+      const sales3m=m3.reduce((s,ym)=>s+((salesMap[salesKey]||{})[ym]||0),0);
       const dailyAvg=totalDays3M>0?sales3m/totalDays3M:0;
       const dio=dailyAvg>0?stock/dailyAvg:Infinity;
       const rop=p.fixedRop!==undefined?p.fixedRop:Math.ceil(dailyAvg*30);
@@ -3235,7 +3236,7 @@ async function renderPT10DIO(){
       else if(dio<90){status='적정';statusCls='color:#43a047';}
       else{status='과잉';statusCls='color:#fb8c00';}
       // 최신 제품명
-      const names=nameMap[p.id]||{};const latestYm=Object.keys(names).sort().pop();
+      const names=nameMap[salesKey]||{};const latestYm=Object.keys(names).sort().pop();
       const displayName=latestYm?names[latestYm]:p.name;
       const shortName=displayName
         .replace(/^\(냉\)\[프리시젼바이오\]\s*/,'').replace(/^\[프리시젼바이오\]\s*/,'')
