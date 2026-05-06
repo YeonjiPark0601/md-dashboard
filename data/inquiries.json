@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-06T05:50:37.882Z",
+  "updated": "2026-05-06T06:35:37.652Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -63,6 +63,26 @@
       "payAmount": null,
       "inquiry": "듀얼형",
       "leadGrade": "가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 06 오후 03:34:27",
+      "date": "2026-05-06",
+      "name": "이하일",
+      "cid": "5d7059f619efa30eb29141e0",
+      "phone": "010-2798-2124",
+      "product": "[일광] 무압력 스텐/옹기 약탕기",
+      "qty": 2,
+      "price": "N/A",
+      "productId": "60bd7a630ccc56001bc7fe19",
+      "clinic": "바른부부한의원",
+      "region": "대전시 유성구",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "견적",
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
@@ -7582,7 +7602,7 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "",
-      "leadGrade": ""
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
