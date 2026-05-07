@@ -130,6 +130,17 @@ th.sortable:hover { background: #eef0f4; }
 .note-cell.editable { cursor: text; }
 .note-cell.editable:hover { background: #f0f7ff; }
 .note-placeholder { color: #bbb; font-style: italic; font-size: 12px; }
+.memo-cell { max-width: 240px; vertical-align: top; cursor: pointer; padding: 6px 10px; }
+.memo-cell:hover { background: #f0f7ff; }
+.memo-stack { display: flex; flex-direction: column; gap: 2px; font-size: 12px; line-height: 1.45; }
+.memo-item { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; color: #333; }
+.memo-date { color: #888; font-size: 11px; margin-right: 3px; }
+.memo-more { color: #1a73e8; font-size: 11px; font-weight: 600; margin-top: 2px; }
+.memo-add-hint { color: #bbb; font-size: 12px; font-style: italic; }
+.memo-row-list { max-height: 280px; overflow-y: auto; margin-bottom: 14px; }
+.memo-row { padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px; margin-bottom: 6px; background: #fafbfc; }
+.memo-row .memo-row-date { font-size: 11px; color: #888; margin-bottom: 4px; }
+.memo-row .memo-row-text { white-space: pre-wrap; word-break: break-word; font-size: 13px; color: #333; }
 .copy-phone:hover { color: #1a73e8; text-decoration: underline; }
 .copy-phone.copied { color: #16a34a; }
 .note-input { width: 100%; padding: 4px 6px; border: 1px solid #1a73e8; border-radius: 4px; font-size: 13px; font-family: inherit; outline: none; }
@@ -324,7 +335,8 @@ th.sortable:hover { background: #eef0f4; }
   #consultTable td:nth-of-type(17)::before { content: "상세"; }
   #consultTable td:nth-of-type(3) { font-size: 15px; font-weight: 700; padding-top: 2px; padding-bottom: 6px; border-bottom: 1px solid #f0f0f0; margin-bottom: 4px; }
   #consultTable td:nth-of-type(3)::before { color: #aaa; }
-  #consultTable td.td-truncate, #consultTable td.note-cell { max-width: none; white-space: normal; overflow: visible; text-overflow: clip; }
+  #consultTable td.td-truncate, #consultTable td.note-cell, #consultTable td.memo-cell { max-width: none; white-space: normal; overflow: visible; text-overflow: clip; }
+  #consultTable td.memo-cell .memo-item { max-width: none; white-space: normal; }
   #consultTable td .td-actions { justify-content: flex-start; }
   #consultTable td .stage-select { width: auto; }
   .col-resizer { display: none; }
@@ -703,6 +715,24 @@ th.sortable:hover { background: #eef0f4; }
     <div id="detailModalBody" style="font-size: 13px; color: #333; line-height: 1.6; max-height: 60vh; overflow-y: auto;"></div>
     <div class="modal-actions" style="margin-top: 16px;">
       <button class="btn btn-secondary" onclick="closeDetailModal()">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MEMO MODAL ===== -->
+<div class="modal-backdrop" id="memoModal">
+  <div class="modal" style="max-width: 480px;">
+    <h3>담당자 메모</h3>
+    <div id="memoModalSubtitle" style="font-size:12px;color:#888;margin-bottom:12px;"></div>
+    <div id="memoList" class="memo-row-list"></div>
+    <div style="border-top:1px solid #e5e7eb;padding-top:14px;">
+      <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#333;">새 메모 추가</label>
+      <textarea id="memoInput" rows="3" placeholder="메모 내용 입력 (저장 시 오늘 날짜가 자동으로 추가됩니다)" style="width:100%;padding:8px 10px;border:1px solid #d0d0d0;border-radius:6px;font-family:inherit;font-size:13px;resize:vertical;box-sizing:border-box;"></textarea>
+      <div style="font-size:11px;color:#888;margin-top:4px;">Ctrl+Enter로 빠른 저장</div>
+    </div>
+    <div class="modal-actions" style="margin-top:14px;">
+      <button class="btn btn-secondary" onclick="closeMemoModal()">닫기</button>
+      <button class="btn btn-primary" onclick="saveMemo()">+ 메모 추가</button>
     </div>
   </div>
 </div>
@@ -1477,7 +1507,7 @@ function renderTable() {
       '<td>' + renderCallerCell(r) + '</td>' +
       '<td>' + renderStageCell(r) + '</td>' +
       '<td class="note-cell" style="font-size:12px;color:#555;" title="' + escHtml(r.inquiry || '') + '">' + escHtml(r.inquiry || '') + '</td>' +
-      '<td class="note-cell">' + renderInlineInput('note', r.note, r, '입력') + '</td>' +
+      '<td class="memo-cell" data-id="' + escHtml(r.id) + '" data-ext="' + (r.external?'1':'0') + '">' + renderMemoStack(r.note) + '</td>' +
       '<td>' + (r.stage === 'Demo' ? renderInlineInput('demoDate', r.demoDate, r, 'YYYY-MM-DD', 'date') : '') + '</td>' +
       '<td>' + escHtml(r.payDate) + '</td>' +
       '<td style="text-align:center;"><button type="button" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;line-height:1.2;" onclick="openDetailModal(\'' + escHtml(r.id) + '\')">상세</button></td>' +
@@ -1510,6 +1540,53 @@ function renderInlineInput(field, value, r, placeholder, inputType) {
   var esc = function(s){ return escHtml(s || '').replace(/"/g,'&quot;'); };
   var t = inputType || 'text';
   return '<input class="inline-input" type="' + t + '" data-id="' + escHtml(r.id) + '" data-ext="' + (r.external?'1':'0') + '" data-field="' + field + '" value="' + esc(value) + '" placeholder="' + (placeholder || '') + '">';
+}
+
+// ============================================================
+// MEMO (담당자메모) — JSON 배열 [{d,t}] 직렬화. legacy 단일 문자열도 첫 항목으로 흡수.
+// ============================================================
+function parseMemos(raw) {
+  if (!raw) return [];
+  if (Array.isArray(raw)) {
+    return raw.map(function(m){ return { date: String(m.date||m.d||''), text: String(m.text||m.t||'') }; })
+              .filter(function(m){ return m.text; });
+  }
+  var s = String(raw).trim();
+  if (!s) return [];
+  if (s.charAt(0) === '[') {
+    try {
+      var arr = JSON.parse(s);
+      if (Array.isArray(arr)) {
+        return arr.map(function(m){ return { date: String(m.date||m.d||''), text: String(m.text||m.t||'') }; })
+                  .filter(function(m){ return m.text; });
+      }
+    } catch(e){}
+  }
+  return [{ date: '', text: s }];
+}
+function serializeMemos(arr) {
+  if (!arr || !arr.length) return '';
+  return JSON.stringify(arr.map(function(m){ return { d: m.date || '', t: m.text || '' }; }));
+}
+function todayDateStr() {
+  var d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function renderMemoStack(noteRaw) {
+  var memos = parseMemos(noteRaw);
+  if (!memos.length) return '<span class="memo-add-hint">+ 메모 추가</span>';
+  var top = memos.slice(0, 3);
+  var html = '<div class="memo-stack">';
+  top.forEach(function(m){
+    var dateLabel = m.date ? '<span class="memo-date">' + escHtml(m.date.length >= 10 ? m.date.slice(5) : m.date) + '</span>' : '';
+    var fullTitle = (m.date ? m.date + ' ' : '') + m.text;
+    html += '<div class="memo-item" title="' + escHtml(fullTitle) + '">' + dateLabel + escHtml(m.text) + '</div>';
+  });
+  if (memos.length > 3) {
+    html += '<div class="memo-more">+' + (memos.length - 3) + '개 더보기</div>';
+  }
+  html += '</div>';
+  return html;
 }
 
 var INLINE_FIELD_KEYS = {
@@ -1667,14 +1744,19 @@ function openDetailModal(id) {
       return '<tr><td style="padding:4px 8px;color:#666;white-space:nowrap;width:80px;vertical-align:top;">' + escHtml(kv[0]) + '</td><td style="padding:4px 8px;">' + escHtml(kv[1] || '-') + '</td></tr>';
     }).join('') + '</table>';
   var inq = r.inquiry || '';
-  var note = r.note || '';
+  var memos = parseMemos(r.note);
   var inquiryHtml = '<div style="margin-top:12px;padding:12px;background:#f8f9fb;border-left:3px solid #1a73e8;border-radius:4px;">' +
     '<div style="font-weight:700;font-size:12px;color:#1a73e8;margin-bottom:6px;">문의 내용</div>' +
     '<div style="white-space:pre-wrap;word-break:break-word;">' + (inq ? escHtml(inq) : '<span style="color:#999;">(내용 없음)</span>') + '</div>' +
     '</div>';
-  var noteHtml = note ? ('<div style="margin-top:12px;padding:12px;background:#fffbea;border-left:3px solid #f4b400;border-radius:4px;">' +
-    '<div style="font-weight:700;font-size:12px;color:#b87b00;margin-bottom:6px;">담당자 메모</div>' +
-    '<div style="white-space:pre-wrap;word-break:break-word;">' + escHtml(note) + '</div>' +
+  var noteHtml = memos.length ? ('<div style="margin-top:12px;padding:12px;background:#fffbea;border-left:3px solid #f4b400;border-radius:4px;">' +
+    '<div style="font-weight:700;font-size:12px;color:#b87b00;margin-bottom:6px;">담당자 메모 (' + memos.length + ')</div>' +
+    memos.map(function(m){
+      return '<div style="padding:6px 0;border-top:1px solid #f3e9c5;">' +
+        (m.date ? '<div style="font-size:11px;color:#a07a00;margin-bottom:2px;">' + escHtml(m.date) + '</div>' : '') +
+        '<div style="white-space:pre-wrap;word-break:break-word;">' + escHtml(m.text) + '</div>' +
+      '</div>';
+    }).join('').replace('border-top:1px solid #f3e9c5;', 'border-top:none;') +
     '</div>') : '';
   // 담당자 변경 이력
   var histMap = (typeof loadCallerHistory === 'function') ? loadCallerHistory() : {};
@@ -2438,6 +2520,100 @@ function startNoteEdit(td) {
 document.addEventListener('click', function(e){
   var td = e.target.closest('.note-cell.editable');
   if (td && !e.target.closest('.note-input')) startNoteEdit(td);
+});
+
+// ============================================================
+// MEMO MODAL — 담당자메모 모달 입력/조회
+// ============================================================
+var currentMemoCtx = null;
+
+function findRecordById(id, isExt) {
+  if (isExt) return EXTERNAL_DATA.find(function(r){ return r.id === id; });
+  return loadLocalOnly().find(function(r){ return r.id === id; });
+}
+
+function openMemoModal(id, isExt) {
+  var rec = findRecordById(id, isExt);
+  if (!rec) return;
+  currentMemoCtx = { id: id, isExt: isExt };
+  var subtitle = (rec.customer || '(고객명 없음)') + (rec.clinic ? ' · ' + rec.clinic : '');
+  document.getElementById('memoModalSubtitle').textContent = subtitle;
+  renderMemoModalList(parseMemos(rec.note));
+  document.getElementById('memoInput').value = '';
+  document.getElementById('memoModal').classList.add('open');
+  setTimeout(function(){ var ta = document.getElementById('memoInput'); if (ta) ta.focus(); }, 60);
+}
+
+function renderMemoModalList(memos) {
+  var el = document.getElementById('memoList');
+  if (!memos.length) {
+    el.innerHTML = '<div style="color:#999;font-size:13px;padding:16px;text-align:center;">아직 등록된 메모가 없습니다.</div>';
+    return;
+  }
+  el.innerHTML = memos.map(function(m){
+    var dateHtml = m.date ? '<div class="memo-row-date">' + escHtml(m.date) + '</div>' : '';
+    return '<div class="memo-row">' + dateHtml + '<div class="memo-row-text">' + escHtml(m.text) + '</div></div>';
+  }).join('');
+}
+
+function closeMemoModal() {
+  document.getElementById('memoModal').classList.remove('open');
+  currentMemoCtx = null;
+}
+
+function saveMemo() {
+  if (!currentMemoCtx) return;
+  var ta = document.getElementById('memoInput');
+  var text = (ta.value || '').trim();
+  if (!text) { ta.focus(); return; }
+  var ctx = currentMemoCtx;
+  var rec;
+  var memos;
+  if (ctx.isExt) {
+    rec = EXTERNAL_DATA.find(function(r){ return r.id === ctx.id; });
+    if (!rec) return;
+    memos = parseMemos(rec.note);
+    memos.unshift({ date: todayDateStr(), text: text });
+    rec.note = serializeMemos(memos);
+    var ov = loadExtNoteOverrides();
+    if (rec.note) ov[ctx.id] = rec.note; else delete ov[ctx.id];
+    saveExtNoteOverrides(ov);
+  } else {
+    var data = loadLocalOnly();
+    var idx = data.findIndex(function(r){ return r.id === ctx.id; });
+    if (idx === -1) return;
+    memos = parseMemos(data[idx].note);
+    memos.unshift({ date: todayDateStr(), text: text });
+    data[idx].note = serializeMemos(memos);
+    saveData(data);
+    rec = data[idx];
+  }
+  syncUpdate(rec).catch(function(){});
+  ta.value = '';
+  renderMemoModalList(memos);
+  renderTable();
+}
+
+document.addEventListener('click', function(e){
+  var cell = e.target.closest('.memo-cell');
+  if (!cell) return;
+  openMemoModal(cell.dataset.id, cell.dataset.ext === '1');
+});
+
+document.addEventListener('keydown', function(e){
+  var ta = document.getElementById('memoInput');
+  if (!ta || document.activeElement !== ta) return;
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault();
+    saveMemo();
+  } else if (e.key === 'Escape') {
+    e.preventDefault();
+    closeMemoModal();
+  }
+});
+
+document.getElementById('memoModal').addEventListener('click', function(e){
+  if (e.target === this) closeMemoModal();
 });
 
 // ============================================================
