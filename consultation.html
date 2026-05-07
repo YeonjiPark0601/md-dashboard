@@ -2824,6 +2824,44 @@ function updateStickyOffset() {
   document.documentElement.style.setProperty('--sticky-offset', el.offsetHeight + 'px');
 }
 
+function applyUrlFilters() {
+  // URL 파라미터로 필터 자동 적용
+  // ?caller=unassigned → 담당자 미지정 필터
+  // ?caller=박연지 → 특정 담당자 필터
+  // ?stage=Follow,Demo → stage 필터
+  // ?period=3m → 기간 필터
+  try {
+    var params = new URLSearchParams(window.location.search);
+    var caller = params.get('caller');
+    if (caller) {
+      if (caller === 'unassigned' || caller === '미지정') {
+        columnFilters.caller = new Set(['(미지정)']);
+      } else {
+        columnFilters.caller = new Set(caller.split(',').map(function(s){ return s.trim(); }));
+      }
+    }
+    var stage = params.get('stage');
+    if (stage) {
+      columnFilters.stage = new Set(stage.split(',').map(function(s){ return s.trim(); }));
+    }
+    var period = params.get('period');
+    if (period) {
+      var sel = document.getElementById('periodFilter');
+      if (sel) sel.value = period;
+    }
+    var from = params.get('from');
+    var to = params.get('to');
+    if (from || to) {
+      var sel2 = document.getElementById('periodFilter');
+      if (sel2) sel2.value = 'custom';
+      if (from) document.getElementById('periodFrom').value = from;
+      if (to) document.getElementById('periodTo').value = to;
+      var wrap = document.getElementById('customPeriodWrap');
+      if (wrap) wrap.style.display = 'inline-flex';
+    }
+  } catch(e){ console.warn('URL 필터 적용 실패', e); }
+}
+
 function init() {
   document.getElementById('f_date').value = today();
   var ps = document.getElementById('pageSizeSelect');
@@ -2838,10 +2876,12 @@ function init() {
   if (window.ResizeObserver) {
     new ResizeObserver(updateStickyOffset).observe(document.querySelector('.sticky-top'));
   }
+  applyUrlFilters();
   renderTable();
   setupColResizers();
   applyColWidths();
   updateFilterBadge();
+  updateTopFilterLabels();
   updateAssignBanner();
   updateStaleBanner();
   // 시트가 단일 소스 (n8n이 slack + 수동입력 모두 시트에 동기화)
