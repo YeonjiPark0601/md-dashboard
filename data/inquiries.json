@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-07T08:25:38.005Z",
+  "updated": "2026-05-07T08:35:39.016Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -57,7 +57,7 @@
       "productId": "696f34951dfcaf25535db872",
       "clinic": "진주경희한의원",
       "region": "경상남도 진주시",
-      "caller": "",
+      "caller": "주봉현",
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
