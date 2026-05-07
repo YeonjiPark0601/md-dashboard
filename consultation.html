@@ -563,7 +563,7 @@ th.sortable:hover { background: #eef0f4; }
   <div id="staleBanner" class="stale-banner">
     <div class="stale-banner-head">
       <span class="icon">🔔</span>
-      <span class="msg">4월 1일 이전 인입건 중 <b>Follow / Demo</b> 단계로 남아있는 건이 있어요</span>
+      <span class="msg"><b>Follow / Demo</b> 단계로 남아있는 건이 있어요</span>
       <button class="btn-clear" id="staleClearBtn" onclick="clearStaleFilter()" style="display:none;">필터 해제</button>
       <button class="btn-close" onclick="dismissStaleBanner()" title="오늘 다시 보지 않기">✕</button>
     </div>
@@ -1367,14 +1367,11 @@ function dismissAssignBanner() {
 }
 
 // ============================================================
-// 잔존 Follow/Demo 배너 — 4/1 이전 인입 + 담당자별 stage 잔존
+// 잔존 Follow/Demo 배너 — 담당자별 Follow/Demo 잔존 (날짜 무관)
 // ============================================================
-var STALE_CUTOFF = '2026-04-01'; // 인입일자가 이 날짜 이전인 건만 잔존으로 카운트
 var staleFilter = null; // { caller: '박연지', stage: 'Follow' } 또는 null
 
 function isStaleRecord(r) {
-  if (!r.date) return false;
-  if (r.date >= STALE_CUTOFF) return false;
   var s = (r.stage || '').trim();
   return s === 'Follow' || s === 'Demo';
 }
