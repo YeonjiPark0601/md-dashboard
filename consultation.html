@@ -136,7 +136,8 @@ th.sortable:hover { background: #eef0f4; }
 .memo-item { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; color: #333; }
 .memo-date { color: #888; font-size: 11px; margin-right: 3px; }
 .memo-more { color: #1a73e8; font-size: 11px; font-weight: 600; margin-top: 2px; }
-.memo-add-hint { color: #bbb; font-size: 12px; font-style: italic; }
+.memo-add-link { color: #1a73e8; font-size: 11px; font-weight: 600; margin-top: 4px; padding-top: 4px; border-top: 1px dashed #d0d8e3; }
+.memo-add-hint { color: #1a73e8; font-size: 12px; font-weight: 600; }
 .memo-row-list { max-height: 280px; overflow-y: auto; margin-bottom: 14px; }
 .memo-row { padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px; margin-bottom: 6px; background: #fafbfc; }
 .memo-row .memo-row-date { font-size: 11px; color: #888; margin-bottom: 4px; }
@@ -212,6 +213,24 @@ th.sortable:hover { background: #eef0f4; }
 .mini-table tr:hover { background: #f7f9fc; }
 
 /* ===== ASSIGN REMINDER BANNER ===== */
+.stale-banner { display: none; background: #fff7ed; border: 1px solid #fdba74; border-radius: 10px; padding: 12px 18px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+.stale-banner.show { display: block; }
+.stale-banner-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.stale-banner-head .icon { font-size: 18px; }
+.stale-banner-head .msg { flex: 1; font-size: 13px; color: #9a3412; font-weight: 600; }
+.stale-banner-head .msg b { color: #c2410c; }
+.stale-banner-head .btn-clear { padding: 5px 12px; border: 1px solid #ea580c; background: #fff; color: #c2410c; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+.stale-banner-head .btn-clear:hover { background: #ea580c; color: #fff; }
+.stale-banner-head .btn-close { background: none; border: none; color: #9a3412; font-size: 16px; cursor: pointer; padding: 0 4px; opacity: 0.6; }
+.stale-banner-head .btn-close:hover { opacity: 1; }
+.stale-banner-body { display: flex; flex-wrap: wrap; gap: 10px; }
+.stale-rep-card { background: #fff; border: 1px solid #fed7aa; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px; }
+.stale-rep-name { font-size: 12px; font-weight: 700; color: #7c2d12; min-width: 60px; }
+.stale-pill { padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid transparent; transition: all 0.15s; }
+.stale-pill.follow { background: #fef3c7; color: #92400e; }
+.stale-pill.follow:hover, .stale-pill.follow.active { background: #d97706; color: #fff; }
+.stale-pill.demo { background: #dbeafe; color: #1e40af; }
+.stale-pill.demo:hover, .stale-pill.demo.active { background: #2563eb; color: #fff; }
 .assign-banner { display: none; align-items: center; gap: 12px; background: #fff7ed; border: 1px solid #fdba74; border-radius: 10px; padding: 12px 18px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
 .assign-banner.show { display: flex; }
 .assign-banner .icon { font-size: 20px; }
@@ -539,6 +558,17 @@ th.sortable:hover { background: #eef0f4; }
   </div>
 
   <!-- Data Table -->
+  <!-- 잔존 Follow/Demo 알림 배너 (담당자별, 4/1 이전 인입건 중 미해결) -->
+  <div id="staleBanner" class="stale-banner">
+    <div class="stale-banner-head">
+      <span class="icon">🔔</span>
+      <span class="msg">4월 1일 이전 인입건 중 <b>Follow / Demo</b> 단계로 남아있는 건이 있어요</span>
+      <button class="btn-clear" id="staleClearBtn" onclick="clearStaleFilter()" style="display:none;">필터 해제</button>
+      <button class="btn-close" onclick="dismissStaleBanner()" title="오늘 다시 보지 않기">✕</button>
+    </div>
+    <div id="staleBannerBody" class="stale-banner-body"></div>
+  </div>
+
   <div class="table-card">
       <div id="zoomControl" style="display:flex;justify-content:flex-end;align-items:center;gap:6px;padding:6px 8px;font-size:12px;color:#6b7280;">
         <span>배율</span>
@@ -1224,6 +1254,7 @@ function applyFilters() {
   renderTable();
   updateFilterBadge();
   updateAssignBanner();
+  updateStaleBanner();
 }
 
 function toggleFilters() {
@@ -1326,6 +1357,97 @@ function dismissAssignBanner() {
   updateAssignBanner();
 }
 
+// ============================================================
+// 잔존 Follow/Demo 배너 — 4/1 이전 인입 + 담당자별 stage 잔존
+// ============================================================
+var STALE_CUTOFF = '2026-04-01'; // 인입일자가 이 날짜 이전인 건만 잔존으로 카운트
+var staleFilter = null; // { caller: '박연지', stage: 'Follow' } 또는 null
+
+function isStaleRecord(r) {
+  if (!r.date) return false;
+  if (r.date >= STALE_CUTOFF) return false;
+  var s = (r.stage || '').trim();
+  return s === 'Follow' || s === 'Demo';
+}
+
+function getStaleByCaller() {
+  var data;
+  try { data = loadData(); } catch(e) { return {}; }
+  var byRep = {};
+  data.forEach(function(r){
+    if (!isStaleRecord(r)) return;
+    var rep = (r.caller || r.rep || '').trim() || '미지정';
+    if (!byRep[rep]) byRep[rep] = { Follow: 0, Demo: 0 };
+    byRep[rep][r.stage]++;
+  });
+  return byRep;
+}
+
+function updateStaleBanner() {
+  var banner = document.getElementById('staleBanner');
+  if (!banner) return;
+  var dismissed = sessionStorage.getItem('md_consult_stale_banner_dismissed') === new Date().toISOString().slice(0,10);
+  if (dismissed && !staleFilter) {
+    banner.classList.remove('show');
+    return;
+  }
+  var byRep = getStaleByCaller();
+  var reps = Object.keys(byRep).sort(function(a,b){
+    var sumA = byRep[a].Follow + byRep[a].Demo;
+    var sumB = byRep[b].Follow + byRep[b].Demo;
+    return sumB - sumA;
+  });
+  if (!reps.length) {
+    banner.classList.remove('show');
+    return;
+  }
+  banner.classList.add('show');
+  var body = document.getElementById('staleBannerBody');
+  body.innerHTML = reps.map(function(rep){
+    var c = byRep[rep];
+    var pills = '';
+    if (c.Follow > 0) {
+      var act = (staleFilter && staleFilter.caller === rep && staleFilter.stage === 'Follow') ? ' active' : '';
+      pills += '<span class="stale-pill follow' + act + '" data-rep="' + escHtml(rep) + '" data-stage="Follow">Follow ' + c.Follow + '</span>';
+    }
+    if (c.Demo > 0) {
+      var act2 = (staleFilter && staleFilter.caller === rep && staleFilter.stage === 'Demo') ? ' active' : '';
+      pills += '<span class="stale-pill demo' + act2 + '" data-rep="' + escHtml(rep) + '" data-stage="Demo">Demo ' + c.Demo + '</span>';
+    }
+    return '<div class="stale-rep-card"><span class="stale-rep-name">' + escHtml(rep) + '</span>' + pills + '</div>';
+  }).join('');
+  document.getElementById('staleClearBtn').style.display = staleFilter ? 'inline-block' : 'none';
+}
+
+function applyStaleFilter(rep, stage) {
+  if (staleFilter && staleFilter.caller === rep && staleFilter.stage === stage) {
+    staleFilter = null;
+  } else {
+    staleFilter = { caller: rep, stage: stage };
+  }
+  currentPage = 1;
+  applyFilters();
+  updateStaleBanner();
+}
+
+function clearStaleFilter() {
+  staleFilter = null;
+  applyFilters();
+  updateStaleBanner();
+}
+
+function dismissStaleBanner() {
+  sessionStorage.setItem('md_consult_stale_banner_dismissed', new Date().toISOString().slice(0,10));
+  if (staleFilter) { staleFilter = null; applyFilters(); }
+  updateStaleBanner();
+}
+
+document.addEventListener('click', function(e){
+  var pill = e.target.closest('.stale-pill');
+  if (!pill) return;
+  applyStaleFilter(pill.dataset.rep, pill.dataset.stage);
+});
+
 function getColumnValues(col) {
   var data = loadData();
   var vals = {};
@@ -1411,6 +1533,16 @@ function getFilteredData() {
   var q = (document.getElementById('searchInput').value || '').toLowerCase().trim();
   var periodF = document.getElementById('periodFilter').value;
   var data = loadData();
+
+  // 잔존 필터가 활성화되어 있으면 다른 필터를 무시하고 해당 담당자 + stage만
+  if (staleFilter) {
+    return data.filter(function(r){
+      if (!isStaleRecord(r)) return false;
+      if (r.stage !== staleFilter.stage) return false;
+      var rep = (r.caller || r.rep || '').trim() || '미지정';
+      return rep === staleFilter.caller;
+    });
+  }
 
   var range = getPeriodRange(periodF);
   if (range) {
@@ -1584,6 +1716,8 @@ function renderMemoStack(noteRaw) {
   });
   if (memos.length > 3) {
     html += '<div class="memo-more">+' + (memos.length - 3) + '개 더보기</div>';
+  } else {
+    html += '<div class="memo-add-link">+ 메모 추가</div>';
   }
   html += '</div>';
   return html;
@@ -2684,6 +2818,7 @@ function init() {
   applyColWidths();
   updateFilterBadge();
   updateAssignBanner();
+  updateStaleBanner();
   // 시트가 단일 소스 (n8n이 slack + 수동입력 모두 시트에 동기화)
   // 단, 원본 문의사항은 시트에 없으므로 data/inquiries.json에서 병렬로 받아와서 주입
   Promise.all([
@@ -2705,6 +2840,7 @@ function init() {
     renderTable();
     applyColWidths();
     updateAssignBanner();
+    updateStaleBanner();
   });
 }
 
