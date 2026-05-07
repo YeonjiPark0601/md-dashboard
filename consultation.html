@@ -1370,6 +1370,7 @@ function dismissAssignBanner() {
 // 잔존 Follow/Demo 배너 — 담당자별 Follow/Demo 잔존 (날짜 무관)
 // ============================================================
 var staleFilter = null; // { caller: '박연지', stage: 'Follow' } 또는 null
+var STALE_EXCLUDE_CALLERS = ['유승준']; // 배너에서 제외할 담당자
 
 function isStaleRecord(r) {
   var s = (r.stage || '').trim();
@@ -1383,6 +1384,7 @@ function getStaleByCaller() {
   data.forEach(function(r){
     if (!isStaleRecord(r)) return;
     var rep = (r.caller || r.rep || '').trim() || '미지정';
+    if (STALE_EXCLUDE_CALLERS.indexOf(rep) !== -1) return;
     if (!byRep[rep]) byRep[rep] = { Follow: 0, Demo: 0 };
     byRep[rep][r.stage]++;
   });
