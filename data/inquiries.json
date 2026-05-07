@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-07T05:00:38.323Z",
+  "updated": "2026-05-07T05:05:37.710Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -62,6 +62,26 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "가격, 결제방법, 배송방법, A/S방법",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 05. 07 오후 02:00:58",
+      "date": "2026-05-07",
+      "name": "황승원",
+      "cid": "5f89aa6e512031633431e797",
+      "phone": "010-8912-1159",
+      "product": "[특별가] 삼성메디슨 초음파 V6",
+      "qty": 1,
+      "price": "모름",
+      "productId": "64c0ba5fa9b8eb001b60cdd3",
+      "clinic": "",
+      "region": "서울시 중구",
+      "caller": "유승준",
+      "supplier": "삼성메디슨",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "중고도 취급하시는지, 최저가는 어떻게 되는지 궁금합니다.",
       "leadGrade": "고가망"
     },
     {
