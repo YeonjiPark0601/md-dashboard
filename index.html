@@ -223,6 +223,7 @@ tr:hover { background: #f7f9fc; }
         <div class="sub-row" style="font-size:13px;"><span id="tkWeekDoneTotal">총: -</span> · <span id="tkWeekDoneAvg">건당: -</span></div>
         <div class="value" id="tkWeekHalfR" style="font-size:20px;margin-top:4px;">HALF: -</div>
         <div class="sub-row" style="font-size:13px;"><span id="tkWeekHalfRTotal">총: -</span> · <span id="tkWeekHalfRAvg">건당: -</span></div>
+        <div class="sub-row" style="font-size:12px;color:#888;margin-top:4px;"><span id="tkWeekNonSono">초음파 제외: -</span></div>
       </div>
       <div class="kpi-card">
         <div class="label">이번 달 결제</div>
@@ -230,6 +231,7 @@ tr:hover { background: #f7f9fc; }
         <div class="sub-row" style="font-size:13px;"><span id="tkMonthDoneTotal">총: -</span> · <span id="tkMonthDoneAvg">건당: -</span></div>
         <div class="value" id="tkMonthHalfR" style="font-size:20px;margin-top:4px;">HALF: -</div>
         <div class="sub-row" style="font-size:13px;"><span id="tkMonthHalfRTotal">총: -</span> · <span id="tkMonthHalfRAvg">건당: -</span></div>
+        <div class="sub-row" style="font-size:12px;color:#888;margin-top:4px;"><span id="tkMonthNonSono">초음파 제외: -</span></div>
       </div>
       <div class="kpi-card">
         <div class="label">이번 분기 결제</div>
@@ -237,6 +239,7 @@ tr:hover { background: #f7f9fc; }
         <div class="sub-row" style="font-size:13px;"><span id="tkQtrDoneTotal">총: -</span> · <span id="tkQtrDoneAvg">건당: -</span></div>
         <div class="value" id="tkQtrHalfR" style="font-size:20px;margin-top:4px;">HALF: -</div>
         <div class="sub-row" style="font-size:13px;"><span id="tkQtrHalfRTotal">총: -</span> · <span id="tkQtrHalfRAvg">건당: -</span></div>
+        <div class="sub-row" style="font-size:12px;color:#888;margin-top:4px;"><span id="tkQtrNonSono">초음파 제외: -</span></div>
       </div>
     </div>
     <div id="turnkeyKpiRow" style="display:none;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;">
@@ -246,6 +249,7 @@ tr:hover { background: #f7f9fc; }
         <div class="sub-row"><span id="tkYearCount">건수: -</span><span id="tkYearTarget">목표: -</span></div>
         <div class="sub-row"><span id="tkYearAchieve">달성률: -</span><span id="tkYearProfitRate">이익률: -</span></div>
         <div class="sub-row"><span id="tkYearProfit">매출총이익: -</span></div>
+        <div class="sub-row" style="font-size:12px;color:#888;margin-top:4px;"><span id="tkYearNonSono">초음파 제외: -</span></div>
         <div class="progress-bar"><div class="progress-fill" id="tkYearBar" style="width:0;background:#4285f4;"></div></div>
       </div>
       <div class="kpi-card">
@@ -663,7 +667,9 @@ async function fetchData(){
       const tkAll=parseCSV(tt).filter(r=>r['결제 일자']&&String(r['결제 일자']).trim()).map(r=>{
         r['매출금액']=parseNum(r['최종 결제액'])/1.1;r['공급가']=parseNum(r['총 공급가액'])/1.1;r['매출총이익']=parseNum(r['최종 매출총이익'])/1.1;r['할인전금액']=parseNum(r['금액']);
         const dt=String(r['결제 일자']||'');r['주문일']=fixDate(dt);r['연월']=fixYm(dt.substring(0,7));
-        r['카테고리']=r['카테고리']||'';return r});
+        r['카테고리']=r['카테고리']||'';
+        const _pn=r['상품명']||'';r['_isSono']=/삼성메디슨|초음파/.test(_pn);
+        return r});
       // key별 금액(O열) 합계 600만 이상만 포함
       const keySum={};tkAll.forEach(r=>{const k=r['key']||'';keySum[k]=(keySum[k]||0)+parseNum(r['금액'])});
       turnkeyData=tkAll.filter(r=>{const k=r['key']||'';return keySum[k]>=6000000})
@@ -2364,6 +2370,8 @@ function renderTurnkeyKPI(){
   document.getElementById('tkYearProfitRate').textContent='이익률: '+yearProfitRate.toFixed(1)+'%';
   document.getElementById('tkYearAchieve').textContent='달성률: '+yearAchieve.toFixed(1)+'%';
   document.getElementById('tkYearProfit').textContent='매출총이익: '+fmt(Math.round(yearProfit));
+  const yearNonSono=yearData.filter(d=>!d._isSono).reduce((s,d)=>s+d['매출금액'],0);
+  document.getElementById('tkYearNonSono').textContent='초음파 제외: '+Math.round(yearNonSono).toLocaleString()+'원';
   document.getElementById('tkYearBar').style.width=Math.min(yearAchieve,100)+'%';
   document.getElementById('tkYearBar').style.background=yearAchieve>=100?'#0d9488':'#4285f4';
 
@@ -2436,20 +2444,23 @@ function renderTurnkeyKPI(){
     {prefix:'tkQtr',filter:function(d){return qMs.includes(d['연월'])}}
   ];
   periods.forEach(function(p){
+    const periodRows=turnkeyData.filter(p.filter);
     const cidSales={};
-    turnkeyData.filter(p.filter).forEach(function(d){const cid=d['CID']||'';cidSales[cid]=(cidSales[cid]||0)+d['매출금액']});
+    periodRows.forEach(function(d){const cid=d['CID']||'';cidSales[cid]=(cidSales[cid]||0)+d['매출금액']});
     let dc=0,ds=0,hc=0,hs=0;
     Object.entries(cidSales).forEach(function([cid,sales]){
       const r=cidResult[cid];
       if(r==='Done'){dc++;ds+=sales}
       else if(r==='HALF'){hc++;hs+=sales}
     });
+    const nonSono=periodRows.filter(d=>!d._isSono).reduce((s,d)=>s+d['매출금액'],0);
     document.getElementById(p.prefix+'Done').textContent='Done: '+dc+'건';
     document.getElementById(p.prefix+'DoneTotal').textContent='총: '+(dc?fmt(Math.round(ds)):'-');
     document.getElementById(p.prefix+'DoneAvg').textContent='건당: '+(dc?fmt(Math.round(ds/dc)):'-');
     document.getElementById(p.prefix+'HalfR').textContent='HALF: '+hc+'건';
     document.getElementById(p.prefix+'HalfRTotal').textContent='총: '+(hc?fmt(Math.round(hs)):'-');
     document.getElementById(p.prefix+'HalfRAvg').textContent='건당: '+(hc?fmt(Math.round(hs/hc)):'-');
+    document.getElementById(p.prefix+'NonSono').textContent='초음파 제외: '+Math.round(nonSono).toLocaleString()+'원';
   });
 }
 
