@@ -821,6 +821,11 @@ function sheetRowToRecord(row) {
     r.date = dm ? dm[1] + '-' + String(dm[2]).padStart(2,'0') + '-' + String(dm[3]).padStart(2,'0') : '';
   }
   r.consent = false; r.buyDate = ''; r.status = ''; r.rep = '';
+  // 담당자 배정되면 New(또는 빈 stage) → Follow 자동 승격 (모든 디바이스 동일 결과)
+  var stageVal = (r.stage || '').trim();
+  if ((stageVal === '' || stageVal === 'New') && (r.caller || '').trim()) {
+    r.stage = 'Follow';
+  }
   // 자동 매칭된 값은 수정 불가 (n8n이 CID/주문이력 기반으로 채워준 값)
   if (isAutomated) {
     r.clinicLocked = !!r.clinic;
@@ -974,6 +979,9 @@ function fetchExternalInquiries() {
             // 결제 완료가 최우선: payDate 있으면 무조건 Done (이전 Drop이었어도 복구)
             if (r.payDate) return 'Done';
             var s = stageOverrides[stableKey] || 'New';
+            // 담당자 배정되면 New → Follow 자동 승격
+            var hasCaller = (callerOverrides[stableKey] !== undefined ? callerOverrides[stableKey] : (r.caller || '')).trim();
+            if (s === 'New' && hasCaller) s = 'Follow';
             // 60일 룰: 인입 60일 경과 + Done 미전환(현재 New/Follow) → Drop 자동 처리
             if ((s === 'New' || s === 'Follow') && r.date) {
               var days = (Date.now() - new Date(r.date).getTime()) / 86400000;
@@ -2563,11 +2571,28 @@ document.addEventListener('change', function(e){
     ov[id] = val; // 빈 문자열도 명시적으로 저장 (json default 덮어쓰기 위함)
     saveExtCallerOverrides(ov);
     var idx = EXTERNAL_DATA.findIndex(function(r){ return r.id === id; });
-    if (idx !== -1) EXTERNAL_DATA[idx].caller = val;
+    if (idx !== -1) {
+      EXTERNAL_DATA[idx].caller = val;
+      // 담당자 배정되면 New → Follow 자동 승격
+      if (val.trim() && EXTERNAL_DATA[idx].stage === 'New') {
+        EXTERNAL_DATA[idx].stage = 'Follow';
+        var sov = loadExtStageOverrides();
+        sov[id] = 'Follow';
+        saveExtStageOverrides(sov);
+        syncUpdate(EXTERNAL_DATA[idx]).catch(function(){});
+      }
+    }
   } else {
     var d = loadLocalOnly();
     var idx = d.findIndex(function(r){ return r.id === id; });
-    if (idx !== -1) { d[idx].caller = val; saveData(d); syncUpdate(d[idx]).catch(function(){}); }
+    if (idx !== -1) {
+      d[idx].caller = val;
+      // 담당자 배정되면 New(또는 빈 stage) → Follow 자동 승격
+      var st = (d[idx].stage || '').trim();
+      if (val.trim() && (st === '' || st === 'New')) d[idx].stage = 'Follow';
+      saveData(d);
+      syncUpdate(d[idx]).catch(function(){});
+    }
   }
   renderTable();
 });
