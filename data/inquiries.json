@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-07T11:55:38.724Z",
+  "updated": "2026-05-07T14:05:39.005Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -183,6 +183,26 @@
       "payAmount": null,
       "inquiry": "",
       "leadGrade": ""
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 05. 07 오후 11:00:17",
+      "date": "2026-05-07",
+      "name": "이정호",
+      "cid": "5f017680221c8b5f77c8d99d",
+      "phone": "010-4045-1213",
+      "product": "[DSE] CO2 레이저 (COTRA PLUS)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "67bdcc3cbade696523840a6b",
+      "clinic": "척척마디한의원",
+      "region": "충청북도 청주시",
+      "caller": "",
+      "supplier": "DSE",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격과 사용법을 배울 수 있는지 입니다.",
+      "leadGrade": "고가망"
     },
     {
       "source": "일반",
@@ -8682,7 +8702,7 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "",
-      "leadGrade": ""
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
@@ -8702,7 +8722,7 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "",
-      "leadGrade": ""
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
