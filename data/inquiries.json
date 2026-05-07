@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-07T05:05:37.710Z",
+  "updated": "2026-05-07T06:30:38.799Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -23,6 +23,26 @@
       "payAmount": null,
       "inquiry": "면역약탕기와 일반약탕기의 차이점",
       "leadGrade": "가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 07 오후 03:26:14",
+      "date": "2026-05-07",
+      "name": "김승영",
+      "cid": "5dd3a23c2bb59605ca3d01f8",
+      "phone": "010-9395-6585",
+      "product": "[썸텍] 비내시경 Dcs pro 103E System",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "5e869205bfe4260944784a6d",
+      "clinic": "사상연세비앤이치과병원",
+      "region": "부산시 사상구",
+      "caller": "",
+      "supplier": "나노메딕스썸텍",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "봉직 중인 병원 도입 예정으로 비내시경 관련 제품들 가격이 필요합니다",
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
