@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-06T22:05:38.458Z",
+  "updated": "2026-05-07T01:35:37.913Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -23,6 +23,26 @@
       "payAmount": null,
       "inquiry": "면역약탕기와 일반약탕기의 차이점",
       "leadGrade": "가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 05. 07 오전 10:35:01",
+      "date": "2026-05-07",
+      "name": "장지원",
+      "cid": "5f51b292a0b91001bf48f146",
+      "phone": "010-5607-3493",
+      "product": "[DSE] 의료용 석션기 (SSB EVA)",
+      "qty": 1,
+      "price": "66만원",
+      "productId": "67e2322d9d6aa764d124103e",
+      "clinic": "",
+      "region": "경기도 화성시",
+      "caller": "",
+      "supplier": "DSE",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격",
+      "leadGrade": "고가망"
     },
     {
       "source": "일반",
