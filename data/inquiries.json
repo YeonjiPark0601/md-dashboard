@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-07T01:35:37.913Z",
+  "updated": "2026-05-07T03:10:37.586Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -42,6 +42,26 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "가격",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 05. 07 오후 12:08:43",
+      "date": "2026-05-07",
+      "name": "류은영",
+      "cid": "69fae0ccc4f74795d6c7292f",
+      "phone": "010-9927-1227",
+      "product": "[네오펙트] 자기장치료기 (TESLA-3000)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "6911cef0d985e2440e6f14c2",
+      "clinic": "",
+      "region": "",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격, 결제방법, 배송방법, A/S방법",
       "leadGrade": "고가망"
     },
     {
