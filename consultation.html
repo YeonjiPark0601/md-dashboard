@@ -1616,7 +1616,10 @@ function getFilteredData() {
 function renderTable() {
   var data = getFilteredData();
   var total = data.length;
-  document.getElementById('totalCount').textContent = total + '건';
+  var allCount = 0;
+  try { allCount = loadData().length; } catch(e){}
+  var hasFilter = total !== allCount;
+  document.getElementById('totalCount').textContent = hasFilter ? (total + '건 / 전체 ' + allCount + '건') : (total + '건');
 
   var start = (currentPage - 1) * PAGE_SIZE;
   var pageData = data.slice(start, start + PAGE_SIZE);
