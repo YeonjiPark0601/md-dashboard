@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-07T08:20:37.902Z",
+  "updated": "2026-05-07T08:25:38.005Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -123,6 +123,26 @@
       "payAmount": null,
       "inquiry": "중고도 취급하시는지, 최저가는 어떻게 되는지 궁금합니다.",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 05. 07 오후 05:22:00",
+      "date": "2026-05-07",
+      "name": "윤동준",
+      "cid": "5dca52242bb59605ca3cfc67",
+      "phone": "010-8615-2241",
+      "product": "[DSE] 의료용 석션기 (SSB EVA)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "67e2322d9d6aa764d124103e",
+      "clinic": "진주경희한의원",
+      "region": "경상남도 진주시",
+      "caller": "",
+      "supplier": "DSE",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
