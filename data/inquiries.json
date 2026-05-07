@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-07T06:55:38.984Z",
+  "updated": "2026-05-07T08:20:37.902Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -43,6 +43,26 @@
       "payAmount": null,
       "inquiry": "봉직 중인 병원 도입 예정으로 비내시경 관련 제품들 가격이 필요합니다",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 07 오후 05:18:31",
+      "date": "2026-05-07",
+      "name": "윤동준",
+      "cid": "5dca52242bb59605ca3cfc67",
+      "phone": "010-8615-2241",
+      "product": "[영일엠] OMS 테이블 기본형 (OMS-1)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "696f34951dfcaf25535db872",
+      "clinic": "진주경희한의원",
+      "region": "경상남도 진주시",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
