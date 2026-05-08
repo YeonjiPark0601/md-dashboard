@@ -1,9 +1,29 @@
 {
-  "updated": "2026-05-07T14:05:39.005Z",
+  "updated": "2026-05-08T03:05:37.414Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 05. 08 오후 12:03:15",
+      "date": "2026-05-08",
+      "name": "김태석",
+      "cid": "604f44a70ccc56001bc78be0",
+      "phone": "010-7121-4232",
+      "product": "체형진단기 아이밸런스 iBalance (v2)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "687efbcf3d86dc978b0ead48",
+      "clinic": "웅천한의원",
+      "region": "전라남도 여수시",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "견적",
+      "leadGrade": "고가망"
+    },
     {
       "source": "일반",
       "timestamp": "2026. 05. 07 오전 07:02:51",
