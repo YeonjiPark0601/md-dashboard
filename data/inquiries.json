@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-08T08:10:37.990Z",
+  "updated": "2026-05-08T09:10:37.685Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -43,6 +43,26 @@
       "payAmount": null,
       "inquiry": "견적",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 05. 08 오후 06:06:45",
+      "date": "2026-05-08",
+      "name": "김주용",
+      "cid": "5f10312d221c8b5f77c8e5df",
+      "phone": "010-5156-6773",
+      "product": "[웰코멧] LDM ECO10",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "69dc792afe738d9beeb4db2a",
+      "clinic": "소통부부한의원",
+      "region": "경기도 시흥시",
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
