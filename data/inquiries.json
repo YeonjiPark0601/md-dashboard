@@ -1,9 +1,29 @@
 {
-  "updated": "2026-05-08T09:15:38.631Z",
+  "updated": "2026-05-08T23:05:36.931Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 05. 09 오전 08:02:33",
+      "date": "2026-05-09",
+      "name": "김현경",
+      "cid": "62c648c802b6984882434745",
+      "phone": "010-5156-9577",
+      "product": "체형진단기 아이밸런스 iBalance (v2)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "687efbcf3d86dc978b0ead48",
+      "clinic": "신길봄한의원",
+      "region": "서울시 영등포구",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
+    },
     {
       "source": "일반",
       "timestamp": "2026. 05. 08 오후 05:05:06",
