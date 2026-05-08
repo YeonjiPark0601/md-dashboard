@@ -982,11 +982,6 @@ function fetchExternalInquiries() {
             // 담당자 배정되면 New → Follow 자동 승격
             var hasCaller = (callerOverrides[stableKey] !== undefined ? callerOverrides[stableKey] : (r.caller || '')).trim();
             if (s === 'New' && hasCaller) s = 'Follow';
-            // 60일 룰: 인입 60일 경과 + Done 미전환(현재 New/Follow) → Drop 자동 처리
-            if ((s === 'New' || s === 'Follow') && r.date) {
-              var days = (Date.now() - new Date(r.date).getTime()) / 86400000;
-              if (days > 60) s = 'Drop';
-            }
             return s;
           })(), status: '', demoDate: demoOverrides[stableKey] || '',
           payDate: r.payDate || '',
