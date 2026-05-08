@@ -1762,7 +1762,7 @@ function saveInlineField(inp) {
         sOv[id] = 'Demo';
         localStorage.setItem('md_consult_ext_stages', JSON.stringify(sOv));
       }
-      syncUpdate(EXTERNAL_DATA[idx]).catch(function(){});
+      syncUpdate(EXTERNAL_DATA[idx]).catch(function(){ showToast('시트 동기화 실패 (로컬만 반영됨)', 'error'); });
     }
   } else {
     var d = loadLocalOnly();
@@ -1773,7 +1773,7 @@ function saveInlineField(inp) {
         d[idx].stage = 'Demo';
       }
       saveData(d);
-      syncUpdate(d[idx]).catch(function(){});
+      syncUpdate(d[idx]).catch(function(){ showToast('시트 동기화 실패 (로컬만 반영됨)', 'error'); });
     }
   }
   renderTable();
@@ -2442,7 +2442,7 @@ function startDemoEdit(td) {
         d[idx].demoDate = val;
         if (val && ['New','Follow'].indexOf(d[idx].stage) !== -1) d[idx].stage = 'Demo';
         saveData(d);
-        syncUpdate(d[idx]).catch(function(){});
+        syncUpdate(d[idx]).catch(function(){ showToast('시트 동기화 실패 (로컬만 반영됨)', 'error'); });
       }
     }
     renderTable();
@@ -2498,7 +2498,7 @@ function startSupplierEdit(td) {
     } else {
       var d = loadLocalOnly();
       var idx = d.findIndex(function(r){ return r.id === id; });
-      if (idx !== -1) { d[idx].supplier = val; saveData(d); syncUpdate(d[idx]).catch(function(){}); }
+      if (idx !== -1) { d[idx].supplier = val; saveData(d); syncUpdate(d[idx]).catch(function(){ showToast('시트 동기화 실패 (로컬만 반영됨)', 'error'); }); }
     }
     renderTable();
   }
@@ -2579,7 +2579,7 @@ document.addEventListener('change', function(e){
         var sov = loadExtStageOverrides();
         sov[id] = 'Follow';
         saveExtStageOverrides(sov);
-        syncUpdate(EXTERNAL_DATA[idx]).catch(function(){});
+        syncUpdate(EXTERNAL_DATA[idx]).catch(function(){ showToast('시트 동기화 실패 (로컬만 반영됨)', 'error'); });
       }
     }
   } else {
@@ -2591,7 +2591,7 @@ document.addEventListener('change', function(e){
       var st = (d[idx].stage || '').trim();
       if (val.trim() && (st === '' || st === 'New')) d[idx].stage = 'Follow';
       saveData(d);
-      syncUpdate(d[idx]).catch(function(){});
+      syncUpdate(d[idx]).catch(function(){ showToast('시트 동기화 실패 (로컬만 반영됨)', 'error'); });
     }
   }
   renderTable();
@@ -2625,7 +2625,7 @@ document.addEventListener('change', function(e){
   } else {
     var d = loadLocalOnly();
     var idx = d.findIndex(function(r){ return r.id === id; });
-    if (idx !== -1) { d[idx].stage = val; saveData(d); syncUpdate(d[idx]).catch(function(){}); }
+    if (idx !== -1) { d[idx].stage = val; saveData(d); syncUpdate(d[idx]).catch(function(){ showToast('시트 동기화 실패 (로컬만 반영됨)', 'error'); }); }
   }
   renderTable();
 });
@@ -2665,7 +2665,7 @@ function startNoteEdit(td) {
       if (idx !== -1) {
         d[idx].note = val;
         saveData(d);
-        syncUpdate(d[idx]).catch(function(){});
+        syncUpdate(d[idx]).catch(function(){ showToast('시트 동기화 실패 (로컬만 반영됨)', 'error'); });
       }
     }
     renderTable();
@@ -2748,7 +2748,7 @@ function saveMemo() {
     saveData(data);
     rec = data[idx];
   }
-  syncUpdate(rec).catch(function(){});
+  syncUpdate(rec).catch(function(){ showToast('시트 동기화 실패 (로컬만 반영됨)', 'error'); });
   ta.value = '';
   renderMemoModalList(memos);
   renderTable();
