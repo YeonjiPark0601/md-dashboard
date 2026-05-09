@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-09T09:05:36.664Z",
+  "updated": "2026-05-09T11:15:37.072Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -23,6 +23,26 @@
       "payAmount": null,
       "inquiry": "가격이 얼마인지, 환자 넘버로 생성해서 비포애프터 비교 가능한지",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 09 오후 08:11:21",
+      "date": "2026-05-09",
+      "name": "김대현",
+      "cid": "5e658e64bfe42609447831c5",
+      "phone": "010-4412-2442",
+      "product": "[PIE] 두피진단기 (SIF PRO)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "68c2908de9a11019a13653ab",
+      "clinic": "강민한의원",
+      "region": "서울시 서초구",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "태블릿 연동문의",
+      "leadGrade": "가망"
     },
     {
       "source": "총판기기",
