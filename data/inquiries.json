@@ -1,9 +1,29 @@
 {
-  "updated": "2026-05-08T23:05:36.931Z",
+  "updated": "2026-05-09T09:05:36.664Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 09 오후 06:02:42",
+      "date": "2026-05-09",
+      "name": "조상욱",
+      "cid": "5d9695dd0dabe405b156d9f0",
+      "phone": "010-9990-4997",
+      "product": "[PIE] 두피진단기 (SIF PRO)",
+      "qty": 1,
+      "price": "2000000",
+      "productId": "68c2908de9a11019a13653ab",
+      "clinic": "온새한의원",
+      "region": "경기도 화성시",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격이 얼마인지, 환자 넘버로 생성해서 비포애프터 비교 가능한지",
+      "leadGrade": "고가망"
+    },
     {
       "source": "총판기기",
       "timestamp": "2026. 05. 09 오전 08:02:33",
