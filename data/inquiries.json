@@ -1,9 +1,29 @@
 {
-  "updated": "2026-05-09T11:15:37.072Z",
+  "updated": "2026-05-10T10:25:37.819Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 10 오후 07:21:32",
+      "date": "2026-05-10",
+      "name": "박은영",
+      "cid": "5d60cedb4e77525ec5ca141e",
+      "phone": "010-5036-8122",
+      "product": "[PIE] 두피진단기 (SIF PRO)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "68c2908de9a11019a13653ab",
+      "clinic": "은정한의원",
+      "region": "부산시 동구",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격/탈모에어떻게사용하는지/결과지",
+      "leadGrade": "고가망"
+    },
     {
       "source": "일반",
       "timestamp": "2026. 05. 09 오후 06:02:42",
@@ -8802,7 +8822,7 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "",
-      "leadGrade": ""
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
