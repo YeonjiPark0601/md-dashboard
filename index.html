@@ -2864,7 +2864,7 @@ function renderSonoCurrentMonth(){
   const now=new Date();
   const ym=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
   const rows=sonoData.filter(d=>!d._isAS&&d._src==='sono'&&d['연월']===ym)
-    .sort((a,b)=>(b['주문일']||'').localeCompare(a['주문일']||''));
+    .sort((a,b)=>(a['주문일']||'').localeCompare(b['주문일']||''));
   const total=rows.reduce((s,r)=>s+(r['매출금액']||0),0);
   document.getElementById('sonoCurrentMonthTitle').textContent=
     `이번달 매출 내역 (${ym}) — ${rows.length}건 / ${fmt(total)}`;
