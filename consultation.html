@@ -802,6 +802,8 @@ var EXTERNAL_DATA = [];
 var INQUIRY_MAP = {};
 // 총판/비총판 맵: id → '총판기기' | '일반'. inquiries.json의 source 필드 기반.
 var DIST_SOURCE_MAP = {};
+// 슬랙 ts 맵: id → 슬랙 메시지 ts (예: "1778479014.897539"). 인입경로 셀 슬랙 스레드 링크용.
+var SLACK_TS_MAP = {};
 
 // ===== 시트 CRUD 동기화 =====
 const WEBHOOK_URL = 'https://n8n.datastream.co.kr/webhook/consultation-crud';
@@ -949,6 +951,8 @@ function loadData() {
     }).map(function(r){
       // inquiry 주입: data/inquiries.json 맵에서 id 매칭 (시트에는 문의사항 컬럼이 없어서 별도 소스 사용)
       if (!r.inquiry && r.id && INQUIRY_MAP[r.id]) r.inquiry = INQUIRY_MAP[r.id];
+      // 슬랙 ts 주입: 시트에는 slackTs 컬럼이 없으므로 별도 맵 사용
+      if (!r.slackTs && r.id && SLACK_TS_MAP[r.id]) r.slackTs = SLACK_TS_MAP[r.id];
       return r;
     });
   } catch (e) { console.error('loadData error', e); return EXTERNAL_DATA.slice(); }
@@ -1712,9 +1716,17 @@ function renderTable() {
     var clinicReadonly = r.clinicLocked || (isManual && r.clinic);
     var regionReadonly = r.regionLocked || (isManual && r.region);
     var supplierReadonly = r.supplierLocked || (isManual && r.supplier);
+    // 인입경로 = '상담신청' + slackTs 있으면 슬랙 스레드 링크
+    var sourceHtml;
+    if (r.source === '상담신청' && r.slackTs) {
+      var slackTsUrl = String(r.slackTs).replace('.', '');
+      sourceHtml = '<a href="https://integration-all.slack.com/archives/C02ULDA8NUE/p' + escHtml(slackTsUrl) + '" target="_blank" rel="noopener" style="color:#1a73e8;text-decoration:none;" title="슬랙 스레드 열기">' + escHtml(r.source) + '</a>';
+    } else {
+      sourceHtml = escHtml(r.source);
+    }
     return '<tr' + (r.external ? ' style="background:#fafbfc;"' : '') + '>' +
       '<td>' + escHtml(r.date) + '</td>' +
-      '<td>' + escHtml(r.source) + '</td>' +
+      '<td>' + sourceHtml + '</td>' +
       '<td>' + ((r.cid && r.cid !== 'N/A' && /^[a-f0-9]{24}$/.test(r.cid)) ? '<a href="https://tools.medistream.co.kr/customers/' + encodeURIComponent(r.cid) + '" target="_blank" rel="noopener" style="color:#1a73e8;text-decoration:none;font-weight:700;">' + escHtml(r.customer) + '</a>' : '<strong>' + escHtml(r.customer) + '</strong>') + '</td>' +
       '<td style="font-size:13px;letter-spacing:-0.3px;">' + (r.phone ? '<span class="copy-phone" onclick="copyPhone(this)" style="cursor:pointer;" title="클릭해서 복사">' + escHtml(r.phone) + '</span>' : '') + '</td>' +
       '<td class="td-truncate"' + (r.clinicLocked ? ' title="' + escHtml(r.clinic || '') + ' (자동 매칭 — 수정 불가)"' : ' title="' + escHtml(r.clinic || '') + '"') + '>' + (clinicReadonly ? escHtml(r.clinic || '') : renderInlineInput('clinic', r.clinic, r, '한의원명')) + '</td>' +
@@ -2996,6 +3008,7 @@ function init() {
         var key = (it.cid || '') + '|' + (it.productId || '') + '|' + (it.timestamp || '');
         if (it.inquiry) INQUIRY_MAP[key] = it.inquiry;
         if (it.source === '총판기기' || it.source === '일반') DIST_SOURCE_MAP[key] = it.source;
+        if (it.slackTs) SLACK_TS_MAP[key] = it.slackTs;
       });
     }
     populateRepFilter();
