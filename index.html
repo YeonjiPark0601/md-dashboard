@@ -303,6 +303,18 @@ tr:hover { background: #f7f9fc; }
     <div class="chart-row-full" id="turnkeyConsultQtrRow" style="display:none;">
       <div class="chart-card"><h3>분기별 컨설팅 진행 건수 (YoY)</h3><canvas id="consultQtrChart" height="80"></canvas></div>
     </div>
+    <!-- 초음파 전용: 이번달 매출 내역 -->
+    <div class="sono-section open" id="sonoCurrentMonthSection" style="display:none;">
+      <div class="sono-section-header" onclick="toggleSonoSection('sonoCurrentMonthSection')"><span class="sono-arrow">▾</span> 이번달 매출 내역</div>
+      <div class="sono-section-body">
+        <div class="chart-row-full">
+          <div class="table-card">
+            <h3 id="sonoCurrentMonthTitle">이번달 매출 내역</h3>
+            <div style="overflow-x:auto;"><table id="sonoCurrentMonthTable"><thead><tr><th>병원명</th><th>계약일</th><th>모델명</th><th>구분</th><th class="text-right">금액(VAT-)</th></tr></thead><tbody id="sonoCurrentMonthBody"></tbody></table></div>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- 초음파 전용: 월별 계약건수 + 지역별 매출 -->
     <div class="chart-row" id="sonoMapRow" style="display:none;grid-template-columns:1fr 1fr;align-items:stretch;">
       <div class="chart-card" style="display:flex;flex-direction:column;"><h3>지역별 매출</h3><div style="position:relative;flex:1;min-height:300px;"><canvas id="sonoRegionChart"></canvas></div></div>
@@ -915,7 +927,7 @@ function render(){
   if(currentTab==='클래스')renderTypeChart(data);
   if(isMD){renderTypeChart(data);renderCategoryChart(data);renderCategoryPieChart(data);renderSupplierChart(data);}
   if(isSono){renderSupplierChart(data);renderSonoQtyChart(data);renderSonoAS();try{renderSonoInventory()}catch(e){console.warn('재고 로딩 에러',e)}
-    renderSonoRegionChart()}
+    renderSonoRegionChart();renderSonoCurrentMonth()}
   if(!isAll){renderTable(data);renderMonthlyTable(data)}
   // 클래스 전용: PU + 재구매
   document.getElementById('detailRow').style.display=(isTurnkey||isPT10||isSono||isAll||isOmnifit)?'none':'';
@@ -923,7 +935,7 @@ function render(){
   ['pt10SummaryRow','pt10CartRow','pt10DioRow','pt10BuyerMonthlyRow','pt10BuyerQuarterlyRow','pt10InsightRow','pt10RetentionRow','pt10Summary2025Row','pt10Cart2025Row','pt10Summary2024Row','pt10Cart2024Row','pt10Summary2023Row','pt10Cart2023Row','pt10CartChartRow','pt10TrfCartChartRow','pt10TrfTrendRow'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
   document.getElementById('sonoMapRow').style.display=isSono?'':'none';
   // 초음파 전용 접기 섹션 표시
-  ['sonoASSection','sonoQtySection','sonoInventorySection','sonoSupplierSection','sonoMonthlySection'].forEach(id=>{
+  ['sonoCurrentMonthSection','sonoASSection','sonoQtySection','sonoInventorySection','sonoSupplierSection','sonoMonthlySection'].forEach(id=>{
     const el=document.getElementById(id);if(el)el.style.display=isSono?'':'none'});
   // 초음파일 때 공용 섹션은 기본 숨김 (접기 헤더로 토글)
   if(isSono){document.getElementById('supplierChartRow').style.display='';document.getElementById('monthlyRow').style.display='';
@@ -2845,6 +2857,24 @@ function renderOmnifitYearly(){
 
   document.getElementById('omnifitYearlyBody').innerHTML=rows.map(row=>{
     return'<tr><td style="font-weight:600;">'+row.label+'</td>'+row.vals.map(v=>`<td class="text-right">${row.fmt(v)}</td>`).join('')+'</tr>';
+  }).join('');
+}
+
+function renderSonoCurrentMonth(){
+  const now=new Date();
+  const ym=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  const rows=sonoData.filter(d=>!d._isAS&&d._src==='sono'&&d['연월']===ym)
+    .sort((a,b)=>(b['주문일']||'').localeCompare(a['주문일']||''));
+  const total=rows.reduce((s,r)=>s+(r['매출금액']||0),0);
+  document.getElementById('sonoCurrentMonthTitle').textContent=
+    `이번달 매출 내역 (${ym}) — ${rows.length}건 / ${fmt(total)}`;
+  const body=document.getElementById('sonoCurrentMonthBody');
+  if(!rows.length){body.innerHTML='<tr><td colspan="5" style="text-align:center;color:#888;padding:20px;">이번달 매출 내역이 없습니다.</td></tr>';return}
+  body.innerHTML=rows.map(r=>{
+    const cat=r['카테고리']||'';
+    const isSample=cat.includes('견본');
+    const tag=isSample?'<span style="color:#9334e6;font-weight:600;">견본</span>':'<span style="color:#1a73e8;font-weight:600;">상품</span>';
+    return `<tr><td>${r['한의원명']||'-'}</td><td>${r['주문일']||'-'}</td><td>${r['품목명']||'-'}</td><td>${tag}</td><td class="text-right">${fmt(r['매출금액']||0)}</td></tr>`;
   }).join('');
 }
 
