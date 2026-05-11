@@ -2980,6 +2980,7 @@ function init() {
   updateTopFilterLabels();
   updateAssignBanner();
   updateStaleBanner();
+  updateUnassignedBanner();
   // 시트가 단일 소스 (n8n이 slack + 수동입력 모두 시트에 동기화)
   // 단, 원본 문의사항은 시트에 없으므로 data/inquiries.json에서 병렬로 받아와서 주입
   Promise.all([
@@ -3002,6 +3003,7 @@ function init() {
     applyColWidths();
     updateAssignBanner();
     updateStaleBanner();
+    updateUnassignedBanner();
   });
 }
 
