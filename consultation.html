@@ -212,8 +212,21 @@ th.sortable:hover { background: #eef0f4; }
 .mini-table tr:hover { background: #f7f9fc; }
 
 /* ===== ASSIGN REMINDER BANNER ===== */
+.alert-row { display: flex; gap: 14px; margin-bottom: 16px; align-items: stretch; }
+.alert-row > .stale-banner, .alert-row > .unassigned-banner { flex: 1; margin-bottom: 0; }
+@media (max-width: 900px) { .alert-row { flex-direction: column; } }
 .stale-banner { display: none; background: #fff7ed; border: 1px solid #fdba74; border-radius: 10px; padding: 12px 18px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
 .stale-banner.show { display: block; }
+.unassigned-banner { display: none; background: #fef2f2; border: 1px solid #fca5a5; border-radius: 10px; padding: 12px 18px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); cursor: pointer; transition: background 0.15s; }
+.unassigned-banner.show { display: flex; align-items: center; gap: 10px; }
+.unassigned-banner:hover { background: #fee2e2; }
+.unassigned-banner.active { background: #fee2e2; border-color: #ef4444; }
+.unassigned-banner .icon { font-size: 18px; }
+.unassigned-banner .msg { flex: 1; font-size: 13px; color: #991b1b; font-weight: 600; }
+.unassigned-banner .msg b { color: #b91c1c; font-size: 14px; }
+.unassigned-banner .btn-clear { padding: 5px 12px; border: 1px solid #ef4444; background: #fff; color: #b91c1c; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; display: none; }
+.unassigned-banner.active .btn-clear { display: inline-block; }
+.unassigned-banner .btn-clear:hover { background: #ef4444; color: #fff; }
 .stale-banner-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 .stale-banner-head .icon { font-size: 18px; }
 .stale-banner-head .msg { flex: 1; font-size: 13px; color: #9a3412; font-weight: 600; }
@@ -560,15 +573,24 @@ th.sortable:hover { background: #eef0f4; }
   </div>
 
   <!-- Data Table -->
-  <!-- 잔존 Follow/Demo 알림 배너 (담당자별, 4/1 이전 인입건 중 미해결) -->
-  <div id="staleBanner" class="stale-banner">
-    <div class="stale-banner-head">
-      <span class="icon">🔔</span>
-      <span class="msg"><b>Follow / Demo</b> 단계로 남아있는 건이 있어요</span>
-      <button class="btn-clear" id="staleClearBtn" onclick="clearStaleFilter()" style="display:none;">필터 해제</button>
-      <button class="btn-close" onclick="dismissStaleBanner()" title="오늘 다시 보지 않기">✕</button>
+  <!-- 알림 배너 영역 (Follow/Demo + 담당자 미배정, 1행 2열) -->
+  <div class="alert-row">
+    <!-- 잔존 Follow/Demo 알림 배너 (담당자별, 4/1 이전 인입건 중 미해결) -->
+    <div id="staleBanner" class="stale-banner">
+      <div class="stale-banner-head">
+        <span class="icon">🔔</span>
+        <span class="msg"><b>Follow / Demo</b> 단계로 남아있는 건이 있어요</span>
+        <button class="btn-clear" id="staleClearBtn" onclick="clearStaleFilter()" style="display:none;">필터 해제</button>
+        <button class="btn-close" onclick="dismissStaleBanner()" title="오늘 다시 보지 않기">✕</button>
+      </div>
+      <div id="staleBannerBody" class="stale-banner-body"></div>
     </div>
-    <div id="staleBannerBody" class="stale-banner-body"></div>
+    <!-- 담당자 미배정 알림 배너 (5/1 이후 인입 중 담당자 비어있는 건) -->
+    <div id="unassignedBanner" class="unassigned-banner" onclick="applyUnassignedFilter(event)">
+      <span class="icon">⚠️</span>
+      <span class="msg">담당자 미배정 건이 있어요! <b id="unassignedCount">0</b>건</span>
+      <button class="btn-clear" onclick="event.stopPropagation(); clearUnassignedFilter();">필터 해제</button>
+    </div>
   </div>
 
   <div class="table-card">
@@ -1260,6 +1282,7 @@ function applyFilters() {
   updateFilterBadge();
   updateAssignBanner();
   updateStaleBanner();
+  updateUnassignedBanner();
 }
 
 function toggleFilters() {
@@ -1441,6 +1464,49 @@ function clearStaleFilter() {
   updateStaleBanner();
 }
 
+// ============================================================
+// 담당자 미배정 알림 배너 (5/1 이후 인입 + 담당자 비어있음)
+// ============================================================
+var unassignedFilter = false;
+var UNASSIGNED_CUTOFF = '2026-05-01';
+
+function isUnassignedRecord(r) {
+  var rep = (r.caller || r.rep || '').trim();
+  if (rep) return false;
+  if (!r.date) return false;
+  return r.date >= UNASSIGNED_CUTOFF;
+}
+
+function updateUnassignedBanner() {
+  var banner = document.getElementById('unassignedBanner');
+  if (!banner) return;
+  var data = loadData();
+  var cnt = data.filter(isUnassignedRecord).length;
+  if (cnt === 0) {
+    banner.classList.remove('show');
+    banner.classList.remove('active');
+    if (unassignedFilter) {
+      unassignedFilter = false;
+    }
+    return;
+  }
+  document.getElementById('unassignedCount').textContent = cnt;
+  banner.classList.add('show');
+  banner.classList.toggle('active', unassignedFilter);
+}
+
+function applyUnassignedFilter(e) {
+  if (e && e.target && e.target.classList.contains('btn-clear')) return;
+  unassignedFilter = !unassignedFilter;
+  currentPage = 1;
+  applyFilters();
+}
+
+function clearUnassignedFilter() {
+  unassignedFilter = false;
+  applyFilters();
+}
+
 function dismissStaleBanner() {
   sessionStorage.setItem('md_consult_stale_banner_dismissed', new Date().toISOString().slice(0,10));
   if (staleFilter) { staleFilter = null; applyFilters(); }
@@ -1547,6 +1613,11 @@ function getFilteredData() {
       var rep = (r.caller || r.rep || '').trim() || '미지정';
       return rep === staleFilter.caller;
     });
+  }
+
+  // 담당자 미배정 필터 (5/1 이후 + 담당자 비어있음) — 다른 필터 무시
+  if (unassignedFilter) {
+    return data.filter(isUnassignedRecord);
   }
 
   var range = getPeriodRange(periodF);
