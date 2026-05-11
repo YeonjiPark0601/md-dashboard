@@ -57,7 +57,7 @@ th { background: #f7f8fa; padding: 10px 12px; text-align: left; font-weight: 600
 #consultTable thead th { position: sticky; top: var(--sticky-offset, 0px); z-index: 20; background: #f7f8fa; background-clip: padding-box; border-bottom: none; box-shadow: inset 0 -2px 0 #e0e0e0; }
 .col-resizer { position: absolute; top: 0; right: 0; width: 6px; height: 100%; cursor: col-resize; user-select: none; z-index: 10; }
 .col-resizer:hover, .col-resizer.dragging { background: #1a73e8; opacity: 0.4; }
-td { padding: 8px 12px; border-bottom: 1px solid #f0f0f0; white-space: nowrap; }
+td { padding: 8px 12px; border-bottom: 1px solid #f0f0f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 tr:hover { background: #f7f9fc; }
 th.sortable { cursor: pointer; user-select: none; }
 th.sortable:hover { background: #eef0f4; }
