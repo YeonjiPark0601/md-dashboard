@@ -132,6 +132,9 @@ th.sortable:hover { background: #eef0f4; }
 .note-cell.editable:hover { background: #f0f7ff; }
 .note-placeholder { color: #bbb; font-style: italic; font-size: 12px; }
 .memo-cell { max-width: 240px; vertical-align: top; cursor: pointer; padding: 6px 10px; }
+#consultTable tbody tr { height: 44px; }
+#consultTable tbody td { height: 44px; max-height: 44px; }
+#consultTable tbody td.memo-cell .memo-stack { max-height: 32px; overflow: hidden; }
 .memo-cell:hover { background: #f0f7ff; }
 .memo-stack { display: flex; flex-direction: column; gap: 2px; font-size: 12px; line-height: 1.45; }
 .memo-item { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; color: #333; }
@@ -567,7 +570,7 @@ th.sortable:hover { background: #eef0f4; }
     <div class="stale-banner-head">
       <span class="icon">🔔</span>
       <span class="msg"><b>Follow / Demo</b> 단계로 남아있는 건이 있어요</span>
-      <button class="btn-clear" id="staleClearBtn" onclick="clearStaleFilter()" style="display:none;">필터 해제</button>
+      <button class="btn-clear" id="staleClearBtn" onclick="clearStaleFilter()" style="visibility:hidden;">필터 해제</button>
       <button class="btn-close" onclick="dismissStaleBanner()" title="오늘 다시 보지 않기">✕</button>
     </div>
     <div id="staleBannerBody" class="stale-banner-body"></div>
@@ -1423,7 +1426,7 @@ function updateStaleBanner() {
     var cardCls = 'stale-rep-card' + (rep === '미지정' ? ' unassigned' : '');
     return '<div class="' + cardCls + '"><span class="stale-rep-name">' + escHtml(rep) + '</span>' + pills + '</div>';
   }).join('');
-  document.getElementById('staleClearBtn').style.display = staleFilter ? 'inline-block' : 'none';
+  document.getElementById('staleClearBtn').style.visibility = staleFilter ? 'visible' : 'hidden';
 }
 
 function applyStaleFilter(rep, stage) {
