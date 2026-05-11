@@ -596,6 +596,7 @@ th.sortable:hover { background: #eef0f4; }
   <div class="table-card">
       <div id="zoomControl" style="display:flex;justify-content:flex-end;align-items:center;gap:6px;padding:6px 8px;font-size:12px;color:#6b7280;">
         <span>배율</span>
+        <button type="button" class="zoom-btn" data-zoom="auto">자동</button>
         <button type="button" class="zoom-btn" data-zoom="0.6">60%</button>
         <button type="button" class="zoom-btn" data-zoom="0.75">75%</button>
         <button type="button" class="zoom-btn" data-zoom="1">100%</button>
@@ -3024,27 +3025,43 @@ function init() {
 // ZOOM CONTROL (table scale for narrow laptop screens)
 // ============================================================
 var ZOOM_KEY = 'md_consult_zoom';
+function computeAutoZoom() {
+  var w = window.innerWidth;
+  if (w >= 1600) return 1;
+  if (w >= 1440) return 0.9;
+  if (w >= 1280) return 0.8;
+  if (w >= 1100) return 0.7;
+  return 0.6;
+}
 function applyZoom(z) {
   var el = document.querySelector('.consult-scroll');
   if (!el) return;
   if (window.matchMedia && window.matchMedia('(max-width: 720px)').matches) {
     el.style.zoom = '';
+    document.querySelectorAll('.zoom-btn').forEach(function(b){
+      b.classList.toggle('active', b.dataset.zoom === String(z));
+    });
     return;
   }
-  el.style.zoom = z;
+  var actual = (z === 'auto') ? computeAutoZoom() : parseFloat(z);
+  el.style.zoom = actual;
   document.querySelectorAll('.zoom-btn').forEach(function(b){
-    b.classList.toggle('active', parseFloat(b.dataset.zoom) === parseFloat(z));
+    b.classList.toggle('active', b.dataset.zoom === String(z));
   });
 }
 (function initZoom(){
-  var saved = parseFloat(localStorage.getItem(ZOOM_KEY) || '1') || 1;
+  var saved = localStorage.getItem(ZOOM_KEY);
+  if (saved === null || saved === '' || saved === 'auto') saved = 'auto';
   applyZoom(saved);
   document.querySelectorAll('.zoom-btn').forEach(function(b){
     b.addEventListener('click', function(){
-      var z = parseFloat(b.dataset.zoom);
+      var z = b.dataset.zoom;
       localStorage.setItem(ZOOM_KEY, String(z));
       applyZoom(z);
     });
+  });
+  window.addEventListener('resize', function(){
+    if ((localStorage.getItem(ZOOM_KEY) || 'auto') === 'auto') applyZoom('auto');
   });
 })();
 
