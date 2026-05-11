@@ -51,7 +51,13 @@ body { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; b
 /* ===== TABLE CARDS ===== */
 .table-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 20px; }
 .consult-scroll { -webkit-overflow-scrolling: touch; overflow: auto; max-height: calc(100vh - 240px); }
-#consultTable { min-width: 1500px; }
+#consultTable { min-width: 1600px; }
+#consultTable th:nth-child(1), #consultTable td:nth-child(1),
+#consultTable th:nth-child(15), #consultTable td:nth-child(15),
+#consultTable th:nth-child(16), #consultTable td:nth-child(16) { width: 120px; min-width: 120px; }
+#consultTable td:nth-child(1),
+#consultTable td:nth-child(15),
+#consultTable td:nth-child(16) { overflow: visible; text-overflow: clip; }
 .table-card h3 { font-size: 14px; font-weight: 600; color: #555; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
 table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
 th { background: #f7f8fa; padding: 10px 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; white-space: nowrap; position: relative; overflow: hidden; text-overflow: ellipsis; }
