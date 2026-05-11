@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-11T08:30:19.291Z",
+  "updated": "2026-05-11T08:45:18.986Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -24,6 +24,27 @@
       "payAmount": null,
       "inquiry": "",
       "leadGrade": ""
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 11 오후 05:43:25",
+      "date": "2026-05-11",
+      "slackTs": "1778489005.558989",
+      "name": "한태우",
+      "cid": "61921315bc63410023477359",
+      "phone": "010-3233-8275",
+      "product": "HCK 엘리베이션베드 (E100)",
+      "qty": 8,
+      "price": "770000",
+      "productId": "610cd88909c63a06ed1489fe",
+      "clinic": "한마음한의원",
+      "region": "충청남도 천안시",
+      "caller": "",
+      "supplier": "에이치씨케이",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "풋스위치 원터치인가요? 천안까지 배송비 무료인가요? 카드결제되나요?",
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
