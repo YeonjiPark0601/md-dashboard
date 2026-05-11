@@ -1,9 +1,29 @@
 {
-  "updated": "2026-05-11T06:01:07.672Z",
+  "updated": "2026-05-11T06:26:07.947Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 11 오후 03:23:19",
+      "date": "2026-05-11",
+      "name": "임호",
+      "cid": "6136d8e597686100197d7db2",
+      "phone": "010-6471-1238",
+      "product": "스트라텍 전침기 STN-330",
+      "qty": 2,
+      "price": "40만원",
+      "productId": "617b4cd2bc63410023471ef3",
+      "clinic": "구침가한의원",
+      "region": "광주시 광산구",
+      "caller": "",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
+    },
     {
       "source": "총판기기",
       "timestamp": "2026. 05. 11 오전 07:17:46",
