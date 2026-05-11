@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>의료기기 ROI 제안서 계산기</title>
+
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+:root {
+  --navy: #0F2F4F;
+  --navy-2: #16406B;
+  --navy-soft: #E8EEF5;
+  --gold: #C7A567;
+  --gold-soft: #F6EFDD;
+  --green: #2D7A4E;
+  --red: #B23A3A;
+  --bg: #F4F5F7;
+  --card: #FFFFFF;
+  --line: #E5E7EB;
+  --line-2: #D1D5DB;
+  --text: #111827;
+  --text-2: #4B5563;
+  --text-3: #9CA3AF;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', sans-serif;
+  font-feature-settings: "tnum";
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ========== Top Bar ========== */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--navy);
+  color: #fff;
+  padding: 14px 28px;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 2px 12px rgba(15, 47, 79, 0.18);
+}
+.topbar .brand {
+  display: flex; align-items: center; gap: 12px;
+}
+.topbar .brand .mark {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--gold) 0%, #B0904A 100%);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--navy); font-weight: 800; font-size: 14px;
+}
+.topbar .brand h1 { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; }
+.topbar .brand .sub { font-size: 11px; color: rgba(255,255,255,0.6); }
+.topbar .actions { display: flex; gap: 10px; }
+.btn {
+  border: none; cursor: pointer; font-family: inherit;
+  padding: 9px 18px; border-radius: 8px; font-weight: 600; font-size: 13px;
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: all 0.15s ease;
+}
+.btn-primary { background: var(--gold); color: var(--navy); }
+.btn-primary:hover { background: #D4B373; transform: translateY(-1px); }
+.btn-ghost { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.3); }
+.btn-ghost:hover { background: rgba(255,255,255,0.08); }
+
+/* ========== Layout ========== */
+.layout {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 24px;
+  padding: 24px 28px 60px;
+  max-width: 1480px;
+  margin: 0 auto;
+  align-items: start;
+}
+
+@media (max-width: 1100px) {
+  .layout { grid-template-columns: 1fr; }
+}
+
+/* ========== Input Panel ========== */
+.input-panel {
+  background: var(--card);
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  padding: 20px;
+  position: sticky; top: 80px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+}
+.input-panel h2 {
+  font-size: 14px; font-weight: 700; color: var(--navy);
+  margin-bottom: 4px; letter-spacing: -0.01em;
+}
+.input-panel .panel-sub { font-size: 12px; color: var(--text-3); margin-bottom: 16px; }
+
+.section {
+  border-top: 1px solid var(--line);
+  padding-top: 14px; margin-top: 14px;
+}
+.section:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+.section-title {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+  color: var(--gold); text-transform: uppercase;
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-title::before {
+  content: ''; width: 14px; height: 1px; background: var(--gold);
+}
+
+.field { margin-bottom: 12px; }
+.field label {
+  display: block; font-size: 12px; color: var(--text-2);
+  margin-bottom: 4px; font-weight: 500;
+}
+.field .input-wrap {
+  position: relative;
+}
+.field input[type="text"],
+.field input[type="number"],
+.field input[type="date"] {
+  width: 100%; padding: 9px 12px; padding-right: 36px;
+  border: 1px solid var(--line-2); border-radius: 7px;
+  font-family: inherit; font-size: 13px; color: var(--text);
+  background: #fff; outline: none; transition: border-color 0.15s ease;
+  font-feature-settings: "tnum";
+}
+.field input:focus {
+  border-color: var(--navy);
+  box-shadow: 0 0 0 3px rgba(15, 47, 79, 0.08);
+}
+.field input[type="number"] { -moz-appearance: textfield; }
+.field input[type="number"]::-webkit-outer-spin-button,
+.field input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none; margin: 0;
+}
+.field .unit {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  font-size: 11px; color: var(--text-3); pointer-events: none;
+}
+
+/* ========== Preview (PDF target) ========== */
+.preview-wrap {
+  display: flex; justify-content: center;
+}
+.proposal {
+  width: 794px; /* A4 portrait at 96dpi */
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 24px rgba(15, 47, 79, 0.10);
+  padding: 0;
+  overflow: hidden;
+  font-feature-settings: "tnum";
+}
+.proposal .page {
+  padding: 44px 48px;
+  position: relative;
+  page-break-after: always;
+}
+.proposal .page:last-child { page-break-after: auto; }
+
+/* ========== Cover header ========== */
+.cover {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  border-bottom: 2px solid var(--navy);
+  padding-bottom: 16px; margin-bottom: 24px;
+}
+.cover .cover-l h1 {
+  font-size: 22px; font-weight: 800; color: var(--navy);
+  letter-spacing: -0.02em;
+}
+.cover .cover-l .device-line {
+  margin-top: 4px; font-size: 13px; color: var(--text-2);
+}
+.cover .cover-l .device-line strong { color: var(--navy); font-weight: 700; }
+.cover .cover-r { text-align: right; font-size: 11px; color: var(--text-2); line-height: 1.7; }
+.cover .cover-r .stamp {
+  display: inline-block; padding: 3px 10px;
+  background: var(--gold-soft); color: #8B6E2C;
+  border-radius: 999px; font-weight: 600; letter-spacing: 0.04em;
+  font-size: 10px;
+}
+
+/* ========== Big metric grid ========== */
+.metric-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+  margin-bottom: 24px;
+}
+.metric-card {
+  background: linear-gradient(180deg, #FAFBFC 0%, #F3F5F8 100%);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px 14px 12px;
+}
+.metric-card.accent {
+  background: linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 100%);
+  color: #fff; border-color: var(--navy);
+}
+.metric-card .label {
+  font-size: 11px; color: var(--text-3); font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;
+}
+.metric-card.accent .label { color: rgba(255,255,255,0.65); }
+.metric-card .value {
+  font-size: 22px; font-weight: 800; letter-spacing: -0.02em;
+  color: var(--navy); line-height: 1.1;
+}
+.metric-card.accent .value { color: #fff; }
+.metric-card .unit {
+  font-size: 12px; font-weight: 600; color: var(--text-3); margin-left: 2px;
+}
+.metric-card.accent .unit { color: rgba(255,255,255,0.6); }
+.metric-card .delta {
+  margin-top: 6px; font-size: 11px; color: var(--text-2);
+}
+.metric-card.accent .delta { color: rgba(255,255,255,0.7); }
+
+/* ========== Sections ========== */
+.h-section {
+  font-size: 14px; font-weight: 700; color: var(--navy);
+  margin-bottom: 12px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; gap: 8px;
+}
+.h-section::before {
+  content: ''; width: 3px; height: 14px; background: var(--gold); border-radius: 2px;
+}
+
+.split-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 22px;
+}
+
+/* ========== P&L Table ========== */
+.pl-table {
+  width: 100%; border-collapse: collapse; font-size: 12px;
+}
+.pl-table th, .pl-table td {
+  padding: 8px 10px; text-align: right;
+  border-bottom: 1px solid var(--line);
+}
+.pl-table th:first-child, .pl-table td:first-child { text-align: left; color: var(--text-2); }
+.pl-table th {
+  background: #FAFBFC; font-weight: 600; color: var(--navy);
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em;
+  border-bottom: 2px solid var(--navy);
+}
+.pl-table tr.total td {
+  font-weight: 700; color: var(--navy);
+  background: var(--navy-soft);
+  border-bottom: 1px solid var(--navy);
+}
+.pl-table .pos { color: var(--green); font-weight: 600; }
+.pl-table .neg { color: var(--red); }
+
+/* ========== Charts ========== */
+.chart-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+}
+.chart-card .chart-title {
+  font-size: 12px; font-weight: 700; color: var(--navy);
+  margin-bottom: 8px;
+}
+.chart-card .chart-canvas-wrap {
+  position: relative; height: 200px;
+}
+
+/* ========== Promo block ========== */
+.promo-block {
+  background: linear-gradient(135deg, var(--gold-soft) 0%, #FBF5E2 100%);
+  border: 1px solid #E8D9A8;
+  border-radius: 10px;
+  padding: 18px 20px;
+  margin-bottom: 22px;
+  display: grid; grid-template-columns: 1fr 2fr; gap: 16px;
+  align-items: center;
+}
+.promo-block .promo-tag {
+  display: inline-block;
+  background: var(--gold); color: var(--navy);
+  font-size: 10px; font-weight: 700; letter-spacing: 0.06em;
+  padding: 3px 10px; border-radius: 999px; margin-bottom: 6px;
+}
+.promo-block h3 {
+  font-size: 14px; color: var(--navy); font-weight: 800;
+  letter-spacing: -0.01em; margin-bottom: 4px;
+}
+.promo-block .promo-desc { font-size: 11px; color: var(--text-2); line-height: 1.55; }
+.promo-block .promo-stats {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+}
+.promo-block .promo-stat {
+  background: rgba(255,255,255,0.72);
+  border-radius: 6px; padding: 8px 10px;
+}
+.promo-block .promo-stat .ps-label { font-size: 10px; color: var(--text-2); margin-bottom: 2px; }
+.promo-block .promo-stat .ps-value {
+  font-size: 15px; font-weight: 800; color: var(--navy); letter-spacing: -0.01em;
+}
+.promo-block .promo-stat .ps-unit { font-size: 11px; color: var(--text-3); margin-left: 2px; font-weight: 600; }
+
+/* ========== Highlight callout ========== */
+.callout {
+  background: var(--navy);
+  color: #fff;
+  border-radius: 10px;
+  padding: 18px 22px;
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 22px;
+}
+.callout .c-l { max-width: 60%; }
+.callout .c-l .c-tag {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+  color: var(--gold); margin-bottom: 4px;
+}
+.callout .c-l h2 {
+  font-size: 16px; font-weight: 800; letter-spacing: -0.01em;
+  margin-bottom: 4px;
+}
+.callout .c-l p { font-size: 12px; color: rgba(255,255,255,0.78); }
+.callout .c-r {
+  text-align: right;
+}
+.callout .c-r .be-num {
+  font-size: 32px; font-weight: 800; color: var(--gold); letter-spacing: -0.02em; line-height: 1;
+}
+.callout .c-r .be-unit { font-size: 14px; color: rgba(255,255,255,0.7); margin-left: 2px; }
+.callout .c-r .be-label { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 4px; }
+
+/* ========== Inputs Summary block ========== */
+.inputs-summary {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px 16px;
+  background: #FAFBFC;
+  padding: 14px 16px;
+  border-radius: 8px; border: 1px solid var(--line);
+  margin-bottom: 22px;
+}
+.inputs-summary .item { font-size: 11px; }
+.inputs-summary .item .label { color: var(--text-3); margin-right: 6px; }
+.inputs-summary .item .val { color: var(--navy); font-weight: 700; }
+
+/* ========== Footer ========== */
+.proposal-footer {
+  margin-top: 28px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 10px; color: var(--text-3);
+}
+.proposal-footer .disclaimer { max-width: 70%; line-height: 1.55; }
+
+/* ========== Print / PDF ========== */
+@media print {
+  body { background: #fff; }
+  .topbar, .input-panel, .preview-wrap > .scale-hint { display: none !important; }
+  .layout { display: block; padding: 0; }
+  .proposal { width: 100%; box-shadow: none; border-radius: 0; }
+  .proposal .page { padding: 18mm 16mm; }
+}
+
+.scale-hint {
+  font-size: 11px; color: var(--text-3); text-align: center;
+  margin-top: 8px;
+}
+</style>
+</head>
+<body>
+
+<!-- ================= Top Bar ================= -->
+<div class="topbar">
+  <div class="brand">
+    <div class="mark">M</div>
+    <div>
+      <h1>의료기기 ROI 제안서 계산기</h1>
+      <div class="sub">Medistream · MD Squad · 의료기기 사업부</div>
+    </div>
+  </div>
+  <div class="actions">
+    <button class="btn btn-ghost" onclick="resetInputs()">초기화</button>
+    <button class="btn btn-primary" onclick="exportPDF()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      PDF 다운로드
+    </button>
+  </div>
+</div>
+
+<!-- ================= Layout ================= -->
+<div class="layout">
+
+  <!-- =========== INPUT PANEL =========== -->
+  <aside class="input-panel">
+    <h2>입력값</h2>
+    <div class="panel-sub">실시간으로 우측 제안서가 갱신됩니다.</div>
+
+    <div class="section">
+      <div class="section-title">고객 정보</div>
+      <div class="field">
+        <label>고객명 (병원/원장님)</label>
+        <input type="text" id="customerName" value="○○ 한의원 / 원장님" />
+      </div>
+      <div class="field">
+        <label>작성일</label>
+        <input type="date" id="preparedDate" />
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">기기 정보</div>
+      <div class="field">
+        <label>기기명</label>
+        <input type="text" id="deviceName" value="울핏(Ulfit)" />
+      </div>
+      <div class="field">
+        <label>기기 단가</label>
+        <div class="input-wrap">
+          <input type="number" id="devicePrice" value="38000000" />
+          <span class="unit">원</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">소모품 (카트리지)</div>
+      <div class="field">
+        <label>카트리지 단가</label>
+        <div class="input-wrap">
+          <input type="number" id="cartridgePrice" value="250000" />
+          <span class="unit">원</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>카트리지당 샷수</label>
+        <div class="input-wrap">
+          <input type="number" id="shotsPerCartridge" value="1000" />
+          <span class="unit">샷</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">시술 (수익)</div>
+      <div class="field">
+        <label>시술당 판매가</label>
+        <div class="input-wrap">
+          <input type="number" id="pricePerProcedure" value="200000" />
+          <span class="unit">원</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>시술당 샷수</label>
+        <div class="input-wrap">
+          <input type="number" id="shotsPerProcedure" value="500" />
+          <span class="unit">샷</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>시술 소요시간</label>
+        <div class="input-wrap">
+          <input type="number" id="procedureMinutes" value="30" />
+          <span class="unit">분</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>월 시술 횟수</label>
+        <div class="input-wrap">
+          <input type="number" id="monthlyProcedures" value="40" />
+          <span class="unit">회/월</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">시술자 인건비</div>
+      <div class="field">
+        <label>시술자 연봉</label>
+        <div class="input-wrap">
+          <input type="number" id="annualSalary" value="48000000" />
+          <span class="unit">원</span>
+        </div>
+      </div>
+      <div class="field" style="font-size:11px; color: var(--text-3); margin-top:-4px;">
+        ※ 인건비 환산 기준 : 연 2,508시간 (월 209h × 12) 표준
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">프로모션 (선택)</div>
+      <div class="field">
+        <label>증정 카트리지 수량</label>
+        <div class="input-wrap">
+          <input type="number" id="freeCartridges" value="10" />
+          <span class="unit">개</span>
+        </div>
+      </div>
+      <div class="field" style="font-size:11px; color: var(--text-3); margin-top:-4px;">
+        ※ 무상 증정분 사용 기간 동안에는 카트리지 원가 = 0
+      </div>
+    </div>
+  </aside>
+
+  <!-- =========== PREVIEW =========== -->
+  <main class="preview-wrap">
+    <div>
+      <div class="proposal" id="proposal">
+
+        <!-- ============== PAGE 1 ============== -->
+        <section class="page">
+
+          <!-- Cover -->
+          <div class="cover">
+            <div class="cover-l">
+              <h1>의료기기 도입 ROI 제안서</h1>
+              <div class="device-line">
+                <span>도입 검토 장비 : </span>
+                <strong id="o-device">울핏(Ulfit)</strong>
+              </div>
+            </div>
+            <div class="cover-r">
+              <div class="stamp">PROPOSAL</div>
+              <div style="margin-top:6px;">
+                <strong id="o-customer" style="color: var(--navy); font-weight:700;">○○ 한의원 / 원장님</strong>
+              </div>
+              <div>작성일 <span id="o-date">2026-05-11</span></div>
+              <div style="margin-top:4px; color: var(--text-3);">메디스트림 의료기기 사업부</div>
+            </div>
+          </div>
+
+          <!-- 4 Big metrics -->
+          <div class="metric-grid">
+            <div class="metric-card">
+              <div class="label">시술당 영업이익</div>
+              <div class="value"><span id="o-margin-per">158,000</span><span class="unit">원</span></div>
+              <div class="delta">마진율 <span id="o-margin-rate">79.0%</span></div>
+            </div>
+            <div class="metric-card">
+              <div class="label">월 영업이익</div>
+              <div class="value"><span id="o-monthly-margin">6,320,000</span><span class="unit">원</span></div>
+              <div class="delta">월 매출 <span id="o-monthly-rev">8,000,000</span>원</div>
+            </div>
+            <div class="metric-card">
+              <div class="label">연 영업이익</div>
+              <div class="value"><span id="o-annual-margin">75,840,000</span><span class="unit">원</span></div>
+              <div class="delta">연 매출 <span id="o-annual-rev">96,000,000</span>원</div>
+            </div>
+            <div class="metric-card accent">
+              <div class="label">손익분기 (정가)</div>
+              <div class="value"><span id="o-be">6.0</span><span class="unit">개월</span></div>
+              <div class="delta">기기 단가 회수까지</div>
+            </div>
+          </div>
+
+          <!-- Inputs summary -->
+          <div class="h-section">입력값 요약</div>
+          <div class="inputs-summary" id="o-inputs-summary">
+            <!-- populated by JS -->
+          </div>
+
+          <!-- Highlight callout : 프로모션 적용시 손익분기 -->
+          <div class="callout">
+            <div class="c-l">
+              <div class="c-tag">★ PROMOTION APPLIED</div>
+              <h2>증정 카트리지 적용 시</h2>
+              <p>무상 증정분이 초기 시술 원가를 0원으로 만들어, 기기 단가 회수 시점이 더 빨라집니다.</p>
+            </div>
+            <div class="c-r">
+              <span class="be-num" id="o-be-promo">4.6</span><span class="be-unit">개월</span>
+              <div class="be-label">정가 대비 <span id="o-be-saved">1.4</span>개월 단축</div>
+            </div>
+          </div>
+
+          <!-- P&L per procedure -->
+          <div class="h-section">시술당 손익 분해</div>
+          <div class="split-row">
+            <div>
+              <table class="pl-table">
+                <thead>
+                  <tr><th>항목</th><th>금액</th><th>비중</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>시술당 판매가</td><td><span id="o-pl-revenue">200,000</span></td><td>100.0%</td></tr>
+                  <tr><td>(−) 카트리지 원가</td><td class="neg"><span id="o-pl-cart">−25,000</span></td><td><span id="o-pl-cart-pct">12.5%</span></td></tr>
+                  <tr><td>(−) 시술 인건비</td><td class="neg"><span id="o-pl-labor">−9,569</span></td><td><span id="o-pl-labor-pct">4.8%</span></td></tr>
+                  <tr class="total"><td>시술당 영업이익</td><td class="pos"><span id="o-pl-margin">165,431</span></td><td><span id="o-pl-margin-pct">82.7%</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="chart-card">
+              <div class="chart-title">시술당 매출 구성</div>
+              <div class="chart-canvas-wrap">
+                <canvas id="donutChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cumulative profit chart -->
+          <div class="h-section">24개월 누적 수익 시뮬레이션</div>
+          <div class="chart-card" style="margin-bottom: 22px;">
+            <div class="chart-canvas-wrap" style="height: 240px;">
+              <canvas id="lineChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Promo block -->
+          <div class="h-section">프로모션 효과 상세</div>
+          <div class="promo-block">
+            <div>
+              <div class="promo-tag">★ PROMOTION</div>
+              <h3>증정 카트리지 <span id="o-free-cart">10</span>개</h3>
+              <div class="promo-desc">
+                무상 증정분으로 초기 시술의 카트리지 원가가 0원이 되어,
+                초기 매출의 마진율이 일시적으로 상승합니다.
+              </div>
+            </div>
+            <div class="promo-stats">
+              <div class="promo-stat">
+                <div class="ps-label">무료 가능 시술</div>
+                <div class="ps-value"><span id="o-free-procedures">20</span><span class="ps-unit">회</span></div>
+              </div>
+              <div class="promo-stat">
+                <div class="ps-label">고객 측 매출 가치</div>
+                <div class="ps-value"><span id="o-free-retail">4,000,000</span><span class="ps-unit">원</span></div>
+              </div>
+              <div class="promo-stat">
+                <div class="ps-label">원가 절감 가치</div>
+                <div class="ps-value"><span id="o-free-cost">2,500,000</span><span class="ps-unit">원</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div class="proposal-footer">
+            <div class="disclaimer">
+              ※ 본 산출은 입력값 기준의 시뮬레이션이며, 실제 운영 결과는 진료 환경·환자 수·시술 효율에 따라 달라질 수 있습니다.
+              인건비는 연 2,508시간(월 209h × 12) 표준을 적용합니다.
+            </div>
+            <div style="text-align:right; line-height:1.6;">
+              <strong style="color: var(--navy);">Medistream MD Squad</strong><br/>
+              의료기기 사업부 · medistream.co.kr
+            </div>
+          </div>
+        </section>
+
+      </div>
+      <div class="scale-hint">↑ 위 미리보기가 PDF로 그대로 출력됩니다 (A4 portrait)</div>
+    </div>
+  </main>
+</div>
+
+<script>
+// ====================================================
+//  Calculator Logic
+// ====================================================
+
+const ANNUAL_WORK_HOURS = 2508; // 한국 표준 (월 209h × 12)
+const ANNUAL_WORK_MINUTES = ANNUAL_WORK_HOURS * 60; // 150,480분
+const SIM_MONTHS = 24;
+
+const $ = (id) => document.getElementById(id);
+
+const inputIds = [
+  'customerName','preparedDate','deviceName',
+  'devicePrice','cartridgePrice','shotsPerCartridge',
+  'pricePerProcedure','shotsPerProcedure','procedureMinutes',
+  'monthlyProcedures','annualSalary','freeCartridges'
+];
+
+// Initialize date
+(function initDate() {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  $('preparedDate').value = `${yyyy}-${mm}-${dd}`;
+})();
+
+function readInputs() {
+  return {
+    customerName: $('customerName').value || '—',
+    preparedDate: $('preparedDate').value || '',
+    deviceName: $('deviceName').value || '—',
+    devicePrice: num('devicePrice'),
+    cartridgePrice: num('cartridgePrice'),
+    shotsPerCartridge: num('shotsPerCartridge'),
+    pricePerProcedure: num('pricePerProcedure'),
+    shotsPerProcedure: num('shotsPerProcedure'),
+    procedureMinutes: num('procedureMinutes'),
+    monthlyProcedures: num('monthlyProcedures'),
+    annualSalary: num('annualSalary'),
+    freeCartridges: num('freeCartridges')
+  };
+}
+
+function num(id) {
+  const v = parseFloat($(id).value);
+  return isFinite(v) ? v : 0;
+}
+
+function compute(i) {
+  // 시술당 원가
+  const cartridgeCostPerShot = i.shotsPerCartridge > 0 ? i.cartridgePrice / i.shotsPerCartridge : 0;
+  const cartridgeCostPerProcedure = cartridgeCostPerShot * i.shotsPerProcedure;
+  const laborCostPerMinute = i.annualSalary / ANNUAL_WORK_MINUTES;
+  const laborCostPerProcedure = laborCostPerMinute * i.procedureMinutes;
+  const totalCostPerProcedure = cartridgeCostPerProcedure + laborCostPerProcedure;
+  const marginPerProcedure = i.pricePerProcedure - totalCostPerProcedure;
+  const marginRate = i.pricePerProcedure > 0 ? marginPerProcedure / i.pricePerProcedure : 0;
+
+  // 월/연 손익
+  const monthlyRevenue = i.pricePerProcedure * i.monthlyProcedures;
+  const monthlyCartridgeCost = cartridgeCostPerProcedure * i.monthlyProcedures;
+  const monthlyLaborCost = laborCostPerProcedure * i.monthlyProcedures;
+  const monthlyMargin = marginPerProcedure * i.monthlyProcedures;
+  const annualRevenue = monthlyRevenue * 12;
+  const annualMargin = monthlyMargin * 12;
+
+  // 프로모션 효과
+  const freeShots = i.freeCartridges * i.shotsPerCartridge;
+  const freeProcedures = i.shotsPerProcedure > 0 ? Math.floor(freeShots / i.shotsPerProcedure) : 0;
+  const promoValueRetail = freeProcedures * i.pricePerProcedure;
+  const promoValueCost = i.freeCartridges * i.cartridgePrice;
+
+  // 손익분기 (정가, 무프로모션)
+  const breakEvenMonths = monthlyMargin > 0 ? i.devicePrice / monthlyMargin : Infinity;
+
+  // 24개월 누적 시뮬레이션
+  let cum = -i.devicePrice;
+  let cumPromo = -i.devicePrice;
+  let remainFreeShots = freeShots;
+  const series = [];
+  let breakEvenPromoMonth = null;
+
+  for (let m = 1; m <= SIM_MONTHS; m++) {
+    // (1) 정가 시나리오
+    cum += monthlyMargin;
+
+    // (2) 프로모션 시나리오
+    const monthlyShots = i.monthlyProcedures * i.shotsPerProcedure;
+    let cartCostMonth;
+    if (remainFreeShots >= monthlyShots) {
+      cartCostMonth = 0;
+      remainFreeShots -= monthlyShots;
+    } else if (remainFreeShots > 0) {
+      const paidShots = monthlyShots - remainFreeShots;
+      cartCostMonth = i.shotsPerCartridge > 0 ? (paidShots / i.shotsPerCartridge) * i.cartridgePrice : 0;
+      remainFreeShots = 0;
+    } else {
+      cartCostMonth = monthlyCartridgeCost;
+    }
+    const monthMarginPromo = monthlyRevenue - cartCostMonth - monthlyLaborCost;
+    cumPromo += monthMarginPromo;
+
+    if (breakEvenPromoMonth === null && cumPromo >= 0) {
+      // Linear interpolation for fractional month
+      const prev = cumPromo - monthMarginPromo;
+      const ratio = monthMarginPromo > 0 ? (-prev) / monthMarginPromo : 0;
+      breakEvenPromoMonth = (m - 1) + ratio;
+    }
+
+    series.push({ month: m, base: cum, promo: cumPromo });
+  }
+
+  return {
+    cartridgeCostPerShot, cartridgeCostPerProcedure,
+    laborCostPerMinute, laborCostPerProcedure,
+    totalCostPerProcedure, marginPerProcedure, marginRate,
+    monthlyRevenue, monthlyCartridgeCost, monthlyLaborCost, monthlyMargin,
+    annualRevenue, annualMargin,
+    freeShots, freeProcedures, promoValueRetail, promoValueCost,
+    breakEvenMonths, breakEvenPromoMonth, series
+  };
+}
+
+// ====================================================
+//  Formatting
+// ====================================================
+const fmt = (n) => isFinite(n) ? Math.round(n).toLocaleString('ko-KR') : '—';
+const fmtPct = (n) => isFinite(n) ? (n * 100).toFixed(1) + '%' : '—';
+const fmtMonths = (n) => isFinite(n) ? n.toFixed(1) : '∞';
+
+// ====================================================
+//  Render
+// ====================================================
+let donutChart, lineChart;
+
+function render() {
+  const i = readInputs();
+  const r = compute(i);
+
+  // Cover
+  $('o-device').textContent = i.deviceName;
+  $('o-customer').textContent = i.customerName;
+  $('o-date').textContent = formatDateKR(i.preparedDate);
+
+  // Big metrics
+  $('o-margin-per').textContent = fmt(r.marginPerProcedure);
+  $('o-margin-rate').textContent = fmtPct(r.marginRate);
+  $('o-monthly-margin').textContent = fmt(r.monthlyMargin);
+  $('o-monthly-rev').textContent = fmt(r.monthlyRevenue);
+  $('o-annual-margin').textContent = fmt(r.annualMargin);
+  $('o-annual-rev').textContent = fmt(r.annualRevenue);
+  $('o-be').textContent = fmtMonths(r.breakEvenMonths);
+
+  // Promo callout
+  if (i.freeCartridges > 0 && r.breakEvenPromoMonth !== null) {
+    $('o-be-promo').textContent = fmtMonths(r.breakEvenPromoMonth);
+    const saved = r.breakEvenMonths - r.breakEvenPromoMonth;
+    $('o-be-saved').textContent = isFinite(saved) ? saved.toFixed(1) : '—';
+  } else {
+    $('o-be-promo').textContent = fmtMonths(r.breakEvenMonths);
+    $('o-be-saved').textContent = '0.0';
+  }
+
+  // P&L
+  $('o-pl-revenue').textContent = fmt(i.pricePerProcedure);
+  $('o-pl-cart').textContent = '−' + fmt(r.cartridgeCostPerProcedure);
+  $('o-pl-labor').textContent = '−' + fmt(r.laborCostPerProcedure);
+  $('o-pl-margin').textContent = fmt(r.marginPerProcedure);
+  const total = i.pricePerProcedure || 1;
+  $('o-pl-cart-pct').textContent = fmtPct(r.cartridgeCostPerProcedure / total);
+  $('o-pl-labor-pct').textContent = fmtPct(r.laborCostPerProcedure / total);
+  $('o-pl-margin-pct').textContent = fmtPct(r.marginPerProcedure / total);
+
+  // Inputs summary
+  const items = [
+    ['기기 단가', fmt(i.devicePrice) + '원'],
+    ['카트리지 단가', fmt(i.cartridgePrice) + '원'],
+    ['카트리지당 샷수', fmt(i.shotsPerCartridge) + '샷'],
+    ['시술당 판매가', fmt(i.pricePerProcedure) + '원'],
+    ['시술당 샷수', fmt(i.shotsPerProcedure) + '샷'],
+    ['시술 시간', fmt(i.procedureMinutes) + '분'],
+    ['월 시술 횟수', fmt(i.monthlyProcedures) + '회'],
+    ['시술자 연봉', fmt(i.annualSalary) + '원'],
+    ['증정 카트리지', fmt(i.freeCartridges) + '개']
+  ];
+  $('o-inputs-summary').innerHTML = items.map(([k,v]) =>
+    `<div class="item"><span class="label">${k}</span><span class="val">${v}</span></div>`
+  ).join('');
+
+  // Promo block
+  $('o-free-cart').textContent = fmt(i.freeCartridges);
+  $('o-free-procedures').textContent = fmt(r.freeProcedures);
+  $('o-free-retail').textContent = fmt(r.promoValueRetail);
+  $('o-free-cost').textContent = fmt(r.promoValueCost);
+
+  // Charts
+  drawDonut(r, i);
+  drawLine(r, i);
+}
+
+function formatDateKR(iso) {
+  if (!iso) return '—';
+  const [y, m, d] = iso.split('-');
+  return `${y}년 ${parseInt(m,10)}월 ${parseInt(d,10)}일`;
+}
+
+function drawDonut(r, i) {
+  const ctx = document.getElementById('donutChart').getContext('2d');
+  const data = {
+    labels: ['카트리지 원가', '시술 인건비', '영업이익'],
+    datasets: [{
+      data: [r.cartridgeCostPerProcedure, r.laborCostPerProcedure, Math.max(0, r.marginPerProcedure)],
+      backgroundColor: ['#B23A3A', '#C48A3A', '#0F2F4F'],
+      borderColor: '#fff',
+      borderWidth: 2
+    }]
+  };
+  if (donutChart) donutChart.destroy();
+  donutChart = new Chart(ctx, {
+    type: 'doughnut',
+    data,
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '62%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { font: { size: 11, family: 'Pretendard' }, boxWidth: 10, padding: 10 }
+        },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => ` ${ctx.label} : ${fmt(ctx.parsed)}원`
+          }
+        }
+      },
+      animation: false
+    }
+  });
+}
+
+function drawLine(r, i) {
+  const ctx = document.getElementById('lineChart').getContext('2d');
+  const labels = r.series.map(s => `${s.month}M`);
+  const baseSeries = r.series.map(s => s.base);
+  const promoSeries = r.series.map(s => s.promo);
+  if (lineChart) lineChart.destroy();
+  lineChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: '정가 도입',
+          data: baseSeries,
+          borderColor: '#9CA3AF',
+          backgroundColor: 'rgba(156,163,175,0.10)',
+          borderWidth: 2,
+          tension: 0.25,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          fill: false,
+          borderDash: [4, 4]
+        },
+        {
+          label: '프로모션 적용',
+          data: promoSeries,
+          borderColor: '#0F2F4F',
+          backgroundColor: 'rgba(15,47,79,0.10)',
+          borderWidth: 2.5,
+          tension: 0.25,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          fill: true
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      plugins: {
+        legend: {
+          position: 'top',
+          align: 'end',
+          labels: { font: { size: 11, family: 'Pretendard' }, boxWidth: 12, padding: 10 }
+        },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => ` ${ctx.dataset.label} : ${fmt(ctx.parsed.y)}원`
+          }
+        },
+        annotation: {}
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { font: { size: 10, family: 'Pretendard' }, color: '#9CA3AF', maxRotation: 0, autoSkip: true, maxTicksLimit: 12 }
+        },
+        y: {
+          grid: { color: '#F3F4F6' },
+          ticks: {
+            font: { size: 10, family: 'Pretendard' },
+            color: '#9CA3AF',
+            callback: (v) => {
+              const abs = Math.abs(v);
+              if (abs >= 100000000) return (v/100000000).toFixed(1) + '억';
+              if (abs >= 10000) return (v/10000).toFixed(0) + '만';
+              return v;
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+// ====================================================
+//  Reset
+// ====================================================
+function resetInputs() {
+  if (!confirm('입력값을 초기화할까요?')) return;
+  const defaults = {
+    customerName: '○○ 한의원 / 원장님',
+    deviceName: '울핏(Ulfit)',
+    devicePrice: 38000000,
+    cartridgePrice: 250000,
+    shotsPerCartridge: 1000,
+    pricePerProcedure: 200000,
+    shotsPerProcedure: 500,
+    procedureMinutes: 30,
+    monthlyProcedures: 40,
+    annualSalary: 48000000,
+    freeCartridges: 10
+  };
+  Object.entries(defaults).forEach(([k, v]) => $(k).value = v);
+  const today = new Date();
+  $('preparedDate').value = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+  render();
+}
+
+// ====================================================
+//  PDF Export
+// ====================================================
+function exportPDF() {
+  const i = readInputs();
+  const safeCustomer = (i.customerName || 'customer').replace(/[\\\/:*?"<>|]/g, '').trim();
+  const safeDevice = (i.deviceName || 'device').replace(/[\\\/:*?"<>|]/g, '').trim();
+  const filename = `[ROI제안서] ${safeDevice} - ${safeCustomer} - ${i.preparedDate}.pdf`;
+
+  const element = document.getElementById('proposal');
+  const opt = {
+    margin: [0, 0, 0, 0],
+    filename: filename,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, letterRendering: true, useCORS: true, backgroundColor: '#ffffff' },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['css', 'legacy'] }
+  };
+  html2pdf().set(opt).from(element).save();
+}
+
+// ====================================================
+//  Bind & init
+// ====================================================
+inputIds.forEach(id => {
+  const el = $(id);
+  el.addEventListener('input', render);
+  el.addEventListener('change', render);
+});
+
+render();
+</script>
+
+</body>
+</html>
