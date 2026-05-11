@@ -910,10 +910,18 @@ function fetchSheetRecords() {
         if (r.id.indexOf('N/A|N/A|') === 0 && r.timestamp && validTs[r.timestamp]) return false;
         return true;
       });
-      // 시트가 append-only라 같은 id가 여러 번 append될 수 있음 → 마지막 row만 유지 (가장 최신 편집)
-      var byId = {};
-      filtered.forEach(function(r){ byId[r.id] = r; });
-      return Object.keys(byId).map(function(k){ return byId[k]; });
+      // 같은 한의사가 같은 상품을 짧은 시간 안에 여러 번 신청하면 stableId(cid|pid|timestamp)가 달라
+      // 시트에 여러 row로 append됨 → 화면에서는 cid+productId+date(또는 product+date) 기준으로 1건만 표시
+      // (마지막 row 유지: 사용자 편집 보존)
+      var byKey = {};
+      filtered.forEach(function(r){
+        var parts = (r.id || '').split('|');
+        var cid = parts[0] || '';
+        var pid = parts[1] || '';
+        var dedupKey = cid + '|' + (pid || (r.product || '')) + '|' + (r.date || '');
+        byKey[dedupKey] = r;
+      });
+      return Object.keys(byKey).map(function(k){ return byKey[k]; });
     })
     .catch(function(e){ console.warn('시트 조회 실패:', e); return []; });
 }
