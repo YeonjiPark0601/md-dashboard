@@ -40,27 +40,20 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ========== Top Bar ========== */
-.topbar {
-  position: sticky; top: 0; z-index: 100;
-  background: var(--navy);
-  color: #fff;
-  padding: 14px 28px;
-  display: flex; align-items: center; justify-content: space-between;
-  box-shadow: 0 2px 12px rgba(15, 47, 79, 0.18);
+/* ========== Top Bar (md-dashboard 공통 헤더) ========== */
+.sticky-top { position: sticky; top: 0; z-index: 100; }
+.header {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  color: #fff; padding: 16px 30px;
+  display: flex; justify-content: space-between; align-items: center;
 }
-.topbar .brand {
-  display: flex; align-items: center; gap: 12px;
+.header h1 { font-size: 20px; font-weight: 600; }
+.header .home-link {
+  color: #fff; text-decoration: none; font-size: 18px;
+  padding: 4px 8px; border-radius: 6px; background: rgba(255,255,255,.1);
+  display: flex; align-items: center;
 }
-.topbar .brand .mark {
-  width: 32px; height: 32px; border-radius: 8px;
-  background: linear-gradient(135deg, var(--gold) 0%, #B0904A 100%);
-  display: flex; align-items: center; justify-content: center;
-  color: var(--navy); font-weight: 800; font-size: 14px;
-}
-.topbar .brand h1 { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; }
-.topbar .brand .sub { font-size: 11px; color: rgba(255,255,255,0.6); }
-.topbar .actions { display: flex; gap: 10px; }
+.header .actions { display: flex; gap: 10px; }
 .btn {
   border: none; cursor: pointer; font-family: inherit;
   padding: 9px 18px; border-radius: 8px; font-weight: 600; font-size: 13px;
@@ -364,7 +357,7 @@ html, body {
 /* ========== Print / PDF ========== */
 @media print {
   body { background: #fff; }
-  .topbar, .input-panel, .preview-wrap > .scale-hint { display: none !important; }
+  .sticky-top, .input-panel, .preview-wrap > .scale-hint { display: none !important; }
   .layout { display: block; padding: 0; }
   .proposal { width: 100%; box-shadow: none; border-radius: 0; }
   .proposal .page { padding: 18mm 16mm; }
@@ -379,13 +372,11 @@ html, body {
 <body>
 
 <!-- ================= Top Bar ================= -->
-<div class="topbar">
-  <div class="brand">
-    <div class="mark">M</div>
-    <div>
-      <h1>의료기기 ROI 제안서 계산기</h1>
-      <div class="sub">Medistream · MD Squad · 의료기기 사업부</div>
-    </div>
+<div class="sticky-top">
+<div class="header">
+  <div style="display:flex;align-items:center;gap:12px;">
+    <a href="home.html" class="home-link" title="홈으로">&#8962;</a>
+    <h1>의료기기 ROI 제안서 계산기</h1>
   </div>
   <div class="actions">
     <button class="btn btn-ghost" onclick="resetInputs()">초기화</button>
@@ -394,6 +385,7 @@ html, body {
       PDF 다운로드
     </button>
   </div>
+</div>
 </div>
 
 <!-- ================= Layout ================= -->
