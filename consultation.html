@@ -51,9 +51,6 @@ body { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; b
 /* ===== TABLE CARDS ===== */
 .table-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 20px; }
 .consult-scroll { -webkit-overflow-scrolling: touch; }
-.zoom-btn { padding: 3px 10px; border: 1px solid #d0d5dd; background: #fff; border-radius: 4px; cursor: pointer; font-size: 12px; color: #374151; }
-.zoom-btn:hover { background: #f3f4f6; }
-.zoom-btn.active { background: #1a1a2e; color: #fff; border-color: #1a1a2e; }
 .table-card h3 { font-size: 14px; font-weight: 600; color: #555; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
 table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
 th { background: #f7f8fa; padding: 10px 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; white-space: nowrap; position: relative; overflow: hidden; text-overflow: ellipsis; }
@@ -594,13 +591,6 @@ th.sortable:hover { background: #eef0f4; }
   </div>
 
   <div class="table-card">
-      <div id="zoomControl" style="display:flex;justify-content:flex-end;align-items:center;gap:6px;padding:6px 8px;font-size:12px;color:#6b7280;">
-        <span>배율</span>
-        <button type="button" class="zoom-btn" data-zoom="auto">자동</button>
-        <button type="button" class="zoom-btn" data-zoom="0.6">60%</button>
-        <button type="button" class="zoom-btn" data-zoom="0.75">75%</button>
-        <button type="button" class="zoom-btn" data-zoom="1">100%</button>
-      </div>
       <div class="consult-scroll">
       <table id="consultTable">
         <thead>
@@ -3024,7 +3014,6 @@ function init() {
 // ============================================================
 // ZOOM CONTROL (table scale for narrow laptop screens)
 // ============================================================
-var ZOOM_KEY = 'md_consult_zoom';
 function computeAutoZoom() {
   var w = window.innerWidth;
   if (w >= 1600) return 1;
@@ -3033,36 +3022,18 @@ function computeAutoZoom() {
   if (w >= 1100) return 0.7;
   return 0.6;
 }
-function applyZoom(z) {
+function applyAutoZoom() {
   var el = document.querySelector('.consult-scroll');
   if (!el) return;
   if (window.matchMedia && window.matchMedia('(max-width: 720px)').matches) {
     el.style.zoom = '';
-    document.querySelectorAll('.zoom-btn').forEach(function(b){
-      b.classList.toggle('active', b.dataset.zoom === String(z));
-    });
     return;
   }
-  var actual = (z === 'auto') ? computeAutoZoom() : parseFloat(z);
-  el.style.zoom = actual;
-  document.querySelectorAll('.zoom-btn').forEach(function(b){
-    b.classList.toggle('active', b.dataset.zoom === String(z));
-  });
+  el.style.zoom = computeAutoZoom();
 }
 (function initZoom(){
-  var saved = localStorage.getItem(ZOOM_KEY);
-  if (saved === null || saved === '' || saved === 'auto') saved = 'auto';
-  applyZoom(saved);
-  document.querySelectorAll('.zoom-btn').forEach(function(b){
-    b.addEventListener('click', function(){
-      var z = b.dataset.zoom;
-      localStorage.setItem(ZOOM_KEY, String(z));
-      applyZoom(z);
-    });
-  });
-  window.addEventListener('resize', function(){
-    if ((localStorage.getItem(ZOOM_KEY) || 'auto') === 'auto') applyZoom('auto');
-  });
+  applyAutoZoom();
+  window.addEventListener('resize', applyAutoZoom);
 })();
 
 // ============================================================
