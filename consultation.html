@@ -1481,6 +1481,8 @@ function updateUnassignedBanner() {
   var banner = document.getElementById('unassignedBanner');
   if (!banner) return;
   var data = loadData();
+  // 데이터 fetch 중 일시적으로 빈 상태일 때는 표시 상태 유지 (깜빡임 방지)
+  if (!data || data.length === 0) return;
   var cnt = data.filter(isUnassignedRecord).length;
   if (cnt === 0) {
     banner.classList.remove('show');
