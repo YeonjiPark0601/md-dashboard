@@ -583,23 +583,29 @@ tr:hover { background: #f7f9fc; }
         <div style="overflow-x:auto;"><table><thead><tr id="omnifitYearlyHead"></tr></thead><tbody id="omnifitYearlyBody"></tbody></table></div>
       </div>
     </div>
-    <!-- 피부미용 전용: 공급처별 월별 매출 + MOQ 진행률 + 드릴다운 -->
+    <!-- 피부미용 전용: 공급처별 월별 매출 → 카테고리별 월별 매출 → 세부 리스트 → MOQ 진행률 -->
     <div class="chart-row-full" id="skinSupplierRow" style="display:none;">
       <div class="table-card">
         <h3>공급처별 월별 매출 <span style="font-size:12px;color:#888;font-weight:400;">(공급업체명 클릭 → 하단에 세부 리스트)</span></h3>
         <div style="overflow-x:auto;"><table class="pt10-sticky"><thead><tr id="skinSupplierHead"></tr></thead><tbody id="skinSupplierBody"></tbody></table></div>
       </div>
     </div>
-    <div class="chart-row-full" id="skinMoqRow" style="display:none;">
+    <div class="chart-row-full" id="skinCategoryRow" style="display:none;">
       <div class="table-card">
-        <h3>MOQ 진행률 <span style="font-size:12px;color:#888;font-weight:400;">(올해 누적 수량 기준)</span> <a href="https://docs.google.com/spreadsheets/d/1s34C5qB-K_A8vJEJQaOOyJ44YM3netORbfCVVfM3idw/edit#gid=1777285866" target="_blank" rel="noopener" style="font-size:12px;color:#1a73e8;margin-left:8px;">[MOQ 시트 편집]</a></h3>
-        <div style="overflow-x:auto;"><table><thead><tr><th>공급업체</th><th>품목명</th><th class="text-right">MOQ수량</th><th class="text-right">누적수량</th><th class="text-right">잔여</th><th style="min-width:240px;">진행률</th></tr></thead><tbody id="skinMoqBody"></tbody></table></div>
+        <h3>카테고리별 월별 매출 <span style="font-size:12px;color:#888;font-weight:400;">(마스터 시트의 카테고리 컬럼 기준)</span> <a href="https://docs.google.com/spreadsheets/d/1s34C5qB-K_A8vJEJQaOOyJ44YM3netORbfCVVfM3idw/edit#gid=1777285866" target="_blank" rel="noopener" style="font-size:12px;color:#1a73e8;margin-left:8px;">[카테고리 편집]</a></h3>
+        <div style="overflow-x:auto;"><table class="pt10-sticky"><thead><tr id="skinCategoryHead"></tr></thead><tbody id="skinCategoryBody"></tbody></table></div>
       </div>
     </div>
     <div class="chart-row-full" id="skinDetailRow" style="display:none;">
       <div class="table-card">
         <h3 id="skinDetailTitle">세부 리스트</h3>
         <div style="overflow-x:auto;max-height:600px;"><table><thead><tr id="skinDetailHead"></tr></thead><tbody id="skinDetailBody"></tbody></table></div>
+      </div>
+    </div>
+    <div class="chart-row-full" id="skinMoqRow" style="display:none;">
+      <div class="table-card">
+        <h3>MOQ 진행률 <span style="font-size:12px;color:#888;font-weight:400;">(올해 누적 수량 기준)</span> <a href="https://docs.google.com/spreadsheets/d/1s34C5qB-K_A8vJEJQaOOyJ44YM3netORbfCVVfM3idw/edit#gid=1777285866" target="_blank" rel="noopener" style="font-size:12px;color:#1a73e8;margin-left:8px;">[마스터 시트 편집]</a></h3>
+        <div style="overflow-x:auto;"><table><thead><tr><th>공급업체</th><th>품목명</th><th class="text-right">MOQ수량</th><th class="text-right">누적수량</th><th class="text-right">잔여</th><th style="min-width:240px;">진행률</th></tr></thead><tbody id="skinMoqBody"></tbody></table></div>
       </div>
     </div>
     <!-- 초음파 전용: 재고 현황 (페이지 하단) -->
@@ -638,7 +644,7 @@ Chart.defaults.plugins.tooltip.position='nearest';
 Chart.defaults.plugins.tooltip.yAlign='top';
 
 let currentTab = '의료기기';
-let allData = [], classData = [], turnkeyData = [], pt10Data = [], pt10Master = {}, sonoData = [], puOnData = [], puOffData = [], rebuyData = [], targetData = {}, pt10PuData = [], turnkeySurveyData = [], omnifitData = [], skinBeautyData = [], skinMoqData = [], turnkeyCidMap = {};
+let allData = [], classData = [], turnkeyData = [], pt10Data = [], pt10Master = {}, sonoData = [], puOnData = [], puOffData = [], rebuyData = [], targetData = {}, pt10PuData = [], turnkeySurveyData = [], omnifitData = [], skinBeautyData = [], skinMoqData = [], skinCategoryMap = {}, turnkeyCidMap = {};
 let drillCategory = null, selectedSuppliers = [], sortCol = -1, sortAsc = true;
 let equipMaster = {}; // 품목ID → 장비여부('O'/'X') 매핑
 let puOnExpanded = false, puOffExpanded = false;
@@ -679,13 +685,13 @@ async function fetchData(){
   const failedSheets=[];
   try{
     const sheetUrl=n=>`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(n)}&headers=1&_t=${Date.now()}`;
-    const [salesR,classR,turnkeyR,pt10R,pt10MasterR,sonoR,sonoMissR,targetR,puOnR,puOffR,rebuyR,pt10PuR,surveyR,omnifitRevR,omnifitCostR,equipMasterR,skinR,moqR]=await Promise.all([
+    const [salesR,classR,turnkeyR,pt10R,pt10MasterR,sonoR,sonoMissR,targetR,puOnR,puOffR,rebuyR,pt10PuR,surveyR,omnifitRevR,omnifitCostR,equipMasterR,skinR,skinMasterR]=await Promise.all([
       fetch(sheetUrl('일반기기')),fetch(sheetUrl('클래스')),fetch(sheetUrl('턴키 결제내역')),fetch(sheetUrl('PT10')),fetch(sheetUrl('PT10 마스터')),
       fetch(sheetUrl('초음파')+'&range=A7:AH'),fetch(sheetUrl('초음파누락')),fetch(TARGET_URL),
       fetch(sheetUrl('PU온라인')),fetch(sheetUrl('PU오프라인')),fetch(sheetUrl('재구매분석')),fetch(sheetUrl('PT10PU')),
       fetch(sheetUrl('턴키 상담관리')),
       fetch(sheetUrl('옴니핏매출')),fetch(sheetUrl('옴니핏공급가')),
-      fetch(sheetUrl('기기 마스터')),fetch(sheetUrl('피부미용')),fetch(sheetUrl('MOQ'))
+      fetch(sheetUrl('기기 마스터')),fetch(sheetUrl('피부미용')),fetch(sheetUrl('피부미용 마스터'))
     ]);
     if(!salesR.ok)throw new Error('매출 데이터 로딩 실패');
     allData=parseCSV(await salesR.text()).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['공급가']=parseNum(r['공급가']);r['수량']=parseNum(r['수량']);r['연월']=fixYm(r['연월']);r['주문일']=fixDate(r['주문일']||'');return r});
@@ -786,6 +792,7 @@ async function fetchData(){
             연월:ym,
             주문일:fixDate(dt),
             주문번호:r['주문번호']||'',
+            주문식별번호:r['주문식별번호']||'',
             주문자명:r['주문자명']||'',
             한의원명:r['한의원명']||'',
             지역:r['지역']||'',
@@ -802,19 +809,27 @@ async function fetchData(){
         })
       }}else{failedSheets.push('피부미용')}
     }catch(e){console.warn('피부미용 에러',e);failedSheets.push('피부미용')}
-    // 피부미용 MOQ
+    // 피부미용 마스터: 카테고리 매핑 + MOQ 관리 통합
     try{
-      if(moqR.ok){const t=await moqR.text();if(t.trim()){
-        skinMoqData=parseCSV(t).filter(r=>(r['공급업체']||r['품목명']||r['품목코드'])&&parseNum(r['MOQ수량'])>0).map(r=>({
+      if(skinMasterR.ok){const t=await skinMasterR.text();if(t.trim()){
+        const rows=parseCSV(t).filter(r=>(r['활성']||'O').toUpperCase()!=='X');
+        skinCategoryMap={};
+        rows.forEach(r=>{
+          const code=(r['품목코드']||'').trim();
+          const cat=(r['카테고리']||'').trim();
+          if(code&&cat)skinCategoryMap[code]=cat;
+        });
+        skinMoqData=rows.filter(r=>parseNum(r['MOQ수량'])>0).map(r=>({
           공급업체:r['공급업체']||'',
           품목명:r['품목명']||'',
           품목코드:r['품목코드']||'',
+          카테고리:r['카테고리']||'',
           MOQ수량:parseNum(r['MOQ수량']),
           적용연도:String(r['적용연도']||'').trim(),
           비고:r['비고']||''
-        }))
-      }}else{failedSheets.push('MOQ')}
-    }catch(e){console.warn('MOQ 에러',e);failedSheets.push('MOQ')}
+        }));
+      }}else{failedSheets.push('피부미용마스터')}
+    }catch(e){console.warn('피부미용마스터 에러',e);failedSheets.push('피부미용마스터')}
     // 턴키CID 로드
     try{const tkCidR=await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('턴키CID')}&headers=1&_t=${Date.now()}`);
       if(tkCidR.ok){const t=await tkCidR.text();if(t.trim()){const parseAddr=a=>{if(!a)return null;const parts=a.split(/\s+/);const w=parts[0];const m=[['서울','서울'],['부산','부산'],['대구','대구'],['인천','인천'],['광주','광주'],['대전','대전'],['울산','울산'],['세종','세종'],['경기','경기'],['강원','강원'],['충북','충북'],['충청북','충북'],['충남','충남'],['충청남','충남'],['전북','전북'],['전라북','전북'],['전남','전남'],['전라남','전남'],['경북','경북'],['경상북','경북'],['경남','경남'],['경상남','경남'],['제주','제주']];let region='';for(const[k,v]of m){if(w.includes(k)){region=v;break}}if(!region)return null;const sub=parts[1]||'';return{region,sub}};
@@ -1016,8 +1031,9 @@ function render(){
   if(isOmnifit){renderOmnifitSummary();renderOmnifitQuarter();renderOmnifitOkr();renderOmnifitYearly()}
   document.getElementById('skinMoqRow').style.display=isSkin?'':'none';
   document.getElementById('skinSupplierRow').style.display=isSkin?'':'none';
+  document.getElementById('skinCategoryRow').style.display=isSkin?'':'none';
   document.getElementById('skinDetailRow').style.display=(isSkin&&_skinSelectedSupplier)?'':'none';
-  if(isSkin){renderSkinMoq();renderSkinSupplier();if(_skinSelectedSupplier)renderSkinDetail(_skinSelectedSupplier)}
+  if(isSkin){renderSkinMoq();renderSkinSupplier();renderSkinCategory();if(_skinSelectedSupplier)renderSkinDetail(_skinSelectedSupplier)}
   document.getElementById('turnkeyResultKpiRow').style.display=isTurnkey?'grid':'none';
   document.getElementById('turnkeyKpiRow').style.display=isTurnkey?'grid':'none';
   document.getElementById('turnkeySurveyKpiRow').style.display=isTurnkey?'grid':'none';
@@ -2928,7 +2944,7 @@ let _skinSelectedSupplier=null;
 function renderSkinMoq(){
   const body=document.getElementById('skinMoqBody');
   if(!skinMoqData.length){
-    body.innerHTML='<tr><td colspan="6" style="text-align:center;color:#888;padding:24px;">MOQ 시트에 품목이 등록되지 않았습니다. <a href="https://docs.google.com/spreadsheets/d/1s34C5qB-K_A8vJEJQaOOyJ44YM3netORbfCVVfM3idw/edit#gid=1777285866" target="_blank" rel="noopener" style="color:#1a73e8;">시트에서 추가</a></td></tr>';
+    body.innerHTML='<tr><td colspan="6" style="text-align:center;color:#888;padding:24px;">MOQ가 설정된 품목이 없습니다. <a href="https://docs.google.com/spreadsheets/d/1s34C5qB-K_A8vJEJQaOOyJ44YM3netORbfCVVfM3idw/edit#gid=1777285866" target="_blank" rel="noopener" style="color:#1a73e8;">마스터 시트에서 MOQ수량 입력</a></td></tr>';
     return;
   }
   const curYear=String(new Date().getFullYear());
@@ -3052,6 +3068,67 @@ function renderSkinSupplier(){
     body.innerHTML+=totRows;
   }
 }
+function renderSkinCategory(){
+  const body=document.getElementById('skinCategoryBody');
+  const head=document.getElementById('skinCategoryHead');
+  const mapped=Object.keys(skinCategoryMap).length;
+  if(!mapped){
+    head.innerHTML='';
+    body.innerHTML='<tr><td style="text-align:center;color:#888;padding:24px;">마스터 시트의 카테고리 컬럼이 비어있습니다. 품목별로 카테고리(예: HIFU, RF, CO2, 니들, 진단기, 소모품 등)를 입력하면 여기에 표시됩니다.</td></tr>';
+    return;
+  }
+  const sM=document.getElementById('startMonth').value;const eM=document.getElementById('endMonth').value;
+  const inRange=ym=>(!sM||ym>=sM)&&(!eM||ym<=eM);
+  const filtered=skinBeautyData.filter(d=>d['연월']&&inRange(d['연월']));
+  const m26=[];for(let m=1;m<=12;m++)m26.push('2026-'+String(m).padStart(2,'0'));
+  const m25=[];for(let m=1;m<=12;m++)m25.push('2025-'+String(m).padStart(2,'0'));
+  const cols=[];
+  cols.push({key:'_26total',label:'26년',isTotal:true,year:'2026'});
+  m26.forEach(m=>cols.push({key:m,label:m.substring(5)+'월',year:'2026'}));
+  cols.push({key:'_25total',label:'25년',isTotal:true,year:'2025'});
+  m25.forEach(m=>cols.push({key:m,label:m.substring(5)+'월',year:'2025'}));
+  const byC={},costByC={},unmapped={};
+  filtered.forEach(d=>{
+    const cat=skinCategoryMap[d['품목코드']]||'(미분류)';
+    const ym=d['연월'];
+    if(!byC[cat]){byC[cat]={};costByC[cat]={}}
+    byC[cat][ym]=(byC[cat][ym]||0)+(d['매출금액']||0);
+    costByC[cat][ym]=(costByC[cat][ym]||0)+(d['공급가']||0);
+    if(cat==='(미분류)')unmapped[d['품목코드']||'']=d['품목명']||'';
+  });
+  const cats=Object.keys(byC).sort((a,b)=>{
+    if(a==='(미분류)')return 1;if(b==='(미분류)')return -1;
+    const ta=Object.values(byC[a]).reduce((s,v)=>s+v,0);
+    const tb=Object.values(byC[b]).reduce((s,v)=>s+v,0);return tb-ta;
+  });
+  function sumYear(byM,yr){return (yr==='2026'?m26:m25).reduce((s,m)=>s+(byM[m]||0),0)}
+  function getVal(byM,col){return col.isTotal?sumYear(byM,col.year):(byM[col.key]||0)}
+  function fmtN(v){return v?Math.round(v).toLocaleString():'-'}
+  function calcMargin(s,c){return s?((s-c)/s*100):null}
+  function fmtMargin(v){return v===null?'-':v.toFixed(1)+'%'}
+  function marginColor(v){if(v===null)return '';return v>=30?'#0d9488':v>=15?'#1a73e8':v>=0?'#f59e0b':'#ef4444'}
+  head.innerHTML='<th style="min-width:120px;position:sticky;left:0;background:#fff;z-index:2;">카테고리</th>'+
+    '<th style="min-width:80px;position:sticky;left:120px;background:#fff;z-index:2;">항목</th>'+
+    cols.map(c=>`<th class="text-right" style="${c.isTotal?'background:#f0f2f5;font-weight:700;':''}">${c.label}</th>`).join('');
+  body.innerHTML=cats.map(cat=>{
+    const r1=`<tr style="border-top:2px solid #e0e0e0;">`+
+      `<td rowspan="3" style="min-width:120px;position:sticky;left:0;background:#fff;z-index:1;vertical-align:top;padding-top:8px;font-weight:600;${cat==='(미분류)'?'color:#888;':''}">${cat}</td>`+
+      `<td style="position:sticky;left:120px;background:#fff;z-index:1;font-weight:600;">매출</td>`+
+      cols.map(c=>{const v=getVal(byC[cat],c);const bg=c.isTotal?'background:#f0f2f5;font-weight:700;':'';return`<td class="text-right" style="${bg}">${fmtN(v)}</td>`}).join('')+'</tr>';
+    const r2=`<tr style="color:#666;">`+
+      `<td style="position:sticky;left:120px;background:#fff;z-index:1;font-size:12px;">공급가</td>`+
+      cols.map(c=>{const v=getVal(costByC[cat],c);const bg=c.isTotal?'background:#f0f2f5;font-weight:600;font-size:12px;':'font-size:12px;';return`<td class="text-right" style="${bg}">${fmtN(v)}</td>`}).join('')+'</tr>';
+    const r3=`<tr>`+
+      `<td style="position:sticky;left:120px;background:#fff;z-index:1;font-size:12px;font-weight:600;">매출총이익률</td>`+
+      cols.map(c=>{const v=calcMargin(getVal(byC[cat],c),getVal(costByC[cat],c));const bg=c.isTotal?'background:#f0f2f5;font-weight:700;':'';const clr=marginColor(v);return`<td class="text-right" style="${bg}${clr?'color:'+clr+';':''}font-size:12px;font-weight:600;">${fmtMargin(v)}</td>`}).join('')+'</tr>';
+    return r1+r2+r3;
+  }).join('');
+  if(Object.keys(unmapped).length){
+    const list=Object.entries(unmapped).slice(0,5).map(([c,n])=>n||c).join(', ');
+    body.innerHTML+=`<tr><td colspan="${cols.length+2}" style="font-size:11px;color:#888;padding:8px;background:#fffbe8;">⚠️ 미분류 ${Object.keys(unmapped).length}개 품목: ${list}${Object.keys(unmapped).length>5?' 외':''} — 마스터 시트에서 카테고리 입력 필요</td></tr>`;
+  }
+}
+
 function renderSkinDetail(supplier){
   const sM=document.getElementById('startMonth').value;const eM=document.getElementById('endMonth').value;
   const inRange=ym=>(!sM||ym>=sM)&&(!eM||ym<=eM);
@@ -3060,16 +3137,17 @@ function renderSkinDetail(supplier){
   const totalSales=rows.reduce((s,r)=>s+(r['매출금액']||0),0);
   const totalCost=rows.reduce((s,r)=>s+(r['공급가']||0),0);
   const totalQty=rows.reduce((s,r)=>s+(r['수량']||0),0);
-  document.getElementById('skinDetailTitle').innerHTML=`세부 리스트: <span style="color:#1a73e8;">${supplier}</span><span style="font-size:12px;color:#888;font-weight:400;margin-left:8px;">(${rows.length}건 · 매출 ${Math.round(totalSales).toLocaleString()}원 · 공급가 ${Math.round(totalCost).toLocaleString()}원 · 수량 ${totalQty.toLocaleString()})</span><a href="javascript:void(0)" onclick="selectSkinSupplier('${supplier.replace(/'/g,"\\'")}')" style="font-size:12px;color:#888;margin-left:8px;">[닫기]</a>`;
+  document.getElementById('skinDetailTitle').innerHTML=`<span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">세부 리스트:<span style="color:#1a73e8;">${supplier}</span><span style="font-size:12px;color:#888;font-weight:400;">(${rows.length}건 · 매출 ${Math.round(totalSales).toLocaleString()}원 · 공급가 ${Math.round(totalCost).toLocaleString()}원 · 수량 ${totalQty.toLocaleString()})</span></span><a href="javascript:void(0)" onclick="selectSkinSupplier('${supplier.replace(/'/g,"\\'")}')" style="font-size:12px;color:#888;">[닫기]</a>`;
   document.getElementById('skinDetailHead').innerHTML=
     '<th>주문번호</th><th>주문일</th><th>한의원명</th><th>품목명</th><th class="text-right">수량</th><th class="text-right">매출금액</th><th class="text-right">공급가</th><th class="text-right">매출총이익률</th>';
   const body=document.getElementById('skinDetailBody');
   if(!rows.length){body.innerHTML='<tr><td colspan="8" style="text-align:center;color:#888;padding:20px;">데이터가 없습니다.</td></tr>';return}
   body.innerHTML=rows.map(r=>{
     const ord=r['주문번호']||'';
+    const oid=r['주문식별번호']||'';
     const margin=r['매출총이익률'];
     const marginStr=margin?margin.toFixed(2)+'%':'-';
-    const ordCell=ord?`<a href="https://tools.medistream.co.kr/orders/${encodeURIComponent(ord)}" target="_blank" rel="noopener" style="color:#1a73e8;text-decoration:none;font-weight:600;">${ord}</a>`:'-';
+    const ordCell=oid?`<a href="https://tools.medistream.co.kr/orders/${encodeURIComponent(oid)}" target="_blank" rel="noopener" style="color:#1a73e8;text-decoration:none;font-weight:600;">${ord||oid}</a>`:(ord||'-');
     return `<tr>`+
       `<td>${ordCell}</td>`+
       `<td>${r['주문일']||'-'}</td>`+
