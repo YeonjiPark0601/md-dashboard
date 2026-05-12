@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-12T09:05:36.058Z",
+  "updated": "2026-05-12T09:50:36.685Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -123,7 +123,7 @@
       "productId": "610cd88909c63a06ed1489fe",
       "clinic": "한마음한의원",
       "region": "충청남도 천안시",
-      "caller": "",
+      "caller": "김진석",
       "supplier": "에이치씨케이",
       "payDate": "",
       "payAmount": null,
