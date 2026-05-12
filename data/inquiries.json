@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-12T02:20:17.600Z",
+  "updated": "2026-05-12T05:25:16.982Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -23,6 +23,48 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "다른모델들과차이점 가격",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 12 오후 02:22:45",
+      "date": "2026-05-12",
+      "slackTs": "1778563365.641759",
+      "name": "장권준",
+      "cid": "5dd6224c2bb59605ca3d0549",
+      "phone": "010-6754-1278",
+      "product": "[PIE] 야누스 피부진단기 (JANUS Pro Hybrid)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "68c27626b9972879bbfef389",
+      "clinic": "한중한의원",
+      "region": "충청북도 청주시",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 05. 12 오후 02:24:26",
+      "date": "2026-05-12",
+      "slackTs": "1778563466.556539",
+      "name": "이재진",
+      "cid": "5ec26846e510ee503167a934",
+      "phone": "010-3352-1237",
+      "product": "[메디코아] HRV : SA-3000 NEW",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "6899816d66efcf46326dcdba",
+      "clinic": "이로운한의원",
+      "region": "충청남도 서산시",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "HRV를 원내 도입해보려고 합니다. 재현성이 좋고 검사 결과를 환자에게 쉽게 설명해줄 수 있는 기기를 검토중입니다.",
       "leadGrade": "고가망"
     },
     {
@@ -9683,7 +9725,7 @@
       "payDate": "2026-03-11",
       "payAmount": 13680350,
       "inquiry": "",
-      "leadGrade": ""
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
