@@ -1,9 +1,30 @@
 {
-  "updated": "2026-05-11T10:40:17.610Z",
+  "updated": "2026-05-12T02:20:17.600Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 12 오전 11:15:28",
+      "date": "2026-05-12",
+      "slackTs": "1778552128.458609",
+      "name": "송은영",
+      "cid": "5f31118ea0b91001bf48beb7",
+      "phone": "010-9902-0387",
+      "product": "극초단파자극기 IS-400",
+      "qty": "1개",
+      "price": "N/A",
+      "productId": "5ffe4b5cd6491c001b1788b1",
+      "clinic": "한울한의원",
+      "region": "서울시 중랑구",
+      "caller": "",
+      "supplier": "인성메디텍",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "다른모델들과차이점 가격",
+      "leadGrade": "고가망"
+    },
     {
       "source": "일반",
       "timestamp": "2026. 05. 11 오후 03:23:19",
