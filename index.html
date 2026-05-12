@@ -796,7 +796,8 @@ async function fetchData(){
             정가:parseNum(r['정가(VAT제외)']),
             매출금액:parseNum(r['매출금액(할인반영)']),
             공급가:parseNum(r['상품공급원가']),
-            매출총이익:parseNum(r['매출총이익'])
+            매출총이익:parseNum(r['매출총이익']),
+            매출총이익률:parseFloat(r['매출총이익률'])||0
           }
         })
       }}else{failedSheets.push('피부미용')}
@@ -2977,7 +2978,7 @@ function renderSkinSupplier(){
   m26.forEach(m=>cols.push({key:m,label:m.substring(5)+'월',year:'2026'}));
   cols.push({key:'_25total',label:'25년',isTotal:true,year:'2025'});
   m25.forEach(m=>cols.push({key:m,label:m.substring(5)+'월',year:'2025'}));
-  // 공급업체별 월별 매출 집계
+  // 공급업체별 월별 매출+공급가 집계
   const byS={},costByS={};
   filtered.forEach(d=>{const s=d['공급업체']||'(미지정)';const ym=d['연월'];
     if(!byS[s]){byS[s]={};costByS[s]={}}
@@ -2990,38 +2991,65 @@ function renderSkinSupplier(){
   function sumYear(byM,yr){return (yr==='2026'?m26:m25).reduce((s,m)=>s+(byM[m]||0),0)}
   function getVal(byM,col){return col.isTotal?sumYear(byM,col.year):(byM[col.key]||0)}
   const head=document.getElementById('skinSupplierHead');
-  head.innerHTML='<th style="min-width:140px;position:sticky;left:0;background:#fff;z-index:2;">공급업체</th>'+
-    cols.map(c=>`<th class="text-right" style="${c.isTotal?'background:#f0f2f5;font-weight:700;':''}">${c.label}</th>`).join('')+
-    '<th class="text-right" style="background:#f0f2f5;">마진율</th>';
+  head.innerHTML='<th style="min-width:120px;position:sticky;left:0;background:#fff;z-index:2;">공급업체</th>'+
+    '<th style="min-width:80px;position:sticky;left:120px;background:#fff;z-index:2;">항목</th>'+
+    cols.map(c=>`<th class="text-right" style="${c.isTotal?'background:#f0f2f5;font-weight:700;':''}">${c.label}</th>`).join('');
+  function fmtN(v){return v?Math.round(v).toLocaleString():'-'}
+  function calcMargin(sales,cost){return sales?((sales-cost)/sales*100):null}
+  function fmtMargin(v){if(v===null)return '-';const s=v.toFixed(1)+'%';return s}
+  function marginColor(v){if(v===null)return '';return v>=30?'#0d9488':v>=15?'#1a73e8':v>=0?'#f59e0b':'#ef4444'}
   const body=document.getElementById('skinSupplierBody');
-  body.innerHTML=suppliers.map(s=>{
+  const supplierRows=suppliers.map(s=>{
     const sel=_skinSelectedSupplier===s;
-    const rowBg=sel?'background:#e8f0fe;':'';
-    const sTotal=sumYear(byS[s],'2026')+sumYear(byS[s],'2025');
-    const cTotal=sumYear(costByS[s],'2026')+sumYear(costByS[s],'2025');
-    const margin=sTotal?((sTotal-cTotal)/sTotal*100).toFixed(1)+'%':'-';
-    return `<tr style="${rowBg}">`+
-      `<td style="min-width:140px;position:sticky;left:0;background:${sel?'#e8f0fe':'#fff'};z-index:1;"><a href="javascript:void(0)" onclick="selectSkinSupplier('${s.replace(/'/g,"\\'")}')" style="color:#1a73e8;font-weight:600;text-decoration:underline;">${s}</a></td>`+
-      cols.map(c=>{
-        const v=getVal(byS[s],c);
-        const bg=c.isTotal?'background:#f0f2f5;font-weight:700;':'';
-        return`<td class="text-right" style="${bg}">${v?Math.round(v).toLocaleString():'-'}</td>`;
-      }).join('')+
-      `<td class="text-right" style="background:#f0f2f5;font-weight:700;">${margin}</td>`+
+    const supBg=sel?'#e8f0fe':'#fff';
+    const supName=`<a href="javascript:void(0)" onclick="selectSkinSupplier('${s.replace(/'/g,"\\'")}')" style="color:#1a73e8;font-weight:600;text-decoration:underline;">${s}</a>`;
+    // row1: 매출
+    const r1=`<tr style="${sel?'background:#f5f9ff;':''}border-top:2px solid #e0e0e0;">`+
+      `<td rowspan="3" style="min-width:120px;position:sticky;left:0;background:${supBg};z-index:1;vertical-align:top;padding-top:8px;">${supName}</td>`+
+      `<td style="position:sticky;left:120px;background:${supBg};z-index:1;font-weight:600;">매출</td>`+
+      cols.map(c=>{const v=getVal(byS[s],c);const bg=c.isTotal?'background:#f0f2f5;font-weight:700;':'';return`<td class="text-right" style="${bg}">${fmtN(v)}</td>`}).join('')+
     '</tr>';
+    // row2: 공급가
+    const r2=`<tr style="${sel?'background:#f5f9ff;':''}color:#666;">`+
+      `<td style="position:sticky;left:120px;background:${supBg};z-index:1;font-size:12px;">공급가</td>`+
+      cols.map(c=>{const v=getVal(costByS[s],c);const bg=c.isTotal?'background:#f0f2f5;font-weight:600;font-size:12px;':'font-size:12px;';return`<td class="text-right" style="${bg}">${fmtN(v)}</td>`}).join('')+
+    '</tr>';
+    // row3: 매출총이익률
+    const r3=`<tr style="${sel?'background:#f5f9ff;':''}">`+
+      `<td style="position:sticky;left:120px;background:${supBg};z-index:1;font-size:12px;font-weight:600;">매출총이익률</td>`+
+      cols.map(c=>{
+        const v=calcMargin(getVal(byS[s],c),getVal(costByS[s],c));
+        const bg=c.isTotal?'background:#f0f2f5;font-weight:700;':'';
+        const clr=marginColor(v);
+        return`<td class="text-right" style="${bg}${clr?'color:'+clr+';':''}font-size:12px;font-weight:600;">${fmtMargin(v)}</td>`;
+      }).join('')+
+    '</tr>';
+    return r1+r2+r3;
   }).join('');
-  // 합계 행
+  body.innerHTML=supplierRows;
+  // 합계 (3행)
   if(suppliers.length){
     const totalByM={},costTotalByM={};
     filtered.forEach(d=>{const ym=d['연월'];totalByM[ym]=(totalByM[ym]||0)+(d['매출금액']||0);costTotalByM[ym]=(costTotalByM[ym]||0)+(d['공급가']||0)});
-    const sAll=sumYear(totalByM,'2026')+sumYear(totalByM,'2025');
-    const cAll=sumYear(costTotalByM,'2026')+sumYear(costTotalByM,'2025');
-    const mAll=sAll?((sAll-cAll)/sAll*100).toFixed(1)+'%':'-';
-    body.innerHTML+=`<tr style="border-top:2px solid #d0d0d0;font-weight:700;background:#fafafa;">`+
-      `<td style="position:sticky;left:0;background:#fafafa;z-index:1;">합계</td>`+
-      cols.map(c=>{const v=getVal(totalByM,c);const bg=c.isTotal?'background:#e8eaf0;':'';return`<td class="text-right" style="${bg}">${v?Math.round(v).toLocaleString():'-'}</td>`}).join('')+
-      `<td class="text-right" style="background:#e8eaf0;">${mAll}</td>`+
-    '</tr>';
+    const totRows=`<tr style="border-top:3px solid #999;background:#fafafa;font-weight:700;">`+
+        `<td rowspan="3" style="position:sticky;left:0;background:#fafafa;z-index:1;vertical-align:top;padding-top:8px;">합계</td>`+
+        `<td style="position:sticky;left:120px;background:#fafafa;z-index:1;">매출</td>`+
+        cols.map(c=>{const v=getVal(totalByM,c);const bg=c.isTotal?'background:#e8eaf0;':'';return`<td class="text-right" style="${bg}">${fmtN(v)}</td>`}).join('')+
+      '</tr>'+
+      `<tr style="background:#fafafa;color:#666;">`+
+        `<td style="position:sticky;left:120px;background:#fafafa;z-index:1;font-size:12px;">공급가</td>`+
+        cols.map(c=>{const v=getVal(costTotalByM,c);const bg=c.isTotal?'background:#e8eaf0;font-size:12px;':'font-size:12px;';return`<td class="text-right" style="${bg}">${fmtN(v)}</td>`}).join('')+
+      '</tr>'+
+      `<tr style="background:#fafafa;">`+
+        `<td style="position:sticky;left:120px;background:#fafafa;z-index:1;font-size:12px;font-weight:600;">매출총이익률</td>`+
+        cols.map(c=>{
+          const v=calcMargin(getVal(totalByM,c),getVal(costTotalByM,c));
+          const bg=c.isTotal?'background:#e8eaf0;font-weight:700;':'';
+          const clr=marginColor(v);
+          return`<td class="text-right" style="${bg}${clr?'color:'+clr+';':''}font-size:12px;font-weight:600;">${fmtMargin(v)}</td>`;
+        }).join('')+
+      '</tr>';
+    body.innerHTML+=totRows;
   }
 }
 function renderSkinDetail(supplier){
@@ -3032,20 +3060,27 @@ function renderSkinDetail(supplier){
   const totalSales=rows.reduce((s,r)=>s+(r['매출금액']||0),0);
   const totalCost=rows.reduce((s,r)=>s+(r['공급가']||0),0);
   const totalQty=rows.reduce((s,r)=>s+(r['수량']||0),0);
-  document.getElementById('skinDetailTitle').innerHTML=`세부 리스트 — <span style="color:#1a73e8;">${supplier}</span> <span style="font-size:12px;color:#888;font-weight:400;">(${rows.length}건 / 매출 ${Math.round(totalSales).toLocaleString()}원 / 공급가 ${Math.round(totalCost).toLocaleString()}원 / 수량 ${totalQty.toLocaleString()})</span> <a href="javascript:void(0)" onclick="selectSkinSupplier('${supplier.replace(/'/g,"\\'")}')" style="font-size:12px;color:#888;margin-left:8px;">[닫기]</a>`;
+  document.getElementById('skinDetailTitle').innerHTML=`세부 리스트: <span style="color:#1a73e8;">${supplier}</span><span style="font-size:12px;color:#888;font-weight:400;margin-left:8px;">(${rows.length}건 · 매출 ${Math.round(totalSales).toLocaleString()}원 · 공급가 ${Math.round(totalCost).toLocaleString()}원 · 수량 ${totalQty.toLocaleString()})</span><a href="javascript:void(0)" onclick="selectSkinSupplier('${supplier.replace(/'/g,"\\'")}')" style="font-size:12px;color:#888;margin-left:8px;">[닫기]</a>`;
   document.getElementById('skinDetailHead').innerHTML=
-    '<th>주문번호</th><th>주문일</th><th>한의원명</th><th>품목명</th><th class="text-right">매출금액</th><th class="text-right">공급가</th><th class="text-right">수량</th>';
+    '<th>주문번호</th><th>주문일</th><th>한의원명</th><th>품목명</th><th class="text-right">수량</th><th class="text-right">매출금액</th><th class="text-right">공급가</th><th class="text-right">매출총이익률</th>';
   const body=document.getElementById('skinDetailBody');
-  if(!rows.length){body.innerHTML='<tr><td colspan="7" style="text-align:center;color:#888;padding:20px;">데이터가 없습니다.</td></tr>';return}
-  body.innerHTML=rows.map(r=>`<tr>`+
-    `<td>${r['주문번호']||'-'}</td>`+
-    `<td>${r['주문일']||'-'}</td>`+
-    `<td>${r['한의원명']||r['주문자명']||'-'}</td>`+
-    `<td>${r['품목명']||'-'}</td>`+
-    `<td class="text-right">${Math.round(r['매출금액']||0).toLocaleString()}</td>`+
-    `<td class="text-right">${Math.round(r['공급가']||0).toLocaleString()}</td>`+
-    `<td class="text-right">${(r['수량']||0).toLocaleString()}</td>`+
-  '</tr>').join('');
+  if(!rows.length){body.innerHTML='<tr><td colspan="8" style="text-align:center;color:#888;padding:20px;">데이터가 없습니다.</td></tr>';return}
+  body.innerHTML=rows.map(r=>{
+    const ord=r['주문번호']||'';
+    const margin=r['매출총이익률'];
+    const marginStr=margin?margin.toFixed(2)+'%':'-';
+    const ordCell=ord?`<a href="https://tools.medistream.co.kr/orders/${encodeURIComponent(ord)}" target="_blank" rel="noopener" style="color:#1a73e8;text-decoration:none;font-weight:600;">${ord}</a>`:'-';
+    return `<tr>`+
+      `<td>${ordCell}</td>`+
+      `<td>${r['주문일']||'-'}</td>`+
+      `<td>${r['한의원명']||r['주문자명']||'-'}</td>`+
+      `<td>${r['품목명']||'-'}</td>`+
+      `<td class="text-right">${(r['수량']||0).toLocaleString()}</td>`+
+      `<td class="text-right">${Math.round(r['매출금액']||0).toLocaleString()}</td>`+
+      `<td class="text-right">${Math.round(r['공급가']||0).toLocaleString()}</td>`+
+      `<td class="text-right">${marginStr}</td>`+
+    '</tr>';
+  }).join('');
 }
 
 function renderSonoCurrentMonth(){
