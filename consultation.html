@@ -991,6 +991,7 @@ function fetchExternalInquiries() {
           external: true,
           externalSource: r.source,
           date: r.date,
+          timestamp: r.timestamp || '',
           source: '상담신청',
           consent: false,
           customer: r.name || '',
