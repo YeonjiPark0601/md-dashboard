@@ -549,7 +549,6 @@ th.sortable:hover { background: #eef0f4; }
               <option value="Follow">Follow</option>
               <option value="Demo">Demo</option>
               <option value="Turn-key">Turn-key</option>
-              <option value="Done">Done</option>
               <option value="Drop">Drop</option>
             </select>
           </div>
@@ -2714,7 +2713,7 @@ document.addEventListener('change', function(e){
 });
 
 // Stage 전환 허용 규칙: Done만 잠금, 나머지는 모든 단계로 자유 변경 가능
-var ALL_STAGES = ['New','Follow','Demo','Turn-key','Drop','Done'];
+var ALL_STAGES = ['New','Follow','Demo','Turn-key','Drop'];
 function renderStageCell(r) {
   if (r.stage === 'Done') {
     return '<span class="badge ' + getStageBadgeClass(r.stage) + '">' + escHtml(r.stage) + '</span>';
@@ -2738,6 +2737,8 @@ document.addEventListener('change', function(e){
     saveExtStageOverrides(ov);
     var idx = EXTERNAL_DATA.findIndex(function(r){ return r.id === id; });
     if (idx !== -1) EXTERNAL_DATA[idx].stage = val;
+    callWebhook('update', { data: { id: id, 'Stage': val } })
+      .catch(function(){ showToast('시트 동기화 실패 (로컬만 반영됨)', 'error'); });
   } else {
     var d = loadLocalOnly();
     var idx = d.findIndex(function(r){ return r.id === id; });
