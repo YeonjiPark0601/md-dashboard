@@ -583,17 +583,17 @@ tr:hover { background: #f7f9fc; }
         <div style="overflow-x:auto;"><table><thead><tr id="omnifitYearlyHead"></tr></thead><tbody id="omnifitYearlyBody"></tbody></table></div>
       </div>
     </div>
-    <!-- 피부미용 전용: MOQ 진행률 + 공급처별 월별 매출 + 드릴다운 -->
-    <div class="chart-row-full" id="skinMoqRow" style="display:none;">
-      <div class="table-card">
-        <h3>MOQ 진행률 <span style="font-size:12px;color:#888;font-weight:400;">(올해 누적 수량 기준)</span> <a href="https://docs.google.com/spreadsheets/d/1s34C5qB-K_A8vJEJQaOOyJ44YM3netORbfCVVfM3idw/edit#gid=1777285866" target="_blank" rel="noopener" style="font-size:12px;color:#1a73e8;margin-left:8px;">[MOQ 시트 편집]</a></h3>
-        <div style="overflow-x:auto;"><table><thead><tr><th>공급업체</th><th>품목명</th><th class="text-right">MOQ수량</th><th class="text-right">누적수량</th><th class="text-right">잔여</th><th style="min-width:240px;">진행률</th></tr></thead><tbody id="skinMoqBody"></tbody></table></div>
-      </div>
-    </div>
+    <!-- 피부미용 전용: 공급처별 월별 매출 + MOQ 진행률 + 드릴다운 -->
     <div class="chart-row-full" id="skinSupplierRow" style="display:none;">
       <div class="table-card">
         <h3>공급처별 월별 매출 <span style="font-size:12px;color:#888;font-weight:400;">(공급업체명 클릭 → 하단에 세부 리스트)</span></h3>
         <div style="overflow-x:auto;"><table class="pt10-sticky"><thead><tr id="skinSupplierHead"></tr></thead><tbody id="skinSupplierBody"></tbody></table></div>
+      </div>
+    </div>
+    <div class="chart-row-full" id="skinMoqRow" style="display:none;">
+      <div class="table-card">
+        <h3>MOQ 진행률 <span style="font-size:12px;color:#888;font-weight:400;">(올해 누적 수량 기준)</span> <a href="https://docs.google.com/spreadsheets/d/1s34C5qB-K_A8vJEJQaOOyJ44YM3netORbfCVVfM3idw/edit#gid=1777285866" target="_blank" rel="noopener" style="font-size:12px;color:#1a73e8;margin-left:8px;">[MOQ 시트 편집]</a></h3>
+        <div style="overflow-x:auto;"><table><thead><tr><th>공급업체</th><th>품목명</th><th class="text-right">MOQ수량</th><th class="text-right">누적수량</th><th class="text-right">잔여</th><th style="min-width:240px;">진행률</th></tr></thead><tbody id="skinMoqBody"></tbody></table></div>
       </div>
     </div>
     <div class="chart-row-full" id="skinDetailRow" style="display:none;">
