@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-12T08:50:36.889Z",
+  "updated": "2026-05-12T09:05:36.058Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -39,7 +39,7 @@
       "productId": "68c27626b9972879bbfef389",
       "clinic": "한중한의원",
       "region": "충청북도 청주시",
-      "caller": "",
+      "caller": "이예림",
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
