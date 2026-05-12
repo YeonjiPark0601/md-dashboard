@@ -100,6 +100,7 @@ tr:hover { background: #f7f9fc; }
   <div class="tab" data-tab="턴키" onclick="switchTab('턴키')">턴키</div>
   <div class="tab" data-tab="PT10" onclick="switchTab('PT10')">PT10</div>
   <div class="tab" data-tab="옴니핏" onclick="switchTab('옴니핏')">옴니핏</div>
+  <div class="tab" data-tab="피부미용" onclick="switchTab('피부미용')">피부미용</div>
 </div>
 <div class="filters">
   <div class="filter-group">
@@ -618,7 +619,7 @@ Chart.defaults.plugins.tooltip.position='nearest';
 Chart.defaults.plugins.tooltip.yAlign='top';
 
 let currentTab = '의료기기';
-let allData = [], classData = [], turnkeyData = [], pt10Data = [], pt10Master = {}, sonoData = [], puOnData = [], puOffData = [], rebuyData = [], targetData = {}, pt10PuData = [], turnkeySurveyData = [], omnifitData = [], turnkeyCidMap = {};
+let allData = [], classData = [], turnkeyData = [], pt10Data = [], pt10Master = {}, sonoData = [], puOnData = [], puOffData = [], rebuyData = [], targetData = {}, pt10PuData = [], turnkeySurveyData = [], omnifitData = [], skinBeautyData = [], turnkeyCidMap = {};
 let drillCategory = null, selectedSuppliers = [], sortCol = -1, sortAsc = true;
 let equipMaster = {}; // 품목ID → 장비여부('O'/'X') 매핑
 let puOnExpanded = false, puOffExpanded = false;
@@ -653,7 +654,7 @@ function yearShift(ym,d){const[y,m]=ym.split('-').map(Number);return`${y+d}-${St
 function getMonday(d){const dt=new Date(d);const day=dt.getDay();dt.setDate(dt.getDate()-day+(day===0?-6:1));return dt}
 function dateStr(d){return d.toISOString().slice(0,10)}
 
-function getData(){if(currentTab==='전체')return[...allData,...sonoData.filter(d=>!d._isAS),...classData];if(currentTab==='클래스')return classData;if(currentTab==='턴키')return turnkeyData;if(currentTab==='PT10')return pt10Data;if(currentTab==='초음파')return sonoData.filter(d=>!d._isAS);if(currentTab==='옴니핏')return omnifitData;return allData}
+function getData(){if(currentTab==='전체')return[...allData,...sonoData.filter(d=>!d._isAS),...classData];if(currentTab==='클래스')return classData;if(currentTab==='턴키')return turnkeyData;if(currentTab==='PT10')return pt10Data;if(currentTab==='초음파')return sonoData.filter(d=>!d._isAS);if(currentTab==='옴니핏')return omnifitData;if(currentTab==='피부미용')return skinBeautyData;return allData}
 
 async function fetchData(){
   const failedSheets=[];
@@ -1934,7 +1935,7 @@ function clearDrill(){drillCategory=null;document.getElementById('drillFilter').
 
 // URL 해시로 탭 초기화
 const hashTab=decodeURIComponent(location.hash.slice(1));
-const validTabs=['전체','의료기기','초음파','PT10','클래스','턴키','옴니핏'];
+const validTabs=['전체','의료기기','초음파','PT10','클래스','턴키','옴니핏','피부미용'];
 if(validTabs.includes(hashTab)){currentTab=hashTab;document.querySelectorAll('.tab[data-tab]').forEach(t=>{t.classList.toggle('active',t.dataset.tab===hashTab)})}
 let _tkRegionYears=['2026'];
 function renderTurnkeyRegion(){
