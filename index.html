@@ -583,6 +583,19 @@ tr:hover { background: #f7f9fc; }
         <div style="overflow-x:auto;"><table><thead><tr id="omnifitYearlyHead"></tr></thead><tbody id="omnifitYearlyBody"></tbody></table></div>
       </div>
     </div>
+    <!-- 피부미용 전용: 공급처별 월별 매출 + 드릴다운 -->
+    <div class="chart-row-full" id="skinSupplierRow" style="display:none;">
+      <div class="table-card">
+        <h3>공급처별 월별 매출 <span style="font-size:12px;color:#888;font-weight:400;">(공급업체명 클릭 → 하단에 세부 리스트)</span></h3>
+        <div style="overflow-x:auto;"><table class="pt10-sticky"><thead><tr id="skinSupplierHead"></tr></thead><tbody id="skinSupplierBody"></tbody></table></div>
+      </div>
+    </div>
+    <div class="chart-row-full" id="skinDetailRow" style="display:none;">
+      <div class="table-card">
+        <h3 id="skinDetailTitle">세부 리스트</h3>
+        <div style="overflow-x:auto;max-height:600px;"><table><thead><tr id="skinDetailHead"></tr></thead><tbody id="skinDetailBody"></tbody></table></div>
+      </div>
+    </div>
     <!-- 초음파 전용: 재고 현황 (페이지 하단) -->
     <div class="sono-section open" id="sonoInventorySection" style="display:none;">
       <div class="sono-section-header" onclick="toggleSonoSection('sonoInventorySection')"><span class="sono-arrow">▾</span> 재고 현황</div>
@@ -660,13 +673,13 @@ async function fetchData(){
   const failedSheets=[];
   try{
     const sheetUrl=n=>`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(n)}&headers=1&_t=${Date.now()}`;
-    const [salesR,classR,turnkeyR,pt10R,pt10MasterR,sonoR,sonoMissR,targetR,puOnR,puOffR,rebuyR,pt10PuR,surveyR,omnifitRevR,omnifitCostR,equipMasterR]=await Promise.all([
+    const [salesR,classR,turnkeyR,pt10R,pt10MasterR,sonoR,sonoMissR,targetR,puOnR,puOffR,rebuyR,pt10PuR,surveyR,omnifitRevR,omnifitCostR,equipMasterR,skinR]=await Promise.all([
       fetch(sheetUrl('일반기기')),fetch(sheetUrl('클래스')),fetch(sheetUrl('턴키 결제내역')),fetch(sheetUrl('PT10')),fetch(sheetUrl('PT10 마스터')),
       fetch(sheetUrl('초음파')+'&range=A7:AH'),fetch(sheetUrl('초음파누락')),fetch(TARGET_URL),
       fetch(sheetUrl('PU온라인')),fetch(sheetUrl('PU오프라인')),fetch(sheetUrl('재구매분석')),fetch(sheetUrl('PT10PU')),
       fetch(sheetUrl('턴키 상담관리')),
       fetch(sheetUrl('옴니핏매출')),fetch(sheetUrl('옴니핏공급가')),
-      fetch(sheetUrl('기기 마스터'))
+      fetch(sheetUrl('기기 마스터')),fetch(sheetUrl('피부미용'))
     ]);
     if(!salesR.ok)throw new Error('매출 데이터 로딩 실패');
     allData=parseCSV(await salesR.text()).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['공급가']=parseNum(r['공급가']);r['수량']=parseNum(r['수량']);r['연월']=fixYm(r['연월']);r['주문일']=fixDate(r['주문일']||'');return r});
@@ -757,6 +770,31 @@ async function fetchData(){
       omnifitData=omnifitRevArr;
       if(!omnifitRevR.ok||!omnifitCostR.ok)failedSheets.push('옴니핏');
     }catch(e){console.warn('옴니핏 에러',e);failedSheets.push('옴니핏')}
+    // 피부미용: Redash 6117 → 시트 동기화
+    try{
+      if(skinR.ok){const t=await skinR.text();if(t.trim()){
+        skinBeautyData=parseCSV(t).filter(r=>r['거래월']).map(r=>{
+          const ym=fixYm(r['거래월']);
+          const dt=r['거래일자']||(ym?ym+'-01':'');
+          return{
+            연월:ym,
+            주문일:fixDate(dt),
+            주문번호:r['주문번호']||'',
+            주문자명:r['주문자명']||'',
+            한의원명:r['한의원명']||'',
+            지역:r['지역']||'',
+            공급업체:r['공급업체']||'',
+            품목코드:r['품목코드']||'',
+            품목명:r['품목명']||'',
+            수량:parseNum(r['수량']),
+            정가:parseNum(r['정가(VAT제외)']),
+            매출금액:parseNum(r['매출금액(할인반영)']),
+            공급가:parseNum(r['상품공급원가']),
+            매출총이익:parseNum(r['매출총이익'])
+          }
+        })
+      }}else{failedSheets.push('피부미용')}
+    }catch(e){console.warn('피부미용 에러',e);failedSheets.push('피부미용')}
     // 턴키CID 로드
     try{const tkCidR=await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('턴키CID')}&headers=1&_t=${Date.now()}`);
       if(tkCidR.ok){const t=await tkCidR.text();if(t.trim()){const parseAddr=a=>{if(!a)return null;const parts=a.split(/\s+/);const w=parts[0];const m=[['서울','서울'],['부산','부산'],['대구','대구'],['인천','인천'],['광주','광주'],['대전','대전'],['울산','울산'],['세종','세종'],['경기','경기'],['강원','강원'],['충북','충북'],['충청북','충북'],['충남','충남'],['충청남','충남'],['전북','전북'],['전라북','전북'],['전남','전남'],['전라남','전남'],['경북','경북'],['경상북','경북'],['경남','경남'],['경상남','경남'],['제주','제주']];let region='';for(const[k,v]of m){if(w.includes(k)){region=v;break}}if(!region)return null;const sub=parts[1]||'';return{region,sub}};
@@ -765,7 +803,7 @@ async function fetchData(){
     document.getElementById('loadingMsg').style.display='none';
     document.getElementById('dashboardContent').style.display='block';
     const warnMsg=failedSheets.length?`⚠️ ${failedSheets.length}개 시트 로딩 실패 (${failedSheets.join(', ')}) | `:'';
-    document.getElementById('lastUpdated').textContent=warnMsg+`의료기기: ${allData.length} | 초음파: ${sonoData.length} | PT10: ${pt10Data.length} | 클래스: ${classData.length} | 턴키: ${turnkeyData.length} | 옴니핏: ${omnifitData.length} | ${new Date().toLocaleString('ko-KR')}`;
+    document.getElementById('lastUpdated').textContent=warnMsg+`의료기기: ${allData.length} | 초음파: ${sonoData.length} | PT10: ${pt10Data.length} | 클래스: ${classData.length} | 턴키: ${turnkeyData.length} | 옴니핏: ${omnifitData.length} | 피부미용: ${skinBeautyData.length} | ${new Date().toLocaleString('ko-KR')}`;
     if(failedSheets.length){const el=document.getElementById('lastUpdated');el.style.color='#d93025';el.style.fontWeight='600'}
   }catch(e){document.getElementById('loadingMsg').textContent='데이터 로딩 실패: '+e.message}
 }
@@ -889,7 +927,7 @@ function updateSupplierSummary(){
 }
 
 function render(){
-  const data=getFilteredData();const isTurnkey=currentTab==='턴키';const isPT10=currentTab==='PT10';const isSono=currentTab==='초음파';const isMD=currentTab==='의료기기';const isClass=currentTab==='클래스';const isAll=currentTab==='전체';const isOmnifit=currentTab==='옴니핏';
+  const data=getFilteredData();const isTurnkey=currentTab==='턴키';const isPT10=currentTab==='PT10';const isSono=currentTab==='초음파';const isMD=currentTab==='의료기기';const isClass=currentTab==='클래스';const isAll=currentTab==='전체';const isOmnifit=currentTab==='옴니핏';const isSkin=currentTab==='피부미용';
   document.getElementById('supplierChartRow').style.display=(isMD||isSono)?'':'none';
   document.getElementById('chartRow3').style.display=(isMD)?'':'none';
   if(isAll){
@@ -931,8 +969,8 @@ function render(){
     renderSonoRegionChart();renderSonoCurrentMonth()}
   if(!isAll){renderTable(data);renderMonthlyTable(data)}
   // 클래스 전용: PU + 재구매
-  document.getElementById('detailRow').style.display=(isTurnkey||isPT10||isSono||isAll||isOmnifit)?'none':'';
-  document.getElementById('monthlyRow').style.display=(isPT10||isAll||isOmnifit)?'none':'';
+  document.getElementById('detailRow').style.display=(isTurnkey||isPT10||isSono||isAll||isOmnifit||isSkin)?'none':'';
+  document.getElementById('monthlyRow').style.display=(isPT10||isAll||isOmnifit||isSkin)?'none':'';
   ['pt10SummaryRow','pt10CartRow','pt10DioRow','pt10BuyerMonthlyRow','pt10BuyerQuarterlyRow','pt10InsightRow','pt10RetentionRow','pt10Summary2025Row','pt10Cart2025Row','pt10Summary2024Row','pt10Cart2024Row','pt10Summary2023Row','pt10Cart2023Row','pt10CartChartRow','pt10TrfCartChartRow','pt10TrfTrendRow'].forEach(id=>{document.getElementById(id).style.display=isPT10?'':'none'});
   document.getElementById('sonoMapRow').style.display=isSono?'':'none';
   // 초음파 전용 접기 섹션 표시
@@ -956,6 +994,9 @@ function render(){
   document.getElementById('omnifitOkrRow').style.display=isOmnifit?'':'none';
   document.getElementById('omnifitYearlyRow').style.display=isOmnifit?'':'none';
   if(isOmnifit){renderOmnifitSummary();renderOmnifitQuarter();renderOmnifitOkr();renderOmnifitYearly()}
+  document.getElementById('skinSupplierRow').style.display=isSkin?'':'none';
+  document.getElementById('skinDetailRow').style.display=(isSkin&&_skinSelectedSupplier)?'':'none';
+  if(isSkin){renderSkinSupplier();if(_skinSelectedSupplier)renderSkinDetail(_skinSelectedSupplier)}
   document.getElementById('turnkeyResultKpiRow').style.display=isTurnkey?'grid':'none';
   document.getElementById('turnkeyKpiRow').style.display=isTurnkey?'grid':'none';
   document.getElementById('turnkeySurveyKpiRow').style.display=isTurnkey?'grid':'none';
@@ -2859,6 +2900,94 @@ function renderOmnifitYearly(){
   document.getElementById('omnifitYearlyBody').innerHTML=rows.map(row=>{
     return'<tr><td style="font-weight:600;">'+row.label+'</td>'+row.vals.map(v=>`<td class="text-right">${row.fmt(v)}</td>`).join('')+'</tr>';
   }).join('');
+}
+
+// 피부미용 전용
+let _skinSelectedSupplier=null;
+function selectSkinSupplier(sup){_skinSelectedSupplier=_skinSelectedSupplier===sup?null:sup;render()}
+function renderSkinSupplier(){
+  const data=skinBeautyData;
+  // 기간 필터 적용
+  const sM=document.getElementById('startMonth').value;const eM=document.getElementById('endMonth').value;
+  const inRange=ym=>(!sM||ym>=sM)&&(!eM||ym<=eM);
+  const filtered=data.filter(d=>d['연월']&&inRange(d['연월']));
+  // 26년/25년 월 구성
+  const m26=[];for(let m=1;m<=12;m++)m26.push('2026-'+String(m).padStart(2,'0'));
+  const m25=[];for(let m=1;m<=12;m++)m25.push('2025-'+String(m).padStart(2,'0'));
+  const cols=[];
+  cols.push({key:'_26total',label:'26년',isTotal:true,year:'2026'});
+  m26.forEach(m=>cols.push({key:m,label:m.substring(5)+'월',year:'2026'}));
+  cols.push({key:'_25total',label:'25년',isTotal:true,year:'2025'});
+  m25.forEach(m=>cols.push({key:m,label:m.substring(5)+'월',year:'2025'}));
+  // 공급업체별 월별 매출 집계
+  const byS={},costByS={};
+  filtered.forEach(d=>{const s=d['공급업체']||'(미지정)';const ym=d['연월'];
+    if(!byS[s]){byS[s]={};costByS[s]={}}
+    byS[s][ym]=(byS[s][ym]||0)+(d['매출금액']||0);
+    costByS[s][ym]=(costByS[s][ym]||0)+(d['공급가']||0);
+  });
+  const suppliers=Object.keys(byS).sort((a,b)=>{
+    const ta=Object.values(byS[a]).reduce((s,v)=>s+v,0);
+    const tb=Object.values(byS[b]).reduce((s,v)=>s+v,0);return tb-ta});
+  function sumYear(byM,yr){return (yr==='2026'?m26:m25).reduce((s,m)=>s+(byM[m]||0),0)}
+  function getVal(byM,col){return col.isTotal?sumYear(byM,col.year):(byM[col.key]||0)}
+  const head=document.getElementById('skinSupplierHead');
+  head.innerHTML='<th style="min-width:140px;position:sticky;left:0;background:#fff;z-index:2;">공급업체</th>'+
+    cols.map(c=>`<th class="text-right" style="${c.isTotal?'background:#f0f2f5;font-weight:700;':''}">${c.label}</th>`).join('')+
+    '<th class="text-right" style="background:#f0f2f5;">마진율</th>';
+  const body=document.getElementById('skinSupplierBody');
+  body.innerHTML=suppliers.map(s=>{
+    const sel=_skinSelectedSupplier===s;
+    const rowBg=sel?'background:#e8f0fe;':'';
+    const sTotal=sumYear(byS[s],'2026')+sumYear(byS[s],'2025');
+    const cTotal=sumYear(costByS[s],'2026')+sumYear(costByS[s],'2025');
+    const margin=sTotal?((sTotal-cTotal)/sTotal*100).toFixed(1)+'%':'-';
+    return `<tr style="${rowBg}">`+
+      `<td style="min-width:140px;position:sticky;left:0;background:${sel?'#e8f0fe':'#fff'};z-index:1;"><a href="javascript:void(0)" onclick="selectSkinSupplier('${s.replace(/'/g,"\\'")}')" style="color:#1a73e8;font-weight:600;text-decoration:underline;">${s}</a></td>`+
+      cols.map(c=>{
+        const v=getVal(byS[s],c);
+        const bg=c.isTotal?'background:#f0f2f5;font-weight:700;':'';
+        return`<td class="text-right" style="${bg}">${v?Math.round(v).toLocaleString():'-'}</td>`;
+      }).join('')+
+      `<td class="text-right" style="background:#f0f2f5;font-weight:700;">${margin}</td>`+
+    '</tr>';
+  }).join('');
+  // 합계 행
+  if(suppliers.length){
+    const totalByM={},costTotalByM={};
+    filtered.forEach(d=>{const ym=d['연월'];totalByM[ym]=(totalByM[ym]||0)+(d['매출금액']||0);costTotalByM[ym]=(costTotalByM[ym]||0)+(d['공급가']||0)});
+    const sAll=sumYear(totalByM,'2026')+sumYear(totalByM,'2025');
+    const cAll=sumYear(costTotalByM,'2026')+sumYear(costTotalByM,'2025');
+    const mAll=sAll?((sAll-cAll)/sAll*100).toFixed(1)+'%':'-';
+    body.innerHTML+=`<tr style="border-top:2px solid #d0d0d0;font-weight:700;background:#fafafa;">`+
+      `<td style="position:sticky;left:0;background:#fafafa;z-index:1;">합계</td>`+
+      cols.map(c=>{const v=getVal(totalByM,c);const bg=c.isTotal?'background:#e8eaf0;':'';return`<td class="text-right" style="${bg}">${v?Math.round(v).toLocaleString():'-'}</td>`}).join('')+
+      `<td class="text-right" style="background:#e8eaf0;">${mAll}</td>`+
+    '</tr>';
+  }
+}
+function renderSkinDetail(supplier){
+  const sM=document.getElementById('startMonth').value;const eM=document.getElementById('endMonth').value;
+  const inRange=ym=>(!sM||ym>=sM)&&(!eM||ym<=eM);
+  const rows=skinBeautyData.filter(d=>d['공급업체']===supplier&&inRange(d['연월']))
+    .sort((a,b)=>(b['주문일']||'').localeCompare(a['주문일']||''));
+  const totalSales=rows.reduce((s,r)=>s+(r['매출금액']||0),0);
+  const totalCost=rows.reduce((s,r)=>s+(r['공급가']||0),0);
+  const totalQty=rows.reduce((s,r)=>s+(r['수량']||0),0);
+  document.getElementById('skinDetailTitle').innerHTML=`세부 리스트 — <span style="color:#1a73e8;">${supplier}</span> <span style="font-size:12px;color:#888;font-weight:400;">(${rows.length}건 / 매출 ${Math.round(totalSales).toLocaleString()}원 / 공급가 ${Math.round(totalCost).toLocaleString()}원 / 수량 ${totalQty.toLocaleString()})</span> <a href="javascript:void(0)" onclick="selectSkinSupplier('${supplier.replace(/'/g,"\\'")}')" style="font-size:12px;color:#888;margin-left:8px;">[닫기]</a>`;
+  document.getElementById('skinDetailHead').innerHTML=
+    '<th>주문번호</th><th>주문일</th><th>한의원명</th><th>품목명</th><th class="text-right">매출금액</th><th class="text-right">공급가</th><th class="text-right">수량</th>';
+  const body=document.getElementById('skinDetailBody');
+  if(!rows.length){body.innerHTML='<tr><td colspan="7" style="text-align:center;color:#888;padding:20px;">데이터가 없습니다.</td></tr>';return}
+  body.innerHTML=rows.map(r=>`<tr>`+
+    `<td>${r['주문번호']||'-'}</td>`+
+    `<td>${r['주문일']||'-'}</td>`+
+    `<td>${r['한의원명']||r['주문자명']||'-'}</td>`+
+    `<td>${r['품목명']||'-'}</td>`+
+    `<td class="text-right">${Math.round(r['매출금액']||0).toLocaleString()}</td>`+
+    `<td class="text-right">${Math.round(r['공급가']||0).toLocaleString()}</td>`+
+    `<td class="text-right">${(r['수량']||0).toLocaleString()}</td>`+
+  '</tr>').join('');
 }
 
 function renderSonoCurrentMonth(){
