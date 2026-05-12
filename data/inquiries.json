@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-12T05:30:18.392Z",
+  "updated": "2026-05-12T08:10:17.660Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -65,6 +65,27 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "HRV를 원내 도입해보려고 합니다. 재현성이 좋고 검사 결과를 환자에게 쉽게 설명해줄 수 있는 기기를 검토중입니다.",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 05. 12 오후 05:08:37",
+      "date": "2026-05-12",
+      "slackTs": "1778573317.164319",
+      "name": "최병재",
+      "cid": "5d996a4d0dabe405b156de33",
+      "phone": "010-5307-6252",
+      "product": "[상담하기] 삼성메디슨 초음파장비 상담",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "66a328fc96e0816c37572d22",
+      "clinic": "대중한의원",
+      "region": "대전시 중구",
+      "caller": "",
+      "supplier": "삼성메디슨",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "근골격계 위주로 진단시 사용하려하는데 기종 추천이랑 가격 상담 받고싶습니다",
       "leadGrade": "고가망"
     },
     {
