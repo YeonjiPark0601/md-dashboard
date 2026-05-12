@@ -1,0 +1,943 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>메디클래스 오프라인 강의 — 수지타산 계산기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff;
+    --surface:#f7f8fa;
+    --surface-2:#f1f3f7;
+    --line:#e6e8ee;
+    --text:#0f172a;
+    --muted:#64748b;
+    --primary:#2563eb;
+    --primary-soft:#eaf1ff;
+    --accent:#f97316;
+    --accent-soft:#fff1e6;
+    --good:#10b981;
+    --good-soft:#e6f7ef;
+    --bad:#ef4444;
+    --warn:#f59e0b;
+    --shadow:0 1px 2px rgba(15,23,42,.04), 0 1px 6px rgba(15,23,42,.04);
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    color:var(--text);
+    background:var(--bg);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:32px 20px 80px}
+  header{
+    padding:28px 0 24px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:28px;
+  }
+  .eyebrow{font-size:13px;color:var(--primary);font-weight:600;letter-spacing:.04em}
+  h1{font-size:28px;line-height:1.25;margin:6px 0 8px;letter-spacing:-.01em}
+  h1 small{display:block;font-size:14px;color:var(--muted);font-weight:500;margin-top:8px}
+
+  section{
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:22px 22px 20px;
+    margin-bottom:18px;
+    box-shadow:var(--shadow);
+  }
+  section h2{
+    font-size:16px;
+    margin:0 0 4px;
+    display:flex;align-items:center;gap:8px;
+  }
+  section h2 .num{
+    width:22px;height:22px;border-radius:50%;
+    background:var(--primary-soft);color:var(--primary);
+    font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  section .desc{color:var(--muted);font-size:13px;margin:0 0 16px}
+
+  .grid{display:grid;gap:14px}
+  .grid-2{grid-template-columns:repeat(2,1fr)}
+  .grid-3{grid-template-columns:repeat(3,1fr)}
+  .grid-4{grid-template-columns:repeat(4,1fr)}
+  @media (max-width:720px){
+    .grid-3,.grid-4{grid-template-columns:repeat(2,1fr)}
+    .grid-2{grid-template-columns:1fr}
+  }
+
+  .field{display:flex;flex-direction:column;gap:6px}
+  .field label{font-size:12.5px;color:var(--muted);font-weight:500}
+  .field .lbl-row{display:flex;justify-content:space-between;align-items:baseline}
+  .field .hint{font-size:11px;color:#94a3b8}
+  .field .input-wrap{
+    position:relative;
+    display:flex;align-items:center;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:0 12px;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .field .input-wrap:focus-within{
+    border-color:var(--primary);
+    background:#fff;
+    box-shadow:0 0 0 3px rgba(37,99,235,.08);
+  }
+  .field input[type=number],
+  .field input[type=text]{
+    border:0;background:transparent;outline:0;
+    width:100%;padding:11px 0;
+    font:inherit;color:var(--text);
+    text-align:right;
+    appearance:textfield;
+  }
+  .field input[type=text]{text-align:left}
+  .field input::-webkit-outer-spin-button,
+  .field input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  .field .unit{font-size:12.5px;color:var(--muted);margin-left:6px;white-space:nowrap}
+
+  .toggle{
+    display:inline-flex;background:var(--surface-2);border-radius:8px;padding:3px;gap:2px;
+    margin-top:4px;
+  }
+  .toggle button{
+    flex:1;border:0;background:transparent;
+    padding:5px 10px;border-radius:6px;font:inherit;font-size:12px;
+    color:var(--muted);cursor:pointer;font-weight:500;
+    transition:all .15s;
+  }
+  .toggle button.active{
+    background:#fff;color:var(--text);
+    box-shadow:0 1px 2px rgba(15,23,42,.08);
+  }
+  .toggle.medi button.active{color:var(--primary)}
+  .toggle.lect button.active{color:var(--accent)}
+
+  .auto-row{
+    background:var(--primary-soft);
+    border-radius:10px;
+    padding:12px 14px;
+    display:flex;justify-content:space-between;align-items:center;
+    margin-top:6px;font-size:13.5px;
+  }
+  .auto-row strong{color:var(--primary);font-variant-numeric:tabular-nums}
+
+  /* 결과 빅 카드 */
+  .results-hero{display:grid;gap:14px;grid-template-columns:repeat(3,1fr)}
+  @media (max-width:720px){.results-hero{grid-template-columns:1fr}}
+  .hero-card{
+    border-radius:var(--radius);
+    padding:22px;
+    color:#fff;
+    position:relative;overflow:hidden;
+  }
+  .hero-card.full{background:linear-gradient(135deg,#1e40af,#2563eb)}
+  .hero-card.est{background:linear-gradient(135deg,#0891b2,#0ea5e9)}
+  .hero-card.medi{background:linear-gradient(135deg,#9a3412,#f97316)}
+  .hero-card .label{font-size:13px;opacity:.85;margin-bottom:6px}
+  .hero-card .value{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+  .hero-card .sub{font-size:12px;opacity:.85;margin-top:6px}
+
+  /* 전표 비교표 */
+  .ledger{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:720px){.ledger{grid-template-columns:1fr}}
+  .ledger-col{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    overflow:hidden;
+  }
+  .ledger-col .head{
+    padding:12px 16px;font-size:13px;font-weight:600;
+    background:#fff;border-bottom:1px solid var(--line);
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .ledger-col.est .head{background:#ecfeff;color:#0e7490}
+  .ledger-col.cap .head{background:#eff6ff;color:#1e40af}
+  .ledger-col table{width:100%;border-collapse:collapse;font-size:13px}
+  .ledger-col td{padding:7px 16px;font-variant-numeric:tabular-nums}
+  .ledger-col td:last-child{text-align:right;font-weight:500}
+  .ledger-col tr.section td{padding-top:13px;font-weight:600;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+  .ledger-col tr.sub td{color:var(--muted);font-size:12.5px}
+  .ledger-col tr.sub td:first-child{padding-left:28px}
+  .ledger-col tr.total td{
+    border-top:1px solid var(--line);
+    padding-top:10px;padding-bottom:10px;
+    font-weight:700;
+  }
+  .ledger-col tr.profit td{
+    background:#fff;font-weight:700;
+    color:var(--text);font-size:14px;
+    border-top:2px solid var(--text);
+  }
+  .ledger-col tr.fee td{color:#9a3412}
+  .ledger-col tr.medi-net td{
+    background:#fff1e6;
+    font-weight:700;color:#9a3412;font-size:14px;
+  }
+  .ledger-col tr.payout td{
+    background:#fef9c3;
+    font-weight:700;color:#854d0e;font-size:14px;
+  }
+  .b-tag{
+    display:inline-block;font-size:10.5px;font-weight:600;
+    padding:1px 7px;border-radius:999px;margin-left:5px;
+    vertical-align:middle;
+  }
+  .b-tag.b-medi{background:var(--accent-soft);color:var(--accent)}
+  .b-tag.b-lect{background:var(--primary-soft);color:var(--primary)}
+  .pct-pill{
+    display:inline-block;
+    background:rgba(255,255,255,.7);
+    border-radius:999px;
+    padding:2px 8px;
+    font-size:11px;font-weight:600;margin-left:6px;
+  }
+
+  /* BEP */
+  .bep{display:grid;gap:14px;grid-template-columns:2fr 3fr}
+  @media (max-width:720px){.bep{grid-template-columns:1fr}}
+  .bep-stat{
+    background:var(--surface);border-radius:var(--radius);
+    padding:18px;border:1px solid var(--line);
+  }
+  .bep-stat .lbl{font-size:12.5px;color:var(--muted);margin-bottom:6px}
+  .bep-stat .v{font-size:28px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+  .bep-stat .v small{font-size:14px;color:var(--muted);font-weight:500;margin-left:4px}
+  .bep-stat .judge{
+    margin-top:8px;font-size:12px;font-weight:600;
+    display:inline-block;padding:3px 10px;border-radius:999px;
+  }
+  .judge.safe{background:var(--good-soft);color:var(--good)}
+  .judge.warn{background:#fef3c7;color:#b45309}
+  .judge.bad{background:#fee2e2;color:#b91c1c}
+
+  .bep-bar{
+    background:var(--surface);border-radius:var(--radius);
+    padding:18px;border:1px solid var(--line);
+  }
+  .bar-track{
+    height:36px;background:#fff;border-radius:8px;
+    border:1px solid var(--line);
+    position:relative;overflow:hidden;
+  }
+  .bar-fill{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#2563eb,#0ea5e9);transition:width .3s ease}
+  .bar-bep{position:absolute;top:-4px;bottom:-4px;width:2px;background:#ef4444}
+  .bar-bep::before{
+    content:'BEP';position:absolute;top:-18px;left:50%;transform:translateX(-50%);
+    font-size:10.5px;font-weight:600;color:#ef4444;white-space:nowrap;
+  }
+  .bar-labels{display:flex;justify-content:space-between;margin-top:8px;font-size:12px;color:var(--muted)}
+
+  /* 차트 */
+  .chart-wrap{
+    background:#fff;border:1px solid var(--line);
+    border-radius:var(--radius);padding:18px;
+  }
+  .chart-wrap svg{width:100%;height:auto;display:block}
+  .chart-legend{
+    display:flex;gap:18px;flex-wrap:wrap;
+    margin-top:12px;font-size:12.5px;color:var(--muted);
+  }
+  .chart-legend span{display:flex;align-items:center;gap:6px}
+  .chart-legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+
+  /* 액션 */
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+  .btn{
+    border:0;background:var(--text);color:#fff;
+    padding:10px 18px;border-radius:10px;
+    font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;
+    transition:transform .1s;
+  }
+  .btn.ghost{background:#fff;color:var(--text);border:1px solid var(--line)}
+  .btn:hover{transform:translateY(-1px)}
+  .btn.copied{background:var(--good)}
+
+  /* 가정 박스 */
+  .assumptions{
+    background:var(--surface);
+    border-radius:10px;padding:14px 16px;
+    font-size:12.5px;color:var(--muted);
+  }
+  .assumptions ul{margin:6px 0 0;padding-left:18px}
+  .assumptions li{margin:3px 0}
+  .assumptions code{background:#fff;padding:1px 6px;border-radius:4px;border:1px solid var(--line);font-size:11.5px}
+
+  footer{margin-top:32px;text-align:center;color:#94a3b8;font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">MEDICLASS ROI CALCULATOR</div>
+    <h1>
+      메디클래스 오프라인 강의 — 수지타산 계산기
+      <small>변수만 바꿔봐. 정원 채웠을 때 vs 예상대로 됐을 때, 강사·메디 각각 얼마 남는지 1초 만에.</small>
+    </h1>
+  </header>
+
+  <!-- 1. 강의 기본 -->
+  <section>
+    <h2><span class="num">1</span> 강의 기본 정보</h2>
+    <p class="desc">강의 시간과 강의료를 입력하면 총 강의시간(C)과 인당 강의료(E)가 자동 계산됩니다.</p>
+    <div class="grid grid-2">
+      <div class="field" style="grid-column:1/-1">
+        <label>강의명</label>
+        <div class="input-wrap"><input type="text" id="nm" placeholder="예) 될 때까지 하는 레이저 — CO2편" /></div>
+      </div>
+      <div class="field">
+        <div class="lbl-row"><label>A. 강의 회차</label><span class="hint">총 몇 회차로 운영하는가</span></div>
+        <div class="input-wrap"><input type="number" id="s" min="1" step="1" /><span class="unit">회</span></div>
+      </div>
+      <div class="field">
+        <div class="lbl-row"><label>B. 회차당 강의 시간</label><span class="hint">한 회당 몇 시간</span></div>
+        <div class="input-wrap"><input type="number" id="h" min="0.5" step="0.5" /><span class="unit">시간</span></div>
+      </div>
+      <div class="field">
+        <div class="lbl-row"><label>D. 시간당 인당 강의료</label><span class="hint">수강생 1명 / 1시간 단가</span></div>
+        <div class="input-wrap"><input type="number" id="r" min="0" step="1000" /><span class="unit">원</span></div>
+      </div>
+      <div class="field">
+        <div class="lbl-row"><label>F. 강의 정원</label><span class="hint">최대 수용 가능 인원</span></div>
+        <div class="input-wrap"><input type="number" id="cap" min="1" step="1" /><span class="unit">명</span></div>
+      </div>
+    </div>
+    <div class="auto-row" style="margin-top:14px">
+      <span>C. 총 강의시간 = A × B</span>
+      <strong><span id="C">—</span> 시간</strong>
+    </div>
+    <div class="auto-row">
+      <span>E. 인당 강의료 = C × D</span>
+      <strong><span id="E">—</span> 원</strong>
+    </div>
+  </section>
+
+  <!-- 2. 수강생/강사 -->
+  <section>
+    <h2><span class="num">2</span> 수강생 · 강사 인원</h2>
+    <p class="desc">예측 수강생 수에 따라 시뮬레이션됩니다. 조별 인원 기준으로 필요 강사 수도 함께 계산.</p>
+    <div class="grid grid-3">
+      <div class="field">
+        <div class="lbl-row"><label>G. 예상 수강생</label><span class="hint">신청 예측치</span></div>
+        <div class="input-wrap"><input type="number" id="est" min="0" step="1" /><span class="unit">명</span></div>
+      </div>
+      <div class="field">
+        <div class="lbl-row"><label>H. 조별 수강생 수</label><span class="hint">강사 1명이 담당</span></div>
+        <div class="input-wrap"><input type="number" id="tg" min="1" step="1" /><span class="unit">명</span></div>
+      </div>
+      <div class="field">
+        <label>강사 인원 (자동)</label>
+        <div class="auto-row" style="margin:0;background:var(--surface);color:var(--text)">
+          <span>정원 / 예상</span>
+          <strong><span id="I">—</span> / <span id="J">—</span> 명</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. 비용 -->
+  <section>
+    <h2><span class="num">3</span> 비용 입력</h2>
+    <p class="desc">각 비용 항목의 단가와 부담자(메디스트림 / 강사자)를 지정하세요. 인쇄·간식·재료비는 정원 기준으로 사전 준비됩니다.</p>
+    <div class="grid grid-3">
+      <!-- K. 인쇄료 -->
+      <div class="field">
+        <div class="lbl-row"><label>K. 인당 인쇄료</label><span class="hint">교재·자료</span></div>
+        <div class="input-wrap"><input type="number" id="pr" min="0" step="500" /><span class="unit">원/인</span></div>
+        <div class="toggle" data-target="bp">
+          <button data-v="0">메디 부담</button>
+          <button data-v="1">강사 부담</button>
+        </div>
+      </div>
+      <!-- L. 간식비 -->
+      <div class="field">
+        <div class="lbl-row"><label>L. 인당 간식비</label><span class="hint">현장 다과</span></div>
+        <div class="input-wrap"><input type="number" id="sn" min="0" step="500" /><span class="unit">원/인</span></div>
+        <div class="toggle" data-target="bs">
+          <button data-v="0">메디 부담</button>
+          <button data-v="1">강사 부담</button>
+        </div>
+      </div>
+      <!-- N. 재료비 -->
+      <div class="field">
+        <div class="lbl-row"><label>N. 인당 재료비</label><span class="hint">실습 소모품</span></div>
+        <div class="input-wrap"><input type="number" id="mt" min="0" step="1000" /><span class="unit">원/인</span></div>
+        <div class="toggle" data-target="bm">
+          <button data-v="0">메디 부담</button>
+          <button data-v="1">강사 부담</button>
+        </div>
+      </div>
+      <!-- M. 대관료 -->
+      <div class="field">
+        <div class="lbl-row"><label>M. 대관료</label><span class="hint">강의장</span></div>
+        <div class="input-wrap"><input type="number" id="vn" min="0" step="10000" /><span class="unit">원</span></div>
+        <div class="toggle" data-target="bv">
+          <button data-v="0">메디 부담</button>
+          <button data-v="1">강사 부담</button>
+        </div>
+      </div>
+      <!-- O. 운송비 -->
+      <div class="field">
+        <div class="lbl-row"><label>O. 운송비</label><span class="hint">기기·자료 운송</span></div>
+        <div class="input-wrap"><input type="number" id="tr" min="0" step="10000" /><span class="unit">원</span></div>
+        <div class="toggle" data-target="bt">
+          <button data-v="0">메디 부담</button>
+          <button data-v="1">강사 부담</button>
+        </div>
+      </div>
+      <!-- P. 모델료 -->
+      <div class="field">
+        <div class="lbl-row"><label>P. 모델료</label><span class="hint">실습 모델</span></div>
+        <div class="input-wrap"><input type="number" id="md" min="0" step="10000" /><span class="unit">원</span></div>
+        <div class="toggle" data-target="bd">
+          <button data-v="0">메디 부담</button>
+          <button data-v="1">강사 부담</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. 수수료 -->
+  <section>
+    <h2><span class="num">4</span> 메디스트림 수수료</h2>
+    <p class="desc">총 매출 기준 수수료율. 기본값 25%.</p>
+    <div class="field" style="max-width:280px">
+      <div class="input-wrap"><input type="number" id="fee" min="0" max="50" step="0.5" /><span class="unit">%</span></div>
+    </div>
+  </section>
+
+  <!-- 5. 결과 빅카드 -->
+  <section>
+    <h2><span class="num">5</span> 결과 — 한눈에 보기</h2>
+    <p class="desc">예상 수강생 기준이 디폴트입니다. 정원 기준은 best case로 참고.</p>
+    <div class="results-hero">
+      <div class="hero-card est">
+        <div class="label">예상 기준 — 강사 수취분</div>
+        <div class="value"><span id="payoutEst">—</span> 원</div>
+        <div class="sub">강사 수취율 <span id="payoutPctEst">—</span></div>
+      </div>
+      <div class="hero-card full">
+        <div class="label">정원 기준 — 강사 수취분 (Best Case)</div>
+        <div class="value"><span id="payoutCap">—</span> 원</div>
+        <div class="sub">정원 모두 채웠을 때</div>
+      </div>
+      <div class="hero-card medi">
+        <div class="label">메디스트림 최종 수취 (예상)</div>
+        <div class="value"><span id="mediEst">—</span> 원</div>
+        <div class="sub">매출 × <span id="feePct">25</span>% − 메디 부담 비용</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. 상세 전표 -->
+  <section>
+    <h2><span class="num">6</span> 상세 전표 — 정원 vs 예상</h2>
+    <p class="desc">두 시나리오의 매출·비용·수익을 같은 기준으로 비교합니다.</p>
+    <div class="ledger">
+      <div class="ledger-col cap">
+        <div class="head"><span>정원 기준</span><span><span id="capN">—</span>명</span></div>
+        <table id="tbl-cap"></table>
+      </div>
+      <div class="ledger-col est">
+        <div class="head"><span>예상 기준</span><span><span id="estN">—</span>명</span></div>
+        <table id="tbl-est"></table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. 손익분기 -->
+  <section>
+    <h2><span class="num">7</span> 손익분기 (BEP) 분석</h2>
+    <p class="desc">강사 수취분이 0이 되는 최소 수강생 수입니다. 예상보다 BEP가 높으면 위험.</p>
+    <div class="bep">
+      <div>
+        <div class="bep-stat" style="margin-bottom:12px">
+          <div class="lbl">BEP — 손익분기 수강생</div>
+          <div class="v"><span id="bepN">—</span><small>명</small></div>
+          <div id="bepJudge"></div>
+        </div>
+        <div class="bep-stat">
+          <div class="lbl">안전마진 (예상 − BEP)</div>
+          <div class="v"><span id="margin">—</span><small>명</small></div>
+        </div>
+      </div>
+      <div class="bep-bar">
+        <div style="font-size:13px;font-weight:600;margin-bottom:14px">
+          예상 수강생 위치 — 정원 대비 <span id="capPct">—</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill" id="barFill"></div>
+          <div class="bar-bep" id="barBEP"></div>
+        </div>
+        <div class="bar-labels">
+          <span>0명</span>
+          <span>정원 <span id="capLbl">—</span>명</span>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin:14px 0 0">
+          파란 막대: 예상 수강생 / 빨간 선: 손익분기점 — 빨간 선이 막대 안쪽에 있어야 흑자.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. 민감도 차트 -->
+  <section>
+    <h2><span class="num">8</span> 민감도 — 수강생 수에 따른 손익 변화</h2>
+    <p class="desc">수강생 수가 변할 때 매출·총비용·강사 수취분이 어떻게 움직이는지.</p>
+    <div class="chart-wrap">
+      <svg id="chart" viewBox="0 0 880 360" preserveAspectRatio="none"></svg>
+      <div class="chart-legend">
+        <span><i style="background:#2563eb"></i> 총 매출</span>
+        <span><i style="background:#ef4444"></i> 총 비용</span>
+        <span><i style="background:#10b981"></i> 강사 수취분</span>
+        <span><i style="background:#f97316;border-radius:999px"></i> 예상(G)</span>
+        <span><i style="background:#94a3b8;border-radius:999px"></i> BEP</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. 액션 -->
+  <section>
+    <h2><span class="num">9</span> 공유 / 초기화</h2>
+    <p class="desc">현재 설정을 URL에 담아 공유할 수 있습니다.</p>
+    <div class="actions">
+      <button class="btn" id="copyBtn">📋 현재 설정 URL 복사</button>
+      <button class="btn ghost" id="resetBtn">↺ 기본값으로 초기화</button>
+      <button class="btn ghost" id="csvBtn">⇣ 결과 CSV 다운로드</button>
+    </div>
+  </section>
+
+  <!-- 10. 가정 -->
+  <section>
+    <h2><span class="num">10</span> 계산 가정 · 수식</h2>
+    <div class="assumptions">
+      <ul>
+        <li><strong>인당 강의료(E)</strong> = 회차(A) × 회차당 시간(B) × 시간당 강의료(D)</li>
+        <li><strong>총 매출</strong> = E × 수강생 수</li>
+        <li><strong>부가세</strong> = 총매출 ÷ 11 (≈ 9.1%) — <code>매출 비례</code></li>
+        <li><strong>결제수수료</strong> = 총매출 × 2% — <code>매출 비례</code></li>
+        <li><strong>인쇄·간식·재료비</strong> = 단가 × <strong>정원(F)</strong> — <code>예상이 정원보다 적어도 정원만큼 사전 준비</code></li>
+        <li><strong>대관료·운송비·모델료</strong> = 고정비 (인원 무관)</li>
+        <li><strong>메디 수수료</strong> = 총매출 × 수수료율(Q, 기본 25%)</li>
+        <li><strong>강사 수취분</strong> = 총매출 − 총비용 − 메디 수수료</li>
+      </ul>
+      <p style="margin-top:10px"><strong>부담자 토글 로직:</strong></p>
+      <ul>
+        <li>기본값은 <strong>모두 강사 부담</strong> — 이때 결과는 CSV 원본 전표와 동일 (강사 수취율 ≈ 33.69~39.99%)</li>
+        <li>특정 항목을 <strong>메디 부담</strong>으로 바꾸면, 해당 금액만큼 <strong>메디 최종 수취 ↓ / 강사 수취분 ↑</strong></li>
+        <li>수식: <code>강사 수취분 = (매출 − 모든비용 − 매출×Q) + 메디 부담 합</code> · <code>메디 최종 수취 = 매출×Q − 메디 부담 합</code></li>
+        <li>부가세·결제수수료는 매출 비례 비용이므로 부담자 토글이 없습니다 (전표에서 자동 차감)</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    메디스트림 MD Squad · CSV 템플릿 기반 · v1.0
+  </footer>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────
+// 상태 정의
+// ─────────────────────────────────────────────────────────
+const DEFAULTS = {
+  nm:'', s:8, h:1, r:55000,
+  cap:24, est:19, tg:4,
+  pr:11000, sn:3000, mt:50000,
+  vn:990000, tr:0, md:0,
+  fee:25,
+  // 부담자: 0 = 메디스트림 / 1 = 강사 (CSV 기준 — 모든 비용은 강사 부담이 디폴트)
+  bp:1, bs:1, bm:1,
+  bv:1, bt:1, bd:1
+};
+const VAT_DENOM = 11;        // 부가세 = 매출 / 11
+const PAYMENT_FEE = 0.02;    // 결제수수료 2%
+
+const state = {...DEFAULTS};
+
+// ─────────────────────────────────────────────────────────
+// URL ↔ 상태 동기화
+// ─────────────────────────────────────────────────────────
+function loadFromURL(){
+  const p = new URLSearchParams(location.search);
+  for(const k of Object.keys(DEFAULTS)){
+    if(!p.has(k)) continue;
+    const v = p.get(k);
+    state[k] = (k==='nm') ? decodeURIComponent(v) : Number(v);
+  }
+}
+function buildURL(){
+  const p = new URLSearchParams();
+  for(const k of Object.keys(DEFAULTS)){
+    if(state[k] !== DEFAULTS[k]){
+      p.set(k, k==='nm' ? encodeURIComponent(state[k]) : state[k]);
+    }
+  }
+  const q = p.toString();
+  return location.origin + location.pathname + (q ? '?' + q : '');
+}
+function syncURL(){
+  history.replaceState(null,'', buildURL());
+}
+
+// ─────────────────────────────────────────────────────────
+// 입력 바인딩
+// ─────────────────────────────────────────────────────────
+const numKeys = ['s','h','r','cap','est','tg','pr','sn','mt','vn','tr','md','fee'];
+
+function bindInputs(){
+  // 텍스트
+  const nm = document.getElementById('nm');
+  nm.value = state.nm;
+  nm.addEventListener('input', e=>{ state.nm = e.target.value; syncURL(); });
+
+  // 숫자
+  for(const k of numKeys){
+    const el = document.getElementById(k);
+    el.value = state[k];
+    el.addEventListener('input', e=>{
+      const v = parseFloat(e.target.value);
+      state[k] = isNaN(v) ? 0 : v;
+      render();
+      syncURL();
+    });
+  }
+
+  // 토글 (부담자)
+  document.querySelectorAll('.toggle').forEach(tg=>{
+    const target = tg.dataset.target;
+    const update = ()=>{
+      tg.querySelectorAll('button').forEach(b=>{
+        b.classList.toggle('active', Number(b.dataset.v) === state[target]);
+      });
+      tg.classList.toggle('medi', state[target]===0);
+      tg.classList.toggle('lect', state[target]===1);
+    };
+    tg.querySelectorAll('button').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        state[target] = Number(b.dataset.v);
+        update();
+        render();
+        syncURL();
+      });
+    });
+    update();
+  });
+}
+
+// ─────────────────────────────────────────────────────────
+// 계산 엔진
+// ─────────────────────────────────────────────────────────
+function compute(n){
+  // n = 수강생 수
+  const E = state.s * state.h * state.r;            // 인당 강의료
+  const revenue = E * n;
+  const vat = revenue / VAT_DENOM;
+  const pgFee = revenue * PAYMENT_FEE;
+  // 인쇄·간식·재료비는 '정원' 기준으로 사전 준비
+  const printing = state.pr * state.cap;
+  const snack    = state.sn * state.cap;
+  const material = state.mt * state.cap;
+  const venue    = state.vn;
+  const transp   = state.tr;
+  const model    = state.md;
+
+  const variable = vat + pgFee + printing + snack + material;
+  const fixed    = venue + transp + model;
+  const totalCost = variable + fixed;
+  const grossProfit = revenue - totalCost;
+  const mediFeeGross = revenue * (state.fee/100);
+  const lecturerBase = grossProfit - mediFeeGross;   // CSV 원본 — 모든 비용을 강사가 부담했을 때
+
+  // 부담자별 비용 분리 (b* = 0 → 메디 부담 / 1 → 강사 부담)
+  const mediCost = (state.bp?0:printing) + (state.bs?0:snack) + (state.bm?0:material)
+                 + (state.bv?0:venue)    + (state.bt?0:transp) + (state.bd?0:model);
+  const lectCost = (state.bp?printing:0) + (state.bs?snack:0) + (state.bm?material:0)
+                 + (state.bv?venue:0)    + (state.bt?transp:0) + (state.bd?model:0);
+
+  // 부담자 조정: 메디 부담분만큼 메디 최종 수취 ↓ / 강사 수취분 ↑
+  const lecturer = lecturerBase + mediCost;
+  const mediNet  = mediFeeGross - mediCost;
+  const lecturerPct = revenue>0 ? lecturer/revenue : 0;
+  const mediPct = revenue>0 ? mediNet/revenue : 0;
+
+  return {
+    n, E, revenue,
+    vat, pgFee, printing, snack, material, variable,
+    venue, transp, model, fixed,
+    totalCost, grossProfit,
+    mediFeeGross, mediCost, mediNet, mediPct,
+    lecturerBase, lecturer, lecturerPct,
+    lectCost
+  };
+}
+
+// 강사 수취분 = 0 인 BEP 수강생 수 (강사 부담 비용만 반영)
+// E*n*(1 - 1/11 - 0.02 - Q/100) = 강사가 실제 부담하는 비용 합계
+function computeBEP(){
+  const E = state.s * state.h * state.r;
+  const k = 1 - 1/VAT_DENOM - PAYMENT_FEE - state.fee/100;
+  if(E<=0 || k<=0) return Infinity;
+  const lectFixed =
+      (state.bp ? state.pr * state.cap : 0)
+    + (state.bs ? state.sn * state.cap : 0)
+    + (state.bm ? state.mt * state.cap : 0)
+    + (state.bv ? state.vn : 0)
+    + (state.bt ? state.tr : 0)
+    + (state.bd ? state.md : 0);
+  return lectFixed / (E * k);
+}
+
+// ─────────────────────────────────────────────────────────
+// 렌더링
+// ─────────────────────────────────────────────────────────
+const fmt = n => isFinite(n) ? Math.round(n).toLocaleString('ko-KR') : '—';
+const fmtPct = p => (p*100).toFixed(2)+'%';
+
+function bearerTag(b){
+  return b===0
+    ? '<span class="b-tag b-medi">메디</span>'
+    : '<span class="b-tag b-lect">강사</span>';
+}
+
+function rowTable(target, r, n){
+  const t = document.getElementById(target);
+  t.innerHTML = `
+    <tr class="section"><td>수익</td><td></td></tr>
+    <tr><td>총 매출 <span class="hint">(E × ${n}명)</span></td><td>${fmt(r.revenue)}</td></tr>
+
+    <tr class="section"><td>비용</td><td></td></tr>
+    <tr class="sub"><td>변동비 — 부가세 <small>(매출÷11)</small></td><td>${fmt(r.vat)}</td></tr>
+    <tr class="sub"><td>변동비 — 결제수수료 <small>(2%)</small></td><td>${fmt(r.pgFee)}</td></tr>
+    <tr class="sub"><td>변동비 — 인쇄료 ${bearerTag(state.bp)}</td><td>${fmt(r.printing)}</td></tr>
+    <tr class="sub"><td>변동비 — 간식비 ${bearerTag(state.bs)}</td><td>${fmt(r.snack)}</td></tr>
+    <tr class="sub"><td>변동비 — 재료비 ${bearerTag(state.bm)}</td><td>${fmt(r.material)}</td></tr>
+    <tr class="sub"><td>고정비 — 대관료 ${bearerTag(state.bv)}</td><td>${fmt(r.venue)}</td></tr>
+    <tr class="sub"><td>고정비 — 운송비 ${bearerTag(state.bt)}</td><td>${fmt(r.transp)}</td></tr>
+    <tr class="sub"><td>고정비 — 모델료 ${bearerTag(state.bd)}</td><td>${fmt(r.model)}</td></tr>
+    <tr class="total"><td>총 비용</td><td>${fmt(r.totalCost)}</td></tr>
+
+    <tr class="profit"><td>총 수익 (매출 − 비용)</td><td>${fmt(r.grossProfit)}</td></tr>
+
+    <tr class="section"><td>정산</td><td></td></tr>
+    <tr class="fee"><td>메디스트림 수수료 <span class="hint">(매출 × ${state.fee}%)</span></td><td>${fmt(r.mediFeeGross)}</td></tr>
+    <tr class="sub" style="color:#9a3412"><td>− 메디 부담 비용</td><td>${r.mediCost>0 ? '−'+fmt(r.mediCost) : '0'}</td></tr>
+    <tr class="medi-net"><td>메디 최종 수취 <span class="pct-pill">${fmtPct(r.mediPct)}</span></td><td>${fmt(r.mediNet)}</td></tr>
+    <tr class="payout"><td>강사 수취분 <span class="pct-pill">${fmtPct(r.lecturerPct)}</span></td><td>${fmt(r.lecturer)}</td></tr>
+  `;
+}
+
+function render(){
+  // 자동 출력값
+  const C = state.s * state.h;
+  const E = C * state.r;
+  document.getElementById('C').textContent = C.toLocaleString('ko-KR');
+  document.getElementById('E').textContent = E.toLocaleString('ko-KR');
+  document.getElementById('I').textContent = state.tg>0 ? Math.ceil(state.cap/state.tg) : '—';
+  document.getElementById('J').textContent = state.tg>0 ? Math.ceil(state.est/state.tg) : '—';
+
+  // 결과 계산
+  const cap = compute(state.cap);
+  const est = compute(state.est);
+  document.getElementById('payoutEst').textContent = fmt(est.lecturer);
+  document.getElementById('payoutPctEst').textContent = fmtPct(est.lecturerPct);
+  document.getElementById('payoutCap').textContent = fmt(cap.lecturer);
+  document.getElementById('mediEst').textContent = fmt(est.mediNet);
+  document.getElementById('feePct').textContent = state.fee;
+
+  // 전표
+  document.getElementById('capN').textContent = state.cap;
+  document.getElementById('estN').textContent = state.est;
+  rowTable('tbl-cap', cap, state.cap);
+  rowTable('tbl-est', est, state.est);
+
+  // BEP
+  const bep = computeBEP();
+  const bepN = isFinite(bep) ? Math.ceil(bep) : '∞';
+  document.getElementById('bepN').textContent = bepN;
+  const margin = isFinite(bep) ? state.est - bep : -Infinity;
+  document.getElementById('margin').textContent = isFinite(margin) ? margin.toFixed(1) : '—';
+
+  // BEP 판정
+  const judge = document.getElementById('bepJudge');
+  if(!isFinite(bep)){
+    judge.innerHTML = '<span class="judge bad">계산 불가</span>';
+  } else if(state.est >= bep * 1.3){
+    judge.innerHTML = '<span class="judge safe">✓ 안전 (BEP의 130% 이상)</span>';
+  } else if(state.est >= bep){
+    judge.innerHTML = '<span class="judge warn">⚠ 흑자지만 마진 얇음</span>';
+  } else {
+    judge.innerHTML = '<span class="judge bad">✕ 적자 — 예상이 BEP 미만</span>';
+  }
+
+  // BEP 막대
+  const capPct = state.cap>0 ? (state.est/state.cap*100).toFixed(0) : 0;
+  document.getElementById('capPct').textContent = capPct + '%';
+  document.getElementById('capLbl').textContent = state.cap;
+  document.getElementById('barFill').style.width = Math.min(100, capPct) + '%';
+  const bepPct = state.cap>0 && isFinite(bep) ? Math.min(100, bep/state.cap*100) : 100;
+  document.getElementById('barBEP').style.left = bepPct + '%';
+
+  // 차트
+  drawChart(bep);
+}
+
+// ─────────────────────────────────────────────────────────
+// SVG 차트
+// ─────────────────────────────────────────────────────────
+function drawChart(bep){
+  const svg = document.getElementById('chart');
+  const W = 880, H = 360, P = {l:60, r:24, t:24, b:42};
+  const innerW = W - P.l - P.r, innerH = H - P.t - P.b;
+
+  const N = Math.max(state.cap, 1);
+  const pts = [];
+  for(let i=0; i<=N; i++){
+    pts.push(compute(i));
+  }
+
+  const maxVal = Math.max(
+    ...pts.map(p=>p.revenue),
+    ...pts.map(p=>p.totalCost),
+    ...pts.map(p=>p.lecturer),
+    1
+  );
+  const minVal = Math.min(0, ...pts.map(p=>p.lecturer));
+  const range = maxVal - minVal;
+
+  const x = i => P.l + (i/N) * innerW;
+  const y = v => P.t + innerH - ((v - minVal)/range) * innerH;
+
+  const line = (arr, color, w=2) => {
+    const d = arr.map((p,i)=> (i?'L':'M') + x(i) + ',' + y(p)).join(' ');
+    return `<path d="${d}" stroke="${color}" stroke-width="${w}" fill="none" stroke-linejoin="round"/>`;
+  };
+
+  // 0선
+  const zeroY = y(0);
+
+  // x축 눈금 (0, 정원/4, 정원/2, 정원*3/4, 정원)
+  const ticks = [0, .25, .5, .75, 1].map(t => Math.round(N*t));
+  const xAxis = ticks.map(t => `
+    <line x1="${x(t)}" y1="${P.t+innerH}" x2="${x(t)}" y2="${P.t+innerH+4}" stroke="#94a3b8"/>
+    <text x="${x(t)}" y="${P.t+innerH+18}" text-anchor="middle" font-size="11" fill="#64748b">${t}명</text>
+  `).join('');
+
+  // y축 눈금 (0, 25%, 50%, 75%, 100%)
+  const yTicks = [0, .25, .5, .75, 1].map(t => minVal + range*t);
+  const yAxis = yTicks.map(v => `
+    <line x1="${P.l-4}" y1="${y(v)}" x2="${P.l+innerW}" y2="${y(v)}" stroke="${v===0?'#94a3b8':'#eef0f4'}" stroke-dasharray="${v===0?'0':'2 4'}"/>
+    <text x="${P.l-8}" y="${y(v)+4}" text-anchor="end" font-size="10.5" fill="#64748b">${shortMoney(v)}</text>
+  `).join('');
+
+  // 마커: 예상(G), BEP
+  const gMark = state.est<=N ? `
+    <line x1="${x(state.est)}" y1="${P.t}" x2="${x(state.est)}" y2="${P.t+innerH}" stroke="#f97316" stroke-dasharray="3 3" stroke-width="1.5"/>
+    <circle cx="${x(state.est)}" cy="${y(pts[state.est].lecturer)}" r="5" fill="#f97316"/>
+    <text x="${x(state.est)}" y="${P.t-8}" text-anchor="middle" font-size="10.5" fill="#f97316" font-weight="600">예상 ${state.est}명</text>
+  ` : '';
+
+  const bepMark = isFinite(bep) && bep<=N ? `
+    <line x1="${x(bep)}" y1="${P.t}" x2="${x(bep)}" y2="${P.t+innerH}" stroke="#94a3b8" stroke-dasharray="3 3" stroke-width="1.5"/>
+    <circle cx="${x(bep)}" cy="${zeroY}" r="4" fill="#94a3b8"/>
+    <text x="${x(bep)}" y="${P.t+innerH+34}" text-anchor="middle" font-size="10.5" fill="#64748b">BEP ${bep.toFixed(1)}명</text>
+  ` : '';
+
+  svg.innerHTML = `
+    ${yAxis}
+    ${xAxis}
+    ${line(pts.map(p=>p.revenue), '#2563eb', 2.5)}
+    ${line(pts.map(p=>p.totalCost), '#ef4444', 2)}
+    ${line(pts.map(p=>p.lecturer), '#10b981', 2.5)}
+    ${gMark}
+    ${bepMark}
+  `;
+}
+
+function shortMoney(v){
+  if(Math.abs(v) >= 10000000) return (v/10000000).toFixed(1)+'천만';
+  if(Math.abs(v) >= 10000) return (v/10000).toFixed(0)+'만';
+  if(v===0) return '0';
+  return Math.round(v).toLocaleString('ko-KR');
+}
+
+// ─────────────────────────────────────────────────────────
+// 액션
+// ─────────────────────────────────────────────────────────
+document.getElementById('copyBtn').addEventListener('click', e=>{
+  navigator.clipboard.writeText(buildURL()).then(()=>{
+    e.target.textContent = '✓ 복사됨!';
+    e.target.classList.add('copied');
+    setTimeout(()=>{
+      e.target.textContent = '📋 현재 설정 URL 복사';
+      e.target.classList.remove('copied');
+    }, 1600);
+  });
+});
+
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  if(!confirm('기본값으로 초기화하시겠습니까?')) return;
+  Object.assign(state, DEFAULTS);
+  document.getElementById('nm').value = state.nm;
+  numKeys.forEach(k=> document.getElementById(k).value = state[k]);
+  document.querySelectorAll('.toggle').forEach(tg=>{
+    const target = tg.dataset.target;
+    tg.querySelectorAll('button').forEach(b=>{
+      b.classList.toggle('active', Number(b.dataset.v) === state[target]);
+    });
+  });
+  render();
+  syncURL();
+});
+
+document.getElementById('csvBtn').addEventListener('click', ()=>{
+  const cap = compute(state.cap), est = compute(state.est);
+  const rows = [
+    ['항목','정원 기준','예상 기준'],
+    ['수강생 수', state.cap, state.est],
+    ['총 매출', cap.revenue, est.revenue],
+    ['부가세', cap.vat, est.vat],
+    ['결제수수료', cap.pgFee, est.pgFee],
+    ['인쇄료', cap.printing, est.printing],
+    ['간식비', cap.snack, est.snack],
+    ['재료비', cap.material, est.material],
+    ['대관료', cap.venue, est.venue],
+    ['운송비', cap.transp, est.transp],
+    ['모델료', cap.model, est.model],
+    ['총 비용', cap.totalCost, est.totalCost],
+    ['총 수익', cap.grossProfit, est.grossProfit],
+    ['메디 수수료(매출×Q)', cap.mediFeeGross, est.mediFeeGross],
+    ['메디 부담 비용', cap.mediCost, est.mediCost],
+    ['메디 최종 수취', cap.mediNet, est.mediNet],
+    ['강사 수취분', cap.lecturer, est.lecturer],
+    ['강사 수취율', cap.lecturerPct, est.lecturerPct],
+  ];
+  const csv = '﻿' + rows.map(r=>r.join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = (state.nm||'mediclass') + '_수지타산.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+// ─────────────────────────────────────────────────────────
+// 초기화
+// ─────────────────────────────────────────────────────────
+loadFromURL();
+bindInputs();
+render();
+</script>
+</body>
+</html>
