@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-13T07:30:39.676Z",
+  "updated": "2026-05-13T08:25:36.687Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -60,7 +60,7 @@
       "productId": "5ffe4b5cd6491c001b1788b1",
       "clinic": "한울한의원",
       "region": "서울시 중랑구",
-      "caller": "",
+      "caller": "김진석",
       "supplier": "인성메디텍",
       "payDate": "",
       "payAmount": null,
