@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-13T02:40:36.180Z",
+  "updated": "2026-05-13T03:50:36.313Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -24,6 +24,27 @@
       "payAmount": null,
       "inquiry": "",
       "leadGrade": ""
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 05. 13 오후 12:49:25",
+      "date": "2026-05-13",
+      "slackTs": "1778644165.284269",
+      "name": "곽희준",
+      "cid": "604acf5ec1908b001a63ab9b",
+      "phone": "010-5118-1075",
+      "product": "메가메디칼 비내시경 패키지",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "67932b2a193f841280f11d3f",
+      "clinic": "곽희준한의원",
+      "region": "경기도 성남시",
+      "caller": "",
+      "supplier": "메가메디칼",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격.사용법난이도.네블라이져효과.",
+      "leadGrade": "고가망"
     },
     {
       "source": "일반",
