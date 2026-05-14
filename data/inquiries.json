@@ -1,9 +1,30 @@
 {
-  "updated": "2026-05-13T09:05:37.494Z",
+  "updated": "2026-05-14T00:20:36.770Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 14 오전 09:17:52",
+      "date": "2026-05-14",
+      "slackTs": "1778717872.292629",
+      "name": "류승주",
+      "cid": "6893f038956fd2cf84ea65b7",
+      "phone": "010-8563-8343",
+      "product": "필립스 초음파기기 루미파이  Lumify",
+      "qty": 1,
+      "price": "800만 원",
+      "productId": "63edb3cd86095b0031e5ef71",
+      "clinic": "류승주한의원",
+      "region": "부산시 해운대구",
+      "caller": "",
+      "supplier": "이앤에스헬스케어",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "A/S 가능하다면 중고도 괜찮습니다",
+      "leadGrade": "고가망"
+    },
     {
       "source": "총판기기",
       "timestamp": "2026. 05. 13 오전 11:37:20",
