@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-14T03:05:36.732Z",
+  "updated": "2026-05-14T03:50:36.519Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -66,6 +66,27 @@
       "payAmount": null,
       "inquiry": "더마쿨, 더마스킨 가격 정보를 원합니다",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 14 오후 12:49:46",
+      "date": "2026-05-14",
+      "slackTs": "1778730586.160559",
+      "name": "최보광",
+      "cid": "5ecc29c2e510ee503167ba35",
+      "phone": "010-2608-1243",
+      "product": "스트라텍 TENS STT-570",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "5e4a82c64267e105dfff1dbb",
+      "clinic": "바른한의원",
+      "region": "경기도 성남시",
+      "caller": "",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
