@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-14T00:20:36.770Z",
+  "updated": "2026-05-14T01:05:36.849Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -23,6 +23,27 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "A/S 가능하다면 중고도 괜찮습니다",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 14 오전 10:03:48",
+      "date": "2026-05-14",
+      "slackTs": "1778720628.237119",
+      "name": "전승원",
+      "cid": "5d6608b34e77525ec5ca171e",
+      "phone": "010-5201-3721",
+      "product": "대요메디 3차원 맥영상 검사기 DMP-LIFEPLUS",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "610a369a09c63a06ed1487a7",
+      "clinic": "온담한의원",
+      "region": "대전시 동구",
+      "caller": "",
+      "supplier": "대요메디",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격",
       "leadGrade": "고가망"
     },
     {
