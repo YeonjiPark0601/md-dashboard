@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-14T07:15:37.648Z",
+  "updated": "2026-05-14T08:25:37.441Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -108,6 +108,27 @@
       "payAmount": null,
       "inquiry": "공보의 진료시에 사용하려고 구매해볼까 합니다. 가격은 더 알아보고 오고 싶은데 미리 상담 입력합니다.",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 05. 14 오후 05:22:13",
+      "date": "2026-05-14",
+      "slackTs": "1778746933.602689",
+      "name": "김복기",
+      "cid": "6221e390f967570023fa8876",
+      "phone": "010-3565-7575",
+      "product": "[DSE] CO2 레이저 (DS-40U B)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "67bc1cd05a4f59cacd7839f8",
+      "clinic": "김씨일가한의원",
+      "region": "경기도 수원시",
+      "caller": "",
+      "supplier": "DSE",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
