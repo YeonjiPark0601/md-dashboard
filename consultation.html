@@ -837,6 +837,8 @@ function sheetRowToRecord(row) {
   r.cid = parts[0] || '';
   r.productId = parts[1] || '';
   r.timestamp = parts[2] || '';
+  // 채널톡(CAMI) 인입은 'Slack 링크' 컬럼에 슬랙 스레드 URL이 들어있음
+  r.slackLink = row['Slack 링크'] || '';
   // 인입일자 컬럼 우선, 없으면 timestamp 에서 yyyy-mm-dd 추출
   if (!r.date) {
     var dm = r.timestamp.match(/(\d{4})[.\-\/\s]+(\d{1,2})[.\-\/\s]+(\d{1,2})/);
@@ -1726,10 +1728,13 @@ function renderTable() {
     var regionReadonly = r.regionLocked || (isManual && r.region);
     var supplierReadonly = r.supplierLocked || (isManual && r.supplier);
     // 인입경로 = '상담신청' + slackTs 있으면 슬랙 스레드 링크
+    // 인입경로 = '채널톡' + slackLink 있으면 슬랙 스레드 링크 (CAMI thread reply)
     var sourceHtml;
     if (r.source === '상담신청' && r.slackTs) {
       var slackTsUrl = String(r.slackTs).replace('.', '');
       sourceHtml = '<a href="https://integration-all.slack.com/archives/C02ULDA8NUE/p' + escHtml(slackTsUrl) + '" target="_blank" rel="noopener" style="color:#1a73e8;text-decoration:none;" title="슬랙 스레드 열기">' + escHtml(r.source) + '</a>';
+    } else if (r.source === '채널톡' && r.slackLink) {
+      sourceHtml = '<a href="' + escHtml(r.slackLink) + '" target="_blank" rel="noopener" style="color:#1a73e8;text-decoration:none;" title="슬랙 스레드 열기">' + escHtml(r.source) + '</a>';
     } else {
       sourceHtml = escHtml(r.source);
     }
