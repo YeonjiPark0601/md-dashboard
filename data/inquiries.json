@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-14T01:10:37.575Z",
+  "updated": "2026-05-14T03:05:36.732Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -44,6 +44,27 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "가격",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 14 오후 12:04:54",
+      "date": "2026-05-14",
+      "slackTs": "1778727894.999919",
+      "name": "김승영",
+      "cid": "5dd3a23c2bb59605ca3d01f8",
+      "phone": "010-9395-6585",
+      "product": "더마 쿨 (Derma Cool)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "685b8c71ae836d7bdb93c75e",
+      "clinic": "사상연세비앤이치과병원",
+      "region": "부산시 사상구",
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "더마쿨, 더마스킨 가격 정보를 원합니다",
       "leadGrade": "고가망"
     },
     {
