@@ -1,9 +1,30 @@
 {
-  "updated": "2026-05-15T06:40:53.180Z",
+  "updated": "2026-05-15T06:55:52.957Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 15 오후 03:53:50",
+      "date": "2026-05-15",
+      "slackTs": "1778828030.392189",
+      "name": "신승우",
+      "cid": "5daa60280dabe405b156eda0",
+      "phone": "010-6301-7229",
+      "product": "아큐닉 혈압계 BP600",
+      "qty": "1셋",
+      "price": "N/A",
+      "productId": "5fbf45f8ce872a1a803a803b",
+      "clinic": "신강한의원",
+      "region": "서울시 동대문구",
+      "caller": "",
+      "supplier": "아큐닉",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "인쇄기능 없는 것으로 견적 부탁드립니다.",
+      "leadGrade": "고가망"
+    },
     {
       "source": "총판기기",
       "timestamp": "2026. 05. 15 오후 03:39:14",
