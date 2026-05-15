@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-15T08:15:53.362Z",
+  "updated": "2026-05-15T11:20:59.007Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -23,6 +23,27 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "인쇄기능 없는 것으로 견적 부탁드립니다.",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 15 오후 08:18:53",
+      "date": "2026-05-15",
+      "slackTs": "1778843933.090369",
+      "name": "김효영",
+      "cid": "5fd6daf00204ef001a67fb1c",
+      "phone": "010-9146-7177",
+      "product": "[클래시스] 사이저 SCIZER",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "69ef0317d5ecfb78a9970431",
+      "clinic": "새라한의원",
+      "region": "서울시 강서구",
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "데모 가능한지 요청드립니다",
       "leadGrade": "고가망"
     },
     {
