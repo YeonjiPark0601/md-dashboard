@@ -472,6 +472,7 @@ th.sortable:hover { background: #eef0f4; }
     <span class="count-badge" id="totalCount">0건</span>
     <button class="form-toggle-btn" id="formToggleBtn" onclick="toggleForm()" style="margin-left:8px;">+ 새 상담 등록</button>
     <button class="form-toggle-btn" id="bulkUploadBtn" onclick="openBulkUpload()" style="margin-left:4px;">📥 엑셀 업로드</button>
+    <button class="form-toggle-btn" id="bulkDownloadBtn" onclick="downloadFilteredXlsx()" style="margin-left:4px;" title="현재 필터 조건으로 조회된 리스트를 엑셀로 다운로드">📤 엑셀 다운로드</button>
     <input type="file" id="bulkFileInput" accept=".xlsx,.xls" style="display:none;" onchange="onBulkFileSelected(event)">
   </div>
 </div>
@@ -1572,13 +1573,32 @@ function openColFilter(btn, col) {
   var pop = document.createElement('div');
   pop.className = 'col-filter-pop';
   pop.dataset.col = col;
-  var html = '<label class="all-row"><input type="checkbox" data-all ' + (!selected ? 'checked' : '') + '> <strong>전체</strong></label>';
+  var showSearch = values.length > 8;
+  var html = '';
+  if (showSearch) {
+    html += '<input type="search" class="col-filter-search" placeholder="검색..." style="width:100%;padding:5px 8px;margin-bottom:4px;border:1px solid #d0d0d0;border-radius:4px;font-size:13px;box-sizing:border-box;">';
+  }
+  html += '<label class="all-row"><input type="checkbox" data-all ' + (!selected ? 'checked' : '') + '> <strong>전체</strong></label>';
   values.forEach(function(v){
     var checked = !selected || selected.has(v);
-    html += '<label><input type="checkbox" data-val="' + escHtml(v).replace(/"/g,'&quot;') + '" ' + (checked ? 'checked' : '') + '> ' + escHtml(v) + '</label>';
+    var lower = (v || '').toLowerCase().replace(/"/g,'&quot;');
+    html += '<label data-name="' + lower + '"><input type="checkbox" data-val="' + escHtml(v).replace(/"/g,'&quot;') + '" ' + (checked ? 'checked' : '') + '> ' + escHtml(v) + '</label>';
   });
   pop.innerHTML = html;
   btn.parentElement.appendChild(pop);
+
+  if (showSearch) {
+    var searchInput = pop.querySelector('.col-filter-search');
+    searchInput.addEventListener('input', function(){
+      var q = searchInput.value.toLowerCase().trim();
+      pop.querySelectorAll('label[data-name]').forEach(function(lbl){
+        var name = lbl.getAttribute('data-name') || '';
+        lbl.style.display = (!q || name.indexOf(q) !== -1) ? '' : 'none';
+      });
+    });
+    searchInput.addEventListener('click', function(e){ e.stopPropagation(); });
+    setTimeout(function(){ searchInput.focus(); }, 0);
+  }
 
   pop.addEventListener('change', function(e){
     var t = e.target;
@@ -3092,6 +3112,62 @@ function downloadBulkTemplate() {
   }).catch(function(e){
     console.error(e); showToast('템플릿 생성 실패', 'error');
   });
+}
+
+function downloadFilteredXlsx() {
+  try {
+    var data = getFilteredData();
+    if (!data.length) {
+      showToast('다운로드할 데이터가 없습니다.', 'error');
+      return;
+    }
+    var headers = ['인입시점','인입경로','고객명','CID','전화번호','한의원명','지역','공급처','상담물품','수량','견적가','담당자','Stage','문의내용','담당자메모','데모일정','결제일'];
+    var memoToText = function(raw){
+      try {
+        var arr = parseMemos(raw);
+        return arr.map(function(m){ return (m.date ? '[' + m.date + '] ' : '') + m.text; }).join(' / ');
+      } catch(e) { return String(raw || ''); }
+    };
+    var rows = data.map(function(r){
+      return [
+        r.date || '',
+        r.source || '',
+        r.customer || '',
+        r.cid || '',
+        r.phone || '',
+        r.clinic || '',
+        r.region || '',
+        r.supplier || '',
+        r.product || '',
+        (r.qty !== '' && r.qty != null) ? r.qty : '',
+        r.price || '',
+        r.caller || r.rep || '',
+        r.stage || '',
+        r.inquiry || '',
+        memoToText(r.note),
+        r.demoDate || '',
+        r.payDate || ''
+      ];
+    });
+    var wb = XLSX.utils.book_new();
+    var aoa = [headers].concat(rows);
+    var ws = XLSX.utils.aoa_to_sheet(aoa);
+    ws['!cols'] = headers.map(function(h, i){
+      var maxLen = h.length;
+      rows.forEach(function(row){
+        var v = row[i] == null ? '' : String(row[i]);
+        if (v.length > maxLen) maxLen = v.length;
+      });
+      return { wch: Math.min(40, Math.max(8, maxLen + 2)) };
+    });
+    XLSX.utils.book_append_sheet(wb, ws, '상담리스트');
+    var ymd = (function(){ var d = new Date(); return d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0'); })();
+    XLSX.writeFile(wb, '상담리스트_' + ymd + '_' + data.length + '건.xlsx');
+    showToast(data.length + '건 다운로드 완료', 'success');
+  } catch (e) {
+    console.error(e);
+    showToast('엑셀 생성 실패', 'error');
+  }
 }
 
 function excelDateToISO(v) {
