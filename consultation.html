@@ -418,6 +418,12 @@ th.sortable:hover { background: #eef0f4; }
         <span>이번주 상담 담당자</span>
         <span id="thisWeekRepName" style="padding:2px 10px;border-radius:12px;background:rgba(26,26,46,.85);color:#fde047;font-weight:800;">-</span>
       </div>
+      <div id="meChip" title="이 PC에서 본인이 누구인지 설정. Done 처리 시 이 이름으로 메모가 남습니다." style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:16px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);font-size:12px;color:#fff;">
+        <span>👤 본인</span>
+        <select id="meSelect" onchange="setMyName(this.value)" style="padding:2px 6px;border-radius:6px;border:none;font-size:12px;font-weight:700;background:#fff;color:#1a1a2e;cursor:pointer;">
+          <option value="">미설정</option>
+        </select>
+      </div>
     </div>
     <a href="https://medistream-team.atlassian.net/wiki/spaces/~71202061a2ddd4dcd34ac3a1d794af9bba1eb1/pages/4067426333" target="_blank" rel="noopener" style="color:#fff;text-decoration:none;font-size:13px;padding:6px 12px;border-radius:6px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);display:inline-flex;align-items:center;gap:6px;" title="매뉴얼 보러가기">📖 매뉴얼 보러가기</a>
   </div>
@@ -2769,17 +2775,64 @@ document.addEventListener('change', function(e){
   renderTable();
 });
 
-// Stage 전환 허용 규칙: Done만 잠금, 나머지는 모든 단계로 자유 변경 가능
-var ALL_STAGES = ['New','Follow','Demo','Turn-key','Drop'];
-function renderStageCell(r) {
-  if (r.stage === 'Done') {
-    return '<span class="badge ' + getStageBadgeClass(r.stage) + '">' + escHtml(r.stage) + '</span>';
+// ============================================================
+// 본인 식별 (Done 수동 처리 시 메모에 기록)
+// ============================================================
+var ME_KEY = 'md_consult_me';
+function getMyName() {
+  try { return localStorage.getItem(ME_KEY) || ''; } catch(e) { return ''; }
+}
+function setMyName(name) {
+  try {
+    if (name) localStorage.setItem(ME_KEY, name);
+    else localStorage.removeItem(ME_KEY);
+  } catch(e) {}
+  var sel = document.getElementById('meSelect');
+  if (sel && sel.value !== (name || '')) sel.value = name || '';
+}
+function initSelfSelector() {
+  var sel = document.getElementById('meSelect');
+  if (!sel) return;
+  CALLER_OPTIONS.forEach(function(n){
+    var o = document.createElement('option');
+    o.value = n; o.textContent = n;
+    sel.appendChild(o);
+  });
+  sel.value = getMyName();
+}
+// Done 수동 처리 시 본인 이름 확보 (미설정이면 prompt)
+function ensureMyName() {
+  var me = getMyName();
+  if (me) return me;
+  var picked = prompt('본인 이름을 선택해주세요 (' + CALLER_OPTIONS.join(' / ') + ')');
+  if (!picked) return '';
+  picked = picked.trim();
+  if (CALLER_OPTIONS.indexOf(picked) === -1) {
+    alert('등록된 담당자 목록에 없는 이름입니다: ' + picked);
+    return '';
   }
+  setMyName(picked);
+  return picked;
+}
+
+// Stage 전환 허용 규칙: Done 포함 자유 변경. 단, Done 선택 시 본인 확인 + 메모 자동 추가.
+var ALL_STAGES = ['New','Follow','Demo','Turn-key','Drop','Done'];
+function renderStageCell(r) {
   var current = r.stage && ALL_STAGES.indexOf(r.stage) !== -1 ? r.stage : 'New';
   var opts = ALL_STAGES.map(function(s){
     return '<option value="' + s + '"' + (s===current?' selected':'') + '>' + s + '</option>';
   }).join('');
-  return '<select class="stage-select ' + getStageBadgeClass(current) + '" data-id="' + escHtml(r.id) + '" data-ext="' + (r.external?'1':'0') + '" style="width:100%;padding:3px 4px;border:1px solid #d0d5dd;border-radius:4px;font-size:12px;">' + opts + '</select>';
+  return '<select class="stage-select ' + getStageBadgeClass(current) + '" data-id="' + escHtml(r.id) + '" data-ext="' + (r.external?'1':'0') + '" data-prev="' + escHtml(current) + '" style="width:100%;padding:3px 4px;border:1px solid #d0d5dd;border-radius:4px;font-size:12px;">' + opts + '</select>';
+}
+
+function findRecordForStage(id, isExt) {
+  if (isExt) {
+    var idx = EXTERNAL_DATA.findIndex(function(r){ return r.id === id; });
+    return idx !== -1 ? EXTERNAL_DATA[idx] : null;
+  }
+  var d = loadLocalOnly();
+  var idx2 = d.findIndex(function(r){ return r.id === id; });
+  return idx2 !== -1 ? d[idx2] : null;
 }
 
 document.addEventListener('change', function(e){
@@ -2788,19 +2841,54 @@ document.addEventListener('change', function(e){
   var id = sel.dataset.id;
   var isExt = sel.dataset.ext === '1';
   var val = sel.value;
+  var prev = sel.dataset.prev || '';
+
+  // Done 수동 선택 시: 본인 확인 + 확인 다이얼로그 + 메모 자동 추가
+  var doneMemo = null;
+  if (val === 'Done' && prev !== 'Done') {
+    var me = ensureMyName();
+    if (!me) { sel.value = prev; return; }
+    var ok = confirm('이 상담을 Done(완료)으로 변경하시겠습니까?\n\n처리자: ' + me + '\n날짜: ' + todayDateStr() + '\n\n담당자메모에 자동으로 기록됩니다.');
+    if (!ok) { sel.value = prev; return; }
+    doneMemo = { d: todayDateStr(), t: '[Done 처리] ' + me };
+  }
+
   if (isExt) {
     var ov = loadExtStageOverrides();
     ov[id] = val;
     saveExtStageOverrides(ov);
     var idx = EXTERNAL_DATA.findIndex(function(r){ return r.id === id; });
     if (idx !== -1) EXTERNAL_DATA[idx].stage = val;
-    callWebhook('update', { data: { id: id, 'Stage': val } })
+    var payload = { id: id, 'Stage': val };
+    if (doneMemo) {
+      // 기존 ext note (override 우선) + 새 메모를 맨 앞에 prepend
+      var overrides = loadExtNoteOverrides();
+      var existing = overrides[id] || (idx !== -1 ? EXTERNAL_DATA[idx].note : '') || '';
+      var memos = parseMemos(existing);
+      memos.unshift({ date: doneMemo.d, text: doneMemo.t });
+      var serialized = serializeMemos(memos);
+      overrides[id] = serialized;
+      saveExtNoteOverrides(overrides);
+      if (idx !== -1) EXTERNAL_DATA[idx].note = serialized;
+      payload[FIELD_TO_COL.note] = serialized;
+    }
+    callWebhook('update', { data: payload })
       .catch(function(){ showToast('시트 동기화 실패 (로컬만 반영됨)', 'error'); });
   } else {
     var d = loadLocalOnly();
     var idx = d.findIndex(function(r){ return r.id === id; });
-    if (idx !== -1) { d[idx].stage = val; saveData(d); syncUpdate(d[idx]).catch(function(){ showToast('시트 동기화 실패 (로컬만 반영됨)', 'error'); }); }
+    if (idx !== -1) {
+      d[idx].stage = val;
+      if (doneMemo) {
+        var memos2 = parseMemos(d[idx].note || '');
+        memos2.unshift({ date: doneMemo.d, text: doneMemo.t });
+        d[idx].note = serializeMemos(memos2);
+      }
+      saveData(d);
+      syncUpdate(d[idx]).catch(function(){ showToast('시트 동기화 실패 (로컬만 반영됨)', 'error'); });
+    }
   }
+  if (doneMemo) showToast('Done 처리 완료 · 메모에 기록됨', 'success');
   renderTable();
 });
 
@@ -3061,6 +3149,7 @@ function updateThisWeekRepChip() {
 
 function init() {
   updateThisWeekRepChip();
+  initSelfSelector();
   document.getElementById('f_date').value = today();
   var ps = document.getElementById('pageSizeSelect');
   if (ps) ps.value = String(PAGE_SIZE);
