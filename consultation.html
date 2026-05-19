@@ -413,6 +413,11 @@ th.sortable:hover { background: #eef0f4; }
     <div style="display:flex;align-items:center;gap:12px;">
       <a href="home.html" style="color:#fff;text-decoration:none;font-size:18px;padding:4px 8px;border-radius:6px;background:rgba(255,255,255,.1);display:flex;align-items:center;" title="홈으로">&#8962;</a>
       <h1>상담 관리</h1>
+      <div id="thisWeekRepChip" title="월~일 기준 주간 로테이션 · 김진석 → 주봉현 → 조성갑" style="display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:20px;background:linear-gradient(135deg,#fde047,#facc15);color:#1a1a2e;font-size:13px;font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.15);">
+        <span style="font-size:14px;">📞</span>
+        <span>이번주 상담 담당자</span>
+        <span id="thisWeekRepName" style="padding:2px 10px;border-radius:12px;background:rgba(26,26,46,.85);color:#fde047;font-weight:800;">-</span>
+      </div>
     </div>
     <a href="https://medistream-team.atlassian.net/wiki/spaces/~71202061a2ddd4dcd34ac3a1d794af9bba1eb1/pages/4067426333" target="_blank" rel="noopener" style="color:#fff;text-decoration:none;font-size:13px;padding:6px 12px;border-radius:6px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);display:inline-flex;align-items:center;gap:6px;" title="매뉴얼 보러가기">📖 매뉴얼 보러가기</a>
   </div>
@@ -3032,7 +3037,30 @@ function applyUrlFilters() {
   } catch(e){ console.warn('URL 필터 적용 실패', e); }
 }
 
+function updateThisWeekRepChip() {
+  var ROTATION = ['김진석', '주봉현', '조성갑'];
+  var ANCHOR = new Date(2026, 4, 18); // 2026-05-18 (월) 김진석 시작주
+  var now = new Date();
+  var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  var dow = today.getDay(); // 0=일..6=토
+  var daysFromMon = (dow + 6) % 7; // 월=0..일=6
+  var thisMon = new Date(today);
+  thisMon.setDate(today.getDate() - daysFromMon);
+  var weeks = Math.floor((thisMon - ANCHOR) / (7 * 24 * 60 * 60 * 1000));
+  var idx = ((weeks % 3) + 3) % 3;
+  var name = ROTATION[idx];
+  var el = document.getElementById('thisWeekRepName');
+  if (el) el.textContent = name;
+  var chip = document.getElementById('thisWeekRepChip');
+  if (chip) {
+    var sun = new Date(thisMon); sun.setDate(thisMon.getDate() + 6);
+    var fmt = function(d){ return (d.getMonth()+1) + '/' + d.getDate(); };
+    chip.title = '이번주(' + fmt(thisMon) + '~' + fmt(sun) + ') 담당: ' + name + ' · 로테이션: 김진석 → 주봉현 → 조성갑';
+  }
+}
+
 function init() {
+  updateThisWeekRepChip();
   document.getElementById('f_date').value = today();
   var ps = document.getElementById('pageSizeSelect');
   if (ps) ps.value = String(PAGE_SIZE);
