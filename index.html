@@ -616,6 +616,12 @@ tr:hover { background: #f7f9fc; }
         <div id="shockwaveZeusBody" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;padding:8px 0;"></div>
       </div>
     </div>
+    <div class="chart-row-full" id="shockwaveCategoryRow" style="display:none;">
+      <div class="table-card">
+        <h3>분류별 매출 <span style="font-size:12px;color:#888;font-weight:400;">(조회 기간 기준 · 충격파 ↔ 자기장 분리)</span></h3>
+        <div id="shockwaveCategoryBody" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;padding:8px 0;"></div>
+      </div>
+    </div>
     <div class="chart-row-full" id="shockwaveSupplierRow" style="display:none;">
       <div class="table-card">
         <h3>공급처별 월별 매출 <span style="font-size:12px;color:#888;font-weight:400;">(공급업체명 클릭 → 하단에 세부 리스트)</span></h3>
@@ -851,7 +857,7 @@ async function fetchData(){
         }));
       }}else{failedSheets.push('피부미용마스터')}
     }catch(e){console.warn('피부미용마스터 에러',e);failedSheets.push('피부미용마스터')}
-    // 충격파: Redash 6329 → 시트 동기화
+    // 충격파: Redash 6329 → 시트 동기화 (다이나믹솔루션 자기장치료기 포함)
     try{
       if(shockwaveR.ok){const t=await shockwaveR.text();if(t.trim()){
         shockwaveData=parseCSV(t).filter(r=>r['결제일자']).map(r=>{
@@ -859,6 +865,13 @@ async function fetchData(){
           const ym=fixYm(dt.substring(0,7));
           const amt=parseNum(r['금액']);
           const cost=parseNum(r['공급가']);
+          const name=r['품목명']||'';
+          // 분류 컬럼이 시트에 있으면 그대로, 없으면(구버전 시트) 품목명 기반 fallback
+          let cls=(r['분류']||'').trim();
+          if(!cls){
+            const hasSw=/충격파/.test(name);const hasMg=/자기장/.test(name);
+            cls=hasSw&&hasMg?'충격파+자기장':hasSw?'충격파':hasMg?'자기장':'기타';
+          }
           return{
             연월:ym,
             주문일:fixDate(dt),
@@ -868,7 +881,8 @@ async function fetchData(){
             한의원명:r['한의원명']||'',
             공급업체:r['공급업체']||'',
             품목코드:r['품목코드']||'',
-            품목명:r['품목명']||'',
+            품목명:name,
+            분류:cls,
             수량:parseNum(r['수량']),
             매출금액:amt,
             정가:amt,
@@ -1082,13 +1096,14 @@ function render(){
   document.getElementById('omnifitYearlyRow').style.display=isOmnifit?'':'none';
   if(isOmnifit){renderOmnifitSummary();renderOmnifitQuarter();renderOmnifitOkr();renderOmnifitYearly()}
   document.getElementById('shockwaveZeusRow').style.display=isShockwave?'':'none';
+  document.getElementById('shockwaveCategoryRow').style.display=isShockwave?'':'none';
   document.getElementById('shockwaveSupplierRow').style.display=isShockwave?'':'none';
   document.getElementById('shockwaveDetailRow').style.display=(isShockwave&&_shockwaveSelectedSupplier)?'':'none';
   // 제우스웨이브 진행률을 KPI 바로 아래로 이동 (충격파일 때) / 그 외엔 원위치로 복원
   const _zeus=document.getElementById('shockwaveZeusRow');
   if(isShockwave){document.getElementById('sec-kpi').after(_zeus)}
   else{document.getElementById('skinMoqRow').after(_zeus)}
-  if(isShockwave){renderShockwaveZeus();renderShockwaveSupplier();if(_shockwaveSelectedSupplier)renderShockwaveDetail(_shockwaveSelectedSupplier)}
+  if(isShockwave){renderShockwaveZeus();renderShockwaveCategory();renderShockwaveSupplier();if(_shockwaveSelectedSupplier)renderShockwaveDetail(_shockwaveSelectedSupplier)}
   document.getElementById('skinMoqRow').style.display=isSkin?'':'none';
   document.getElementById('skinSupplierRow').style.display=isSkin?'':'none';
   document.getElementById('skinCategoryRow').style.display=isSkin?'':'none';
@@ -3326,6 +3341,36 @@ function renderShockwaveDetail(supplier){
       `<td class="text-right">${Math.round(r['공급가']||0).toLocaleString()}</td>`+
       `<td class="text-right">${marginStr}</td>`+
     '</tr>';
+  }).join('');
+}
+// 충격파 탭 분류별 매출 카드 (조회 기간 기준)
+function renderShockwaveCategory(){
+  const sM=document.getElementById('startMonth').value;const eM=document.getElementById('endMonth').value;
+  const inRange=ym=>(!sM||ym>=sM)&&(!eM||ym<=eM);
+  const filtered=shockwaveData.filter(d=>d['연월']&&inRange(d['연월']));
+  const groups=[
+    {key:'충격파',color:'#1a73e8',includes:['충격파','충격파+자기장']},
+    {key:'자기장',color:'#9334e6',includes:['자기장','충격파+자기장']},
+    {key:'전체',color:'#0d9488',includes:['충격파','자기장','충격파+자기장','기타']}
+  ];
+  const totalAll=filtered.reduce((s,d)=>s+(d['매출금액']||0),0);
+  const body=document.getElementById('shockwaveCategoryBody');
+  body.innerHTML=groups.map(g=>{
+    const rows=filtered.filter(d=>g.includes.includes(d['분류']));
+    const sales=rows.reduce((s,d)=>s+(d['매출금액']||0),0);
+    const cost=rows.reduce((s,d)=>s+(d['공급가']||0),0);
+    const qty=rows.reduce((s,d)=>s+(d['수량']||0),0);
+    const margin=sales?((sales-cost)/sales*100):0;
+    const share=totalAll?(sales/totalAll*100):0;
+    return `<div style="background:#fff;border:1px solid #e8e8e8;border-left:4px solid ${g.color};border-radius:8px;padding:14px;">`+
+      `<div style="font-size:13px;color:#555;font-weight:600;margin-bottom:6px;">${g.key}${g.key!=='전체'?` <span style="font-size:11px;color:#888;font-weight:400;">${share.toFixed(1)}%</span>`:''}</div>`+
+      `<div style="font-size:20px;font-weight:700;color:${g.color};margin-bottom:6px;">${Math.round(sales).toLocaleString()}원</div>`+
+      `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;font-size:11px;color:#666;">`+
+        `<div><span style="color:#888;">공급가</span><br><span style="font-weight:600;">${Math.round(cost).toLocaleString()}</span></div>`+
+        `<div><span style="color:#888;">이익률</span><br><span style="font-weight:600;">${margin.toFixed(1)}%</span></div>`+
+        `<div><span style="color:#888;">수량</span><br><span style="font-weight:600;">${qty.toLocaleString()}</span></div>`+
+      `</div>`+
+    `</div>`;
   }).join('');
 }
 // 제우스웨이브 진행률: 3개월 단위(2-4, 5-7, 8-10, 11-1), 주문일자 기준 공급가 합계, 목표 2.5억
