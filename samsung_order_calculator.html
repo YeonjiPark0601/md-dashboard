@@ -325,28 +325,16 @@
       <div class="sub" id="cardTotalVat"></div>
     </div>
   </div>
-  <div class="cards" style="grid-template-columns: 1fr 1fr; margin-bottom: 12px;">
+  <div class="cards" style="grid-template-columns: 1fr 1fr; margin-bottom: 20px;">
     <div class="card" style="border-top:3px solid #0ea5e9">
       <div class="label" id="cardNeedLabelP">1차 목표 달성 필요 금액</div>
       <div class="val" id="cardNeedP">-</div>
       <div class="sub" id="cardNeedSubP"></div>
     </div>
-    <div class="card" style="border-top:3px solid #0ea5e9">
-      <div class="label" id="cardQLabelP">1Q 1차 목표 달성율</div>
-      <div class="val" id="cardQRateP">0%</div>
-      <div class="sub" id="cardQSubP"></div>
-    </div>
-  </div>
-  <div class="cards" style="grid-template-columns: 1fr 1fr; margin-bottom: 20px;">
     <div class="card" style="border-top:3px solid #f59e0b">
       <div class="label" id="cardNeedLabelS">2차 목표 달성 필요 금액</div>
       <div class="val" id="cardNeedS">-</div>
       <div class="sub" id="cardNeedSubS"></div>
-    </div>
-    <div class="card" style="border-top:3px solid #f59e0b">
-      <div class="label" id="cardQLabelS">1Q 2차 목표 달성율</div>
-      <div class="val" id="cardQRateS">0%</div>
-      <div class="sub" id="cardQSubS"></div>
     </div>
   </div>
 
@@ -1059,17 +1047,6 @@ function render() {
       needEl.className = 'val';
       needSubEl.textContent = kindLabel + ' 목표 미설정';
     }
-    const rate = target > 0 ? qTotal / target : 0;
-    const rateDisc = target > 0 ? qTotalDisc / target : 0;
-    const rateEl = document.getElementById('cardQRate' + suffix);
-    if (target > 0) {
-      rateEl.innerHTML = `${(rate * 100).toFixed(1)}%<div style="font-size:14px; color:#92400e; margin-top:6px; font-weight:600">↳ 견본 -20%: ${(rateDisc * 100).toFixed(1)}%</div>`;
-    } else {
-      rateEl.innerHTML = '-';
-    }
-    rateEl.className = 'val ' + (rate >= 1 ? 'green' : rate >= 0.8 ? 'orange' : 'red');
-    document.getElementById('cardQLabel' + suffix).textContent = qLabel + 'Q ' + kindLabel + ' 목표 달성율';
-    document.getElementById('cardQSub' + suffix).innerHTML = `${fmt(qTotal)} / ${fmt(target)}<br><span style="color:#92400e">차감 후: ${fmt(qTotalDisc)} / ${fmt(target)}</span>`;
   }
   renderTargetCards('primary', 'P');
   renderTargetCards('stretch', 'S');
