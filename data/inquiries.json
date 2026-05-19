@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-19T06:55:22.103Z",
+  "updated": "2026-05-19T07:00:25.451Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -45,6 +45,27 @@
       "payAmount": null,
       "inquiry": "",
       "leadGrade": ""
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 19 오후 03:59:17",
+      "date": "2026-05-19",
+      "slackTs": "1779173957.590549",
+      "name": "장서윤",
+      "cid": "5dd4d7a22bb59605ca3d0338",
+      "phone": "010-2383-0647",
+      "product": "스파인엠티",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "5f7ec8b748060c52caf16513",
+      "clinic": "김한의원",
+      "region": "경기도 여주시",
+      "caller": "",
+      "supplier": "스파인케어",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": "가망"
     },
     {
       "source": "총판기기",
