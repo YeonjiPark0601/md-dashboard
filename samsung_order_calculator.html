@@ -1732,6 +1732,13 @@ function closeShipout() {
   document.getElementById('shipoutModal').classList.remove('open');
 }
 
+// ESC 키로 열린 모달 모두 닫기
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.open').forEach(el => el.classList.remove('open'));
+  }
+});
+
 function resetAll() {
   productQty.fill(0);
   demoQty.fill(0);
