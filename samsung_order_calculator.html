@@ -382,6 +382,7 @@
       <tbody id="mainBody"></tbody>
     </table>
   </div>
+  <div id="targetGapBox" style="margin-top:12px"></div>
 
   <div class="section-title" id="sec-option">옵션 발주 (S/W 등)</div>
   <div class="table-wrap">
@@ -954,7 +955,7 @@ function render() {
   const tbody = document.getElementById('mainBody');
   tbody.innerHTML = '';
 
-  let sumProductAmt = 0, sumDemoAmt = 0, sumSales = 0, sumMargin = 0;
+  let sumProductAmt = 0, sumDemoAmt = 0, sumDemoAmtDisc = 0, sumSales = 0, sumMargin = 0;
   let sumProductQty = 0, sumDemoQty = 0;
 
   PRODUCTS.forEach((p, i) => {
@@ -962,10 +963,13 @@ function render() {
     const dq = demoQty[i];
     const pAmt = pq * p.cost;
     const dAmt = dq * p.cost; // 견본도 공급가 기준
+    const dAmtDisc = Math.round(dAmt * (1 - DEMO_DISCOUNT_RATE)); // -20%
     const total = pAmt + dAmt;
+    const totalDisc = pAmt + dAmtDisc;
 
     sumProductAmt += pAmt;
     sumDemoAmt += dAmt;
+    sumDemoAmtDisc += dAmtDisc;
     sumProductQty += pq;
     sumDemoQty += dq;
     sumSales += pq * p.price;
@@ -990,8 +994,8 @@ function render() {
       <td class="col-sep stock-cell">${ds || '-'}</td>
       <td><input type="number" min="0" max="99" value="${dq}" class="demo-input"
         onchange="setQty('demo',${i},this.value)" onfocus="this.select()"></td>
-      <td class="amount-cell ${dAmt ? 'has-value' : ''}">${dAmt ? fmt(dAmt) : '-'}</td>
-      <td class="col-sep amount-cell ${total ? 'has-value' : ''}" style="font-weight:600">${total ? fmt(total) : '-'}</td>
+      <td class="amount-cell ${dAmt ? 'has-value' : ''}">${dAmt ? `${fmt(dAmtDisc)}<br><span style="color:#888; font-size:10px; font-weight:400">차감 전: ${fmt(dAmt)}</span>` : '-'}</td>
+      <td class="col-sep amount-cell ${total ? 'has-value' : ''}" style="font-weight:600">${total ? (dAmt ? `${fmt(totalDisc)}<br><span style="color:#888; font-size:10px; font-weight:400">차감 전: ${fmt(total)}</span>` : fmt(total)) : '-'}</td>
       <td class="col-sep lastyear-cell">${ly.qty || '-'}</td>
       <td class="lastyear-cell">${ly.amt ? fmt(ly.amt) : '-'}</td>
     `;
@@ -1000,6 +1004,7 @@ function render() {
 
   // Sum row
   const sumTotal = sumProductAmt + sumDemoAmt;
+  const sumTotalDisc = sumProductAmt + sumDemoAmtDisc;
   const sumLastYearQty = Object.values(LAST_YEAR).reduce((a, b) => a + b.qty, 0);
   const sumLastYearAmt = Object.values(LAST_YEAR).reduce((a, b) => a + b.amt, 0);
   const sumTr = document.createElement('tr');
@@ -1019,8 +1024,8 @@ function render() {
     <td style="color:#1a73e8">${fmt(sumProductAmt)}</td>
     <td class="col-sep" style="color:#b45309">${sumDStock}</td>
     <td style="color:#7c3aed">${sumDemoQty}</td>
-    <td style="color:#7c3aed">${fmt(sumDemoAmt)}</td>
-    <td class="col-sep" style="color:#0d9488">${fmt(sumTotal)}</td>
+    <td style="color:#7c3aed">${sumDemoAmt ? `${fmt(sumDemoAmtDisc)}<br><span style="color:#888; font-size:10px; font-weight:400">차감 전: ${fmt(sumDemoAmt)}</span>` : fmt(sumDemoAmt)}</td>
+    <td class="col-sep" style="color:#0d9488">${sumDemoAmt ? `${fmt(sumTotalDisc)}<br><span style="color:#888; font-size:10px; font-weight:400">차감 전: ${fmt(sumTotal)}</span>` : fmt(sumTotal)}</td>
     <td class="col-sep lastyear-cell" style="font-weight:700">${sumLastYearQty}</td>
     <td class="lastyear-cell" style="font-weight:700">${fmt(sumLastYearAmt)}</td>
   `;
@@ -1098,6 +1103,29 @@ function render() {
   }
   renderTargetCards('primary', 'P');
   renderTargetCards('stretch', 'S');
+
+  // 기기 합계 박스 — 이번 발주 시 1차/2차 목표 갭
+  const gapBox = document.getElementById('targetGapBox');
+  if (gapBox) {
+    const projDisc = qTotalDisc + sumTotalDisc;
+    const qLab = (CUR_QUARTER + 1) + 'Q';
+    const tgtP = quarterTargetOf(CUR_QUARTER, 'primary');
+    const tgtS = quarterTargetOf(CUR_QUARTER, 'stretch');
+    const gapLine = (tgt, label) => {
+      if (!tgt) return `<span style="color:#aaa">${label} 미설정</span>`;
+      const gap = tgt - projDisc;
+      if (gap === 0) return `<strong>${label}</strong> 달성 ✓`;
+      if (gap > 0)  return `<strong>${label}</strong> 대비 <span style="color:#dc2626; font-weight:700">${fmt(gap)}원</span>이 부족합니다`;
+      return `<strong>${label}</strong> 대비 <span style="color:#10b981; font-weight:700">${fmt(-gap)}원</span>이 초과됩니다`;
+    };
+    gapBox.innerHTML = `
+      <div style="background:#fff; border:1px solid #e5e7eb; border-left:4px solid #f59e0b; border-radius:8px; padding:14px 18px; font-size:14px; line-height:1.9; box-shadow:0 1px 3px rgba(0,0,0,.06)">
+        <div style="font-size:12px; color:#888; margin-bottom:4px">위와 같이 발주 시 <span style="color:#555">${qLab} 누적 ${fmt(qTotalDisc)} + 이번 발주 ${fmt(sumTotalDisc)} = <strong>${fmt(projDisc)}</strong> (견본 -20% 적용)</span></div>
+        <div>${gapLine(tgtP, '1차 목표')}</div>
+        <div>${gapLine(tgtS, '2차 목표')}</div>
+      </div>
+    `;
+  }
 
   // Render quarter comparison
   renderQuarter(grandTotal);
