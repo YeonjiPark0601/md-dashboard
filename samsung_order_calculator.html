@@ -595,6 +595,8 @@ const THIS_YEAR_QUARTER = {
   1: 421099377,   // 26년 1월
   2: 406602655,   // 26년 2월
 };
+// 26년 월별 견본 -20% 차감 후 (BDTS 로드 시 자동 갱신)
+const THIS_YEAR_QUARTER_DISC = {};
 
 // 25년 3월 실적 (입고월 기준, BDTS 시트 - 시스템 BDTS번호 기준 수량, 금액은 전 항목 합산)
 const LAST_YEAR = {
@@ -1025,17 +1027,25 @@ function render() {
   remainEl.style.color = demoRemain >= 10 ? '#4ade80' : '';
   document.getElementById('cardDemoRemainSub').textContent = '남은 월: ' + (12 - CUR_MONTH - 1) + '개월 (월 ' + (demoRemain / Math.max(1, 12 - CUR_MONTH - 1)).toFixed(1) + '대)';
 
-  // Quarter target — 분기 단위 목표/누적/필요금액
+  // Quarter target — 분기 단위 목표/누적/필요금액 (gross + 견본 20% 차감 후)
   const qStart = CUR_QUARTER * 3;
   const qMonths = [qStart, qStart + 1, qStart + 2];
   const qLabel = CUR_QUARTER + 1;
-  let qTotal = 0;
+  const curYM = '26-' + String(CUR_MONTH + 1).padStart(2, '0');
+  const grandTotalDisc = sumProductAmt + (curYM >= DEMO_DISCOUNT_START ? Math.round(sumDemoAmt * (1 - DEMO_DISCOUNT_RATE)) : sumDemoAmt);
+  let qTotal = 0, qTotalDisc = 0;
   qMonths.forEach(m => {
     const mNum = m + 1;
-    qTotal += (m === CUR_MONTH) ? grandTotal : (THIS_YEAR_QUARTER[mNum] || 0);
+    if (m === CUR_MONTH) {
+      qTotal += grandTotal;
+      qTotalDisc += grandTotalDisc;
+    } else {
+      qTotal += THIS_YEAR_QUARTER[mNum] || 0;
+      qTotalDisc += THIS_YEAR_QUARTER_DISC[mNum] || THIS_YEAR_QUARTER[mNum] || 0;
+    }
   });
 
-  // 1차/2차 카드 공통 렌더 함수
+  // 1차/2차 카드 공통 렌더 함수 (gross + 차감 후 병기)
   function renderTargetCards(kind, suffix) {
     const target = quarterTargetOf(CUR_QUARTER, kind);
     const kindLabel = (kind === 'primary') ? '1차' : '2차';
@@ -1044,27 +1054,28 @@ function render() {
     document.getElementById('cardNeedLabel' + suffix).textContent = qLabel + 'Q ' + kindLabel + ' 목표 달성 필요 금액';
     if (target > 0) {
       const need = target - qTotal;
-      if (need <= 0) {
-        needEl.textContent = '✓ 달성';
-        needEl.className = 'val green';
-        needSubEl.textContent = '초과 ' + fmt(-need);
-      } else {
-        needEl.textContent = fmt(need);
-        needEl.className = 'val red';
-        needSubEl.textContent = '목표 ' + fmt(target) + ' / 누적 ' + fmt(qTotal);
-      }
+      const needDisc = target - qTotalDisc;
+      const grossTxt = need <= 0 ? '✓ 달성' : fmt(need);
+      const discTxt = needDisc <= 0 ? '✓ 달성' : fmt(needDisc);
+      needEl.innerHTML = `${grossTxt}<div style="font-size:14px; color:#92400e; margin-top:6px; font-weight:600">↳ 견본 -20%: ${discTxt}</div>`;
+      needEl.className = 'val ' + (need <= 0 ? 'green' : 'red');
+      needSubEl.innerHTML = `목표 ${fmt(target)} / 누적 ${fmt(qTotal)}<br><span style="color:#92400e">차감 후 누적: ${fmt(qTotalDisc)}</span>`;
     } else {
-      needEl.textContent = '-';
+      needEl.innerHTML = '-';
       needEl.className = 'val';
       needSubEl.textContent = kindLabel + ' 목표 미설정';
     }
     const rate = target > 0 ? qTotal / target : 0;
-    const ratePct = (rate * 100).toFixed(1) + '%';
+    const rateDisc = target > 0 ? qTotalDisc / target : 0;
     const rateEl = document.getElementById('cardQRate' + suffix);
-    rateEl.textContent = target > 0 ? ratePct : '-';
+    if (target > 0) {
+      rateEl.innerHTML = `${(rate * 100).toFixed(1)}%<div style="font-size:14px; color:#92400e; margin-top:6px; font-weight:600">↳ 견본 -20%: ${(rateDisc * 100).toFixed(1)}%</div>`;
+    } else {
+      rateEl.innerHTML = '-';
+    }
     rateEl.className = 'val ' + (rate >= 1 ? 'green' : rate >= 0.8 ? 'orange' : 'red');
     document.getElementById('cardQLabel' + suffix).textContent = qLabel + 'Q ' + kindLabel + ' 목표 달성율';
-    document.getElementById('cardQSub' + suffix).textContent = fmt(qTotal) + ' / ' + fmt(target);
+    document.getElementById('cardQSub' + suffix).innerHTML = `${fmt(qTotal)} / ${fmt(target)}<br><span style="color:#92400e">차감 후: ${fmt(qTotalDisc)} / ${fmt(target)}</span>`;
   }
   renderTargetCards('primary', 'P');
   renderTargetCards('stretch', 'S');
@@ -1741,12 +1752,16 @@ async function fetchBdtsMonthly() {
     BDTS_MONTHLY = agg;
     MILEAGE_MONTHLY = mileage;
     recomputeDemoYearUsed(); // 26년 견본 누적 수량 동적 갱신
-    // 분기 비교 데이터 동기화
+    // 분기 비교 데이터 동기화 (gross + 차감 후 별도 저장)
     for (const ym in agg) {
       const [yy, mm] = ym.split('-').map(Number);
-      const total = agg[ym].p_amt + agg[ym].d_amt;
-      if (yy === 25) LAST_YEAR_QUARTER[mm] = total;
-      else if (yy === 26 && mm !== CUR_MONTH + 1) THIS_YEAR_QUARTER[mm] = total;
+      const totalGross = agg[ym].p_amt + agg[ym].d_amt;
+      const totalDisc = agg[ym].p_amt + demoDiscounted(agg[ym].d_amt, ym);
+      if (yy === 25) LAST_YEAR_QUARTER[mm] = totalGross;
+      else if (yy === 26 && mm !== CUR_MONTH + 1) {
+        THIS_YEAR_QUARTER[mm] = totalGross;
+        THIS_YEAR_QUARTER_DISC[mm] = totalDisc;
+      }
     }
     if (status) {
       const newNote = newAdded > 0 ? ` (+NEW ${newAdded})` : '';
