@@ -595,7 +595,7 @@ const HARDCODED_QUARTERLY_TARGETS = [
 ];
 
 // kind: 'primary' (1차) or 'stretch' (2차)
-// 우선순위: 공유 저장값 → 하드코딩 → 시트(1차 only)
+// 우선순위: 공유 저장값 → 하드코딩 (4Q는 0 고정, 시트 폴백 안 함)
 function quarterTargetOf(q, kind) {
   kind = kind || 'primary';
   if (QUARTERLY_TARGETS_SHARED.length === 4) {
@@ -603,8 +603,7 @@ function quarterTargetOf(q, kind) {
     if (row && row[kind] > 0) return row[kind];
   }
   const hc = HARDCODED_QUARTERLY_TARGETS[q];
-  if (hc && hc[kind] > 0) return hc[kind];
-  if (kind === 'primary') return SHEET_QUARTERLY_TARGETS[q] || 0;
+  if (hc) return hc[kind] || 0;
   return 0;
 }
 
