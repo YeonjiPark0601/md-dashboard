@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-19T08:05:22.906Z",
+  "updated": "2026-05-19T08:15:22.335Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -129,6 +129,27 @@
       "payAmount": null,
       "inquiry": "",
       "leadGrade": ""
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 05. 19 오후 05:14:30",
+      "date": "2026-05-19",
+      "slackTs": "1779178470.873519",
+      "name": "송동원",
+      "cid": "5eb39c6309982e0735b2d41c",
+      "phone": "010-4872-0548",
+      "product": "[상담하기] 삼성메디슨 초음파장비 상담",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "66a328fc96e0816c37572d22",
+      "clinic": "경희차율한의원 경산점",
+      "region": "경상북도 경산시",
+      "caller": "",
+      "supplier": "삼성메디슨",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "V5 구매 문의 드립니다. 중고나 시연장비 있다면 견적 문의 드립니다.",
+      "leadGrade": "고가망"
     },
     {
       "source": "일반",
