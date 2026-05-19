@@ -943,6 +943,24 @@ function mergeSheetIntoLocal(sheetRecords) {
   saveData(merged);
 }
 
+// 폼으로 만든 c_* 행 중 시트에 없는 것(이전 sync 실패 잔재)을 자동 재동기화
+function retryOrphanSyncs(sheetRecords) {
+  try {
+    var sheetIds = new Set(sheetRecords.map(function(r){ return r.id; }));
+    var local = loadLocalOnly();
+    var orphans = local.filter(function(r){
+      return r && r.id && r.id.indexOf('c_') === 0 && !sheetIds.has(r.id);
+    });
+    if (!orphans.length) return;
+    console.warn('[orphan-sync] 시트에 없는 로컬 행 ' + orphans.length + '건 자동 재시도');
+    orphans.forEach(function(r){
+      syncCreate(r)
+        .then(function(){ console.log('[orphan-sync] OK', r.id, r.customer); })
+        .catch(function(e){ console.warn('[orphan-sync] 실패', r.id, e); });
+    });
+  } catch (e) { console.warn('retryOrphanSyncs error', e); }
+}
+
 // 화면에서 견적가 표시를 강제로 비울 cid 목록 (테스트 계정 등)
 var PRICE_SUPPRESS_CIDS = { '5f33869ca0b91001bf48c428': true };
 
@@ -1115,7 +1133,8 @@ function showToast(msg, type) {
   var t = document.getElementById('toast');
   t.textContent = msg;
   t.className = 'toast ' + type + ' show';
-  setTimeout(function(){ t.className = 'toast'; }, 2800);
+  var dur = (type === 'error') ? 7000 : 2800;
+  setTimeout(function(){ t.className = 'toast'; }, dur);
 }
 
 // ============================================================
@@ -3045,7 +3064,7 @@ function init() {
       .catch(function(){ return null; })
   ]).then(function(results){
     var records = results[0], inqData = results[1];
-    if (records && records.length) mergeSheetIntoLocal(records);
+    if (records && records.length) { mergeSheetIntoLocal(records); retryOrphanSyncs(records); }
     if (inqData && inqData.items) {
       inqData.items.forEach(function(it){
         var key = (it.cid || '') + '|' + (it.productId || '') + '|' + (it.timestamp || '');
