@@ -844,9 +844,12 @@ function sheetRowToRecord(row) {
   Object.keys(COL_TO_FIELD).forEach(function(col){ r[COL_TO_FIELD[col]] = row[col] || ''; });
   // id 형식: cid|productId|timestamp(ex: "2026. 04. 17 오전 02:13:09")
   // 또는 수동 입력: c_xxxx (timestamp 없음)
+  // CAMI 인입: cami-{ts} (cid는 별도 'CID' 컬럼)
   var isAutomated = (row.id || '').indexOf('|') !== -1;
   var parts = (row.id || '').split('|');
-  r.cid = parts[0] || '';
+  // CAMI 행: CID 컬럼 우선 사용 (고객명 하이퍼링크 활성화)
+  var cidFromCol = (row['CID'] || '').trim();
+  r.cid = cidFromCol || parts[0] || '';
   r.productId = parts[1] || '';
   r.timestamp = parts[2] || '';
   // 채널톡(CAMI) 인입은 'Slack 링크' 컬럼에 슬랙 스레드 URL이 들어있음
