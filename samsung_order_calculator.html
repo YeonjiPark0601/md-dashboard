@@ -326,15 +326,31 @@
     </div>
   </div>
   <div class="cards" style="grid-template-columns: 1fr 1fr; margin-bottom: 20px;">
-    <div class="card" style="border-top:3px solid #0ea5e9">
-      <div class="label" id="cardNeedLabelP">1차 목표 달성 필요 금액</div>
-      <div class="val" id="cardNeedP">-</div>
-      <div class="sub" id="cardNeedSubP"></div>
+    <div class="card" style="border-top:3px solid #0ea5e9; text-align:left">
+      <div class="label" id="cardLabelP" style="text-align:center; margin-bottom:10px">1Q 1차 목표</div>
+      <div style="display:grid; grid-template-columns:auto 1fr; gap:6px 12px; align-items:baseline">
+        <div style="color:#666; font-size:13px">누적 발주금액</div>
+        <div id="cardCumDiscP" style="font-size:20px; font-weight:700; color:#0d9488; text-align:right">-</div>
+        <div style="color:#666; font-size:13px">발주 필요 금액</div>
+        <div id="cardNeedP" style="font-size:20px; font-weight:700; text-align:right">-</div>
+        <div style="color:#666; font-size:13px">목표 금액</div>
+        <div id="cardTargetP" style="font-size:20px; font-weight:700; color:#1a1a2e; text-align:right">-</div>
+        <div style="color:#aaa; font-size:11px; padding-top:6px; border-top:1px dashed #e0e0e0">차감 전 누적</div>
+        <div id="cardCumGrossP" style="font-size:13px; color:#888; text-align:right; padding-top:6px; border-top:1px dashed #e0e0e0">-</div>
+      </div>
     </div>
-    <div class="card" style="border-top:3px solid #f59e0b">
-      <div class="label" id="cardNeedLabelS">2차 목표 달성 필요 금액</div>
-      <div class="val" id="cardNeedS">-</div>
-      <div class="sub" id="cardNeedSubS"></div>
+    <div class="card" style="border-top:3px solid #f59e0b; text-align:left">
+      <div class="label" id="cardLabelS" style="text-align:center; margin-bottom:10px">1Q 2차 목표</div>
+      <div style="display:grid; grid-template-columns:auto 1fr; gap:6px 12px; align-items:baseline">
+        <div style="color:#666; font-size:13px">누적 발주금액</div>
+        <div id="cardCumDiscS" style="font-size:20px; font-weight:700; color:#0d9488; text-align:right">-</div>
+        <div style="color:#666; font-size:13px">발주 필요 금액</div>
+        <div id="cardNeedS" style="font-size:20px; font-weight:700; text-align:right">-</div>
+        <div style="color:#666; font-size:13px">목표 금액</div>
+        <div id="cardTargetS" style="font-size:20px; font-weight:700; color:#1a1a2e; text-align:right">-</div>
+        <div style="color:#aaa; font-size:11px; padding-top:6px; border-top:1px dashed #e0e0e0">차감 전 누적</div>
+        <div id="cardCumGrossS" style="font-size:13px; color:#888; text-align:right; padding-top:6px; border-top:1px dashed #e0e0e0">-</div>
+      </div>
     </div>
   </div>
 
@@ -545,6 +561,7 @@
 const PRODUCTS = [
   { name: 'HS40',    cost: 18202566, price: 24200000 },
   { name: 'HS50',    cost: 24235299, price: 32500000 },
+  { name: 'Q10',     cost: 13864500, price: 19400000 }, // 판매가 추정 — 확정값 알려주세요
   { name: 'V5',      cost: 22756210, price: 34000000 },
   { name: 'V6',      cost: 28106250, price: 39600000 },
   { name: 'V7',      cost: 33648733, price: 48400000 },
@@ -553,6 +570,16 @@ const PRODUCTS = [
   { name: 'R20',     cost: 88078675, price: 130000000 },
   { name: 'HM70Evo', cost: 19715500, price: 23990000 },
 ];
+
+// 모델명 정규화: EVO Q10 → Q10, V6/V7/V8 ONE → V6/V7/V8
+function normalizeModel(name) {
+  if (!name) return name;
+  const n = name.trim();
+  if (/^EVO\s*Q10\$/i.test(n) || /^Q10\$/i.test(n)) return 'Q10';
+  const m = n.match(/^(V[5-8])\s+ONE\$/i);
+  if (m) return m[1].toUpperCase();
+  return n;
+}
 
 let QUARTERLY_TARGETS_SHARED = []; // 공유 저장된 4분기 목표 [{primary, stretch}, ...] (SAVE_URL)
 let SHEET_QUARTERLY_TARGETS = [];  // 시트(12개월) 합산으로 도출한 4분기 기본값 (1차 디폴트)
@@ -590,6 +617,7 @@ const THIS_YEAR_QUARTER_DISC = {};
 const LAST_YEAR = {
   'HS40':    { qty: 0, amt: 0 },
   'HS50':    { qty: 0, amt: 0 },
+  'Q10':     { qty: 0, amt: 0 },
   'V5':      { qty: 5, amt: 109664818 },
   'V6':      { qty: 1, amt: 23816251 },
   'V7':      { qty: 6, amt: 191900426 },
@@ -626,9 +654,9 @@ const productStockOut = new Array(PRODUCTS.length).fill(0);   // 출고예정(�
 const productStockAvail = new Array(PRODUCTS.length).fill(0); // 신품재고(현재) = 신품재고 - 출고예정
 const demoStock = new Array(PRODUCTS.length).fill(0);
 
-// Pre-fill with 3월 plan data
-const plan3Product = [0, 0, 4, 3, 3, 2, 0, 0, 0]; // V5:4, V6:3, V7:3, V8:2
-const plan3Demo    = [0, 0, 0, 1, 1, 1, 0, 0, 0]; // V6:1, V7:1, V8:1
+// Pre-fill with 3월 plan data (PRODUCTS 순서: HS40, HS50, Q10, V5, V6, V7, V8, RS85, R20, HM70Evo)
+const plan3Product = [0, 0, 0, 4, 3, 3, 2, 0, 0, 0]; // V5:4, V6:3, V7:3, V8:2
+const plan3Demo    = [0, 0, 0, 0, 1, 1, 1, 0, 0, 0]; // V6:1, V7:1, V8:1
 plan3Product.forEach((v, i) => productQty[i] = v);
 plan3Demo.forEach((v, i) => demoQty[i] = v);
 
@@ -675,7 +703,7 @@ async function fetchInventoryData() {
     console.log('재고 실시간 로드 완료:', { newByModel, outByModel, sampleByModel });
   } catch (e) {
     console.warn('재고 실시간 로드 실패, 하드코딩 사용:', e);
-    [1, 2, 3, 1, 4, 3, 0, 0, 0].forEach((v, i) => { productStock[i] = v; productStockAvail[i] = v; });
+    [1, 2, 0, 3, 1, 4, 3, 0, 0, 0].forEach((v, i) => { productStock[i] = v; productStockAvail[i] = v; });
     [0, 1, 5, 3, 6, 6, 2, 1, 1].forEach((v, i) => demoStock[i] = v);
   }
 }
@@ -1005,10 +1033,14 @@ function render() {
   document.getElementById('cardDemoQty').textContent = sumDemoQty;
 
   // 견본 한도 업데이트
-  const demoUsedTotal = DEMO_YEAR_USED + sumDemoQty;
+  // 견본 한도: BDTS 26년 누적(DEMO_YEAR_USED)만 기준. 이번달은 BDTS 5월 d_qty로 분리 표시.
+  const curMonthYM = '26-' + String(CUR_MONTH + 1).padStart(2, '0');
+  const curMonthBdtsDemo = (BDTS_MONTHLY[curMonthYM] && BDTS_MONTHLY[curMonthYM].d_qty) || 0;
+  const pastBdtsDemo = Math.max(0, DEMO_YEAR_USED - curMonthBdtsDemo);
+  const demoUsedTotal = DEMO_YEAR_USED;
   const demoRemain = DEMO_YEAR_LIMIT - demoUsedTotal;
   document.getElementById('cardDemoLimit').textContent = demoUsedTotal + ' / ' + DEMO_YEAR_LIMIT;
-  document.getElementById('cardDemoLimitSub').textContent = '기 입고 ' + DEMO_YEAR_USED + '대 + 이번달 ' + sumDemoQty + '대';
+  document.getElementById('cardDemoLimitSub').textContent = '기 입고 ' + pastBdtsDemo + '대 + 이번달 ' + curMonthBdtsDemo + '대';
   const remainEl = document.getElementById('cardDemoRemain');
   remainEl.textContent = demoRemain + '대';
   remainEl.className = 'val ' + (demoRemain >= 10 ? '' : demoRemain >= 5 ? 'orange' : 'red');
@@ -1027,25 +1059,32 @@ function render() {
     qTotalDisc += THIS_YEAR_QUARTER_DISC[mNum] || THIS_YEAR_QUARTER[mNum] || 0;
   });
 
-  // 1차/2차 카드 공통 렌더 함수 (gross + 차감 후 병기)
+  // 1차/2차 카드 공통 렌더 함수 (차감 후 = 메인, 차감 전 = 보조)
   function renderTargetCards(kind, suffix) {
     const target = quarterTargetOf(CUR_QUARTER, kind);
     const kindLabel = (kind === 'primary') ? '1차' : '2차';
+    document.getElementById('cardLabel' + suffix).textContent = qLabel + 'Q ' + kindLabel + ' 목표';
+    const cumDiscEl = document.getElementById('cardCumDisc' + suffix);
+    const cumGrossEl = document.getElementById('cardCumGross' + suffix);
     const needEl = document.getElementById('cardNeed' + suffix);
-    const needSubEl = document.getElementById('cardNeedSub' + suffix);
-    document.getElementById('cardNeedLabel' + suffix).textContent = qLabel + 'Q ' + kindLabel + ' 목표 달성 필요 금액';
+    const targetEl = document.getElementById('cardTarget' + suffix);
+    cumDiscEl.textContent = fmt(qTotalDisc);
+    cumGrossEl.textContent = fmt(qTotal);
     if (target > 0) {
-      const need = target - qTotal;
-      const needDisc = target - qTotalDisc;
-      const grossTxt = need <= 0 ? '✓ 달성' : fmt(need);
-      const discTxt = needDisc <= 0 ? '✓ 달성' : fmt(needDisc);
-      needEl.innerHTML = `${grossTxt}<div style="font-size:14px; color:#92400e; margin-top:6px; font-weight:600">↳ 견본 -20%: ${discTxt}</div>`;
-      needEl.className = 'val ' + (need <= 0 ? 'green' : 'red');
-      needSubEl.innerHTML = `목표 ${fmt(target)} / 누적 ${fmt(qTotal)}<br><span style="color:#92400e">차감 후 누적: ${fmt(qTotalDisc)}</span>`;
+      const need = target - qTotalDisc;
+      if (need <= 0) {
+        needEl.innerHTML = '✓ 달성';
+        needEl.style.color = '#10b981';
+      } else {
+        needEl.textContent = fmt(need);
+        needEl.style.color = '#dc2626';
+      }
+      targetEl.textContent = fmt(target);
     } else {
-      needEl.innerHTML = '-';
-      needEl.className = 'val';
-      needSubEl.textContent = kindLabel + ' 목표 미설정';
+      needEl.textContent = '-';
+      needEl.style.color = '#888';
+      targetEl.textContent = '미설정';
+      targetEl.style.color = '#aaa';
     }
   }
   renderTargetCards('primary', 'P');
@@ -1219,6 +1258,7 @@ function parseCSVRow(row) {
 const RECENT_SALES = {
   'HS40':    { monthly: [0, 0, 0, 0, 0, 0], demo: [0, 0, 0, 0, 0, 0] },
   'HS50':    { monthly: [0, 0, 0, 0, 0, 0], demo: [0, 0, 0, 0, 0, 0] },
+  'Q10':     { monthly: [0, 0, 0, 0, 0, 0], demo: [0, 0, 0, 0, 0, 0] },
   'V5':      { monthly: [2, 6, 2, 0, 2, 4], demo: [0, 2, 0, 1, 1, 0] },
   'V6':      { monthly: [1, 0, 3, 0, 2, 3], demo: [1, 0, 0, 0, 1, 1] },
   'V7':      { monthly: [2, 4, 0, 1, 2, 3], demo: [2, 0, 0, 0, 1, 1] },
@@ -1935,30 +1975,31 @@ function renderByModel(startKey, endKey) {
   }
   const months = [...monthSet].sort();
 
-  // 기간 내 등장 모델 수집 (PRODUCTS 순서)
+  // 기간 내 등장 모델 수집 (정규화 후, PRODUCTS 순서)
   const inRange = BDTS_ROWS.filter(r => r.ym >= startKey && r.ym <= endKey);
-  const modelSet = new Set(inRange.map(r => r.model).filter(Boolean));
+  const modelSet = new Set(inRange.map(r => normalizeModel(r.model)).filter(Boolean));
   const order = PRODUCTS.map(p => p.name);
   const models = [
     ...order.filter(m => modelSet.has(m)),
     ...[...modelSet].filter(m => !order.includes(m)).sort(),
   ];
 
-  // 집계: cell[model][ym] = { p_q, p_a, d_q, d_a }
+  // 집계: cell[model][ym] = { p_q, p_a, d_q, d_a } (ONE 변형은 V5~V8에 합산, EVO Q10은 Q10에 합산)
   const cell = {}, rowTotal = {}, colTotal = {};
   for (const m of models) { cell[m] = {}; rowTotal[m] = { p_q:0, p_a:0, d_q:0, d_a:0 }; }
   for (const ym of months) colTotal[ym] = { p_q:0, p_a:0, d_q:0, d_a:0 };
   for (const r of BDTS_ROWS) {
     if (r.ym < startKey || r.ym > endKey) continue;
-    if (!r.model || !cell[r.model]) continue;
-    if (!cell[r.model][r.ym]) cell[r.model][r.ym] = { p_q:0, p_a:0, d_q:0, d_a:0 };
-    const c = cell[r.model][r.ym];
+    const m = normalizeModel(r.model);
+    if (!m || !cell[m]) continue;
+    if (!cell[m][r.ym]) cell[m][r.ym] = { p_q:0, p_a:0, d_q:0, d_a:0 };
+    const c = cell[m][r.ym];
     if (r.type === '상품') {
-      c.p_a += r.amt; rowTotal[r.model].p_a += r.amt; colTotal[r.ym].p_a += r.amt;
-      if (r.cat === '시스템') { c.p_q += r.qty; rowTotal[r.model].p_q += r.qty; colTotal[r.ym].p_q += r.qty; }
+      c.p_a += r.amt; rowTotal[m].p_a += r.amt; colTotal[r.ym].p_a += r.amt;
+      if (r.cat === '시스템') { c.p_q += r.qty; rowTotal[m].p_q += r.qty; colTotal[r.ym].p_q += r.qty; }
     } else if (r.type === '견본') {
-      c.d_a += r.amt; rowTotal[r.model].d_a += r.amt; colTotal[r.ym].d_a += r.amt;
-      if (r.cat === '시스템') { c.d_q += r.qty; rowTotal[r.model].d_q += r.qty; colTotal[r.ym].d_q += r.qty; }
+      c.d_a += r.amt; rowTotal[m].d_a += r.amt; colTotal[r.ym].d_a += r.amt;
+      if (r.cat === '시스템') { c.d_q += r.qty; rowTotal[m].d_q += r.qty; colTotal[r.ym].d_q += r.qty; }
     }
   }
 
