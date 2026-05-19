@@ -296,6 +296,7 @@
   <a href="#sec-model" onclick="return scrollTo2('sec-model')">모델 × 월</a>
   <a href="#sec-quarter" onclick="return scrollTo2('sec-quarter')">분기 비교</a>
   <a href="#sec-target" onclick="return scrollTo2('sec-target')">분기별 목표 관리</a>
+  <a href="#sec-mileage-status" onclick="return scrollTo2('sec-mileage-status')">마일리지 현황</a>
   <a href="#sec-mileage" onclick="return scrollTo2('sec-mileage')">적립 마일리지</a>
 </nav>
 
@@ -500,6 +501,36 @@
     <span id="targetStatus" style="color:#888; font-size:12px"></span>
     <button onclick="resetMonthlyTargets()" style="background:#eee; color:#555; border:0; padding:10px 18px; border-radius:8px; cursor:pointer; font-weight:600; font-size:13px">기본값(시트)</button>
     <button onclick="applyMonthlyTargets()" style="background:#0ea5e9; color:#fff; border:0; padding:10px 24px; border-radius:8px; cursor:pointer; font-weight:700; font-size:13px">적용</button>
+  </div>
+
+  <div class="section-title" style="border-left-color:#a855f7; margin-top:24px" id="sec-mileage-status">마일리지 현황 <span style="font-size:12px; color:#888; font-weight:400">(2026 마일리지 시트 실시간) <span id="mileageStatusNote" style="margin-left:6px"></span></span></div>
+  <div class="cards" style="grid-template-columns:1fr 1fr 1fr; margin-bottom:12px">
+    <div class="card">
+      <div class="label">총 적립</div>
+      <div class="val" id="mileageTotalEarn" style="color:#f43f5e">0</div>
+    </div>
+    <div class="card">
+      <div class="label">총 사용</div>
+      <div class="val" id="mileageTotalUsed" style="color:#0ea5e9">0</div>
+    </div>
+    <div class="card">
+      <div class="label">마일리지 잔액</div>
+      <div class="val" id="mileageBalance" style="color:#10b981">0</div>
+    </div>
+  </div>
+  <div class="table-wrap" style="margin-bottom:24px">
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align:left">발주 날짜</th>
+          <th>S/o</th>
+          <th>실제 금액</th>
+          <th>마일리지 적용 금액</th>
+          <th>마일리지 잔액</th>
+        </tr>
+      </thead>
+      <tbody id="mileageUsageBody"></tbody>
+    </table>
   </div>
 
   <div class="section-title" style="border-left-color:#f43f5e; margin-top:24px" id="sec-mileage">적립 마일리지 <span style="font-size:12px; color:#888; font-weight:400">(입고월 기준, 1년 후 사용 가능)</span></div>
@@ -1594,6 +1625,7 @@ function resetAll() {
 // ============ 월별 발주 내역 (BDTS 실시간) ============
 const BDTS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1Z8C_uiDHD6udIq7b9C79xlPxz4ERK5aC-vkoIbvTxic/gviz/tq?tqx=out:csv&gid=1570415089';
 const BDTS_NEW_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1Z8C_uiDHD6udIq7b9C79xlPxz4ERK5aC-vkoIbvTxic/gviz/tq?tqx=out:csv&gid=712697274';
+const MILEAGE_STATUS_URL = 'https://docs.google.com/spreadsheets/d/1Z8C_uiDHD6udIq7b9C79xlPxz4ERK5aC-vkoIbvTxic/gviz/tq?tqx=out:json&gid=414019217';
 
 // 견본 금액 차감 규칙 (25-05 이후 적용)
 const DEMO_DISCOUNT_RATE = 0.2;
@@ -1787,6 +1819,76 @@ function renderMonthly() {
   renderMileage();
 }
 
+// ============ 마일리지 현황 (시트 414019217 실시간) ============
+async function fetchMileageStatus() {
+  const noteEl = document.getElementById('mileageStatusNote');
+  try {
+    const res = await fetch(MILEAGE_STATUS_URL + '&_t=' + Date.now());
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const raw = await res.text();
+    const m = raw.match(/\((.*)\);?\s*$/s);
+    if (!m) throw new Error('JSONP 파싱 실패');
+    const data = JSON.parse(m[1]);
+    const rows = data.table.rows || [];
+    // 0행: 섹션 라벨 + 합계 / 1행: 컬럼 헤더 / 2행~: 데이터
+    const totalEarn = (rows[0] && rows[0].c[1] && rows[0].c[1].v) || 0;
+    const usage = [];
+    let totalUsed = 0;
+    let lastBalance = null;
+    for (let i = 2; i < rows.length; i++) {
+      const c = rows[i].c || [];
+      const cell = (idx) => (c[idx] && c[idx].v != null) ? c[idx].v : null;
+      const cellF = (idx) => (c[idx] && c[idx].f) || null;
+      const orderDate = cellF(3) || cell(3);
+      const so = cell(5);
+      const realAmt = cell(7);
+      const milAmt = cell(8);
+      const balance = cell(11);
+      const used = cell(6);
+      const hasData = [orderDate, so, realAmt, milAmt, balance, used].some(v => v != null && v !== '');
+      if (!hasData) continue;
+      usage.push({ orderDate, so, realAmt, milAmt, balance, used });
+      if (typeof used === 'number') totalUsed += used;
+      if (typeof balance === 'number') lastBalance = balance;
+    }
+    document.getElementById('mileageTotalEarn').textContent = fmt(totalEarn);
+    document.getElementById('mileageTotalUsed').textContent = fmt(totalUsed);
+    const balanceShown = (lastBalance != null) ? lastBalance : (totalEarn - totalUsed);
+    document.getElementById('mileageBalance').textContent = fmt(balanceShown);
+    renderMileageUsage(usage);
+    if (noteEl) noteEl.textContent = usage.length ? `· ${usage.length}건` : '· 사용 내역 없음';
+  } catch (e) {
+    console.warn('마일리지 현황 로드 실패:', e);
+    if (noteEl) noteEl.textContent = '⚠ 로드 실패';
+  }
+}
+
+function renderMileageUsage(usage) {
+  const tbody = document.getElementById('mileageUsageBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  if (!usage.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#888; padding:20px">사용 내역 없음</td></tr>';
+    return;
+  }
+  for (const u of usage) {
+    const tr = document.createElement('tr');
+    const cellShow = (v) => {
+      if (v == null || v === '') return '<span style="color:#ccc">-</span>';
+      if (typeof v === 'number') return fmt(v);
+      return String(v);
+    };
+    tr.innerHTML = `
+      <td style="text-align:left">${cellShow(u.orderDate)}</td>
+      <td>${cellShow(u.so)}</td>
+      <td>${cellShow(u.realAmt)}</td>
+      <td style="color:#0ea5e9; font-weight:600">${cellShow(u.milAmt)}</td>
+      <td style="color:#10b981; font-weight:600">${cellShow(u.balance)}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
 function renderMileage() {
   const tbody = document.getElementById('mileageBody');
   if (!tbody) return;
@@ -1973,6 +2075,7 @@ function renderByModel(startKey, endKey) {
   if (s && !s.value) s.value = now.getFullYear() + '-01';
   if (e && !e.value) e.value = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
   fetchBdtsMonthly();
+  fetchMileageStatus();
 })();
 
 // ============ 좌측 내비게이션 ============
@@ -1984,7 +2087,7 @@ function scrollTo2(id) {
   }
   return false;
 }
-const NAV_SECS = ['sec-kpi', 'sec-order', 'sec-option', 'sec-stock', 'sec-monthly', 'sec-model', 'sec-quarter', 'sec-target', 'sec-mileage'];
+const NAV_SECS = ['sec-kpi', 'sec-order', 'sec-option', 'sec-stock', 'sec-monthly', 'sec-model', 'sec-quarter', 'sec-target', 'sec-mileage-status', 'sec-mileage'];
 window.addEventListener('scroll', () => {
   let active = NAV_SECS[0];
   for (const id of NAV_SECS) {
