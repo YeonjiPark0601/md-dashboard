@@ -296,13 +296,13 @@
   <a href="#sec-model" onclick="return scrollTo2('sec-model')">모델 × 월</a>
   <a href="#sec-quarter" onclick="return scrollTo2('sec-quarter')">분기 비교</a>
   <a href="#sec-mileage" onclick="return scrollTo2('sec-mileage')">적립 마일리지</a>
-  <a href="#sec-target" onclick="return scrollTo2('sec-target')">월별 목표 관리</a>
+  <a href="#sec-target" onclick="return scrollTo2('sec-target')">분기별 목표 관리</a>
 </nav>
 
 <div class="container">
   <div style="margin-bottom:20px;" id="sec-kpi">
     <div style="font-size:32px;font-weight:700;color:#1a1a2e;" id="monthBadge">4월</div>
-    <p class="subtitle" style="font-size:14px;color:#888;margin-top:4px;">월 목표: 433,333,333원 (VAT 별도) | 연간 목표: 52억</p>
+    <p class="subtitle" style="font-size:14px;color:#888;margin-top:4px;">분기 목표: -- | 연간 목표: --억</p>
   </div>
 
   <div class="cards">
@@ -326,9 +326,9 @@
   </div>
   <div class="cards" style="grid-template-columns: 1fr 1fr; margin-bottom: 20px;">
     <div class="card">
-      <div class="label">월 목표 달성율</div>
-      <div class="val" id="cardRate">0%</div>
-      <div class="sub" id="cardRateSub"></div>
+      <div class="label" id="cardNeedLabel">분기 목표 달성 필요 금액</div>
+      <div class="val" id="cardNeed">-</div>
+      <div class="sub" id="cardNeedSub"></div>
     </div>
     <div class="card">
       <div class="label" id="cardQLabel">1Q 목표 달성율</div>
@@ -478,12 +478,12 @@
     </table>
   </div>
 
-  <div class="section-title" style="border-left-color:#0ea5e9; margin-top:24px" id="sec-target">월별 목표 관리 <span style="font-size:12px; color:#888; font-weight:400">(VAT별도, 이번달 값이 상단 목표/달성율에 반영)</span></div>
+  <div class="section-title" style="border-left-color:#0ea5e9; margin-top:24px" id="sec-target">분기별 목표 관리 <span style="font-size:12px; color:#888; font-weight:400">(VAT별도, 이번 분기 값이 상단 카드에 반영)</span></div>
   <div class="table-wrap">
     <table>
       <thead>
         <tr>
-          <th style="text-align:left">월</th>
+          <th style="text-align:left">분기</th>
           <th>목표 금액 (원)</th>
           <th>억 환산</th>
         </tr>
@@ -515,10 +515,15 @@ const PRODUCTS = [
   { name: 'HM70Evo', cost: 19715500, price: 23990000 },
 ];
 
-let MONTHLY_TARGET = 433333333; // 기본값 (시트에서 실시간 로드)
-let MONTHLY_TARGETS_SHARED = []; // 공유 저장된 12개월 목표 (SAVE_URL)
-let SHEET_TARGETS = [];          // 시트에서 로드된 12개월 기본값
+let QUARTERLY_TARGETS_SHARED = []; // 공유 저장된 4분기 목표 (SAVE_URL)
+let SHEET_QUARTERLY_TARGETS = [];  // 시트(12개월) 합산으로 도출한 4분기 기본값
+let SHEET_TARGETS = [];            // 시트 원본 12개월 값 (분기 환산용)
 const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSg1DtcRObcFTmBS_rb2oIOj9Yp6JYAXGF7BKDUEgXdMwA5v7V2m1X00FfdmTo3h6dsJS2Aap1dnlNv/pub?gid=471725858&single=true&output=csv';
+
+function quarterTargetOf(q) {
+  if (QUARTERLY_TARGETS_SHARED.length === 4 && QUARTERLY_TARGETS_SHARED[q] > 0) return QUARTERLY_TARGETS_SHARED[q];
+  return SHEET_QUARTERLY_TARGETS[q] || 0;
+}
 
 // 25년 1분기 월별 발주 실적 (입고월 기준, BDTS 전체 금액 합산)
 const LAST_YEAR_QUARTER = {
@@ -553,6 +558,7 @@ const DEMO_YEAR_USED = 10; // 26년 1~2월 입고 확정분 (V8:3, V7:3, V6:2, V
 // Current month (0-indexed)
 const NOW = new Date();
 const CUR_MONTH = NOW.getMonth(); // 0=Jan
+const CUR_QUARTER = Math.floor(CUR_MONTH / 3); // 0=Q1
 document.getElementById('monthBadge').textContent = (CUR_MONTH + 1) + '월';
 
 // State
@@ -952,28 +958,43 @@ function render() {
   remainEl.style.color = demoRemain >= 10 ? '#4ade80' : '';
   document.getElementById('cardDemoRemainSub').textContent = '남은 월: ' + (12 - CUR_MONTH - 1) + '개월 (월 ' + (demoRemain / Math.max(1, 12 - CUR_MONTH - 1)).toFixed(1) + '대)';
 
-  const rate = grandTotal / MONTHLY_TARGET;
-  const ratePct = (rate * 100).toFixed(1) + '%';
-  const rateEl = document.getElementById('cardRate');
-  rateEl.textContent = ratePct;
-  rateEl.className = 'val ' + (rate >= 1 ? 'green' : rate >= 0.8 ? 'orange' : 'red');
-  document.getElementById('cardRateSub').textContent = '목표: ' + fmt(MONTHLY_TARGET);
-
-  // Quarter target rate — 분기 3개월 목표 합산 (각 월 공유/시트 값, 없으면 현재 월 목표로 대체)
-  const qStart = Math.floor(CUR_MONTH / 3) * 3;
+  // Quarter target — 분기 단위 목표/누적/필요금액
+  const qStart = CUR_QUARTER * 3;
   const qMonths = [qStart, qStart + 1, qStart + 2];
-  const qLabel = Math.floor(CUR_MONTH / 3) + 1;
-  const _qTargets = getCurrentTargets();
-  const qTarget = qMonths.reduce((sum, m) => sum + (_qTargets[m] || MONTHLY_TARGET), 0);
+  const qLabel = CUR_QUARTER + 1;
+  const qTarget = quarterTargetOf(CUR_QUARTER);
   let qTotal = 0;
   qMonths.forEach(m => {
     const mNum = m + 1;
     qTotal += (m === CUR_MONTH) ? grandTotal : (THIS_YEAR_QUARTER[mNum] || 0);
   });
-  const qRate = qTotal / qTarget;
+
+  // 분기 목표 달성 필요 금액 (남은 금액)
+  const needEl = document.getElementById('cardNeed');
+  const needSubEl = document.getElementById('cardNeedSub');
+  document.getElementById('cardNeedLabel').textContent = qLabel + 'Q 목표 달성 필요 금액';
+  if (qTarget > 0) {
+    const need = qTarget - qTotal;
+    if (need <= 0) {
+      needEl.textContent = '✓ 달성';
+      needEl.className = 'val green';
+      needSubEl.textContent = '초과 ' + fmt(-need);
+    } else {
+      needEl.textContent = fmt(need);
+      needEl.className = 'val red';
+      needSubEl.textContent = '목표 ' + fmt(qTarget) + ' / 누적 ' + fmt(qTotal);
+    }
+  } else {
+    needEl.textContent = '-';
+    needEl.className = 'val';
+    needSubEl.textContent = '분기 목표 미설정';
+  }
+
+  // 분기 달성율 카드
+  const qRate = qTarget > 0 ? qTotal / qTarget : 0;
   const qRatePct = (qRate * 100).toFixed(1) + '%';
   const qRateEl = document.getElementById('cardQRate');
-  qRateEl.textContent = qRatePct;
+  qRateEl.textContent = qTarget > 0 ? qRatePct : '-';
   qRateEl.className = 'val ' + (qRate >= 1 ? 'green' : qRate >= 0.8 ? 'orange' : 'red');
   document.getElementById('cardQLabel').textContent = qLabel + 'Q 목표 달성율';
   document.getElementById('cardQSub').textContent = fmt(qTotal) + ' / ' + fmt(qTarget);
@@ -1046,7 +1067,7 @@ function _doSave() {
     productQty: [...productQty],
     demoQty: [...demoQty],
     options: options.map(o => ({ model: o.model, name: o.name, cost: o.cost, qty: o.qty })),
-    monthlyTargets: (MONTHLY_TARGETS_SHARED.length === 12) ? MONTHLY_TARGETS_SHARED : null,
+    quarterlyTargets: (QUARTERLY_TARGETS_SHARED.length === 4) ? QUARTERLY_TARGETS_SHARED : null,
     savedAt: new Date().toISOString(),
   };
   console.log('상태 저장 전송', state);
@@ -1079,15 +1100,15 @@ async function loadState() {
       options.length = 0;
       state.options.forEach(o => options.push({ model: o.model, name: o.name, cost: o.cost, qty: o.qty }));
     }
-    let mt = state.monthlyTargets;
-    if (typeof mt === 'string') {
-      try { mt = JSON.parse(mt); } catch(e) { mt = null; }
+    let qt = state.quarterlyTargets;
+    if (typeof qt === 'string') {
+      try { qt = JSON.parse(qt); } catch(e) { qt = null; }
     }
-    if (mt && Array.isArray(mt) && mt.length === 12) {
-      MONTHLY_TARGETS_SHARED = mt.map(x => parseInt(x) || 0);
-      console.log('monthlyTargets 로드 완료', MONTHLY_TARGETS_SHARED);
+    if (qt && Array.isArray(qt) && qt.length === 4) {
+      QUARTERLY_TARGETS_SHARED = qt.map(x => parseInt(x) || 0);
+      console.log('quarterlyTargets 로드 완료', QUARTERLY_TARGETS_SHARED);
     } else {
-      console.log('monthlyTargets 미설정 또는 형식 오류, 원본:', state.monthlyTargets, '타입:', typeof state.monthlyTargets);
+      console.log('quarterlyTargets 미설정 또는 형식 오류, 원본:', state.quarterlyTargets, '타입:', typeof state.quarterlyTargets);
     }
     console.log('발주 수량 로드됨', state);
     return true;
@@ -1097,20 +1118,25 @@ async function loadState() {
 // 초기 로드: 저장된 수량 → 재고 실시간 → 렌더
 loadState().then(() => {
   if (typeof renderTargetInputs === 'function') renderTargetInputs();
-  // 공유 저장된 목표가 있으면 MONTHLY_TARGET 반영
-  if (MONTHLY_TARGETS_SHARED.length === 12 && MONTHLY_TARGETS_SHARED[CUR_MONTH] > 0) {
-    MONTHLY_TARGET = MONTHLY_TARGETS_SHARED[CUR_MONTH];
-    const sub = document.querySelector('.subtitle');
-    const annual = MONTHLY_TARGETS_SHARED.reduce((a, b, i) => a + (b || SHEET_TARGETS[i] || 0), 0);
-    if (sub && annual > 0) {
-      sub.textContent = '월 목표: ' + MONTHLY_TARGET.toLocaleString('ko-KR') + '원 (VAT 별도) | 연간 목표: ' + (annual / 100000000).toFixed(0) + '억';
-    }
-  }
+  updateSubtitle();
   render();
   return fetchInventoryData();
 }).then(() => render());
 
-// 구글시트에서 월별 목표 실시간 로드
+function updateSubtitle() {
+  const sub = document.querySelector('.subtitle');
+  if (!sub) return;
+  const qt = quarterTargetOf(CUR_QUARTER);
+  const annual = [0,1,2,3].reduce((a, q) => a + quarterTargetOf(q), 0);
+  if (qt > 0 || annual > 0) {
+    const qStr = qt > 0 ? (qt / 100000000).toFixed(2) + '억' : '미설정';
+    const yStr = annual > 0 ? (annual / 100000000).toFixed(0) + '억' : '미설정';
+    sub.textContent = (CUR_QUARTER + 1) + 'Q 목표: ' + qStr + ' (VAT 별도) | 연간 목표: ' + yStr;
+    sub.style.color = '#8899aa';
+  }
+}
+
+// 구글시트에서 월별 값(12개월) 로드 → 분기 합산
 function parseCSVRow(row) {
   const result = [];
   let cur = '', inQuote = false;
@@ -1214,8 +1240,7 @@ function generateRecommend() {
   qMonths.forEach(m => {
     if (m < CUR_MONTH) qPastTotal += (THIS_YEAR_QUARTER[m + 1] || 0);
   });
-  const _qT = getCurrentTargets();
-  const qTarget = qMonths.reduce((sum, m) => sum + (_qT[m] || MONTHLY_TARGET), 0);
+  const qTarget = quarterTargetOf(qIdx);
 
   // 작년 동분기 합계
   const lastYearQTotal = LAST_YEAR_Q_TOTAL[qIdx] || 0;
@@ -1348,12 +1373,11 @@ function generateRecommend() {
       qTotal = qPastTotal + totalAmt;
     }
 
-    const monthRate = (totalAmt / MONTHLY_TARGET * 100).toFixed(1);
-    const qRate = (qTotal / qTarget * 100).toFixed(1);
+    const qRate = qTarget > 0 ? (qTotal / qTarget * 100).toFixed(1) : '-';
     const lyRate = lastYearQTotal > 0 ? (qTotal / lastYearQTotal * 100).toFixed(1) : '-';
 
     return { label, desc, recProduct, recDemo, recOptions, totalAmt, totalOptAmt,
-             monthRate, qRate, qTotal, lyRate, boostInfo, minForQuarter, trendData };
+             qRate, qTotal, lyRate, boostInfo, minForQuarter, trendData };
   }
 
   return [
@@ -1473,7 +1497,6 @@ function showRecommend() {
 
     html += `<div class="insight" style="margin-top:4px">
       <strong>총 발주:</strong> ${fmt(s.totalAmt)}
-      &nbsp;|&nbsp; <strong>월 달성율:</strong> <span style="color:${s.monthRate >= 100 ? '#4ade80' : s.monthRate >= 80 ? '#fbbf24' : '#f87171'}">${s.monthRate}%</span>
       &nbsp;|&nbsp; <strong>분기 달성율:</strong> <span style="color:${s.qRate >= 100 ? '#4ade80' : s.qRate >= 80 ? '#fbbf24' : '#f87171'}">${s.qRate}%</span>
       (${fmt(s.qTotal)} / ${fmt(qTarget)})
       <br><strong>작년 동분기 대비:</strong> <span style="color:${lyColor}">${s.lyRate}%</span>
@@ -1849,10 +1872,16 @@ window.addEventListener('scroll', () => {
   });
 });
 
-// ============ 월별 목표 관리 (전사 공유 저장) ============
+// ============ 분기별 목표 관리 (전사 공유 저장) ============
 function getCurrentTargets() {
-  const base = (MONTHLY_TARGETS_SHARED.length === 12) ? MONTHLY_TARGETS_SHARED.slice() : SHEET_TARGETS.slice();
-  while (base.length < 12) base.push(0);
+  // 4분기 effective 값 배열 (공유저장 우선, 없으면 시트)
+  const base = [];
+  for (let q = 0; q < 4; q++) {
+    const v = (QUARTERLY_TARGETS_SHARED.length === 4 && QUARTERLY_TARGETS_SHARED[q] > 0)
+      ? QUARTERLY_TARGETS_SHARED[q]
+      : (SHEET_QUARTERLY_TARGETS[q] || 0);
+    base.push(v);
+  }
   return base;
 }
 
@@ -1861,22 +1890,22 @@ function renderTargetInputs() {
   if (!tbody) return;
   tbody.innerHTML = '';
   const vals = getCurrentTargets();
-  for (let i = 0; i < 12; i++) {
+  for (let q = 0; q < 4; q++) {
     const tr = document.createElement('tr');
-    const isCurr = (i === CUR_MONTH);
-    const v = vals[i] || 0;
+    const isCurr = (q === CUR_QUARTER);
+    const v = vals[q] || 0;
     tr.innerHTML = `
-      <td style="text-align:left; ${isCurr ? 'background:#e0f2fe; font-weight:700' : ''}">${i + 1}월${isCurr ? ' (이번달)' : ''}</td>
-      <td style="text-align:center"><input type="number" id="tgt-${i}" value="${v || ''}" placeholder="0" style="width:180px; padding:6px 8px; border:1px solid #d0d7de; border-radius:6px; text-align:right; font-size:13px"></td>
-      <td id="tgt-eok-${i}" style="color:#888; font-size:12px">${v ? (v / 100000000).toFixed(2) + '억' : '-'}</td>
+      <td style="text-align:left; ${isCurr ? 'background:#e0f2fe; font-weight:700' : ''}">${q + 1}Q (${q * 3 + 1}~${q * 3 + 3}월)${isCurr ? ' (이번 분기)' : ''}</td>
+      <td style="text-align:center"><input type="number" id="tgt-${q}" value="${v || ''}" placeholder="0" style="width:180px; padding:6px 8px; border:1px solid #d0d7de; border-radius:6px; text-align:right; font-size:13px"></td>
+      <td id="tgt-eok-${q}" style="color:#888; font-size:12px">${v ? (v / 100000000).toFixed(2) + '억' : '-'}</td>
     `;
     tbody.appendChild(tr);
   }
-  for (let i = 0; i < 12; i++) {
-    const inp = document.getElementById('tgt-' + i);
+  for (let q = 0; q < 4; q++) {
+    const inp = document.getElementById('tgt-' + q);
     inp.addEventListener('input', () => {
       const v = parseInt((inp.value || '0').replace(/,/g, '')) || 0;
-      document.getElementById('tgt-eok-' + i).textContent = v ? (v / 100000000).toFixed(2) + '억' : '-';
+      document.getElementById('tgt-eok-' + q).textContent = v ? (v / 100000000).toFixed(2) + '억' : '-';
     });
   }
   updateTargetStatus();
@@ -1885,26 +1914,19 @@ function renderTargetInputs() {
 function updateTargetStatus() {
   const el = document.getElementById('targetStatus');
   if (!el) return;
-  el.textContent = (MONTHLY_TARGETS_SHARED.length === 12)
+  el.textContent = (QUARTERLY_TARGETS_SHARED.length === 4)
     ? '공유 저장된 값 사용중 (전사 공통)'
     : '시트 기본값 사용중';
 }
 
 function applyMonthlyTargets() {
   const vals = [];
-  for (let i = 0; i < 12; i++) {
-    const el = document.getElementById('tgt-' + i);
+  for (let q = 0; q < 4; q++) {
+    const el = document.getElementById('tgt-' + q);
     vals.push(parseInt((el.value || '0').replace(/,/g, '')) || 0);
   }
-  MONTHLY_TARGETS_SHARED = vals;
-  const cur = vals[CUR_MONTH] || SHEET_TARGETS[CUR_MONTH] || 0;
-  if (cur > 0) MONTHLY_TARGET = cur;
-  const annual = vals.reduce((a, b, i) => a + (b || SHEET_TARGETS[i] || 0), 0);
-  const sub = document.querySelector('.subtitle');
-  if (sub) {
-    sub.textContent = '월 목표: ' + MONTHLY_TARGET.toLocaleString('ko-KR') + '원 (VAT 별도) | 연간 목표: ' + (annual / 100000000).toFixed(0) + '억';
-    sub.style.color = '#8899aa';
-  }
+  QUARTERLY_TARGETS_SHARED = vals;
+  updateSubtitle();
   render();
   saveStateImmediate(); // 전사 공유 저장 (즉시 실행)
   updateTargetStatus();
@@ -1914,9 +1936,9 @@ function applyMonthlyTargets() {
 }
 
 function resetMonthlyTargets() {
-  MONTHLY_TARGETS_SHARED = [];
-  if (SHEET_TARGETS[CUR_MONTH]) MONTHLY_TARGET = SHEET_TARGETS[CUR_MONTH];
+  QUARTERLY_TARGETS_SHARED = [];
   renderTargetInputs();
+  updateSubtitle();
   render();
   saveStateImmediate(); // 공유 해제도 저장 (다른 사용자에게 반영)
   const st = document.getElementById('targetStatus');
@@ -1935,20 +1957,16 @@ function parseSheetTargets(csv) {
     const v = idx >= 0 ? parseInt((vals[idx] || '').replace(/,/g, '')) || 0 : 0;
     SHEET_TARGETS.push(v);
   }
-  renderTargetInputs();
-  const vs = getCurrentTargets();
-  if (vs[CUR_MONTH] > 0) {
-    MONTHLY_TARGET = vs[CUR_MONTH];
-    const annual = vs.reduce((a, b, i) => a + (b || SHEET_TARGETS[i] || 0), 0);
-    const sub = document.querySelector('.subtitle');
-    if (sub && annual > 0) {
-      sub.textContent = '월 목표: ' + MONTHLY_TARGET.toLocaleString('ko-KR') + '원 (VAT 별도) | 연간 목표: ' + (annual / 100000000).toFixed(0) + '억';
-      sub.style.color = '#8899aa';
-    }
+  // 12개월 → 4분기 합산
+  SHEET_QUARTERLY_TARGETS = [];
+  for (let q = 0; q < 4; q++) {
+    SHEET_QUARTERLY_TARGETS.push((SHEET_TARGETS[q*3] || 0) + (SHEET_TARGETS[q*3+1] || 0) + (SHEET_TARGETS[q*3+2] || 0));
   }
+  renderTargetInputs();
+  updateSubtitle();
 }
 
-// 시트 기본값 로드 (MONTHLY_TARGETS_SHARED는 loadState()에서 이미 로드됨)
+// 시트 기본값 로드 (QUARTERLY_TARGETS_SHARED는 loadState()에서 이미 로드됨)
 fetch(SHEET_CSV_URL + '&_t=' + Date.now(), { redirect: 'follow' })
   .then(r => r.ok ? r.text() : Promise.reject())
   .then(csv => { parseSheetTargets(csv); render(); })
