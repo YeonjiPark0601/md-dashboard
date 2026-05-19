@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-19T06:16:03.188Z",
+  "updated": "2026-05-19T06:40:21.015Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -65,6 +65,27 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "가격",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 05. 19 오후 03:39:31",
+      "date": "2026-05-19",
+      "slackTs": "1779172771.308239",
+      "name": "조영빈",
+      "cid": "5de4d55b4267e105dffeea67",
+      "phone": "010-2960-9498",
+      "product": "[특별가] 삼성메디슨 초음파 V5",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "6744372fb7f1deb74e849d26",
+      "clinic": "지리산쌍계한의원",
+      "region": "서울시 강남구",
+      "caller": "",
+      "supplier": "삼성메디슨",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "금액 및 할부, 할인 여부",
       "leadGrade": "고가망"
     },
     {
