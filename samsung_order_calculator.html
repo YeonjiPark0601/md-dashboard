@@ -1028,21 +1028,15 @@ function render() {
   document.getElementById('cardDemoRemainSub').textContent = '남은 월: ' + (12 - CUR_MONTH - 1) + '개월 (월 ' + (demoRemain / Math.max(1, 12 - CUR_MONTH - 1)).toFixed(1) + '대)';
 
   // Quarter target — 분기 단위 목표/누적/필요금액 (gross + 견본 20% 차감 후)
+  // 누적은 모두 BDTS 실제 입고 데이터 기준 (이번달 user 입력 무관)
   const qStart = CUR_QUARTER * 3;
   const qMonths = [qStart, qStart + 1, qStart + 2];
   const qLabel = CUR_QUARTER + 1;
-  const curYM = '26-' + String(CUR_MONTH + 1).padStart(2, '0');
-  const grandTotalDisc = sumProductAmt + (curYM >= DEMO_DISCOUNT_START ? Math.round(sumDemoAmt * (1 - DEMO_DISCOUNT_RATE)) : sumDemoAmt);
   let qTotal = 0, qTotalDisc = 0;
   qMonths.forEach(m => {
     const mNum = m + 1;
-    if (m === CUR_MONTH) {
-      qTotal += grandTotal;
-      qTotalDisc += grandTotalDisc;
-    } else {
-      qTotal += THIS_YEAR_QUARTER[mNum] || 0;
-      qTotalDisc += THIS_YEAR_QUARTER_DISC[mNum] || THIS_YEAR_QUARTER[mNum] || 0;
-    }
+    qTotal += THIS_YEAR_QUARTER[mNum] || 0;
+    qTotalDisc += THIS_YEAR_QUARTER_DISC[mNum] || THIS_YEAR_QUARTER[mNum] || 0;
   });
 
   // 1차/2차 카드 공통 렌더 함수 (gross + 차감 후 병기)
@@ -1753,12 +1747,13 @@ async function fetchBdtsMonthly() {
     MILEAGE_MONTHLY = mileage;
     recomputeDemoYearUsed(); // 26년 견본 누적 수량 동적 갱신
     // 분기 비교 데이터 동기화 (gross + 차감 후 별도 저장)
+    // 26년은 이번달 포함 전체 BDTS 실제 입고 데이터로 채움 (KPI 누적은 BDTS 기준)
     for (const ym in agg) {
       const [yy, mm] = ym.split('-').map(Number);
       const totalGross = agg[ym].p_amt + agg[ym].d_amt;
       const totalDisc = agg[ym].p_amt + demoDiscounted(agg[ym].d_amt, ym);
       if (yy === 25) LAST_YEAR_QUARTER[mm] = totalGross;
-      else if (yy === 26 && mm !== CUR_MONTH + 1) {
+      else if (yy === 26) {
         THIS_YEAR_QUARTER[mm] = totalGross;
         THIS_YEAR_QUARTER_DISC[mm] = totalDisc;
       }
