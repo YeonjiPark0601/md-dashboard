@@ -1725,27 +1725,45 @@ async function fetchBdtsMonthly() {
       fetch(BDTS_NEW_SHEET_URL + '&_t=' + Date.now()).catch(() => null),
     ]);
     if (!oldRes.ok) throw new Error('HTTP ' + oldRes.status);
+
+    // 1) NEW 시트 먼저 파싱하여 (BDTS+ItemCode) 키 집합 구축 (NEW가 우선 데이터)
+    let newRows = [];
+    const newKeys = new Set();
+    if (newRes && newRes.ok) {
+      try {
+        newRows = parseCSVAll(await newRes.text());
+        for (const r of newRows) {
+          if (r.length < 17) continue;
+          const no = (r[0] || '').trim();
+          const ic = (r[3] || '').trim();
+          if (no && no.startsWith('KRUS') && ic) newKeys.add(no + '|' + ic);
+        }
+      } catch (e) { console.warn('BDTS NEW 파싱 실패:', e); }
+    }
+
+    // 2) OLD 처리 — NEW에 같은 키 있으면 p/d 집계 스킵, 마일리지는 항상 수집
     const rows = parseCSVAll(await oldRes.text());
     const agg = {};
     const parsed = [];
     const mileage = {};
-    const dedupKeys = new Set(); // BDTS번호|ItemCode (기존 BDTS에 이미 있는 라인)
+    let oldSkipped = 0;
     for (const r of rows) {
       if (r.length < 96) continue;
       const bdtsNo = (r[0] || '').trim();
       const itemCode = (r[29] || '').trim();
-      if (bdtsNo && itemCode) dedupKeys.add(bdtsNo + '|' + itemCode);
       const qty = parseInt((r[45] || '').replace(/,/g, ''));
       const price = parseInt((r[46] || '').replace(/,/g, ''));
       const type_ = (r[55] || '').trim();
       const cat = (r[90] || '').trim();
-      const ym = (r[95] || '').trim(); // YY-MM
+      const ym = (r[95] || '').trim();
       const model = (r[28] || '').trim();
       if (!ym || !/^\d{2}-\d{2}$/.test(ym)) continue;
-      // 적립 마일리지 (DB열, idx 105) — 가격 없어도 집계
+      // 마일리지는 OLD에서만 수집되므로 항상 집계 (NEW 우선과 무관)
       const ml = parseInt((r[105] || '').replace(/,/g, '')) || 0;
       if (ml > 0) mileage[ym] = (mileage[ym] || 0) + ml;
       if (!price) continue;
+      // NEW에 동일 키 있으면 OLD에서 p/d 스킵
+      if (bdtsNo && itemCode && newKeys.has(bdtsNo + '|' + itemCode)) { oldSkipped++; continue; }
       const amt = price;
       const unit = qty || 1;
       parsed.push({ ym, model, type: type_, cat, qty: unit, amt, src: 'old' });
@@ -1759,42 +1777,35 @@ async function fetchBdtsMonthly() {
       }
     }
 
-    // BDTS NEW 시트 — 기존(번호+ItemCode) 중복 제거 후 합산
-    let newAdded = 0, newSkipped = 0;
-    if (newRes && newRes.ok) {
-      try {
-        const newRows = parseCSVAll(await newRes.text());
-        for (const r of newRows) {
-          if (r.length < 17) continue;
-          const bdtsNo = (r[0] || '').trim();
-          const itemCode = (r[3] || '').trim();
-          if (!bdtsNo || !bdtsNo.startsWith('KRUS')) continue;
-          const key = bdtsNo + '|' + itemCode;
-          if (dedupKeys.has(key)) { newSkipped++; continue; }
-          const model = (r[2] || '').trim();
-          const qty = parseInt((r[5] || '').replace(/,/g, ''));
-          const price = parseInt((r[6] || '').replace(/,/g, ''));
-          const type_ = (r[8] || '').trim();
-          const cat = (r[11] || '').trim();
-          const ym = (r[16] || '').trim(); // YY-MM
-          if (!ym || !/^\d{2}-\d{2}$/.test(ym)) continue;
-          if (!price) continue;
-          const amt = price;
-          const unit = qty || 1;
-          parsed.push({ ym, model, type: type_, cat, qty: unit, amt, src: 'new' });
-          if (!agg[ym]) agg[ym] = { p_qty:0, p_amt:0, d_qty:0, d_amt:0 };
-          if (type_ === '상품') {
-            agg[ym].p_amt += amt;
-            if (cat === '시스템') agg[ym].p_qty += unit;
-          } else if (type_ === '견본') {
-            agg[ym].d_amt += amt;
-            if (cat === '시스템') agg[ym].d_qty += unit;
-          }
-          dedupKeys.add(key);
-          newAdded++;
-        }
-      } catch (e) { console.warn('BDTS NEW 파싱 실패:', e); }
+    // 3) NEW 처리 — 전체 행 집계 (NEW가 마스터)
+    let newAdded = 0;
+    for (const r of newRows) {
+      if (r.length < 17) continue;
+      const bdtsNo = (r[0] || '').trim();
+      const itemCode = (r[3] || '').trim();
+      if (!bdtsNo || !bdtsNo.startsWith('KRUS')) continue;
+      const model = (r[2] || '').trim();
+      const qty = parseInt((r[5] || '').replace(/,/g, ''));
+      const price = parseInt((r[6] || '').replace(/,/g, ''));
+      const type_ = (r[8] || '').trim();
+      const cat = (r[11] || '').trim();
+      const ym = (r[16] || '').trim();
+      if (!ym || !/^\d{2}-\d{2}$/.test(ym)) continue;
+      if (!price) continue;
+      const amt = price;
+      const unit = qty || 1;
+      parsed.push({ ym, model, type: type_, cat, qty: unit, amt, src: 'new' });
+      if (!agg[ym]) agg[ym] = { p_qty:0, p_amt:0, d_qty:0, d_amt:0 };
+      if (type_ === '상품') {
+        agg[ym].p_amt += amt;
+        if (cat === '시스템') agg[ym].p_qty += unit;
+      } else if (type_ === '견본') {
+        agg[ym].d_amt += amt;
+        if (cat === '시스템') agg[ym].d_qty += unit;
+      }
+      newAdded++;
     }
+    const newSkipped = oldSkipped; // backward-compat log
 
     BDTS_ROWS = parsed;
     BDTS_MONTHLY = agg;
