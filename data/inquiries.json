@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-19T09:50:21.811Z",
+  "updated": "2026-05-19T11:20:21.382Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -86,6 +86,27 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "가격/ 할인/ 할부 여부",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 19 오후 08:17:29",
+      "date": "2026-05-19",
+      "slackTs": "1779189449.925009",
+      "name": "김태민",
+      "cid": "63e7078d875765002226a3c0",
+      "phone": "010-8886-6983",
+      "product": "[PIE] 두피진단기 (SIF PRO)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "68c2908de9a11019a13653ab",
+      "clinic": "동백숲한의원",
+      "region": "경기도 용인시",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격",
       "leadGrade": "고가망"
     },
     {
