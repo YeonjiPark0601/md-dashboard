@@ -580,7 +580,16 @@ const LAST_YEAR = {
 
 // 견본 연간 한도
 const DEMO_YEAR_LIMIT = 39;
-const DEMO_YEAR_USED = 10; // 26년 1~2월 입고 확정분 (V8:3, V7:3, V6:2, V5:2)
+let DEMO_YEAR_USED = 10; // 초기값 (BDTS 로드 후 26년 누적 견본 시스템 수량으로 자동 갱신)
+
+// BDTS_MONTHLY에서 26년 견본 시스템 누적 수량 동적 계산 (이번달 BDTS 입고분 포함, 사용자 input 제외)
+function recomputeDemoYearUsed() {
+  let used = 0;
+  for (const ym in BDTS_MONTHLY) {
+    if (ym.startsWith('26-')) used += BDTS_MONTHLY[ym].d_qty || 0;
+  }
+  DEMO_YEAR_USED = used;
+}
 
 // Current month (0-indexed)
 const NOW = new Date();
@@ -1699,6 +1708,7 @@ async function fetchBdtsMonthly() {
     BDTS_ROWS = parsed;
     BDTS_MONTHLY = agg;
     MILEAGE_MONTHLY = mileage;
+    recomputeDemoYearUsed(); // 26년 견본 누적 수량 동적 갱신
     // 분기 비교 데이터 동기화
     for (const ym in agg) {
       const [yy, mm] = ym.split('-').map(Number);
