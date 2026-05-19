@@ -3350,22 +3350,31 @@ function renderShockwaveDetail(key){
     '</tr>';
   }).join('');
 }
-// 제우스웨이브 진행률: 3개월 단위(2-4, 5-7, 8-10, 11-1), 주문일자 기준 공급가 합계 (다이나믹솔루션 충격파+자기장), 목표 2.5억(5-7월만 3.5억)
+// 제우스웨이브 진행률: 3개월 단위(2-4, 5-7, 8-10, 11-1), 주문일자 기준 공급가 합계 (다이나믹솔루션 충격파+자기장), 목표 2.5억(5-7월만 2.7억)
+// 진행률 수기 보정: 일부 주문은 결제일과 무관하게 다른 분기로 귀속 (월별매출에는 영향 없음, 진행률 카드에서만 적용)
 function renderShockwaveZeus(){
   const TESLA_CODE='01K9PNVBSVE729P1W7830EZYR0';
   const isDynamic=d=>(d['공급업체']||'').includes('다이나믹솔루션');
   const year=2026;
   const periods=[
     {label:'2-4월',startDate:`${year}-02-01`,endDate:`${year}-04-30`,target:2.5e8},
-    {label:'5-7월',startDate:`${year}-05-01`,endDate:`${year}-07-31`,target:3.5e8},
+    {label:'5-7월',startDate:`${year}-05-01`,endDate:`${year}-07-31`,target:2.7e8},
     {label:'8-10월',startDate:`${year}-08-01`,endDate:`${year}-10-31`,target:2.5e8},
     {label:'11월-익1월',startDate:`${year}-11-01`,endDate:`${year+1}-01-31`,target:2.5e8}
   ];
   const today=new Date().toISOString().slice(0,10);
-  const dsRows=shockwaveData.filter(isDynamic);
+  // 수기 보정: 아래 주문번호는 4월(2-4월 분기)로 귀속 (월별매출은 결제일 기준 그대로)
+  const ZEUS_REASSIGN_TO_APRIL=new Set(['1445391','1428591']);
+  const dsRows=shockwaveData.filter(isDynamic).map(d=>{
+    const ono=String(d['주문번호']||'');
+    if(ZEUS_REASSIGN_TO_APRIL.has(ono)){
+      return Object.assign({},d,{_zeusDate:`${year}-04-30`});
+    }
+    return d;
+  });
   const body=document.getElementById('shockwaveZeusBody');
   body.innerHTML=periods.map(p=>{
-    const inP=d=>{const dt=d['주문일']||'';return dt>=p.startDate&&dt<=p.endDate};
+    const inP=d=>{const dt=d._zeusDate||d['주문일']||'';return dt>=p.startDate&&dt<=p.endDate};
     const rows=dsRows.filter(inP);
     const sum=rows.reduce((s,d)=>s+(d['공급가']||0),0);
     // 충격파 = 본체 3종 + 핸드피스 등 (분류='충격파')
