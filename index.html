@@ -101,6 +101,7 @@ tr:hover { background: #f7f9fc; }
   <div class="tab" data-tab="PT10" onclick="switchTab('PT10')">PT10</div>
   <div class="tab" data-tab="옴니핏" onclick="switchTab('옴니핏')">옴니핏</div>
   <div class="tab" data-tab="피부미용" onclick="switchTab('피부미용')">피부미용</div>
+  <div class="tab" data-tab="충격파" onclick="switchTab('충격파')">충격파</div>
 </div>
 <div class="filters">
   <div class="filter-group">
@@ -644,7 +645,7 @@ Chart.defaults.plugins.tooltip.position='nearest';
 Chart.defaults.plugins.tooltip.yAlign='top';
 
 let currentTab = '의료기기';
-let allData = [], classData = [], turnkeyData = [], pt10Data = [], pt10Master = {}, sonoData = [], puOnData = [], puOffData = [], rebuyData = [], targetData = {}, pt10PuData = [], turnkeySurveyData = [], omnifitData = [], skinBeautyData = [], skinMoqData = [], skinCategoryMap = {}, turnkeyCidMap = {};
+let allData = [], classData = [], turnkeyData = [], pt10Data = [], pt10Master = {}, sonoData = [], puOnData = [], puOffData = [], rebuyData = [], targetData = {}, pt10PuData = [], turnkeySurveyData = [], omnifitData = [], skinBeautyData = [], skinMoqData = [], skinCategoryMap = {}, shockwaveData = [], turnkeyCidMap = {};
 let drillCategory = null, selectedSuppliers = [], sortCol = -1, sortAsc = true;
 let equipMaster = {}; // 품목ID → 장비여부('O'/'X') 매핑
 let puOnExpanded = false, puOffExpanded = false;
@@ -679,19 +680,20 @@ function yearShift(ym,d){const[y,m]=ym.split('-').map(Number);return`${y+d}-${St
 function getMonday(d){const dt=new Date(d);const day=dt.getDay();dt.setDate(dt.getDate()-day+(day===0?-6:1));return dt}
 function dateStr(d){return d.toISOString().slice(0,10)}
 
-function getData(){if(currentTab==='전체')return[...allData,...sonoData.filter(d=>!d._isAS),...classData];if(currentTab==='클래스')return classData;if(currentTab==='턴키')return turnkeyData;if(currentTab==='PT10')return pt10Data;if(currentTab==='초음파')return sonoData.filter(d=>!d._isAS);if(currentTab==='옴니핏')return omnifitData;if(currentTab==='피부미용')return skinBeautyData;return allData}
+function getData(){if(currentTab==='전체')return[...allData,...sonoData.filter(d=>!d._isAS),...classData];if(currentTab==='클래스')return classData;if(currentTab==='턴키')return turnkeyData;if(currentTab==='PT10')return pt10Data;if(currentTab==='초음파')return sonoData.filter(d=>!d._isAS);if(currentTab==='옴니핏')return omnifitData;if(currentTab==='피부미용')return skinBeautyData;if(currentTab==='충격파')return shockwaveData;return allData}
 
 async function fetchData(){
   const failedSheets=[];
   try{
     const sheetUrl=n=>`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(n)}&headers=1&_t=${Date.now()}`;
-    const [salesR,classR,turnkeyR,pt10R,pt10MasterR,sonoR,sonoMissR,targetR,puOnR,puOffR,rebuyR,pt10PuR,surveyR,omnifitRevR,omnifitCostR,equipMasterR,skinR,skinMasterR]=await Promise.all([
+    const [salesR,classR,turnkeyR,pt10R,pt10MasterR,sonoR,sonoMissR,targetR,puOnR,puOffR,rebuyR,pt10PuR,surveyR,omnifitRevR,omnifitCostR,equipMasterR,skinR,skinMasterR,shockwaveR]=await Promise.all([
       fetch(sheetUrl('일반기기')),fetch(sheetUrl('클래스')),fetch(sheetUrl('턴키 결제내역')),fetch(sheetUrl('PT10')),fetch(sheetUrl('PT10 마스터')),
       fetch(sheetUrl('초음파')+'&range=A7:AH'),fetch(sheetUrl('초음파누락')),fetch(TARGET_URL),
       fetch(sheetUrl('PU온라인')),fetch(sheetUrl('PU오프라인')),fetch(sheetUrl('재구매분석')),fetch(sheetUrl('PT10PU')),
       fetch(sheetUrl('턴키 상담관리')),
       fetch(sheetUrl('옴니핏매출')),fetch(sheetUrl('옴니핏공급가')),
-      fetch(sheetUrl('기기 마스터')),fetch(sheetUrl('피부미용')),fetch(sheetUrl('피부미용 마스터'))
+      fetch(sheetUrl('기기 마스터')),fetch(sheetUrl('피부미용')),fetch(sheetUrl('피부미용 마스터')),
+      fetch(sheetUrl('충격파'))
     ]);
     if(!salesR.ok)throw new Error('매출 데이터 로딩 실패');
     allData=parseCSV(await salesR.text()).map(r=>{r['매출금액']=parseNum(r['매출금액']);r['공급가']=parseNum(r['공급가']);r['수량']=parseNum(r['수량']);r['연월']=fixYm(r['연월']);r['주문일']=fixDate(r['주문일']||'');return r});
@@ -830,6 +832,34 @@ async function fetchData(){
         }));
       }}else{failedSheets.push('피부미용마스터')}
     }catch(e){console.warn('피부미용마스터 에러',e);failedSheets.push('피부미용마스터')}
+    // 충격파: Redash 6329 → 시트 동기화
+    try{
+      if(shockwaveR.ok){const t=await shockwaveR.text();if(t.trim()){
+        shockwaveData=parseCSV(t).filter(r=>r['결제일자']).map(r=>{
+          const dt=String(r['결제일자']||'').substring(0,10);
+          const ym=fixYm(dt.substring(0,7));
+          const amt=parseNum(r['금액']);
+          const cost=parseNum(r['공급가']);
+          return{
+            연월:ym,
+            주문일:fixDate(dt),
+            주문번호:r['주문번호']||'',
+            cid:r['cid']||'',
+            구매자명:r['구매자명']||'',
+            한의원명:r['한의원명']||'',
+            공급업체:r['공급업체']||'',
+            품목코드:r['품목코드']||'',
+            품목명:r['품목명']||'',
+            수량:parseNum(r['수량']),
+            매출금액:amt,
+            정가:amt,
+            공급가:cost,
+            매출총이익:amt-cost,
+            매출총이익률:amt?Math.round((amt-cost)*10000/amt)/100:0
+          }
+        })
+      }}else{failedSheets.push('충격파')}
+    }catch(e){console.warn('충격파 에러',e);failedSheets.push('충격파')}
     // 턴키CID 로드
     try{const tkCidR=await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('턴키CID')}&headers=1&_t=${Date.now()}`);
       if(tkCidR.ok){const t=await tkCidR.text();if(t.trim()){const parseAddr=a=>{if(!a)return null;const parts=a.split(/\s+/);const w=parts[0];const m=[['서울','서울'],['부산','부산'],['대구','대구'],['인천','인천'],['광주','광주'],['대전','대전'],['울산','울산'],['세종','세종'],['경기','경기'],['강원','강원'],['충북','충북'],['충청북','충북'],['충남','충남'],['충청남','충남'],['전북','전북'],['전라북','전북'],['전남','전남'],['전라남','전남'],['경북','경북'],['경상북','경북'],['경남','경남'],['경상남','경남'],['제주','제주']];let region='';for(const[k,v]of m){if(w.includes(k)){region=v;break}}if(!region)return null;const sub=parts[1]||'';return{region,sub}};
@@ -838,7 +868,7 @@ async function fetchData(){
     document.getElementById('loadingMsg').style.display='none';
     document.getElementById('dashboardContent').style.display='block';
     const warnMsg=failedSheets.length?`⚠️ ${failedSheets.length}개 시트 로딩 실패 (${failedSheets.join(', ')}) | `:'';
-    document.getElementById('lastUpdated').textContent=warnMsg+`의료기기: ${allData.length} | 초음파: ${sonoData.length} | PT10: ${pt10Data.length} | 클래스: ${classData.length} | 턴키: ${turnkeyData.length} | 옴니핏: ${omnifitData.length} | 피부미용: ${skinBeautyData.length} | ${new Date().toLocaleString('ko-KR')}`;
+    document.getElementById('lastUpdated').textContent=warnMsg+`의료기기: ${allData.length} | 초음파: ${sonoData.length} | PT10: ${pt10Data.length} | 클래스: ${classData.length} | 턴키: ${turnkeyData.length} | 옴니핏: ${omnifitData.length} | 피부미용: ${skinBeautyData.length} | 충격파: ${shockwaveData.length} | ${new Date().toLocaleString('ko-KR')}`;
     if(failedSheets.length){const el=document.getElementById('lastUpdated');el.style.color='#d93025';el.style.fontWeight='600'}
   }catch(e){document.getElementById('loadingMsg').textContent='데이터 로딩 실패: '+e.message}
 }
@@ -962,8 +992,8 @@ function updateSupplierSummary(){
 }
 
 function render(){
-  const data=getFilteredData();const isTurnkey=currentTab==='턴키';const isPT10=currentTab==='PT10';const isSono=currentTab==='초음파';const isMD=currentTab==='의료기기';const isClass=currentTab==='클래스';const isAll=currentTab==='전체';const isOmnifit=currentTab==='옴니핏';const isSkin=currentTab==='피부미용';
-  document.getElementById('supplierChartRow').style.display=(isMD||isSono)?'':'none';
+  const data=getFilteredData();const isTurnkey=currentTab==='턴키';const isPT10=currentTab==='PT10';const isSono=currentTab==='초음파';const isMD=currentTab==='의료기기';const isClass=currentTab==='클래스';const isAll=currentTab==='전체';const isOmnifit=currentTab==='옴니핏';const isSkin=currentTab==='피부미용';const isShockwave=currentTab==='충격파';
+  document.getElementById('supplierChartRow').style.display=(isMD||isSono||isShockwave)?'':'none';
   document.getElementById('chartRow3').style.display=(isMD)?'':'none';
   if(isAll){
     document.getElementById('trendRow').style.display='';
@@ -991,15 +1021,16 @@ function render(){
     document.getElementById('chartRow3').style.display='none';
   }
   // 의료기기/초음파/클래스/전체: 주별 매출 트렌드 표시, chartRow3를 detailRow 하단으로 이동
-  document.getElementById('weeklyTrendRow').style.display=(isMD||isSono||isClass||isAll)?'':'none';
+  document.getElementById('weeklyTrendRow').style.display=(isMD||isSono||isClass||isAll||isShockwave)?'':'none';
   const _wkRow=document.getElementById('weeklyTrendRow');
   if(isClass){document.getElementById('classTrendRow').after(_wkRow)}else{document.getElementById('trendRow').after(_wkRow)}
   const _chartRow3=document.getElementById('chartRow3');const _detailRow=document.getElementById('detailRow');
   if(isMD){_detailRow.after(_chartRow3)}else{document.getElementById('sec-charts').after(_chartRow3)}
   renderKPIs();renderTrendChart(data);
-  if(isMD||isSono||isClass||isAll){try{renderWeeklyTrend(data)}catch(e){console.warn('주별 트렌드 에러',e)}}
+  if(isMD||isSono||isClass||isAll||isShockwave){try{renderWeeklyTrend(data)}catch(e){console.warn('주별 트렌드 에러',e)}}
   if(currentTab==='클래스')renderTypeChart(data);
   if(isMD){renderTypeChart(data);renderCategoryChart(data);renderCategoryPieChart(data);renderSupplierChart(data);}
+  if(isShockwave){try{renderSupplierChart(data)}catch(e){console.warn('충격파 공급사 차트 에러',e)}}
   if(isSono){renderSupplierChart(data);renderSonoQtyChart(data);renderSonoAS();try{renderSonoInventory()}catch(e){console.warn('재고 로딩 에러',e)}
     renderSonoRegionChart();renderSonoCurrentMonth()}
   if(!isAll){renderTable(data);renderMonthlyTable(data)}
@@ -2013,7 +2044,7 @@ function clearDrill(){drillCategory=null;document.getElementById('drillFilter').
 
 // URL 해시로 탭 초기화
 const hashTab=decodeURIComponent(location.hash.slice(1));
-const validTabs=['전체','의료기기','초음파','PT10','클래스','턴키','옴니핏','피부미용'];
+const validTabs=['전체','의료기기','초음파','PT10','클래스','턴키','옴니핏','피부미용','충격파'];
 if(validTabs.includes(hashTab)){currentTab=hashTab;document.querySelectorAll('.tab[data-tab]').forEach(t=>{t.classList.toggle('active',t.dataset.tab===hashTab)})}
 let _tkRegionYears=['2026'];
 function renderTurnkeyRegion(){
