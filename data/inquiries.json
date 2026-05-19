@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-19T08:25:20.994Z",
+  "updated": "2026-05-19T09:50:21.811Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -66,6 +66,27 @@
       "payAmount": null,
       "inquiry": "",
       "leadGrade": "가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 19 오후 06:46:21",
+      "date": "2026-05-19",
+      "slackTs": "1779183981.012759",
+      "name": "조영빈",
+      "cid": "5de4d55b4267e105dffeea67",
+      "phone": "010-2960-9498",
+      "product": "MESH T-1000 SMART 체열진단기",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "5da995310dabe405b156ed53",
+      "clinic": "지리산쌍계한의원",
+      "region": "서울시 강남구",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격/ 할인/ 할부 여부",
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
@@ -170,6 +191,27 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "가격 문의드립니다",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 05. 19 오후 06:42:44",
+      "date": "2026-05-19",
+      "slackTs": "1779183764.761439",
+      "name": "조영빈",
+      "cid": "5de4d55b4267e105dffeea67",
+      "phone": "010-2960-9498",
+      "product": "체형진단기 아이밸런스 iBalance (v2)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "687efbcf3d86dc978b0ead48",
+      "clinic": "지리산쌍계한의원",
+      "region": "서울시 강남구",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격, 할인, 할부 여부",
       "leadGrade": "고가망"
     },
     {
