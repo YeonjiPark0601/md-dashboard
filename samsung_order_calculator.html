@@ -429,7 +429,7 @@
     </div>
   </div>
 
-  <div class="section-title" style="border-left-color:#10b981" id="sec-monthly">월별 발주 내역</div>
+  <div class="section-title" style="border-left-color:#10b981" id="sec-monthly">월별 발주 내역 <span style="font-size:12px; color:#888; font-weight:400">(견본 금액은 25-05부터 -20% 차감 가능)</span></div>
   <div style="background:#fff; border-radius:12px; padding:14px 18px; margin-bottom:14px; box-shadow: 0 1px 3px rgba(0,0,0,.08); display:flex; gap:12px; align-items:center; flex-wrap:wrap">
     <label style="font-size:13px; color:#555; font-weight:600">시작 <input type="month" id="bdtsStart" style="margin-left:4px; padding:6px 8px; border:1px solid #d0d7de; border-radius:6px"></label>
     <label style="font-size:13px; color:#555; font-weight:600">종료 <input type="month" id="bdtsEnd" style="margin-left:4px; padding:6px 8px; border:1px solid #d0d7de; border-radius:6px"></label>
@@ -445,14 +445,16 @@
           <th class="th-product">상품 금액</th>
           <th class="th-demo col-sep">견본 수량</th>
           <th class="th-demo">견본 금액</th>
+          <th class="th-demo" style="background:#fef3c7; color:#92400e">견본 금액 (-20% 차감)<br><span style="font-size:10px; font-weight:400">25-05 이후</span></th>
           <th class="col-sep">합계</th>
+          <th style="background:#fef3c7; color:#92400e">합계 (-20% 적용)<br><span style="font-size:10px; font-weight:400">25-05 이후</span></th>
         </tr>
       </thead>
       <tbody id="monthlyBody"></tbody>
     </table>
   </div>
 
-  <div class="section-title" style="border-left-color:#f59e0b" id="sec-model">모델별 × 월별 발주 내역 <span style="font-size:12px; color:#888; font-weight:400">(수량=시스템 기준, 금액=공급단가 합계)</span></div>
+  <div class="section-title" style="border-left-color:#f59e0b" id="sec-model">모델별 × 월별 발주 내역 <span style="font-size:12px; color:#888; font-weight:400">(수량=시스템 기준, 금액=공급단가 합계, 견본은 25-05부터 -20% 병기)</span></div>
   <div class="table-wrap" style="margin-bottom:24px; overflow-x:auto">
     <table id="modelMonthTable" style="min-width:1200px">
       <thead id="modelMonthHead"></thead>
@@ -1583,6 +1585,14 @@ function resetAll() {
 // ============ 월별 발주 내역 (BDTS 실시간) ============
 const BDTS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1Z8C_uiDHD6udIq7b9C79xlPxz4ERK5aC-vkoIbvTxic/gviz/tq?tqx=out:csv&gid=1570415089';
 const BDTS_NEW_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1Z8C_uiDHD6udIq7b9C79xlPxz4ERK5aC-vkoIbvTxic/gviz/tq?tqx=out:csv&gid=712697274';
+
+// 견본 금액 차감 규칙 (25-05 이후 적용)
+const DEMO_DISCOUNT_RATE = 0.2;
+const DEMO_DISCOUNT_START = '25-05'; // YY-MM, 이 월 이상부터 -20% 적용
+function demoDiscounted(amt, ym) {
+  if (!amt) return 0;
+  return (ym && ym >= DEMO_DISCOUNT_START) ? Math.round(amt * (1 - DEMO_DISCOUNT_RATE)) : amt;
+}
 let BDTS_ROWS = []; // [{ ym, model, type, cat, qty, amt, src }]
 let BDTS_MONTHLY = {}; // 'YY-MM' -> { p_qty, p_amt, d_qty, d_amt }
 let MILEAGE_MONTHLY = {}; // 'YY-MM' -> 적립액
@@ -1721,11 +1731,14 @@ function renderMonthly() {
   const endKey = endEl.value.slice(2);
   tbody.innerHTML = '';
   const keys = Object.keys(BDTS_MONTHLY).sort().filter(k => k >= startKey && k <= endKey);
-  let sPQ=0, sPA=0, sDQ=0, sDA=0;
+  let sPQ=0, sPA=0, sDQ=0, sDA=0, sDA_disc=0;
   for (const k of keys) {
     const v = BDTS_MONTHLY[k];
-    sPQ += v.p_qty; sPA += v.p_amt; sDQ += v.d_qty; sDA += v.d_amt;
+    const dDisc = demoDiscounted(v.d_amt, k);
+    sPQ += v.p_qty; sPA += v.p_amt; sDQ += v.d_qty; sDA += v.d_amt; sDA_disc += dDisc;
     const total = v.p_amt + v.d_amt;
+    const totalDisc = v.p_amt + dDisc;
+    const isDisc = k >= DEMO_DISCOUNT_START;
     const [yy, mm] = k.split('-');
     const tr = document.createElement('tr');
     tr.innerHTML = `
@@ -1734,7 +1747,9 @@ function renderMonthly() {
       <td>${v.p_amt ? fmt(v.p_amt) : '-'}</td>
       <td class="col-sep" style="color:#7c3aed; font-weight:600">${v.d_qty || '-'}</td>
       <td>${v.d_amt ? fmt(v.d_amt) : '-'}</td>
+      <td style="background:${isDisc ? '#fffbeb' : '#fafafa'}; color:${isDisc && dDisc ? '#92400e' : '#bbb'}; font-weight:${isDisc && dDisc ? '600' : '400'}">${isDisc && dDisc ? fmt(dDisc) : '-'}</td>
       <td class="col-sep" style="font-weight:700">${total ? fmt(total) : '-'}</td>
+      <td style="background:${isDisc ? '#fffbeb' : '#fafafa'}; color:${isDisc ? '#92400e' : '#bbb'}; font-weight:${isDisc ? '700' : '400'}">${isDisc && totalDisc ? fmt(totalDisc) : '-'}</td>
     `;
     tbody.appendChild(tr);
   }
@@ -1747,11 +1762,13 @@ function renderMonthly() {
       <td>${fmt(sPA)}</td>
       <td class="col-sep" style="color:#7c3aed">${sDQ}</td>
       <td>${fmt(sDA)}</td>
+      <td style="background:#fffbeb; color:#92400e">${fmt(sDA_disc)}</td>
       <td class="col-sep">${fmt(sPA + sDA)}</td>
+      <td style="background:#fffbeb; color:#92400e">${fmt(sPA + sDA_disc)}</td>
     `;
     tbody.appendChild(sumTr);
   } else {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#888; padding:20px">해당 기간 데이터 없음</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#888; padding:20px">해당 기간 데이터 없음</td></tr>';
   }
 
   // 모델별 집계 렌더
@@ -1874,18 +1891,29 @@ function renderByModel(startKey, endKey) {
   const dim = v => v ? `<span style="font-weight:600">${v}</span>` : '<span style="color:#ddd">-</span>';
   const dimAmt = v => v ? fmt(v) : '<span style="color:#ddd">-</span>';
 
+  // 견본액 셀: 25-05 이후이고 값 있으면 "원본 / -20%" 병기
+  const dAmtCell = (amt, ym) => {
+    if (!amt) return '<span style="color:#ddd">-</span>';
+    if (ym && ym >= DEMO_DISCOUNT_START) {
+      return `${fmt(amt)}<br><span style="color:#92400e; font-size:10px">-20%: ${fmt(demoDiscounted(amt, ym))}</span>`;
+    }
+    return fmt(amt);
+  };
+
   for (const m of models) {
     const rt = rowTotal[m];
     if (!rt.p_q && !rt.p_a && !rt.d_q && !rt.d_a) continue;
     const tr = document.createElement('tr');
     let row = `<td style="text-align:left; font-weight:700; position:sticky; left:0; background:#fff">${m}</td>`;
+    let rtDDisc = 0;
     for (const ym of months) {
       const c = cell[m][ym] || { p_q:0, p_a:0, d_q:0, d_a:0 };
+      rtDDisc += demoDiscounted(c.d_a, ym);
       const tq = c.p_q + c.d_q, ta = c.p_a + c.d_a;
       row += `<td class="col-sep" style="color:#1a73e8">${dim(c.p_q)}</td>`;
       row += `<td style="color:#555; font-size:12px">${dimAmt(c.p_a)}</td>`;
       row += `<td style="color:#7c3aed">${dim(c.d_q)}</td>`;
-      row += `<td style="color:#555; font-size:12px">${dimAmt(c.d_a)}</td>`;
+      row += `<td style="color:#555; font-size:12px">${dAmtCell(c.d_a, ym)}</td>`;
       row += `<td style="color:#0f766e; font-weight:700; background:#f0fdfa">${dim(tq)}</td>`;
       row += `<td style="color:#0f766e; font-size:12px; font-weight:600; background:#f0fdfa">${dimAmt(ta)}</td>`;
     }
@@ -1893,7 +1921,7 @@ function renderByModel(startKey, endKey) {
     row += `<td class="col-sep" style="background:#f7f9fc; color:#1a73e8; font-weight:700">${rt.p_q || '-'}</td>`;
     row += `<td style="background:#f7f9fc; font-weight:600">${rt.p_a ? fmt(rt.p_a) : '-'}</td>`;
     row += `<td style="background:#f7f9fc; color:#7c3aed; font-weight:700">${rt.d_q || '-'}</td>`;
-    row += `<td style="background:#f7f9fc; font-weight:600">${rt.d_a ? fmt(rt.d_a) : '-'}</td>`;
+    row += `<td style="background:#f7f9fc; font-weight:600">${rt.d_a ? (rtDDisc < rt.d_a ? `${fmt(rt.d_a)}<br><span style="color:#92400e; font-size:10px">-20%: ${fmt(rtDDisc)}</span>` : fmt(rt.d_a)) : '-'}</td>`;
     row += `<td style="background:#ccfbf1; color:#0f766e; font-weight:700">${rtTq || '-'}</td>`;
     row += `<td style="background:#ccfbf1; color:#0f766e; font-weight:700">${rtTa ? fmt(rtTa) : '-'}</td>`;
     tr.innerHTML = row;
