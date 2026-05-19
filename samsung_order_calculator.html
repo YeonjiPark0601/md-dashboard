@@ -582,18 +582,28 @@ function normalizeModel(name) {
 }
 
 let QUARTERLY_TARGETS_SHARED = []; // 공유 저장된 4분기 목표 [{primary, stretch}, ...] (SAVE_URL)
-let SHEET_QUARTERLY_TARGETS = [];  // 시트(12개월) 합산으로 도출한 4분기 기본값 (1차 디폴트)
+let SHEET_QUARTERLY_TARGETS = [];  // 시트(12개월) 합산으로 도출한 4분기 기본값
 let SHEET_TARGETS = [];            // 시트 원본 12개월 값 (분기 환산용)
 const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSg1DtcRObcFTmBS_rb2oIOj9Yp6JYAXGF7BKDUEgXdMwA5v7V2m1X00FfdmTo3h6dsJS2Aap1dnlNv/pub?gid=471725858&single=true&output=csv';
 
+// 하드코딩된 분기 목표 (사용자 변경 없을 때 기본값으로 사용)
+const HARDCODED_QUARTERLY_TARGETS = [
+  { primary: 1303000000, stretch: 1368000000 }, // 1Q: 13.03억 / 13.68억
+  { primary: 1424000000, stretch: 1491000000 }, // 2Q: 14.24억 / 14.91억
+  { primary: 1167000000, stretch: 1330000000 }, // 3Q: 11.67억 / 13.30억
+  { primary: 0,          stretch: 0 },          // 4Q: 미정
+];
+
 // kind: 'primary' (1차) or 'stretch' (2차)
+// 우선순위: 공유 저장값 → 하드코딩 → 시트(1차 only)
 function quarterTargetOf(q, kind) {
   kind = kind || 'primary';
   if (QUARTERLY_TARGETS_SHARED.length === 4) {
     const row = QUARTERLY_TARGETS_SHARED[q];
     if (row && row[kind] > 0) return row[kind];
   }
-  // 시트 기본값은 1차에만 적용
+  const hc = HARDCODED_QUARTERLY_TARGETS[q];
+  if (hc && hc[kind] > 0) return hc[kind];
   if (kind === 'primary') return SHEET_QUARTERLY_TARGETS[q] || 0;
   return 0;
 }
