@@ -1809,7 +1809,7 @@ function renderTable() {
       '<td class="note-cell" style="font-size:12px;color:#555;" title="' + escHtml(r.inquiry || '') + '">' + escHtml(r.inquiry || '') + '</td>' +
       '<td class="memo-cell" data-id="' + escHtml(r.id) + '" data-ext="' + (r.external?'1':'0') + '">' + renderMemoStack(r.note) + '</td>' +
       '<td>' + (r.stage === 'Demo' ? renderInlineInput('demoDate', r.demoDate, r, 'YYYY-MM-DD', 'date') : '') + '</td>' +
-      '<td>' + escHtml(r.payDate) + '</td>' +
+      '<td>' + (r.stage === 'Done' && !(r.payDate || '').trim() ? renderInlineInput('payDate', r.payDate, r, 'YYYY-MM-DD', 'date') : escHtml(r.payDate)) + '</td>' +
       '<td style="text-align:center;"><button type="button" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;line-height:1.2;" onclick="openDetailModal(\'' + escHtml(r.id) + '\')">상세</button></td>' +
     '</tr>';
   }).join('');
@@ -1896,7 +1896,8 @@ var INLINE_FIELD_KEYS = {
   note:     'md_consult_ext_notes',
   demoDate: 'md_consult_ext_demos',
   clinic:   'md_consult_ext_clinics',
-  region:   'md_consult_ext_regions'
+  region:   'md_consult_ext_regions',
+  payDate:  'md_consult_ext_paydates'
 };
 
 function saveInlineField(inp) {
@@ -2816,8 +2817,13 @@ function ensureMyName() {
 }
 
 // Stage 전환 허용 규칙: Done 포함 자유 변경. 단, Done 선택 시 본인 확인 + 메모 자동 추가.
+// 자동 Done(결제일자 있음)은 잠금(badge), 수동 Done(결제일자 없음)은 변경 가능(select).
 var ALL_STAGES = ['New','Follow','Demo','Turn-key','Drop','Done'];
 function renderStageCell(r) {
+  // 자동 Done: 결제일자가 있으면 Stage 변경 불가
+  if (r.stage === 'Done' && (r.payDate || '').trim()) {
+    return '<span class="badge ' + getStageBadgeClass(r.stage) + '" title="결제일자가 입력되어 자동 Done 처리됨. 변경 불가.">' + escHtml(r.stage) + '</span>';
+  }
   var current = r.stage && ALL_STAGES.indexOf(r.stage) !== -1 ? r.stage : 'New';
   var opts = ALL_STAGES.map(function(s){
     return '<option value="' + s + '"' + (s===current?' selected':'') + '>' + s + '</option>';
