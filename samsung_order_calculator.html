@@ -1153,12 +1153,25 @@ function setQty(type, idx, val) {
 const SAVE_URL = 'https://script.google.com/macros/s/AKfycbxwM-scWd4J-KG7Ot4i8Fwo8ueZYewjx-9yLKUPw7DVyQPF3skpQRSTfe3e1fwrG1E6/exec';
 let _saveTimer = null;
 
+// 마지막으로 서버에서 받은 quarterlyTargets (사용자가 명시적으로 reset/apply 하지 않았으면 이걸 다시 저장)
+let _lastLoadedQuarterlyTargets = null;
+let _userExplicitlyChangedTargets = false;
+
 function _doSave() {
+  // 사용자가 명시적으로 분기 목표를 변경했으면 현재값 저장, 아니면 마지막 로드값 보존
+  let qtToSave;
+  if (_userExplicitlyChangedTargets && QUARTERLY_TARGETS_SHARED.length === 4) {
+    qtToSave = QUARTERLY_TARGETS_SHARED;
+  } else if (QUARTERLY_TARGETS_SHARED.length === 4) {
+    qtToSave = QUARTERLY_TARGETS_SHARED;
+  } else {
+    qtToSave = _lastLoadedQuarterlyTargets; // 빈 상태일 때 기존 서버값 보존
+  }
   const state = {
     productQty: [...productQty],
     demoQty: [...demoQty],
     options: options.map(o => ({ model: o.model, name: o.name, cost: o.cost, qty: o.qty })),
-    quarterlyTargets: (QUARTERLY_TARGETS_SHARED.length === 4) ? QUARTERLY_TARGETS_SHARED : null,
+    quarterlyTargets: qtToSave,
     savedAt: new Date().toISOString(),
   };
   console.log('상태 저장 전송', state);
@@ -1191,9 +1204,24 @@ async function loadState() {
       options.length = 0;
       state.options.forEach(o => options.push({ model: o.model, name: o.name, cost: o.cost, qty: o.qty }));
     }
+    // 1) 신규 형식: state.quarterlyTargets ([{primary, stretch}, ...])
     let qt = state.quarterlyTargets;
     if (typeof qt === 'string') {
       try { qt = JSON.parse(qt); } catch(e) { qt = null; }
+    }
+    // 2) 폴백 1: 이전 분기 형식 (단일 숫자 4개 배열)
+    // 3) 폴백 2: 더 이전 monthlyTargets (12개월 → 3개월씩 합산)
+    if (!(qt && Array.isArray(qt) && qt.length === 4)) {
+      let mt = state.monthlyTargets;
+      if (typeof mt === 'string') {
+        try { mt = JSON.parse(mt); } catch(e) { mt = null; }
+      }
+      if (mt && Array.isArray(mt) && mt.length === 12) {
+        const summed = [0,0,0,0];
+        for (let i = 0; i < 12; i++) summed[Math.floor(i / 3)] += (parseInt(mt[i]) || 0);
+        qt = summed.map(v => ({ primary: v, stretch: 0 }));
+        console.log('monthlyTargets (12개월) → quarterlyTargets 마이그레이션', qt);
+      }
     }
     if (qt && Array.isArray(qt) && qt.length === 4) {
       QUARTERLY_TARGETS_SHARED = qt.map(x => {
@@ -1203,9 +1231,9 @@ async function loadState() {
             stretch: parseInt(x.stretch) || 0,
           };
         }
-        // 이전 형식 (단일 숫자) — 1차로 마이그레이션
         return { primary: parseInt(x) || 0, stretch: 0 };
       });
+      _lastLoadedQuarterlyTargets = QUARTERLY_TARGETS_SHARED;
       console.log('quarterlyTargets 로드 완료', QUARTERLY_TARGETS_SHARED);
     } else {
       console.log('quarterlyTargets 미설정 또는 형식 오류, 원본:', state.quarterlyTargets, '타입:', typeof state.quarterlyTargets);
@@ -2190,6 +2218,8 @@ function applyMonthlyTargets() {
     });
   }
   QUARTERLY_TARGETS_SHARED = vals;
+  _userExplicitlyChangedTargets = true;
+  _lastLoadedQuarterlyTargets = vals;
   updateSubtitle();
   render();
   saveStateImmediate(); // 전사 공유 저장 (즉시 실행)
@@ -2201,6 +2231,8 @@ function applyMonthlyTargets() {
 
 function resetMonthlyTargets() {
   QUARTERLY_TARGETS_SHARED = [];
+  _userExplicitlyChangedTargets = true;
+  _lastLoadedQuarterlyTargets = null;
   renderTargetInputs();
   updateSubtitle();
   render();
