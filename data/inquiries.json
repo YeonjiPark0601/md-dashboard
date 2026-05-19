@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-19T06:40:21.015Z",
+  "updated": "2026-05-19T06:55:22.103Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -81,7 +81,7 @@
       "productId": "6744372fb7f1deb74e849d26",
       "clinic": "지리산쌍계한의원",
       "region": "서울시 강남구",
-      "caller": "",
+      "caller": "유승준",
       "supplier": "삼성메디슨",
       "payDate": "",
       "payAmount": null,
