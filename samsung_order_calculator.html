@@ -295,8 +295,8 @@
   <a href="#sec-monthly" onclick="return scrollTo2('sec-monthly')">월별 내역</a>
   <a href="#sec-model" onclick="return scrollTo2('sec-model')">모델 × 월</a>
   <a href="#sec-quarter" onclick="return scrollTo2('sec-quarter')">분기 비교</a>
-  <a href="#sec-mileage" onclick="return scrollTo2('sec-mileage')">적립 마일리지</a>
   <a href="#sec-target" onclick="return scrollTo2('sec-target')">분기별 목표 관리</a>
+  <a href="#sec-mileage" onclick="return scrollTo2('sec-mileage')">적립 마일리지</a>
 </nav>
 
 <div class="container">
@@ -324,16 +324,28 @@
       <div class="sub" id="cardTotalVat"></div>
     </div>
   </div>
-  <div class="cards" style="grid-template-columns: 1fr 1fr; margin-bottom: 20px;">
-    <div class="card">
-      <div class="label" id="cardNeedLabel">분기 목표 달성 필요 금액</div>
-      <div class="val" id="cardNeed">-</div>
-      <div class="sub" id="cardNeedSub"></div>
+  <div class="cards" style="grid-template-columns: 1fr 1fr; margin-bottom: 12px;">
+    <div class="card" style="border-top:3px solid #0ea5e9">
+      <div class="label" id="cardNeedLabelP">1차 목표 달성 필요 금액</div>
+      <div class="val" id="cardNeedP">-</div>
+      <div class="sub" id="cardNeedSubP"></div>
     </div>
-    <div class="card">
-      <div class="label" id="cardQLabel">1Q 목표 달성율</div>
-      <div class="val" id="cardQRate">0%</div>
-      <div class="sub" id="cardQSub"></div>
+    <div class="card" style="border-top:3px solid #0ea5e9">
+      <div class="label" id="cardQLabelP">1Q 1차 목표 달성율</div>
+      <div class="val" id="cardQRateP">0%</div>
+      <div class="sub" id="cardQSubP"></div>
+    </div>
+  </div>
+  <div class="cards" style="grid-template-columns: 1fr 1fr; margin-bottom: 20px;">
+    <div class="card" style="border-top:3px solid #f59e0b">
+      <div class="label" id="cardNeedLabelS">2차 목표 달성 필요 금액</div>
+      <div class="val" id="cardNeedS">-</div>
+      <div class="sub" id="cardNeedSubS"></div>
+    </div>
+    <div class="card" style="border-top:3px solid #f59e0b">
+      <div class="label" id="cardQLabelS">1Q 2차 목표 달성율</div>
+      <div class="val" id="cardQRateS">0%</div>
+      <div class="sub" id="cardQSubS"></div>
     </div>
   </div>
 
@@ -463,6 +475,31 @@
     </table>
   </div>
 
+  <div class="section-title" style="border-left-color:#0ea5e9; margin-top:24px" id="sec-target">분기별 목표 관리 <span style="font-size:12px; color:#888; font-weight:400">(VAT별도, 1차=기본 / 2차=스트레치, 이번 분기 값이 상단 카드에 반영)</span></div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align:left" rowspan="2">분기</th>
+          <th colspan="2" style="background:#e0f2fe; color:#0369a1">1차 목표 (기본)</th>
+          <th colspan="2" style="background:#fef3c7; color:#92400e">2차 목표 (스트레치)</th>
+        </tr>
+        <tr>
+          <th style="background:#e0f2fe">금액 (원)</th>
+          <th style="background:#e0f2fe">억</th>
+          <th style="background:#fef3c7">금액 (원)</th>
+          <th style="background:#fef3c7">억</th>
+        </tr>
+      </thead>
+      <tbody id="targetBody"></tbody>
+    </table>
+  </div>
+  <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px; align-items:center">
+    <span id="targetStatus" style="color:#888; font-size:12px"></span>
+    <button onclick="resetMonthlyTargets()" style="background:#eee; color:#555; border:0; padding:10px 18px; border-radius:8px; cursor:pointer; font-weight:600; font-size:13px">기본값(시트)</button>
+    <button onclick="applyMonthlyTargets()" style="background:#0ea5e9; color:#fff; border:0; padding:10px 24px; border-radius:8px; cursor:pointer; font-weight:700; font-size:13px">적용</button>
+  </div>
+
   <div class="section-title" style="border-left-color:#f43f5e; margin-top:24px" id="sec-mileage">적립 마일리지 <span style="font-size:12px; color:#888; font-weight:400">(입고월 기준, 1년 후 사용 가능)</span></div>
   <div class="table-wrap">
     <table>
@@ -476,25 +513,6 @@
       </thead>
       <tbody id="mileageBody"></tbody>
     </table>
-  </div>
-
-  <div class="section-title" style="border-left-color:#0ea5e9; margin-top:24px" id="sec-target">분기별 목표 관리 <span style="font-size:12px; color:#888; font-weight:400">(VAT별도, 이번 분기 값이 상단 카드에 반영)</span></div>
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th style="text-align:left">분기</th>
-          <th>목표 금액 (원)</th>
-          <th>억 환산</th>
-        </tr>
-      </thead>
-      <tbody id="targetBody"></tbody>
-    </table>
-  </div>
-  <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px; align-items:center">
-    <span id="targetStatus" style="color:#888; font-size:12px"></span>
-    <button onclick="resetMonthlyTargets()" style="background:#eee; color:#555; border:0; padding:10px 18px; border-radius:8px; cursor:pointer; font-weight:600; font-size:13px">기본값(시트)</button>
-    <button onclick="applyMonthlyTargets()" style="background:#0ea5e9; color:#fff; border:0; padding:10px 24px; border-radius:8px; cursor:pointer; font-weight:700; font-size:13px">적용</button>
   </div>
 </div>
 
@@ -515,14 +533,21 @@ const PRODUCTS = [
   { name: 'HM70Evo', cost: 19715500, price: 23990000 },
 ];
 
-let QUARTERLY_TARGETS_SHARED = []; // 공유 저장된 4분기 목표 (SAVE_URL)
-let SHEET_QUARTERLY_TARGETS = [];  // 시트(12개월) 합산으로 도출한 4분기 기본값
+let QUARTERLY_TARGETS_SHARED = []; // 공유 저장된 4분기 목표 [{primary, stretch}, ...] (SAVE_URL)
+let SHEET_QUARTERLY_TARGETS = [];  // 시트(12개월) 합산으로 도출한 4분기 기본값 (1차 디폴트)
 let SHEET_TARGETS = [];            // 시트 원본 12개월 값 (분기 환산용)
 const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSg1DtcRObcFTmBS_rb2oIOj9Yp6JYAXGF7BKDUEgXdMwA5v7V2m1X00FfdmTo3h6dsJS2Aap1dnlNv/pub?gid=471725858&single=true&output=csv';
 
-function quarterTargetOf(q) {
-  if (QUARTERLY_TARGETS_SHARED.length === 4 && QUARTERLY_TARGETS_SHARED[q] > 0) return QUARTERLY_TARGETS_SHARED[q];
-  return SHEET_QUARTERLY_TARGETS[q] || 0;
+// kind: 'primary' (1차) or 'stretch' (2차)
+function quarterTargetOf(q, kind) {
+  kind = kind || 'primary';
+  if (QUARTERLY_TARGETS_SHARED.length === 4) {
+    const row = QUARTERLY_TARGETS_SHARED[q];
+    if (row && row[kind] > 0) return row[kind];
+  }
+  // 시트 기본값은 1차에만 적용
+  if (kind === 'primary') return SHEET_QUARTERLY_TARGETS[q] || 0;
+  return 0;
 }
 
 // 25년 1분기 월별 발주 실적 (입고월 기준, BDTS 전체 금액 합산)
@@ -962,42 +987,45 @@ function render() {
   const qStart = CUR_QUARTER * 3;
   const qMonths = [qStart, qStart + 1, qStart + 2];
   const qLabel = CUR_QUARTER + 1;
-  const qTarget = quarterTargetOf(CUR_QUARTER);
   let qTotal = 0;
   qMonths.forEach(m => {
     const mNum = m + 1;
     qTotal += (m === CUR_MONTH) ? grandTotal : (THIS_YEAR_QUARTER[mNum] || 0);
   });
 
-  // 분기 목표 달성 필요 금액 (남은 금액)
-  const needEl = document.getElementById('cardNeed');
-  const needSubEl = document.getElementById('cardNeedSub');
-  document.getElementById('cardNeedLabel').textContent = qLabel + 'Q 목표 달성 필요 금액';
-  if (qTarget > 0) {
-    const need = qTarget - qTotal;
-    if (need <= 0) {
-      needEl.textContent = '✓ 달성';
-      needEl.className = 'val green';
-      needSubEl.textContent = '초과 ' + fmt(-need);
+  // 1차/2차 카드 공통 렌더 함수
+  function renderTargetCards(kind, suffix) {
+    const target = quarterTargetOf(CUR_QUARTER, kind);
+    const kindLabel = (kind === 'primary') ? '1차' : '2차';
+    const needEl = document.getElementById('cardNeed' + suffix);
+    const needSubEl = document.getElementById('cardNeedSub' + suffix);
+    document.getElementById('cardNeedLabel' + suffix).textContent = qLabel + 'Q ' + kindLabel + ' 목표 달성 필요 금액';
+    if (target > 0) {
+      const need = target - qTotal;
+      if (need <= 0) {
+        needEl.textContent = '✓ 달성';
+        needEl.className = 'val green';
+        needSubEl.textContent = '초과 ' + fmt(-need);
+      } else {
+        needEl.textContent = fmt(need);
+        needEl.className = 'val red';
+        needSubEl.textContent = '목표 ' + fmt(target) + ' / 누적 ' + fmt(qTotal);
+      }
     } else {
-      needEl.textContent = fmt(need);
-      needEl.className = 'val red';
-      needSubEl.textContent = '목표 ' + fmt(qTarget) + ' / 누적 ' + fmt(qTotal);
+      needEl.textContent = '-';
+      needEl.className = 'val';
+      needSubEl.textContent = kindLabel + ' 목표 미설정';
     }
-  } else {
-    needEl.textContent = '-';
-    needEl.className = 'val';
-    needSubEl.textContent = '분기 목표 미설정';
+    const rate = target > 0 ? qTotal / target : 0;
+    const ratePct = (rate * 100).toFixed(1) + '%';
+    const rateEl = document.getElementById('cardQRate' + suffix);
+    rateEl.textContent = target > 0 ? ratePct : '-';
+    rateEl.className = 'val ' + (rate >= 1 ? 'green' : rate >= 0.8 ? 'orange' : 'red');
+    document.getElementById('cardQLabel' + suffix).textContent = qLabel + 'Q ' + kindLabel + ' 목표 달성율';
+    document.getElementById('cardQSub' + suffix).textContent = fmt(qTotal) + ' / ' + fmt(target);
   }
-
-  // 분기 달성율 카드
-  const qRate = qTarget > 0 ? qTotal / qTarget : 0;
-  const qRatePct = (qRate * 100).toFixed(1) + '%';
-  const qRateEl = document.getElementById('cardQRate');
-  qRateEl.textContent = qTarget > 0 ? qRatePct : '-';
-  qRateEl.className = 'val ' + (qRate >= 1 ? 'green' : qRate >= 0.8 ? 'orange' : 'red');
-  document.getElementById('cardQLabel').textContent = qLabel + 'Q 목표 달성율';
-  document.getElementById('cardQSub').textContent = fmt(qTotal) + ' / ' + fmt(qTarget);
+  renderTargetCards('primary', 'P');
+  renderTargetCards('stretch', 'S');
 
   // Render quarter comparison
   renderQuarter(grandTotal);
@@ -1105,7 +1133,16 @@ async function loadState() {
       try { qt = JSON.parse(qt); } catch(e) { qt = null; }
     }
     if (qt && Array.isArray(qt) && qt.length === 4) {
-      QUARTERLY_TARGETS_SHARED = qt.map(x => parseInt(x) || 0);
+      QUARTERLY_TARGETS_SHARED = qt.map(x => {
+        if (x && typeof x === 'object') {
+          return {
+            primary: parseInt(x.primary) || 0,
+            stretch: parseInt(x.stretch) || 0,
+          };
+        }
+        // 이전 형식 (단일 숫자) — 1차로 마이그레이션
+        return { primary: parseInt(x) || 0, stretch: 0 };
+      });
       console.log('quarterlyTargets 로드 완료', QUARTERLY_TARGETS_SHARED);
     } else {
       console.log('quarterlyTargets 미설정 또는 형식 오류, 원본:', state.quarterlyTargets, '타입:', typeof state.quarterlyTargets);
@@ -1126,14 +1163,13 @@ loadState().then(() => {
 function updateSubtitle() {
   const sub = document.querySelector('.subtitle');
   if (!sub) return;
-  const qt = quarterTargetOf(CUR_QUARTER);
-  const annual = [0,1,2,3].reduce((a, q) => a + quarterTargetOf(q), 0);
-  if (qt > 0 || annual > 0) {
-    const qStr = qt > 0 ? (qt / 100000000).toFixed(2) + '억' : '미설정';
-    const yStr = annual > 0 ? (annual / 100000000).toFixed(0) + '억' : '미설정';
-    sub.textContent = (CUR_QUARTER + 1) + 'Q 목표: ' + qStr + ' (VAT 별도) | 연간 목표: ' + yStr;
-    sub.style.color = '#8899aa';
-  }
+  const qtP = quarterTargetOf(CUR_QUARTER, 'primary');
+  const qtS = quarterTargetOf(CUR_QUARTER, 'stretch');
+  const annualP = [0,1,2,3].reduce((a, q) => a + quarterTargetOf(q, 'primary'), 0);
+  const annualS = [0,1,2,3].reduce((a, q) => a + quarterTargetOf(q, 'stretch'), 0);
+  const fmt억 = v => v > 0 ? (v / 100000000).toFixed(2) + '억' : '-';
+  sub.textContent = (CUR_QUARTER + 1) + 'Q 목표 1차/2차: ' + fmt억(qtP) + ' / ' + fmt억(qtS) + ' (VAT 별도) | 연간 1차: ' + fmt억(annualP) + ' / 2차: ' + fmt억(annualS);
+  sub.style.color = '#8899aa';
 }
 
 // 구글시트에서 월별 값(12개월) 로드 → 분기 합산
@@ -1860,7 +1896,7 @@ function scrollTo2(id) {
   }
   return false;
 }
-const NAV_SECS = ['sec-kpi', 'sec-order', 'sec-option', 'sec-stock', 'sec-monthly', 'sec-model', 'sec-quarter', 'sec-mileage', 'sec-target'];
+const NAV_SECS = ['sec-kpi', 'sec-order', 'sec-option', 'sec-stock', 'sec-monthly', 'sec-model', 'sec-quarter', 'sec-target', 'sec-mileage'];
 window.addEventListener('scroll', () => {
   let active = NAV_SECS[0];
   for (const id of NAV_SECS) {
@@ -1872,15 +1908,15 @@ window.addEventListener('scroll', () => {
   });
 });
 
-// ============ 분기별 목표 관리 (전사 공유 저장) ============
+// ============ 분기별 목표 관리 (1차/2차 공유 저장) ============
 function getCurrentTargets() {
-  // 4분기 effective 값 배열 (공유저장 우선, 없으면 시트)
+  // 4분기 [{primary, stretch}] 배열 (공유저장 우선, 1차는 시트 fallback)
   const base = [];
   for (let q = 0; q < 4; q++) {
-    const v = (QUARTERLY_TARGETS_SHARED.length === 4 && QUARTERLY_TARGETS_SHARED[q] > 0)
-      ? QUARTERLY_TARGETS_SHARED[q]
-      : (SHEET_QUARTERLY_TARGETS[q] || 0);
-    base.push(v);
+    base.push({
+      primary: quarterTargetOf(q, 'primary'),
+      stretch: quarterTargetOf(q, 'stretch'),
+    });
   }
   return base;
 }
@@ -1893,19 +1929,24 @@ function renderTargetInputs() {
   for (let q = 0; q < 4; q++) {
     const tr = document.createElement('tr');
     const isCurr = (q === CUR_QUARTER);
-    const v = vals[q] || 0;
+    const p = vals[q].primary || 0;
+    const s = vals[q].stretch || 0;
     tr.innerHTML = `
       <td style="text-align:left; ${isCurr ? 'background:#e0f2fe; font-weight:700' : ''}">${q + 1}Q (${q * 3 + 1}~${q * 3 + 3}월)${isCurr ? ' (이번 분기)' : ''}</td>
-      <td style="text-align:center"><input type="number" id="tgt-${q}" value="${v || ''}" placeholder="0" style="width:180px; padding:6px 8px; border:1px solid #d0d7de; border-radius:6px; text-align:right; font-size:13px"></td>
-      <td id="tgt-eok-${q}" style="color:#888; font-size:12px">${v ? (v / 100000000).toFixed(2) + '억' : '-'}</td>
+      <td style="text-align:center"><input type="number" id="tgt-${q}-p" value="${p || ''}" placeholder="0" style="width:160px; padding:6px 8px; border:1px solid #0ea5e9; border-radius:6px; text-align:right; font-size:13px"></td>
+      <td id="tgt-eok-${q}-p" style="color:#888; font-size:12px">${p ? (p / 100000000).toFixed(2) + '억' : '-'}</td>
+      <td style="text-align:center"><input type="number" id="tgt-${q}-s" value="${s || ''}" placeholder="0" style="width:160px; padding:6px 8px; border:1px solid #f59e0b; border-radius:6px; text-align:right; font-size:13px"></td>
+      <td id="tgt-eok-${q}-s" style="color:#888; font-size:12px">${s ? (s / 100000000).toFixed(2) + '억' : '-'}</td>
     `;
     tbody.appendChild(tr);
   }
   for (let q = 0; q < 4; q++) {
-    const inp = document.getElementById('tgt-' + q);
-    inp.addEventListener('input', () => {
-      const v = parseInt((inp.value || '0').replace(/,/g, '')) || 0;
-      document.getElementById('tgt-eok-' + q).textContent = v ? (v / 100000000).toFixed(2) + '억' : '-';
+    ['p', 's'].forEach(k => {
+      const inp = document.getElementById('tgt-' + q + '-' + k);
+      inp.addEventListener('input', () => {
+        const v = parseInt((inp.value || '0').replace(/,/g, '')) || 0;
+        document.getElementById('tgt-eok-' + q + '-' + k).textContent = v ? (v / 100000000).toFixed(2) + '억' : '-';
+      });
     });
   }
   updateTargetStatus();
@@ -1916,14 +1957,18 @@ function updateTargetStatus() {
   if (!el) return;
   el.textContent = (QUARTERLY_TARGETS_SHARED.length === 4)
     ? '공유 저장된 값 사용중 (전사 공통)'
-    : '시트 기본값 사용중';
+    : '시트 기본값 사용중 (1차만 — 2차는 직접 입력)';
 }
 
 function applyMonthlyTargets() {
   const vals = [];
   for (let q = 0; q < 4; q++) {
-    const el = document.getElementById('tgt-' + q);
-    vals.push(parseInt((el.value || '0').replace(/,/g, '')) || 0);
+    const pEl = document.getElementById('tgt-' + q + '-p');
+    const sEl = document.getElementById('tgt-' + q + '-s');
+    vals.push({
+      primary: parseInt((pEl.value || '0').replace(/,/g, '')) || 0,
+      stretch: parseInt((sEl.value || '0').replace(/,/g, '')) || 0,
+    });
   }
   QUARTERLY_TARGETS_SHARED = vals;
   updateSubtitle();
@@ -1942,7 +1987,7 @@ function resetMonthlyTargets() {
   render();
   saveStateImmediate(); // 공유 해제도 저장 (다른 사용자에게 반영)
   const st = document.getElementById('targetStatus');
-  if (st) st.textContent = '✓ 시트 기본값으로 복귀';
+  if (st) st.textContent = '✓ 시트 기본값으로 복귀 (2차는 비워짐)';
   setTimeout(updateTargetStatus, 3000);
 }
 
