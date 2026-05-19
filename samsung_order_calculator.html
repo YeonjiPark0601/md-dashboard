@@ -575,8 +575,8 @@ const PRODUCTS = [
 function normalizeModel(name) {
   if (!name) return name;
   const n = name.trim();
-  if (/^EVO\s*Q10\$/i.test(n) || /^Q10\$/i.test(n)) return 'Q10';
-  const m = n.match(/^(V[5-8])\s+ONE\$/i);
+  if (/^EVO\s*Q10$/i.test(n) || /^Q10$/i.test(n)) return 'Q10';
+  const m = n.match(/^(V[5-8])\s+ONE$/i);
   if (m) return m[1].toUpperCase();
   return n;
 }
