@@ -846,10 +846,15 @@ function sheetRowToRecord(row) {
     r.date = dm ? dm[1] + '-' + String(dm[2]).padStart(2,'0') + '-' + String(dm[3]).padStart(2,'0') : '';
   }
   r.consent = false; r.buyDate = ''; r.status = ''; r.rep = '';
-  // 담당자 배정되면 New(또는 빈 stage) → Follow 자동 승격 (모든 디바이스 동일 결과)
-  var stageVal = (r.stage || '').trim();
-  if ((stageVal === '' || stageVal === 'New') && (r.caller || '').trim()) {
-    r.stage = 'Follow';
+  // 결제 완료가 최우선: payDate 있으면 무조건 Done (이전 Follow/Drop이었어도 복구)
+  if ((r.payDate || '').trim()) {
+    r.stage = 'Done';
+  } else {
+    // 담당자 배정되면 New(또는 빈 stage) → Follow 자동 승격 (모든 디바이스 동일 결과)
+    var stageVal = (r.stage || '').trim();
+    if ((stageVal === '' || stageVal === 'New') && (r.caller || '').trim()) {
+      r.stage = 'Follow';
+    }
   }
   // 자동 매칭된 값은 수정 불가 (n8n이 CID/주문이력 기반으로 채워준 값)
   if (isAutomated) {
