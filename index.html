@@ -3235,7 +3235,7 @@ function renderShockwaveSupplier(){
   const cols=[];
   years.forEach(yr=>{
     cols.push({key:`_${yr}total`,label:yr.substring(2)+'년',isTotal:true,year:yr});
-    const yms=monthSet.filter(m=>m.startsWith(yr)).sort().reverse();
+    const yms=monthSet.filter(m=>m.startsWith(yr)).sort();
     yms.forEach(m=>cols.push({key:m,label:m.substring(5)+'월',year:yr}));
   });
   const byS={},costByS={},qtyByS={};
