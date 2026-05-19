@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-19T11:30:23.158Z",
+  "updated": "2026-05-19T12:00:26.849Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -108,6 +108,27 @@
       "payAmount": null,
       "inquiry": "가격",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 19 오후 08:55:41",
+      "date": "2026-05-19",
+      "slackTs": "1779191741.031549",
+      "name": "이요한",
+      "cid": "5fb223e95120316334323d1c",
+      "phone": "010-9245-6490",
+      "product": "스트라텍 전침기 stn-220 (4채널)",
+      "qty": 2,
+      "price": "N/A",
+      "productId": "645c45796fa3a0002addd9f5",
+      "clinic": "노아한의원",
+      "region": "경기도 용인시",
+      "caller": "",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
