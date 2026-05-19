@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-19T07:00:25.451Z",
+  "updated": "2026-05-19T08:05:22.906Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -108,6 +108,27 @@
       "payAmount": null,
       "inquiry": "금액 및 할부, 할인 여부",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 05. 19 오후 05:02:47",
+      "date": "2026-05-19",
+      "slackTs": "1779177767.585179",
+      "name": "남승우",
+      "cid": "5eec1c81e510ee503167cfee",
+      "phone": "010-3360-2124",
+      "product": "체형진단기 아이밸런스 iBalance (v2)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "687efbcf3d86dc978b0ead48",
+      "clinic": "이안한방병원",
+      "region": "경기도 수원시",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
