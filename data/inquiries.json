@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-20T06:45:21.515Z",
+  "updated": "2026-05-20T09:30:20.787Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -23,6 +23,27 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "견적서 요청",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 20 오후 06:27:19",
+      "date": "2026-05-20",
+      "slackTs": "1779269239.426789",
+      "name": "송호선",
+      "cid": "5d9599870dabe405b156d81c",
+      "phone": "010-5163-7153",
+      "product": "[에이치비오티] 고압산소챔버 O2 FRESH M50",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "64c70cee37e218002a5c3a00",
+      "clinic": "일등한의원",
+      "region": "인천시 서구",
+      "caller": "",
+      "supplier": "에이치비오티",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격",
       "leadGrade": "고가망"
     },
     {
@@ -7730,7 +7751,7 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "",
-      "leadGrade": ""
+      "leadGrade": "고가망"
     },
     {
       "source": "일반",
