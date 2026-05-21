@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-21T06:35:22.805Z",
+  "updated": "2026-05-21T08:05:22.020Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -23,6 +23,27 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "가격",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 21 오후 05:04:48",
+      "date": "2026-05-21",
+      "slackTs": "1779350688.886399",
+      "name": "김태민",
+      "cid": "63e7078d875765002226a3c0",
+      "phone": "010-8886-6983",
+      "product": "[세이버] 자동포장기 스텐 KH15200",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "60bd7a640ccc56001bc7fe1a",
+      "clinic": "동백숲한의원",
+      "region": "경기도 용인시",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격,  구매시 배송시기",
       "leadGrade": "고가망"
     },
     {
