@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-21T08:05:22.020Z",
+  "updated": "2026-05-21T08:45:21.863Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -45,6 +45,27 @@
       "payAmount": null,
       "inquiry": "가격,  구매시 배송시기",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 21 오후 05:41:05",
+      "date": "2026-05-21",
+      "slackTs": "1779352865.162919",
+      "name": "이해란",
+      "cid": "613852393b4626001a056379",
+      "phone": "010-7127-3887",
+      "product": "[PIE] 야누스 피부진단기 (JANUS Pro sunlike)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "68c28018b4ea61bdadcd40c5",
+      "clinic": "해누리한의원",
+      "region": "서울시 송파구",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "엔디야그 야누스",
+      "leadGrade": "가망"
     },
     {
       "source": "총판기기",
