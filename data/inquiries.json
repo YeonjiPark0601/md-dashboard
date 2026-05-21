@@ -1,9 +1,30 @@
 {
-  "updated": "2026-05-21T05:35:22.659Z",
+  "updated": "2026-05-21T06:25:22.289Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 21 오후 03:20:58",
+      "date": "2026-05-21",
+      "slackTs": "1779344458.542559",
+      "name": "오순석",
+      "cid": "5d68709619efa30eb2913d5d",
+      "phone": "010-6775-9566",
+      "product": "[굿플] 수치료기 AQUA MEDI",
+      "qty": "1개",
+      "price": "N/A",
+      "productId": "672b587d5eae559fe29df007",
+      "clinic": "경희 고성 한의원",
+      "region": "서울시 강북구",
+      "caller": "",
+      "supplier": "굿플",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격",
+      "leadGrade": "고가망"
+    },
     {
       "source": "총판기기",
       "timestamp": "2026. 05. 21 오후 02:04:53",
