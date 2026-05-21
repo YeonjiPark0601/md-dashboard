@@ -1,9 +1,30 @@
 {
-  "updated": "2026-05-20T09:35:26.170Z",
+  "updated": "2026-05-21T05:05:22.193Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 05. 21 오후 02:04:53",
+      "date": "2026-05-21",
+      "slackTs": "1779339893.135629",
+      "name": "고상종",
+      "cid": "608c0e420ccc56001bc7cbf2",
+      "phone": "010-6433-9427",
+      "product": "[DSE] CO2 레이저 (COTRA PLUS)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "67bdcc3cbade696523840a6b",
+      "clinic": "삼성서울연합의원 ",
+      "region": "경기도 남양주시",
+      "caller": "",
+      "supplier": "DSE",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "구매가",
+      "leadGrade": "고가망"
+    },
     {
       "source": "일반",
       "timestamp": "2026. 05. 20 오후 03:02:13",
