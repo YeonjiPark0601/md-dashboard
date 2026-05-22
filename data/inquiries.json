@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-22T07:45:21.911Z",
+  "updated": "2026-05-22T13:15:20.993Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -24,6 +24,27 @@
       "payAmount": null,
       "inquiry": "",
       "leadGrade": ""
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 22 오후 10:13:30",
+      "date": "2026-05-22",
+      "slackTs": "1779455610.542079",
+      "name": "박재영",
+      "cid": "62160f0fd41623002392f6b3",
+      "phone": "010-4174-9977",
+      "product": "HCK 치료실 베드 (N100)",
+      "qty": 14,
+      "price": "N/A",
+      "productId": "61162ddad26af90681b1f6fd",
+      "clinic": "무실한의원",
+      "region": "강원도 원주시",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "800",
+      "leadGrade": "가망"
     },
     {
       "source": "총판기기",
@@ -9284,7 +9305,7 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "",
-      "leadGrade": ""
+      "leadGrade": "가망"
     },
     {
       "source": "일반",
