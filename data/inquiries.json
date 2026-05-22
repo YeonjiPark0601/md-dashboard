@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-21T09:15:23.404Z",
+  "updated": "2026-05-22T00:05:22.724Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -251,8 +251,8 @@
       "region": "대전시 대덕구",
       "caller": "이예림",
       "supplier": "메디스트림",
-      "payDate": "",
-      "payAmount": null,
+      "payDate": "2026-05-21",
+      "payAmount": 1400000,
       "inquiry": "",
       "leadGrade": ""
     },
@@ -818,8 +818,8 @@
       "region": "부산시 해운대구",
       "caller": "이예림",
       "supplier": "이앤에스헬스케어",
-      "payDate": "",
-      "payAmount": null,
+      "payDate": "2026-05-21",
+      "payAmount": 6900000,
       "inquiry": "A/S 가능하다면 중고도 괜찮습니다",
       "leadGrade": "고가망"
     },
