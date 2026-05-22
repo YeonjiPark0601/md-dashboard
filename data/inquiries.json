@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-22T01:55:20.872Z",
+  "updated": "2026-05-22T02:05:21.982Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -3839,7 +3839,7 @@
       "price": "0",
       "productId": "67bbd1a35712128607614aa7",
       "clinic": "",
-      "region": "대전시 서구",
+      "region": "경기도 남양주시",
       "caller": "이예림",
       "supplier": "동아참메드",
       "payDate": "",
