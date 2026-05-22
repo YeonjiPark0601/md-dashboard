@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-22T04:05:22.722Z",
+  "updated": "2026-05-22T06:00:27.952Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -66,6 +66,27 @@
       "payAmount": null,
       "inquiry": "올라와있는 5750000원가 차이가 있나요? 프로모션 계획이 있을까요?",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 05. 22 오후 02:57:59",
+      "date": "2026-05-22",
+      "slackTs": "1779429479.881489",
+      "name": "박신영",
+      "cid": "601dbf712c593a001ace9c2e",
+      "phone": "010-9421-9615",
+      "product": "[DSE] CO2 레이저 (DS-40U B)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "67bc1cd05a4f59cacd7839f8",
+      "clinic": "리샘한의원 천안아산점",
+      "region": "충청남도 천안시",
+      "caller": "",
+      "supplier": "DSE",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
