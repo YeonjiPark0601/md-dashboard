@@ -1,9 +1,30 @@
 {
-  "updated": "2026-05-22T02:40:21.104Z",
+  "updated": "2026-05-22T04:05:22.722Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 22 오후 01:02:26",
+      "date": "2026-05-22",
+      "slackTs": "1779422546.104249",
+      "name": "안혜준",
+      "cid": "60960c880ccc56001bc7d70f",
+      "phone": "010-5622-1049",
+      "product": "[아큐닉] 체성분분석기 BC380 PLUS",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "671f207808965d9e4d18c387",
+      "clinic": "아산본재활의학과의원한의원",
+      "region": "서울시 서대문구",
+      "caller": "",
+      "supplier": "바디헬스케어",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
+    },
     {
       "source": "총판기기",
       "timestamp": "2026. 05. 22 오전 10:54:05",
