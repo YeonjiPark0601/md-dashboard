@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-22T06:00:27.952Z",
+  "updated": "2026-05-22T07:35:21.993Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -18,7 +18,7 @@
       "productId": "671f207808965d9e4d18c387",
       "clinic": "아산본재활의학과의원한의원",
       "region": "서울시 서대문구",
-      "caller": "",
+      "caller": "김진석",
       "supplier": "바디헬스케어",
       "payDate": "",
       "payAmount": null,
