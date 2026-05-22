@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-22T07:40:21.076Z",
+  "updated": "2026-05-22T07:45:21.911Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -354,7 +354,7 @@
       "productId": "5f7ec8b748060c52caf16513",
       "clinic": "김한의원",
       "region": "경기도 여주시",
-      "caller": "",
+      "caller": "김진석",
       "supplier": "스파인케어",
       "payDate": "",
       "payAmount": null,
