@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-22T02:05:21.982Z",
+  "updated": "2026-05-22T02:40:21.104Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -23,6 +23,27 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "최저가 부탁드립니다~",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 05. 22 오전 11:37:39",
+      "date": "2026-05-22",
+      "slackTs": "1779417459.005959",
+      "name": "우혜린",
+      "cid": "5e0007724267e105dffefd44",
+      "phone": "010-5432-7409",
+      "product": "(상담하기) PT10 혈액검사기",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "618c881fbc63410023476154",
+      "clinic": "",
+      "region": "서울시 강남구",
+      "caller": "김태호",
+      "supplier": "프리시젼바이오",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "올라와있는 5750000원가 차이가 있나요? 프로모션 계획이 있을까요?",
       "leadGrade": "고가망"
     },
     {
@@ -968,7 +989,7 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "",
-      "leadGrade": ""
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
