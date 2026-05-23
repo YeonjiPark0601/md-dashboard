@@ -1,9 +1,30 @@
 {
-  "updated": "2026-05-23T02:05:21.603Z",
+  "updated": "2026-05-23T12:40:22.078Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 05. 23 오후 09:36:21",
+      "date": "2026-05-23",
+      "slackTs": "1779539781.461079",
+      "name": "박성환",
+      "cid": "5e66c1acbfe42609447832f2",
+      "phone": "010-8588-1075",
+      "product": "[제우스웨이브] 체외충격파 (ESWT Piezo+Airgun-type)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "6911d93b35ae28ff04ea58a0",
+      "clinic": "제중한의원",
+      "region": "서울시 중랑구",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
+    },
     {
       "source": "일반",
       "timestamp": "2026. 05. 22 오후 01:02:26",
