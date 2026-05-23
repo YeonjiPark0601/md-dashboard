@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-22T13:15:20.993Z",
+  "updated": "2026-05-23T00:05:21.607Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -62,8 +62,8 @@
       "region": "서울시 용산구",
       "caller": "김진석",
       "supplier": "메디스트림",
-      "payDate": "",
-      "payAmount": null,
+      "payDate": "2026-05-22",
+      "payAmount": 1650000,
       "inquiry": "최저가 부탁드립니다~",
       "leadGrade": "고가망"
     },
@@ -2876,8 +2876,8 @@
       "region": "서울시 용산구",
       "caller": "김진석",
       "supplier": "메디스트림",
-      "payDate": "",
-      "payAmount": null,
+      "payDate": "2026-05-22",
+      "payAmount": 1650000,
       "inquiry": "",
       "leadGrade": "고가망"
     },
