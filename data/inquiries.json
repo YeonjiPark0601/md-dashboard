@@ -1,9 +1,30 @@
 {
-  "updated": "2026-05-23T12:40:22.078Z",
+  "updated": "2026-05-24T09:30:21.147Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 24 오후 06:26:54",
+      "date": "2026-05-24",
+      "slackTs": "1779614814.147459",
+      "name": "박정민",
+      "cid": "5e6c2747bfe42609447836df",
+      "phone": "010-4035-3841",
+      "product": "고주파 치료기 INBIO-500",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "602b824e527223001a209420",
+      "clinic": "365백세부부한의원",
+      "region": "경기도 부천시",
+      "caller": "",
+      "supplier": "엠원코리아",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "복부 등에도 사용가능한지 위험여부",
+      "leadGrade": "고가망"
+    },
     {
       "source": "총판기기",
       "timestamp": "2026. 05. 23 오후 09:36:21",
