@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-24T10:55:21.903Z",
+  "updated": "2026-05-24T11:50:21.837Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -45,6 +45,27 @@
       "payAmount": null,
       "inquiry": "",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 24 오후 08:49:37",
+      "date": "2026-05-24",
+      "slackTs": "1779623377.787589",
+      "name": "김민범",
+      "cid": "5fa4e45b5120316334321f53",
+      "phone": "010-4692-3139",
+      "product": "고주파 치료기 INBIO-500",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "602b824e527223001a209420",
+      "clinic": "",
+      "region": "제주도 제주시",
+      "caller": "",
+      "supplier": "엠원코리아",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
