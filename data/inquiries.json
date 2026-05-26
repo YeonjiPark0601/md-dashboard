@@ -1,9 +1,30 @@
 {
-  "updated": "2026-05-25T13:45:20.680Z",
+  "updated": "2026-05-26T00:25:20.859Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 05. 26 오전 09:24:47",
+      "date": "2026-05-26",
+      "slackTs": "1779755087.489069",
+      "name": "김태현",
+      "cid": "5d6b822419efa30eb2913e13",
+      "phone": "010-9040-2474",
+      "product": "[DSE] 네오젝 전동식 의료용 주입기 (NEOJECT)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "685bb9fab7ac8d6f02415834",
+      "clinic": "통달한의원",
+      "region": "서울시 영등포구",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
+    },
     {
       "source": "일반",
       "timestamp": "2026. 05. 25 오전 09:39:51",
