@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-26T09:55:23.177Z",
+  "updated": "2026-05-26T10:10:20.956Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -65,6 +65,27 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "가격이요",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 26 오후 07:09:01",
+      "date": "2026-05-26",
+      "slackTs": "1779790141.752609",
+      "name": "박정민",
+      "cid": "5e6c2747bfe42609447836df",
+      "phone": "010-4035-3841",
+      "product": "디에스메디 베스타 고주파 (VESTA)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "61245520d26af90681b20891",
+      "clinic": "365백세부부한의원",
+      "region": "경기도 부천시",
+      "caller": "주봉현",
+      "supplier": "디에스메디",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "데모 가능할까요?",
       "leadGrade": "고가망"
     },
     {
