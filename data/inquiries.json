@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-26T02:35:22.202Z",
+  "updated": "2026-05-26T03:20:21.008Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -45,6 +45,27 @@
       "payAmount": null,
       "inquiry": "",
       "leadGrade": ""
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 05. 26 오후 12:17:50",
+      "date": "2026-05-26",
+      "slackTs": "1779765470.068049",
+      "name": "최원익",
+      "cid": "5d96ad4e0dabe405b156db1c",
+      "phone": "010-5060-1693",
+      "product": "[은성] V-메타쉐이프 (Meta Shape)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "693960a721009623ac43112a",
+      "clinic": "최원익한의원",
+      "region": "서울시 강동구",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격.",
+      "leadGrade": "고가망"
     },
     {
       "source": "일반",
