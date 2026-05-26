@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-26T04:45:21.264Z",
+  "updated": "2026-05-26T05:50:21.771Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -24,6 +24,27 @@
       "payAmount": null,
       "inquiry": "구매 가격 궁금합니다",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 26 오후 02:47:44",
+      "date": "2026-05-26",
+      "slackTs": "1779774464.147279",
+      "name": "이성용",
+      "cid": "5e6042c0bfe4260944782db9",
+      "phone": "010-8609-3738",
+      "product": "아쿠아 힐링베드 수치료기 아이언 2종",
+      "qty": 2,
+      "price": "N/A",
+      "productId": "5fc8a12ace872a1a803a95cd",
+      "clinic": "더웰한방병원",
+      "region": "광주시 광산구",
+      "caller": "",
+      "supplier": "아쿠아",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
