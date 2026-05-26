@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-26T11:55:22.769Z",
+  "updated": "2026-05-26T12:30:21.389Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -108,6 +108,27 @@
       "payAmount": null,
       "inquiry": "180×90  열선포함",
       "leadGrade": "가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 26 오후 09:26:34",
+      "date": "2026-05-26",
+      "slackTs": "1779798394.822119",
+      "name": "서우철",
+      "cid": "5f61c11e48060c52caf135e6",
+      "phone": "010-9361-1075",
+      "product": "아큐닉 혈압계 BP600",
+      "qty": "1개",
+      "price": "N/A",
+      "productId": "5fbf45f8ce872a1a803a803b",
+      "clinic": "경희나라한의원",
+      "region": "서울시 서초구",
+      "caller": "",
+      "supplier": "아큐닉",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격 알고싶어요",
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
@@ -10901,7 +10922,7 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "",
-      "leadGrade": ""
+      "leadGrade": "고가망"
     },
     {
       "source": "일반",
