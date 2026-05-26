@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-26T10:10:20.956Z",
+  "updated": "2026-05-26T11:55:22.769Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -87,6 +87,27 @@
       "payAmount": null,
       "inquiry": "데모 가능할까요?",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 26 오후 08:52:01",
+      "date": "2026-05-26",
+      "slackTs": "1779796321.372259",
+      "name": "김수정",
+      "cid": "5da903990dabe405b156ec20",
+      "phone": "010-2970-5116",
+      "product": "HCK 치료실 베드 (N100)",
+      "qty": 4,
+      "price": "N/A",
+      "productId": "61162ddad26af90681b1f6fd",
+      "clinic": "코비한의원",
+      "region": "서울시 마포구",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "180×90  열선포함",
+      "leadGrade": "가망"
     },
     {
       "source": "총판기기",
@@ -989,7 +1010,7 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "",
-      "leadGrade": ""
+      "leadGrade": "가망"
     },
     {
       "source": "일반",
