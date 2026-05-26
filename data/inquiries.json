@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-26T04:20:21.867Z",
+  "updated": "2026-05-26T04:40:21.789Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -60,7 +60,7 @@
       "productId": "693960a721009623ac43112a",
       "clinic": "최원익한의원",
       "region": "서울시 강동구",
-      "caller": "",
+      "caller": "주봉현",
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
