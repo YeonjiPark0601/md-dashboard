@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-27T06:25:20.579Z",
+  "updated": "2026-05-27T06:55:21.665Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -24,6 +24,27 @@
       "payAmount": null,
       "inquiry": "크기 및 소모품 가격, 도입시 프로그램 등등...",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 27 오후 03:53:19",
+      "date": "2026-05-27",
+      "slackTs": "1779864799.828039",
+      "name": "김희원",
+      "cid": "62fc7c710b5b9e002b2e038c",
+      "phone": "010-5546-3126",
+      "product": "아쿠아필 (Aqua Peel)",
+      "qty": 1,
+      "price": "400",
+      "productId": "685b73335c71a5d66aa83127",
+      "clinic": "바올한의원",
+      "region": "대구시 북구",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
