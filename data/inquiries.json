@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-27T00:30:22.069Z",
+  "updated": "2026-05-27T01:45:22.208Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -144,7 +144,7 @@
       "productId": "5fbf45f8ce872a1a803a803b",
       "clinic": "경희나라한의원",
       "region": "서울시 서초구",
-      "caller": "",
+      "caller": "주봉현",
       "supplier": "아큐닉",
       "payDate": "",
       "payAmount": null,
