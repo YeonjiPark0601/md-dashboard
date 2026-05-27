@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-27T08:36:26.997Z",
+  "updated": "2026-05-27T08:40:21.516Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -60,7 +60,7 @@
       "productId": "68c2842c860009fbc509994a",
       "clinic": "",
       "region": "서울시 강동구",
-      "caller": "",
+      "caller": "주봉현",
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
