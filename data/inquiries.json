@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-27T07:10:21.595Z",
+  "updated": "2026-05-27T07:20:22.198Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -66,6 +66,27 @@
       "payAmount": null,
       "inquiry": "금액",
       "leadGrade": "가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 27 오후 04:17:08",
+      "date": "2026-05-27",
+      "slackTs": "1779866228.952429",
+      "name": "허슬아",
+      "cid": "5d8342c53f0e6805c4706725",
+      "phone": "010-5126-8584",
+      "product": "[아큐닉] 자동혈압계 BP650",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "671f240908965d9e4d18c43a",
+      "clinic": "인천송도리아한의원",
+      "region": "인천시 연수구",
+      "caller": "",
+      "supplier": "바디헬스케어",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격문의",
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
