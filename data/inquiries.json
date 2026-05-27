@@ -1,9 +1,30 @@
 {
-  "updated": "2026-05-27T16:05:21.355Z",
+  "updated": "2026-05-27T18:25:20.975Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 28 오전 03:23:46",
+      "date": "2026-05-28",
+      "slackTs": "1779906226.190619",
+      "name": "윤한규",
+      "cid": "5f268e12221c8b5f77c90bcd",
+      "phone": "010-2635-4432",
+      "product": "[라메디텍] 아토빛 ATOVIT",
+      "qty": "1개",
+      "price": "N/A",
+      "productId": "69f14864755d3039155b6421",
+      "clinic": "이든한의원 (든든한의원)",
+      "region": "경기도 이천시",
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
+    },
     {
       "source": "일반",
       "timestamp": "2026. 05. 27 오후 03:22:46",
