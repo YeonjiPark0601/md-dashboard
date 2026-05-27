@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-27T07:00:27.827Z",
+  "updated": "2026-05-27T07:10:21.595Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -45,6 +45,27 @@
       "payAmount": null,
       "inquiry": "",
       "leadGrade": ""
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 27 오후 04:09:09",
+      "date": "2026-05-27",
+      "slackTs": "1779865749.116279",
+      "name": "주혜령",
+      "cid": "60b0db390ccc56001bc7f387",
+      "phone": "010-5616-2523",
+      "product": "[PIE] 야누스 피부진단기 (FOCUSKIN)",
+      "qty": 1,
+      "price": "없음",
+      "productId": "68c2842c860009fbc509994a",
+      "clinic": "",
+      "region": "서울시 강동구",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "금액",
+      "leadGrade": "가망"
     },
     {
       "source": "총판기기",
