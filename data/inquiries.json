@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-27T09:35:22.763Z",
+  "updated": "2026-05-27T10:55:28.551Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -108,6 +108,27 @@
       "payAmount": null,
       "inquiry": "",
       "leadGrade": ""
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 27 오후 07:52:35",
+      "date": "2026-05-27",
+      "slackTs": "1779879155.213539",
+      "name": "심창래",
+      "cid": "5da080d50dabe405b156e76d",
+      "phone": "010-5163-3923",
+      "product": "[라메디텍] 아토빛 ATOVIT",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "69f14864755d3039155b6421",
+      "clinic": "안심부부한의원",
+      "region": "충청북도 제천시",
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
