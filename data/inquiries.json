@@ -1,9 +1,30 @@
 {
-  "updated": "2026-05-27T01:55:22.809Z",
+  "updated": "2026-05-27T06:25:20.579Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 27 오후 03:22:46",
+      "date": "2026-05-27",
+      "slackTs": "1779862966.137999",
+      "name": "홍유동",
+      "cid": "5d6e579e19efa30eb2913f47",
+      "phone": "010-7578-8370",
+      "product": "[클래시스] 사이저 SCIZER",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "69ef0317d5ecfb78a9970431",
+      "clinic": "더진심한의원",
+      "region": "경기도 양주시",
+      "caller": "",
+      "supplier": "클래시스",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "크기 및 소모품 가격, 도입시 프로그램 등등...",
+      "leadGrade": "고가망"
+    },
     {
       "source": "총판기기",
       "timestamp": "2026. 05. 27 오전 09:11:52",
