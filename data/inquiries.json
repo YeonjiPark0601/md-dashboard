@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-27T01:45:22.208Z",
+  "updated": "2026-05-27T01:50:20.949Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -123,7 +123,7 @@
       "productId": "61162ddad26af90681b1f6fd",
       "clinic": "코비한의원",
       "region": "서울시 마포구",
-      "caller": "",
+      "caller": "주봉현",
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
