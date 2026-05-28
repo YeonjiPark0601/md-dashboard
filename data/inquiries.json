@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-28T05:55:22.013Z",
+  "updated": "2026-05-28T06:00:24.550Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -39,7 +39,7 @@
       "productId": "6a057b0fa01aaa992bcf44a8",
       "clinic": "픽스포츠한의원",
       "region": "서울시 구로구",
-      "caller": "",
+      "caller": "주봉현",
       "supplier": "",
       "payDate": "",
       "payAmount": null,
