@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-28T02:05:21.278Z",
+  "updated": "2026-05-28T02:45:20.933Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -213,6 +213,27 @@
       "payAmount": null,
       "inquiry": "가격",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 28 오전 11:41:51",
+      "date": "2026-05-28",
+      "slackTs": "1779936111.018339",
+      "name": "정혜미",
+      "cid": "5ec659b1e510ee503167b16f",
+      "phone": "010-5147-5802",
+      "product": "[라메디텍] 아토빛 ATOVIT",
+      "qty": "아토빛 퓨라셀",
+      "price": "N/A",
+      "productId": "69f14864755d3039155b6421",
+      "clinic": "하늘마음한의원",
+      "region": "경기도 고양시",
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
