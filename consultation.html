@@ -1032,7 +1032,7 @@ function fetchExternalInquiries() {
           externalSource: r.source,
           date: r.date,
           timestamp: r.timestamp || '',
-          source: '상담신청',
+          source: r.source === '피부미용' ? '피부미용' : '상담신청',
           consent: false,
           customer: r.name || '',
           cid: r.cid || '',
