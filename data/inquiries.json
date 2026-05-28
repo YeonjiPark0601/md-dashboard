@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-28T00:45:22.278Z",
+  "updated": "2026-05-28T00:50:20.950Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -108,6 +108,27 @@
       "payAmount": null,
       "inquiry": "ㅡ",
       "leadGrade": "가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 28 오전 09:48:43",
+      "date": "2026-05-28",
+      "slackTs": "1779929323.664169",
+      "name": "김혜련",
+      "cid": "5eb3527009982e0735b2d32a",
+      "phone": "010-2014-7275",
+      "product": "[라메디텍] 아토빛 ATOVIT",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "69f14864755d3039155b6421",
+      "clinic": "침앤뜸한의원",
+      "region": "전라남도 순천시",
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
