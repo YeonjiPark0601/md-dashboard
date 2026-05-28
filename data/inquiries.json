@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-28T02:00:30.252Z",
+  "updated": "2026-05-28T02:05:21.278Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -4909,7 +4909,7 @@
       "qty": 1,
       "price": "모름",
       "productId": "5da995310dabe405b156ed53",
-      "clinic": "",
+      "clinic": "경희수려한의원",
       "region": "제주도 제주시",
       "caller": "",
       "supplier": "메디스트림",
