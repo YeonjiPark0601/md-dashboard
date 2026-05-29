@@ -1,9 +1,30 @@
 {
-  "updated": "2026-05-29T11:11:09.093Z",
+  "updated": "2026-05-29T23:16:08.267Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 30 오전 08:11:41",
+      "date": "2026-05-30",
+      "slackTs": "1780096301.751669",
+      "name": "이다현",
+      "cid": "5d9690c70dabe405b156d8fb",
+      "phone": "010-4773-1906",
+      "product": "[라메디텍] 퓨라셀 MX(FX-7000)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "6a057b0fa01aaa992bcf44a8",
+      "clinic": "빛담은한의원",
+      "region": "서울시 강서구",
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "퓨라셀&아토빛 런칭 프로모션 가격, 소모품 비용",
+      "leadGrade": "고가망"
+    },
     {
       "source": "일반",
       "timestamp": "2026. 05. 29 오전 10:59:30",
