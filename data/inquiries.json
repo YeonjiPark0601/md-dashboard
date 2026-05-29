@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-29T03:41:09.064Z",
+  "updated": "2026-05-29T06:46:24.496Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -7786,8 +7786,8 @@
       "qty": 10,
       "price": "모름",
       "productId": "617b4cd2bc63410023471ef3",
-      "clinic": "",
-      "region": "인천시 남동구",
+      "clinic": "인천시원한의원",
+      "region": "인천시 미추홀구",
       "caller": "",
       "supplier": "선웅메디테크",
       "payDate": "",
