@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-29T08:06:23.395Z",
+  "updated": "2026-05-29T08:11:14.712Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -1068,7 +1068,7 @@
       "productId": "61162ddad26af90681b1f6fd",
       "clinic": "무실한의원",
       "region": "강원도 원주시",
-      "caller": "",
+      "caller": "주봉현",
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
