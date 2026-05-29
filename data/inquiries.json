@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-29T02:11:08.734Z",
+  "updated": "2026-05-29T03:01:10.586Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -86,6 +86,27 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "가격, 조건등 궁금합니다.",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 05. 29 오전 11:57:33",
+      "date": "2026-05-29",
+      "slackTs": "1780023453.223819",
+      "name": "김명균",
+      "cid": "66038ca7ea7f1393f2a64853",
+      "phone": "010-3801-8338",
+      "product": "[상담하기] 옴니핏 마인드케어 메디칼 맥파분석기",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "67bd57740c109d9ed2324fd0",
+      "clinic": "미사척한의원",
+      "region": "경기도 하남시",
+      "caller": "",
+      "supplier": "옴니씨앤에스",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격 등",
       "leadGrade": "고가망"
     },
     {
