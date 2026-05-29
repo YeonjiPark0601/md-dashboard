@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-29T09:56:08.472Z",
+  "updated": "2026-05-29T10:01:11.607Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -144,7 +144,7 @@
       "productId": "69f14864755d3039155b6421",
       "clinic": "코비한의원",
       "region": "서울시 마포구",
-      "caller": "",
+      "caller": "이예림",
       "supplier": "",
       "payDate": "",
       "payAmount": null,
