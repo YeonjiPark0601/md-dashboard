@@ -1,9 +1,30 @@
 {
-  "updated": "2026-05-29T00:16:24.564Z",
+  "updated": "2026-05-29T01:36:37.443Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 05. 29 오전 10:30:17",
+      "date": "2026-05-29",
+      "slackTs": "1780018217.711439",
+      "name": "이재석",
+      "cid": "5fec3fbfd6491c001b177ed8",
+      "phone": "010-5546-5787",
+      "product": "[메디코아] HRV : Max Pulse",
+      "qty": "1대",
+      "price": "모름",
+      "productId": "5dde05fb2bb59605ca3d09b9",
+      "clinic": "자운영한의원",
+      "region": "강원도 강릉시",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격",
+      "leadGrade": "고가망"
+    },
     {
       "source": "일반",
       "timestamp": "2026. 05. 28 오전 03:23:46",
