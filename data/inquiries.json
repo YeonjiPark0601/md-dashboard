@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-29T08:11:14.712Z",
+  "updated": "2026-05-29T08:16:10.896Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -249,7 +249,7 @@
       "productId": "69f14864755d3039155b6421",
       "clinic": "침앤뜸한의원",
       "region": "전라남도 순천시",
-      "caller": "",
+      "caller": "주봉현",
       "supplier": "",
       "payDate": "",
       "payAmount": null,
