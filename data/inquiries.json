@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-29T09:46:09.347Z",
+  "updated": "2026-05-29T09:56:08.472Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -129,6 +129,27 @@
       "payAmount": null,
       "inquiry": "",
       "leadGrade": ""
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 29 오후 06:53:19",
+      "date": "2026-05-29",
+      "slackTs": "1780048399.434079",
+      "name": "김수정",
+      "cid": "5da903990dabe405b156ec20",
+      "phone": "010-2970-5116",
+      "product": "[라메디텍] 아토빛 ATOVIT",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "69f14864755d3039155b6421",
+      "clinic": "코비한의원",
+      "region": "서울시 마포구",
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격 궁금합니다",
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
@@ -863,7 +884,7 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "180×90  열선포함",
-      "leadGrade": "가망"
+      "leadGrade": "고가망"
     },
     {
       "source": "일반",
@@ -1808,7 +1829,7 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "",
-      "leadGrade": "가망"
+      "leadGrade": "고가망"
     },
     {
       "source": "일반",
