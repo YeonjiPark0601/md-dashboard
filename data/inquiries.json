@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-29T06:46:24.496Z",
+  "updated": "2026-05-29T07:31:05.139Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -501,7 +501,7 @@
       "productId": "60bd7a640ccc56001bc7fe1a",
       "clinic": "밝은해한의원 상동",
       "region": "대구시 수성구",
-      "caller": "",
+      "caller": "주봉현",
       "supplier": "메디스트림",
       "payDate": "",
       "payAmount": null,
