@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-29T03:01:10.586Z",
+  "updated": "2026-05-29T03:41:09.064Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -44,6 +44,27 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "가격, 조건등 궁금합니다.",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 29 오후 12:39:38",
+      "date": "2026-05-29",
+      "slackTs": "1780025978.523409",
+      "name": "박서현",
+      "cid": "5d968f530dabe405b156d85c",
+      "phone": "010-8990-8553",
+      "product": "라인뷰 Line Vu",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "685cce24111d6bde79408b5b",
+      "clinic": "박서현한의원",
+      "region": "경기도 성남시",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "라인뷰, 야누스 문의드립니다. 중고도 괜찮습니다.",
       "leadGrade": "고가망"
     },
     {
@@ -102,7 +123,7 @@
       "productId": "67bd57740c109d9ed2324fd0",
       "clinic": "미사척한의원",
       "region": "경기도 하남시",
-      "caller": "",
+      "caller": "김태호",
       "supplier": "옴니씨앤에스",
       "payDate": "",
       "payAmount": null,
