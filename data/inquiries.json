@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-29T10:01:11.607Z",
+  "updated": "2026-05-29T11:11:09.093Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -149,6 +149,27 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "가격 궁금합니다",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 29 오후 08:05:38",
+      "date": "2026-05-29",
+      "slackTs": "1780052738.012469",
+      "name": "노현진",
+      "cid": "5dbb18152bb59605ca3cf49c",
+      "phone": "010-6229-4099",
+      "product": "[PIE] 야누스 피부진단기 (JANUS Pro Hybrid)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "68c27626b9972879bbfef389",
+      "clinic": "천하장사한의원",
+      "region": "경기도 하남시",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격이나 성능에 연계진료 등에 대해 전반적으로 궁금합니다.",
       "leadGrade": "고가망"
     },
     {
