@@ -355,7 +355,7 @@ body { font-family: 'Segoe UI', -apple-system, 'Malgun Gothic', sans-serif; back
           <input type="hidden" id="f-status" name="status" required>
         </div>
         <div class="field">
-          <label>파트<span class="req">*</span></label>
+          <label>파트<span class="req">*</span> <span style="font-weight:400;color:#9ca3af;font-size:11px;">(중복 선택 가능)</span></label>
           <div class="category-group" id="categoryGroup">
             <div class="category-btn" data-value="클래스">클래스</div>
             <div class="category-btn" data-value="초음파">초음파</div>
@@ -367,7 +367,7 @@ body { font-family: 'Segoe UI', -apple-system, 'Malgun Gothic', sans-serif; back
           <input type="hidden" id="f-category" name="category" required>
         </div>
         <div class="field">
-          <label>카테고리<span class="req">*</span></label>
+          <label>카테고리<span class="req">*</span> <span style="font-weight:400;color:#9ca3af;font-size:11px;">(중복 선택 가능)</span></label>
           <div class="maincat-group" id="maincatGroup">
             <div class="maincat-btn" data-value="운영">운영</div>
             <div class="maincat-btn" data-value="마케팅">마케팅</div>
@@ -423,12 +423,13 @@ function runServer(fnName, ...args) {
   });
 }
 
-const api = {
-  load:        ()              => runServer('listCards'),
-  createCard:  (card)          => runServer('createCard', JSON.stringify(card)),
-  updateCard:  (card)          => runServer('updateCard', JSON.stringify(card)),
-  moveCard:    (id, status)    => runServer('moveCard', id, status),
-};
+  const api = {
+    load:          ()              => runServer('listCards'),
+    createCard:    (card)          => runServer('createCard', JSON.stringify(card)),
+    updateCard:    (card)          => runServer('updateCard', JSON.stringify(card)),
+    moveCard:      (id, status)    => runServer('moveCard', id, status),
+    reorderCards:  (payload)       => runServer('reorderCards', JSON.stringify(payload)),
+  };
 
 let serverUser = null;
 let lastSyncAt = null;
@@ -483,6 +484,11 @@ function fmtDateTime(iso) {
 function escapeHtml(s) {
   if (!s) return '';
   return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+// 다중값 문자열을 배열로 분리 (담당자/파트/카테고리 공용)
+function splitMulti(s) {
+  return (s || '').split(/[,、·/]/).map(x => x.trim()).filter(Boolean);
 }
 
 // ===== 아카이브 판정 =====
@@ -578,20 +584,18 @@ function openModal(status, cardData = null) {
       if (pBtn) { pBtn.classList.add('active'); priorityInput.value = cardData.priority; }
     }
     if (cardData.category) {
-      const cBtn = categoryGroup.querySelector(`[data-value="${cardData.category}"]`);
-      if (cBtn) {
-        cBtn.classList.add('active');
-        categoryInput.value = cardData.category;
-        categoryHint.textContent = cardData.category;
-        categoryHint.setAttribute('data-c', cardData.category);
-      }
+      splitMulti(cardData.category).forEach(p => {
+        const cBtn = categoryGroup.querySelector(`[data-value="${p}"]`);
+        if (cBtn) cBtn.classList.add('active');
+      });
+      syncCategoryFromButtons();
     }
     if (cardData.mainCategory) {
-      const mBtn = maincatGroup.querySelector(`[data-value="${cardData.mainCategory}"]`);
-      if (mBtn) {
-        mBtn.classList.add('active');
-        maincatInput.value = cardData.mainCategory;
-      }
+      splitMulti(cardData.mainCategory).forEach(p => {
+        const mBtn = maincatGroup.querySelector(`[data-value="${p}"]`);
+        if (mBtn) mBtn.classList.add('active');
+      });
+      syncMaincatFromButtons();
     }
     auditRow.style.display = 'flex';
     const createdText = cardData.createdBy ? `${cardData.createdBy} · ${fmtDateTime(cardData.createdAt)}` : fmtDateTime(cardData.createdAt) || '—';
@@ -635,21 +639,39 @@ priorityGroup.querySelectorAll('.priority-btn').forEach(btn => {
   });
 });
 
+// 파트(category) - 다중 선택 토글
+function syncCategoryFromButtons() {
+  const selected = Array.from(categoryGroup.querySelectorAll('.category-btn.active')).map(b => b.dataset.value);
+  categoryInput.value = selected.join(', ');
+  if (selected.length === 0) {
+    categoryHint.textContent = '파트 미선택';
+    categoryHint.removeAttribute('data-c');
+  } else if (selected.length === 1) {
+    categoryHint.textContent = selected[0];
+    categoryHint.setAttribute('data-c', selected[0]);
+  } else {
+    categoryHint.textContent = `파트 ${selected.length}개`;
+    categoryHint.removeAttribute('data-c');
+  }
+}
+
+// 카테고리(mainCategory) - 다중 선택 토글
+function syncMaincatFromButtons() {
+  const selected = Array.from(maincatGroup.querySelectorAll('.maincat-btn.active')).map(b => b.dataset.value);
+  maincatInput.value = selected.join(', ');
+}
+
 categoryGroup.querySelectorAll('.category-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    categoryGroup.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    categoryInput.value = btn.dataset.value;
-    categoryHint.textContent = btn.dataset.value;
-    categoryHint.setAttribute('data-c', btn.dataset.value);
+    btn.classList.toggle('active');
+    syncCategoryFromButtons();
   });
 });
 
 maincatGroup.querySelectorAll('.maincat-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    maincatGroup.querySelectorAll('.maincat-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    maincatInput.value = btn.dataset.value;
+    btn.classList.toggle('active');
+    syncMaincatFromButtons();
   });
 });
 
@@ -671,7 +693,11 @@ function updateDashboard(kanbanCards) {
     const list = kanbanCards.filter(c => c.status === status);
     dc.querySelector('[data-dash-count]').textContent = list.length;
     const catCounts = {};
-    list.forEach(c => { if (c.category) catCounts[c.category] = (catCounts[c.category] || 0) + 1; });
+    list.forEach(c => {
+      splitMulti(c.category).forEach(cat => {
+        catCounts[cat] = (catCounts[cat] || 0) + 1;
+      });
+    });
     const subsEl = dc.querySelector('[data-subs]');
     const entries = Object.entries(catCounts);
     if (entries.length === 0) {
@@ -700,13 +726,15 @@ function getDday(dueStr) {
 function cardHtml(c) {
   const dd = getDday(c.due);
   const dueDate = c.due ? c.due.slice(5, 10).replace('-', '/') : '';
+  const catBadges = splitMulti(c.category).map(v => `<span class="card-category" data-c="${escapeHtml(v)}">${escapeHtml(v)}</span>`).join('');
+  const mainBadges = splitMulti(c.mainCategory).map(v => `<span class="card-maincat" data-m="${escapeHtml(v)}">${escapeHtml(v)}</span>`).join('');
   return `
     <div class="card" data-id="${c.id}" data-priority="${escapeHtml(c.priority)}">
       <div class="card-top">
         <span class="card-priority" data-p="${escapeHtml(c.priority)}">${escapeHtml(c.priority)}</span>
         <div class="card-badges">
-          ${c.category ? `<span class="card-category" data-c="${escapeHtml(c.category)}">${escapeHtml(c.category)}</span>` : ''}
-          ${c.mainCategory ? `<span class="card-maincat" data-m="${escapeHtml(c.mainCategory)}">${escapeHtml(c.mainCategory)}</span>` : ''}
+          ${catBadges}
+          ${mainBadges}
         </div>
       </div>
       <div class="card-title">${escapeHtml(c.title)}</div>
@@ -721,7 +749,7 @@ function cardHtml(c) {
 }
 
 function splitAssignees(s) {
-  return (s || '').split(/[,、·/]/).map(x => x.trim()).filter(Boolean);
+  return splitMulti(s);
 }
 
 function sortByOrder(key, values) {
@@ -744,11 +772,17 @@ function hasActiveFilter(key) {
 function applyFilters(list) {
   return list.filter(c => {
     if (hasActiveFilter('assignee')) {
-      const alist = splitAssignees(c.assignee);
+      const alist = splitMulti(c.assignee);
       if (!alist.some(a => filters.assignee.includes(a))) return false;
     }
-    if (hasActiveFilter('category') && !filters.category.includes(c.category)) return false;
-    if (hasActiveFilter('mainCategory') && !filters.mainCategory.includes(c.mainCategory)) return false;
+    if (hasActiveFilter('category')) {
+      const clist = splitMulti(c.category);
+      if (!clist.some(v => filters.category.includes(v))) return false;
+    }
+    if (hasActiveFilter('mainCategory')) {
+      const mlist = splitMulti(c.mainCategory);
+      if (!mlist.some(v => filters.mainCategory.includes(v))) return false;
+    }
     return true;
   });
 }
@@ -767,8 +801,8 @@ function populateFilterOptions() {
     const key = dd.dataset.filter;
     const selected = filters[key] || [];
     let uniqueVals;
-    if (key === 'assignee') {
-      uniqueVals = [...new Set(cards.flatMap(c => splitAssignees(c.assignee)))];
+    if (key === 'assignee' || key === 'category' || key === 'mainCategory') {
+      uniqueVals = [...new Set(cards.flatMap(c => splitMulti(c[key])))];
     } else {
       uniqueVals = [...new Set(cards.map(c => c[key]).filter(Boolean))];
     }
@@ -797,18 +831,20 @@ function populateFilterOptions() {
   document.getElementById('clearFiltersBtn').style.display = anyActive ? '' : 'none';
 }
 
-function renderKanban() {
-  const visible = getKanbanCards();
-  document.querySelectorAll('.column').forEach(col => {
-    const status = col.dataset.status;
-    const box = col.querySelector('[data-cards]');
-    const list = visible.filter(c => c.status === status);
-    box.innerHTML = list.map(cardHtml).join('') + '<div class="card-add" data-add-card>+</div>';
-    col.querySelector('[data-count]').textContent = list.length;
-  });
-  updateDashboard(visible);
-  initSortables();
-}
+ function renderKanban() {
+    const visible = getKanbanCards();
+    document.querySelectorAll('.column').forEach(col => {
+      const status = col.dataset.status;
+      const box = col.querySelector('[data-cards]');
+      const list = visible
+        .filter(c => c.status === status)
+        .sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
+      box.innerHTML = list.map(cardHtml).join('') + '<div class="card-add" data-add-card>+</div>';
+      col.querySelector('[data-count]').textContent = list.length;
+    });
+    updateDashboard(visible);
+    initSortables();
+  }
 
 function renderArchive() {
   const visible = getArchiveCards().slice().sort((a, b) => (b.due || '').localeCompare(a.due || ''));
@@ -825,8 +861,8 @@ function renderArchive() {
         <td>${escapeHtml(c.assignee)}</td>
         <td>
           <span class="archive-meta-badges">
-            ${c.category ? `<span class="card-category" data-c="${escapeHtml(c.category)}">${escapeHtml(c.category)}</span>` : ''}
-            ${c.mainCategory ? `<span class="card-maincat" data-m="${escapeHtml(c.mainCategory)}">${escapeHtml(c.mainCategory)}</span>` : ''}
+            ${splitMulti(c.category).map(v => `<span class="card-category" data-c="${escapeHtml(v)}">${escapeHtml(v)}</span>`).join('')}
+            ${splitMulti(c.mainCategory).map(v => `<span class="card-maincat" data-m="${escapeHtml(v)}">${escapeHtml(v)}</span>`).join('')}
           </span>
         </td>
         <td><span class="card-priority" data-p="${escapeHtml(c.priority)}">${escapeHtml(c.priority)}</span></td>
@@ -943,40 +979,59 @@ function initSortables() {
       delayOnTouchOnly: true,
       touchStartThreshold: 3,
       onStart: () => { isDragging = true; },
-      onEnd: async (evt) => {
-        // + 버튼을 항상 컬럼 최하단으로 유지
-        [evt.from, evt.to].forEach(box => {
-          const addBtn = box.querySelector('.card-add');
-          if (addBtn) box.appendChild(addBtn);
-        });
+       onEnd: async (evt) => {
+          // + 버튼을 항상 컬럼 최하단으로 유지
+          [evt.from, evt.to].forEach(box => {
+            const addBtn = box.querySelector('.card-add');
+            if (addBtn) box.appendChild(addBtn);
+          });
 
-        const id = evt.item.dataset.id;
-        const newStatus = evt.to.closest('.column').dataset.status;
-        const card = cards.find(c => c.id === id);
-        const prevStatus = card ? card.status : null;
-        if (card && card.status !== newStatus) {
-          // 낙관적 업데이트 - 서버 응답 전에 UI 즉시 반영
-          card.status = newStatus;
+          const id = evt.item.dataset.id;
+          const fromStatus = evt.from.closest('.column').dataset.status;
+          const toStatus   = evt.to.closest('.column').dataset.status;
+          const card = cards.find(c => c.id === id);
+          if (!card) { isDragging = false; return; }
+
+          const prevSnapshot = cards.map(c => ({ id: c.id, status: c.status, order: c.order }));
+
+          // 영향받은 컬럼(들)의 DOM 순서로 ID 배열 구성
+          const affected = (fromStatus === toStatus) ? [toStatus] : [fromStatus, toStatus];
+          const payload = {};
+          affected.forEach(s => {
+            const colBox = document.querySelector(`.column[data-status="${s}"] [data-cards]`);
+            payload[s] = Array.from(colBox.querySelectorAll('.card')).map(el => el.dataset.id);
+          });
+
+          // 낙관적: 로컬 cards 배열에 status / order 즉시 반영
+          Object.keys(payload).forEach(status => {
+            payload[status].forEach((cid, idx) => {
+              const c = cards.find(x => x.id === cid);
+              if (c) { c.status = status; c.order = idx; }
+            });
+          });
           updateColumnCounts();
           updateDashboard(getKanbanCards());
           document.getElementById('archiveBadge').textContent = getArchiveCards().length;
+
           try {
-            const result = await api.moveCard(id, newStatus);
-            card.status = result.status;
-            card.updatedAt = result.updatedAt;
-            card.updatedBy = result.updatedBy;
+            const result = await api.reorderCards(payload);
+            if (result && result.updatedAt) {
+              // 이동된 카드의 updatedAt/By도 갱신
+              const moved = cards.find(c => c.id === id);
+              if (moved) { moved.updatedAt = result.updatedAt; moved.updatedBy = result.updatedBy; }
+            }
             updateSyncStatus();
           } catch (err) {
-            card.status = prevStatus;
+            // 롤백
+            prevSnapshot.forEach(snap => {
+              const c = cards.find(x => x.id === snap.id);
+              if (c) { c.status = snap.status; c.order = snap.order; }
+            });
             render();
-            alert('이동 실패: ' + err.message);
+            alert('순서 저장 실패: ' + err.message);
           }
-        } else {
-          updateColumnCounts();
-          updateDashboard(getKanbanCards());
+          setTimeout(() => { isDragging = false; }, 120);
         }
-        setTimeout(() => { isDragging = false; }, 120);
-      }
     });
     sortableInstances.push(instance);
   });
