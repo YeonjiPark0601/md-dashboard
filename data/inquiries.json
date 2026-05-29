@@ -1,9 +1,30 @@
 {
-  "updated": "2026-05-29T01:36:37.443Z",
+  "updated": "2026-05-29T02:01:14.518Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "일반",
+      "timestamp": "2026. 05. 29 오전 10:59:30",
+      "date": "2026-05-29",
+      "slackTs": "1780019970.203109",
+      "name": "윤찬열",
+      "cid": "60d0295e09c63a06ed1443fa",
+      "phone": "010-9373-0208",
+      "product": "고강도 레이저 HEALTRON",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "6299b51d9d938800240720d8",
+      "clinic": "올바른한의원",
+      "region": "광주시 서구",
+      "caller": "",
+      "supplier": "엠원코리아",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격, 데모가능한지 여부",
+      "leadGrade": "고가망"
+    },
     {
       "source": "총판기기",
       "timestamp": "2026. 05. 29 오전 10:30:17",
