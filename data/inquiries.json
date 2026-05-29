@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-29T02:06:08.703Z",
+  "updated": "2026-05-29T02:11:08.734Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -18,7 +18,7 @@
       "productId": "6299b51d9d938800240720d8",
       "clinic": "올바른한의원",
       "region": "광주시 서구",
-      "caller": "",
+      "caller": "이예림",
       "supplier": "엠원코리아",
       "payDate": "",
       "payAmount": null,
