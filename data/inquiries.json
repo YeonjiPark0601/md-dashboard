@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-29T02:01:14.518Z",
+  "updated": "2026-05-29T02:06:08.703Z",
   "month": "2026-05",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -26,6 +26,27 @@
       "leadGrade": "고가망"
     },
     {
+      "source": "일반",
+      "timestamp": "2026. 05. 29 오전 11:03:54",
+      "date": "2026-05-29",
+      "slackTs": "1780020234.169279",
+      "name": "윤찬열",
+      "cid": "60d0295e09c63a06ed1443fa",
+      "phone": "010-9373-0208",
+      "product": "MESH T-1000 SMART 체열진단기",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "5da995310dabe405b156ed53",
+      "clinic": "올바른한의원",
+      "region": "광주시 서구",
+      "caller": "이예림",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격, 조건등 궁금합니다.",
+      "leadGrade": "고가망"
+    },
+    {
       "source": "총판기기",
       "timestamp": "2026. 05. 29 오전 10:30:17",
       "date": "2026-05-29",
@@ -44,6 +65,27 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "가격",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 05. 29 오전 11:03:38",
+      "date": "2026-05-29",
+      "slackTs": "1780020218.692339",
+      "name": "윤찬열",
+      "cid": "60d0295e09c63a06ed1443fa",
+      "phone": "010-9373-0208",
+      "product": "[메디코아] 체열진단기 IRIS-950",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "6899730a0199fa2e00c19c97",
+      "clinic": "올바른한의원",
+      "region": "광주시 서구",
+      "caller": "이예림",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격, 조건등 궁금합니다.",
       "leadGrade": "고가망"
     },
     {
