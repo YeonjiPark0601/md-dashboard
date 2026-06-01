@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-01T00:56:11.569Z",
+  "updated": "2026-06-01T01:36:09.274Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -144,7 +144,7 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "약선당부부한의원",
       "region": "인천시 연수구",
-      "caller": "",
+      "caller": "김태호",
       "supplier": "프리시젼바이오",
       "payDate": "",
       "payAmount": null,
