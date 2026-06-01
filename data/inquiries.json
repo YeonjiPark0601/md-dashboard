@@ -1,9 +1,30 @@
 {
-  "updated": "2026-06-01T01:36:09.274Z",
+  "updated": "2026-06-01T06:01:12.774Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "일반",
+      "timestamp": "2026. 06. 01 오후 02:57:36",
+      "date": "2026-06-01",
+      "slackTs": "1780293456.300059",
+      "name": "조나경",
+      "cid": "5d8812f00dabe405b156d457",
+      "phone": "010-3336-6573",
+      "product": "스트라텍 전침기 STN-330",
+      "qty": "1대 혹은 최대 5대",
+      "price": "N/A",
+      "productId": "617b4cd2bc63410023471ef3",
+      "clinic": "신화한의원",
+      "region": "대구시 북구",
+      "caller": "",
+      "supplier": "선웅메디테크",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "있는걸 다 갈지 고장난것만 교체할지 금액대 따라 고민중입니다",
+      "leadGrade": "고가망"
+    },
     {
       "source": "일반",
       "timestamp": "2026. 05. 31 오후 05:06:06",
