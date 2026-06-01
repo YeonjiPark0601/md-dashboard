@@ -3159,13 +3159,14 @@ function renderSkinCategory(){
   m26.forEach(m=>cols.push({key:m,label:m.substring(5)+'월',year:'2026'}));
   cols.push({key:'_25total',label:'25년',isTotal:true,year:'2025'});
   m25.forEach(m=>cols.push({key:m,label:m.substring(5)+'월',year:'2025'}));
-  const byC={},costByC={},unmapped={};
+  const byC={},costByC={},qtyByC={},unmapped={};
   filtered.forEach(d=>{
     const cat=skinCategoryMap[d['품목코드']]||'(미분류)';
     const ym=d['연월'];
-    if(!byC[cat]){byC[cat]={};costByC[cat]={}}
+    if(!byC[cat]){byC[cat]={};costByC[cat]={};qtyByC[cat]={}}
     byC[cat][ym]=(byC[cat][ym]||0)+(d['매출금액']||0);
     costByC[cat][ym]=(costByC[cat][ym]||0)+(d['공급가']||0);
+    qtyByC[cat][ym]=(qtyByC[cat][ym]||0)+(d['수량']||0);
     if(cat==='(미분류)')unmapped[d['품목코드']||'']=d['품목명']||'';
   });
   const cats=Object.keys(byC).sort((a,b)=>{
@@ -3184,16 +3185,19 @@ function renderSkinCategory(){
     cols.map(c=>`<th class="text-right" style="${c.isTotal?'background:#f0f2f5;font-weight:700;':''}">${c.label}</th>`).join('');
   body.innerHTML=cats.map(cat=>{
     const r1=`<tr style="border-top:2px solid #e0e0e0;">`+
-      `<td rowspan="3" style="min-width:120px;position:sticky;left:0;background:#fff;z-index:1;vertical-align:top;padding-top:8px;font-weight:600;${cat==='(미분류)'?'color:#888;':''}">${cat}</td>`+
+      `<td rowspan="4" style="min-width:120px;position:sticky;left:0;background:#fff;z-index:1;vertical-align:top;padding-top:8px;font-weight:600;${cat==='(미분류)'?'color:#888;':''}">${cat}</td>`+
       `<td style="position:sticky;left:120px;background:#fff;z-index:1;font-weight:600;">매출</td>`+
       cols.map(c=>{const v=getVal(byC[cat],c);const bg=c.isTotal?'background:#f0f2f5;font-weight:700;':'';return`<td class="text-right" style="${bg}">${fmtN(v)}</td>`}).join('')+'</tr>';
+    const rQty=`<tr style="color:#555;">`+
+      `<td style="position:sticky;left:120px;background:#fff;z-index:1;font-size:12px;">수량</td>`+
+      cols.map(c=>{const v=getVal(qtyByC[cat],c);const bg=c.isTotal?'background:#f0f2f5;font-weight:600;font-size:12px;':'font-size:12px;';return`<td class="text-right" style="${bg}">${fmtN(v)}</td>`}).join('')+'</tr>';
     const r2=`<tr style="color:#666;">`+
       `<td style="position:sticky;left:120px;background:#fff;z-index:1;font-size:12px;">공급가</td>`+
       cols.map(c=>{const v=getVal(costByC[cat],c);const bg=c.isTotal?'background:#f0f2f5;font-weight:600;font-size:12px;':'font-size:12px;';return`<td class="text-right" style="${bg}">${fmtN(v)}</td>`}).join('')+'</tr>';
     const r3=`<tr>`+
       `<td style="position:sticky;left:120px;background:#fff;z-index:1;font-size:12px;font-weight:600;">매출총이익률</td>`+
       cols.map(c=>{const v=calcMargin(getVal(byC[cat],c),getVal(costByC[cat],c));const bg=c.isTotal?'background:#f0f2f5;font-weight:700;':'';const clr=marginColor(v);return`<td class="text-right" style="${bg}${clr?'color:'+clr+';':''}font-size:12px;font-weight:600;">${fmtMargin(v)}</td>`}).join('')+'</tr>';
-    return r1+r2+r3;
+    return r1+rQty+r2+r3;
   }).join('');
   if(Object.keys(unmapped).length){
     const list=Object.entries(unmapped).slice(0,5).map(([c,n])=>n||c).join(', ');
