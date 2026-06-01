@@ -1092,6 +1092,10 @@ function render(){
   document.getElementById('shockwaveZeusRow').style.display=isShockwave?'':'none';
   document.getElementById('shockwaveSupplierRow').style.display=isShockwave?'':'none';
   document.getElementById('shockwaveDetailRow').style.display=(isShockwave&&_shockwaveSelectedSupplier)?'':'none';
+  // 피부미용: MOQ 진행률을 월별 매출 트렌드 하단으로 이동 / 그 외엔 원위치(카테고리 하단)로 복원
+  const _skinMoq=document.getElementById('skinMoqRow');
+  if(isSkin){document.getElementById('trendRow').after(_skinMoq)}
+  else{document.getElementById('skinCategoryRow').after(_skinMoq)}
   // 제우스웨이브 진행률을 KPI 바로 아래로 이동 (충격파일 때) / 그 외엔 원위치로 복원
   const _zeus=document.getElementById('shockwaveZeusRow');
   if(isShockwave){document.getElementById('sec-kpi').after(_zeus)}
