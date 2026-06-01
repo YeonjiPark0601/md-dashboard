@@ -1,9 +1,30 @@
 {
-  "updated": "2026-06-01T06:01:12.774Z",
+  "updated": "2026-06-01T23:11:09.948Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 06. 02 오전 08:06:50",
+      "date": "2026-06-02",
+      "slackTs": "1780355210.562299",
+      "name": "김수정",
+      "cid": "5da903990dabe405b156ec20",
+      "phone": "010-2970-5116",
+      "product": "[참메드] ENT Unit (XU1 SMART + V1 Smart mini)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "67bede9be6dfb5eb3ad0207a",
+      "clinic": "코비한의원",
+      "region": "서울시 마포구",
+      "caller": "",
+      "supplier": "동아참메드",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "석션 후 물통을 비우는 구조인가요",
+      "leadGrade": "가망"
+    },
     {
       "source": "일반",
       "timestamp": "2026. 06. 01 오후 02:57:36",
@@ -317,7 +338,7 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "가격 궁금합니다",
-      "leadGrade": "고가망"
+      "leadGrade": "가망"
     },
     {
       "source": "일반",
@@ -1073,7 +1094,7 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "180×90  열선포함",
-      "leadGrade": "고가망"
+      "leadGrade": "가망"
     },
     {
       "source": "일반",
@@ -2018,7 +2039,7 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "",
-      "leadGrade": "고가망"
+      "leadGrade": "가망"
     },
     {
       "source": "일반",
