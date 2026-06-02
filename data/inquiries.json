@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-02T12:21:13.437Z",
+  "updated": "2026-06-02T13:51:11.265Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -45,6 +45,27 @@
       "payAmount": null,
       "inquiry": "가격대가 궁금합니다.",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 06. 02 오후 10:49:45",
+      "date": "2026-06-02",
+      "slackTs": "1780408185.480629",
+      "name": "김홍준",
+      "cid": "5d70c9ac19efa30eb2914261",
+      "phone": "010-9193-8382",
+      "product": "HCK 엘리베이션베드 (E100)",
+      "qty": 3,
+      "price": "795,000원(원터치, 열선 포함)",
+      "productId": "610cd88909c63a06ed1489fe",
+      "clinic": "홍익한의원",
+      "region": "서울시 강서구",
+      "caller": "",
+      "supplier": "에이치씨케이",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
