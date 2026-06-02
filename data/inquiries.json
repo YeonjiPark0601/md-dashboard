@@ -1,9 +1,30 @@
 {
-  "updated": "2026-06-02T06:11:10.958Z",
+  "updated": "2026-06-02T10:16:07.976Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "일반",
+      "timestamp": "2026. 06. 02 오후 07:12:55",
+      "date": "2026-06-02",
+      "slackTs": "1780395175.370389",
+      "name": "이선정",
+      "cid": "5d9a85c60dabe405b156deb9",
+      "phone": "010-7392-7028",
+      "product": "[바이오시그널랩] 정량뇌파진단기 QEEG-32FX AI (8채널/16채널)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "6a0d376f7dc34bd6d0797bea",
+      "clinic": "바른부부한의원",
+      "region": "전라남도 나주시",
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
+    },
     {
       "source": "총판기기",
       "timestamp": "2026. 06. 02 오전 08:06:50",
