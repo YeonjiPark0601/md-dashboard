@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-02T10:16:07.976Z",
+  "updated": "2026-06-02T12:21:13.437Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -24,6 +24,27 @@
       "payAmount": null,
       "inquiry": "",
       "leadGrade": ""
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 06. 02 오후 09:18:56",
+      "date": "2026-06-02",
+      "slackTs": "1780402736.286629",
+      "name": "윤종인",
+      "cid": "5d96990d0dabe405b156da43",
+      "phone": "010-3453-4065",
+      "product": "[바이오시그널랩] 정량뇌파진단기 QEEG-32FX AI (8채널/16채널)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "6a0d376f7dc34bd6d0797bea",
+      "clinic": "안성경희365한의원",
+      "region": "경기도 안성시",
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격대가 궁금합니다.",
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
