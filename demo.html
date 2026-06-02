@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>데모현황관리 — MD Squad</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Segoe UI', -apple-system, "Malgun Gothic", sans-serif; background: #f0f2f5; color: #333; margin: 0; }
+
+  .header {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    color: #fff; padding: 14px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 10px; position: sticky; top: 0; z-index: 50;
+  }
+  .header .left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .header h1 { font-size: 19px; font-weight: 600; margin: 0; }
+  .header a.home { color: #fff; text-decoration: none; font-size: 18px; padding: 4px 9px; border-radius: 6px; background: rgba(255,255,255,.12); }
+  .header .updated { font-size: 12px; color: #8899aa; }
+  .header .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn { border: 0; border-radius: 6px; padding: 7px 12px; font-size: 13px; cursor: pointer; font-weight: 600; }
+  .btn-primary { background: #2b6cb0; color: #fff; }
+  .btn-green { background: #0d9488; color: #fff; }
+  .btn-ghost { background: rgba(255,255,255,.15); color: #fff; }
+  .btn-danger { background: #dc2626; color: #fff; }
+  .btn-light { background: #eef2f7; color: #334; }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+
+  .filters {
+    background: #fff; padding: 10px 20px; border-bottom: 1px solid #e0e0e0;
+    display: flex; gap: 14px; flex-wrap: wrap; align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.06); position: sticky; top: 56px; z-index: 40;
+  }
+  .filter-group { display: flex; align-items: center; gap: 6px; }
+  .filter-group label { font-size: 12.5px; font-weight: 600; color: #555; }
+  .filters select, .filters input[type=text] { padding: 5px 9px; border: 1px solid #d0d0d0; border-radius: 6px; font-size: 13px; background: #fff; }
+  .filters input[type=text] { min-width: 180px; }
+  .count-pill { font-size: 12.5px; color: #555; background: #eef2f7; padding: 4px 10px; border-radius: 999px; }
+
+  .stats { display: flex; gap: 10px; flex-wrap: wrap; padding: 14px 20px 0; }
+  .stat-card { background: #fff; border: 1px solid #e6e8ee; border-radius: 10px; padding: 10px 16px; min-width: 96px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+  .stat-card .v { font-size: 22px; font-weight: 700; color: #1a1a2e; }
+  .stat-card .l { font-size: 12px; color: #7b8696; margin-top: 2px; }
+
+  .container { padding: 14px 20px 80px; }
+  .table-wrap { background: #fff; border: 1px solid #e6e8ee; border-radius: 10px; overflow: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; white-space: nowrap; }
+  th, td { border-bottom: 1px solid #eef0f4; padding: 6px 8px; text-align: left; vertical-align: middle; }
+  th { background: #f7f9fc; color: #5a6473; font-weight: 600; position: sticky; top: 0; z-index: 1; }
+  tbody tr:hover { background: #fafbfd; }
+  td input, td select { width: 100%; min-width: 70px; border: 1px solid transparent; background: transparent; padding: 4px 5px; font-size: 12.5px; border-radius: 5px; font-family: inherit; }
+  td input:hover, td select:hover { border-color: #e0e3ea; }
+  td input:focus, td select:focus { border-color: #2b6cb0; background: #fff; outline: none; }
+  td.col-id { color: #aab; font-size: 10.5px; }
+  .region-tag { font-size: 11px; padding: 2px 7px; border-radius: 999px; background: #eef2f7; color: #555; }
+  .region-수도권 { background: #e8f0fe; color: #1a73e8; }
+  .region-지방 { background: #fff3e0; color: #e65100; }
+  .badge-status { font-size: 11px; padding: 1px 0; }
+  tr.sel { background: #eaf2fb !important; }
+
+  .empty { text-align: center; color: #98a2b3; padding: 48px 0; font-size: 14px; }
+
+  /* modal */
+  .modal-bg { position: fixed; inset: 0; background: rgba(20,25,40,.5); display: none; align-items: flex-start; justify-content: center; z-index: 100; padding: 40px 14px; overflow: auto; }
+  .modal-bg.open { display: flex; }
+  .modal { background: #fff; border-radius: 12px; width: 100%; max-width: 560px; padding: 22px; box-shadow: 0 20px 50px rgba(0,0,0,.25); }
+  .modal h2 { margin: 0 0 4px; font-size: 18px; }
+  .modal .sub { font-size: 12.5px; color: #8893a4; margin-bottom: 14px; }
+  .modal label { display: block; font-size: 12.5px; font-weight: 600; color: #4a5566; margin: 10px 0 4px; }
+  .modal input, .modal select, .modal textarea { width: 100%; padding: 8px 10px; border: 1px solid #d4d9e2; border-radius: 7px; font-size: 13.5px; font-family: inherit; }
+  .modal textarea { min-height: 90px; resize: vertical; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .modal-foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+  .hint { font-size: 11.5px; color: #94a3b8; margin-top: 4px; }
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1a1a2e; color: #fff; padding: 10px 18px; border-radius: 8px; font-size: 13px; z-index: 200; opacity: 0; transition: opacity .25s; pointer-events: none; }
+  .toast.show { opacity: 1; }
+  @media (max-width: 640px) {
+    .filters { top: 92px; }
+    .filters input[type=text] { min-width: 120px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="left">
+    <a class="home" href="home.html" title="홈으로">🏠</a>
+    <h1>데모현황관리</h1>
+    <span class="updated" id="syncInfo">불러오는 중…</span>
+  </div>
+  <div class="actions">
+    <button class="btn btn-light" id="btnStats" onclick="toggleStats()">통계 ▾</button>
+    <button class="btn btn-ghost" onclick="refresh(true)">↻ 새로고침</button>
+    <button class="btn btn-green" onclick="openPaste()">📋 붙여넣기 등록</button>
+    <button class="btn btn-primary" onclick="openManual()">＋ 수기 등록</button>
+  </div>
+</div>
+
+<div class="filters">
+  <div class="filter-group">
+    <input type="text" id="fSearch" placeholder="🔍 원장/병원/제품/연락처 검색" oninput="render()">
+  </div>
+  <div class="filter-group"><label>공급업체</label><select id="fSupplier" onchange="render()"><option value="">전체</option></select></div>
+  <div class="filter-group"><label>진행여부</label><select id="fStatus" onchange="render()"><option value="">전체</option><option>대기</option><option>확정</option><option>취소</option><option>완료</option></select></div>
+  <div class="filter-group"><label>담당자</label><select id="fManager" onchange="render()"><option value="">전체</option></select></div>
+  <div class="filter-group"><label>지역</label><select id="fRegion" onchange="render()"><option value="">전체</option><option>수도권</option><option>지방</option><option>미지정</option></select></div>
+  <span class="count-pill" id="countPill">0건</span>
+  <button class="btn btn-danger" id="btnDel" onclick="bulkDelete()" disabled>선택 삭제 (0)</button>
+</div>
+
+<div class="stats" id="stats" style="display:none"></div>
+
+<div class="container">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th><input type="checkbox" id="chkAll" onclick="toggleAll(this)"></th>
+          <th>신청일</th><th>원장명</th><th>연락처</th><th>병원명</th><th>주소</th><th>지역</th>
+          <th>공급업체</th><th>제품명</th><th>데모희망일</th><th>확정데모일</th><th>확정시간</th>
+          <th>진행여부</th><th>회수일자</th><th>담당자</th><th>F/U담당자</th><th>F/U상태</th>
+          <th>Stage</th><th>참고사항</th><th>특이사항</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+  <div class="empty" id="empty" style="display:none">데이터가 없습니다. 우측 상단 “붙여넣기 등록” 또는 “수기 등록”으로 추가하세요.</div>
+</div>
+
+<!-- 수기 등록 모달 -->
+<div class="modal-bg" id="manualBg">
+  <div class="modal">
+    <h2>수기 등록</h2>
+    <div class="sub">필수 항목만 입력해도 됩니다.</div>
+    <div class="grid2">
+      <div><label>신청일</label><input type="date" id="m_requestDate"></div>
+      <div><label>원장명</label><input id="m_director"></div>
+      <div><label>연락처</label><input id="m_phone" placeholder="010-0000-0000"></div>
+      <div><label>병원명</label><input id="m_hospital"></div>
+    </div>
+    <label>주소 <span class="hint">(서울/경기/인천 → 수도권 자동 분류)</span></label>
+    <input id="m_address">
+    <div class="grid2">
+      <div><label>공급업체</label><input id="m_supplier"></div>
+      <div><label>제품명</label><input id="m_product"></div>
+      <div><label>데모희망일</label><input type="date" id="m_desiredDate"></div>
+      <div><label>담당자</label><input id="m_manager"></div>
+    </div>
+    <label>참고사항</label>
+    <textarea id="m_notes"></textarea>
+    <div class="modal-foot">
+      <button class="btn btn-light" onclick="closeModal('manualBg')">취소</button>
+      <button class="btn btn-primary" id="m_save" onclick="saveManual()">등록</button>
+    </div>
+  </div>
+</div>
+
+<!-- 붙여넣기 모달 -->
+<div class="modal-bg" id="pasteBg">
+  <div class="modal" style="max-width:640px">
+    <h2>붙여넣기 등록</h2>
+    <div class="sub">외부 폼/시트에서 복사한 <b>탭 구분 텍스트</b>를 그대로 붙여넣으세요. 여러 줄 = 여러 건 동시 등록.</div>
+    <textarea id="pasteText" style="min-height:160px" placeholder="한 줄에 한 건씩, 탭으로 구분된 16개 필드"></textarea>
+    <div class="hint">추출 필드 → 5:원장명 · 7:연락처 · 8:제품명 · 10:참고사항 · 13:공급업체 · 14:담당자 · 15:신청일</div>
+    <div id="pastePreview" class="hint" style="margin-top:8px"></div>
+    <div class="modal-foot">
+      <button class="btn btn-light" onclick="closeModal('pasteBg')">취소</button>
+      <button class="btn btn-green" id="p_save" onclick="savePaste()">등록</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// CONFIG
+// ============================================================
+const SHEET_ID = '18FbNZ4Laki6TdWCQD6qbbwdtaPgwUaquOFpUoqa7Jbk';
+const SHEET_TAB = '시트1';
+const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
+  '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(SHEET_TAB);
+const WEBHOOK_URL = 'https://n8n.datastream.co.kr/webhook/demo-crud';
+
+// JS 필드 <-> 시트 컬럼명
+const FIELD_TO_COL = {
+  id: 'id', createdAt: '생성일', updatedAt: '수정일', requestDate: '신청일',
+  director: '원장명', phone: '연락처', hospital: '병원명', address: '주소',
+  supplier: '공급업체', product: '제품명', notes: '참고사항',
+  desiredDate: '데모희망일', demoDate: '확정데모일', demoTime: '확정시간',
+  status: '진행여부', manager: '담당자', fuManager: 'F/U담당자', fuStatus: 'F/U상태',
+  collectionDate: '회수일자', stage: 'Stage', remarks: '특이사항'
+};
+const COL_TO_FIELD = Object.fromEntries(Object.entries(FIELD_TO_COL).map(kv => [kv[1], kv[0]]));
+
+let DEMOS = [];           // 화면 데이터
+const selected = new Set();
+let pollTimer = null;
+
+// ============================================================
+// 비즈니스 로직
+// ============================================================
+function parseKoreanDate(input) {
+  if (!input) return '';
+  const cleaned = String(input).trim().replace(/\s+오[전후]\s+\d+:\d+(?::\d+)?/, '');
+  const m = cleaned.match(/(\d{4})\D+(\d{1,2})\D+(\d{1,2})/);
+  return m ? `${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}` : '';
+}
+function addBusinessDays(ymd, n) {
+  if (!ymd) return '';
+  const d = new Date(ymd + 'T00:00:00');
+  if (isNaN(d)) return '';
+  let added = 0;
+  while (added < n) { d.setDate(d.getDate()+1); const w = d.getDay(); if (w!==0 && w!==6) added++; }
+  return d.toISOString().slice(0,10);
+}
+function classifyRegion(address) {
+  if (!address || !address.trim()) return '미지정';
+  return /^(서울|경기|인천)/.test(address.trim()) ? '수도권' : '지방';
+}
+function todayStr() { return new Date().toISOString().slice(0,10); }
+function genId() { return 'd_' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+// ============================================================
+// 시트 읽기 (gviz CSV)
+// ============================================================
+function parseCSV(text) {
+  const rows = []; let i=0, cur='', row=[], inQ=false; const len=text.length;
+  while (i < len) {
+    const ch = text[i];
+    if (inQ) {
+      if (ch === '"' && text[i+1] === '"') { cur+='"'; i+=2; continue; }
+      if (ch === '"') { inQ=false; i++; continue; }
+      cur+=ch; i++;
+    } else {
+      if (ch === '"') { inQ=true; i++; continue; }
+      if (ch === ',') { row.push(cur); cur=''; i++; continue; }
+      if (ch === '\n') { row.push(cur); rows.push(row); row=[]; cur=''; i++; continue; }
+      if (ch === '\r') { i++; continue; }
+      cur+=ch; i++;
+    }
+  }
+  if (cur !== '' || row.length) { row.push(cur); rows.push(row); }
+  if (!rows.length) return [];
+  const headers = rows[0];
+  return rows.slice(1).filter(r => r.some(c => c && c.trim()))
+    .map(r => { const o={}; headers.forEach((h,idx)=>{ o[h]=r[idx]||''; }); return o; });
+}
+function sheetRowToRecord(row) {
+  const r = {};
+  Object.keys(COL_TO_FIELD).forEach(col => { r[COL_TO_FIELD[col]] = row[col] || ''; });
+  return r;
+}
+function fetchSheet() {
+  return fetch(SHEET_CSV_URL + '&_t=' + Date.now(), { cache: 'no-store' })
+    .then(res => { if (!res.ok) throw new Error('HTTP '+res.status); return res.text(); })
+    .then(csv => parseCSV(csv).map(sheetRowToRecord).filter(r => r.id))
+    .catch(e => { console.warn('시트 조회 실패:', e); throw e; });
+}
+
+// ============================================================
+// 시트 쓰기 (n8n webhook)
+// ============================================================
+function recordToSheetData(r) {
+  const d = {};
+  Object.keys(FIELD_TO_COL).forEach(f => { if (r[f] !== undefined) d[FIELD_TO_COL[f]] = r[f] != null ? String(r[f]) : ''; });
+  return d;
+}
+function callWebhook(action, payload) {
+  return fetch(WEBHOOK_URL, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(Object.assign({ action }, payload))
+  }).then(res => { if (!res.ok) throw new Error('webhook '+res.status); return res.json(); });
+}
+function syncCreate(r) { return callWebhook('create', { data: recordToSheetData(r) }); }
+function syncUpdate(r) { return callWebhook('update', { data: recordToSheetData(r) }); }
+function syncDelete(id) { return callWebhook('delete', { id }); }
+
+// ============================================================
+// 렌더링
+// ============================================================
+const STATUS_OPTS = ['대기','확정','취소','완료'];
+const STAGE_OPTS = ['Follow','Drop','Done'];
+const FU_OPTS = ['','대기','완료'];
+
+function esc(s){ return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function optionsHtml(opts, val) {
+  return opts.map(o => `<option value="${esc(o)}"${o===(val||'')?' selected':''}>${esc(o||'-')}</option>`).join('');
+}
+
+function rebuildFilterOptions() {
+  const sup = [...new Set(DEMOS.map(d=>d.supplier).filter(Boolean))].sort();
+  const mgr = [...new Set(DEMOS.map(d=>d.manager).filter(Boolean))].sort();
+  fillSelect('fSupplier', sup);
+  fillSelect('fManager', mgr);
+}
+function fillSelect(id, vals) {
+  const el = document.getElementById(id); const keep = el.value;
+  el.innerHTML = '<option value="">전체</option>' + vals.map(v=>`<option>${esc(v)}</option>`).join('');
+  if ([...el.options].some(o=>o.value===keep)) el.value = keep;
+}
+
+function applyFilters() {
+  const q = document.getElementById('fSearch').value.trim().toLowerCase();
+  const fs = document.getElementById('fSupplier').value;
+  const fst = document.getElementById('fStatus').value;
+  const fm = document.getElementById('fManager').value;
+  const fr = document.getElementById('fRegion').value;
+  return DEMOS.filter(d => {
+    if (fs && d.supplier !== fs) return false;
+    if (fst && (d.status||'대기') !== fst) return false;
+    if (fm && d.manager !== fm) return false;
+    if (fr && classifyRegion(d.address) !== fr) return false;
+    if (q) {
+      const hay = [d.director,d.hospital,d.product,d.phone,d.supplier,d.manager,d.notes,d.remarks].join(' ').toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+function render() {
+  const list = applyFilters();
+  const tb = document.getElementById('tbody');
+  document.getElementById('empty').style.display = DEMOS.length ? 'none' : 'block';
+  document.getElementById('countPill').textContent = list.length + '건';
+  tb.innerHTML = list.map(rowHtml).join('');
+  renderStats();
+  updateDelBtn();
+}
+
+function rowHtml(d) {
+  const region = classifyRegion(d.address);
+  const sel = selected.has(d.id);
+  const T = (f) => `oninput="edit('${d.id}','${f}',this.value)"`;
+  const S = (f) => `onchange="edit('${d.id}','${f}',this.value)"`;
+  return `<tr data-id="${d.id}" class="${sel?'sel':''}">
+    <td><input type="checkbox" ${sel?'checked':''} onclick="toggleSel('${d.id}',this)"></td>
+    <td><input value="${esc(d.requestDate)}" ${T('requestDate')} placeholder="YYYY-MM-DD"></td>
+    <td><input value="${esc(d.director)}" ${T('director')}></td>
+    <td><input value="${esc(d.phone)}" ${T('phone')}></td>
+    <td><input value="${esc(d.hospital)}" ${T('hospital')}></td>
+    <td><input value="${esc(d.address)}" ${T('address')} style="min-width:140px"></td>
+    <td><span class="region-tag region-${region}">${region}</span></td>
+    <td><input value="${esc(d.supplier)}" ${T('supplier')}></td>
+    <td><input value="${esc(d.product)}" ${T('product')}></td>
+    <td><input value="${esc(d.desiredDate)}" ${T('desiredDate')} placeholder="YYYY-MM-DD"></td>
+    <td><input value="${esc(d.demoDate)}" ${S('demoDate')} placeholder="YYYY-MM-DD"></td>
+    <td><input value="${esc(d.demoTime)}" ${T('demoTime')} placeholder="14:00"></td>
+    <td><select ${S('status')}>${optionsHtml(STATUS_OPTS, d.status||'대기')}</select></td>
+    <td><input value="${esc(d.collectionDate)}" ${T('collectionDate')} placeholder="YYYY-MM-DD"></td>
+    <td><input value="${esc(d.manager)}" ${T('manager')}></td>
+    <td><input value="${esc(d.fuManager)}" ${T('fuManager')}></td>
+    <td><select ${S('fuStatus')}>${optionsHtml(FU_OPTS, d.fuStatus)}</select></td>
+    <td><select ${S('stage')}>${optionsHtml(STAGE_OPTS, d.stage||'Follow')}</select></td>
+    <td><input value="${esc(d.notes)}" ${T('notes')} style="min-width:140px"></td>
+    <td><input value="${esc(d.remarks)}" ${T('remarks')} style="min-width:140px"></td>
+  </tr>`;
+}
+
+function renderStats() {
+  const wrap = document.getElementById('stats');
+  if (wrap.style.display === 'none') return;
+  const by = (f,v) => DEMOS.filter(d => (d[f]||(f==='status'?'대기':''))===v).length;
+  const cards = [
+    ['전체', DEMOS.length],
+    ['대기', by('status','대기')], ['확정', by('status','확정')],
+    ['완료', by('status','완료')], ['취소', by('status','취소')],
+    ['수도권', DEMOS.filter(d=>classifyRegion(d.address)==='수도권').length],
+    ['지방', DEMOS.filter(d=>classifyRegion(d.address)==='지방').length],
+    ['F/U 대기', by('fuStatus','대기')],
+  ];
+  wrap.innerHTML = cards.map(c=>`<div class="stat-card"><div class="v">${c[1]}</div><div class="l">${c[0]}</div></div>`).join('');
+}
+function toggleStats() {
+  const w = document.getElementById('stats');
+  w.style.display = w.style.display === 'none' ? 'flex' : 'none';
+  document.getElementById('btnStats').textContent = '통계 ' + (w.style.display==='none'?'▾':'▴');
+  renderStats();
+}
+
+// ============================================================
+// 편집 (낙관적 업데이트 + 자동 전이)
+// ============================================================
+let editDebounce = {};
+function edit(id, field, value) {
+  const d = DEMOS.find(x => x.id === id); if (!d) return;
+  d[field] = value;
+
+  // 날짜 입력 정규화
+  if (['requestDate','desiredDate','demoDate','collectionDate'].includes(field) && value) {
+    const norm = parseKoreanDate(value);
+    if (norm) d[field] = norm;
+  }
+  // 상태 자동 전이: 확정데모일 입력 → 진행여부 확정 + 회수일자(+영업일3) 자동
+  if (field === 'demoDate' && d.demoDate) {
+    if (!d.status || d.status === '대기') d.status = '확정';
+    if (!d.collectionDate) d.collectionDate = addBusinessDays(d.demoDate, 3);
+    render();
+  }
+  d.updatedAt = new Date().toISOString().slice(0,16).replace('T',' ');
+
+  // 디바운스 후 시트 동기화
+  clearTimeout(editDebounce[id]);
+  editDebounce[id] = setTimeout(() => {
+    syncUpdate(d).then(()=>flashSync()).catch(()=>toast('⚠ 저장 실패 — 새로고침 후 재시도'));
+  }, 700);
+}
+
+// ============================================================
+// 선택 / 삭제
+// ============================================================
+function toggleSel(id, cb) {
+  if (cb.checked) selected.add(id); else selected.delete(id);
+  cb.closest('tr').classList.toggle('sel', cb.checked);
+  updateDelBtn();
+}
+function toggleAll(cb) {
+  applyFilters().forEach(d => { if (cb.checked) selected.add(d.id); else selected.delete(d.id); });
+  render();
+}
+function updateDelBtn() {
+  const n = selected.size;
+  const b = document.getElementById('btnDel');
+  b.disabled = n === 0; b.textContent = `선택 삭제 (${n})`;
+  document.getElementById('chkAll').checked = applyFilters().length>0 && applyFilters().every(d=>selected.has(d.id));
+}
+function bulkDelete() {
+  const ids = [...selected];
+  if (!ids.length || !confirm(`${ids.length}건을 삭제할까요? 시트에서도 영구 삭제됩니다.`)) return;
+  DEMOS = DEMOS.filter(d => !selected.has(d.id));
+  selected.clear(); render();
+  // 시트 삭제는 행 번호 시프트 방지를 위해 순차 처리
+  (async () => {
+    for (const id of ids) { try { await syncDelete(id); } catch(e){ console.warn('삭제 실패', id, e); } }
+    flashSync(); toast('삭제 완료');
+    setTimeout(()=>refresh(false), 1200);
+  })();
+}
+
+// ============================================================
+// 등록 — 수기
+// ============================================================
+function openManual() {
+  ['requestDate','director','phone','hospital','address','supplier','product','desiredDate','manager','notes']
+    .forEach(f => { const el=document.getElementById('m_'+f); if(el) el.value=''; });
+  document.getElementById('m_requestDate').value = todayStr();
+  openModal('manualBg');
+}
+function saveManual() {
+  const g = f => (document.getElementById('m_'+f).value||'').trim();
+  const r = {
+    id: genId(), createdAt: new Date().toISOString().slice(0,16).replace('T',' '),
+    updatedAt: '', requestDate: g('requestDate'), director: g('director'), phone: g('phone'),
+    hospital: g('hospital'), address: g('address'), supplier: g('supplier'), product: g('product'),
+    notes: g('notes'), desiredDate: g('desiredDate'), demoDate: '', demoTime: '',
+    status: '대기', manager: g('manager'), fuManager: '', fuStatus: '', collectionDate: '',
+    stage: 'Follow', remarks: ''
+  };
+  if (!r.director && !r.hospital) { toast('원장명 또는 병원명은 입력하세요'); return; }
+  const btn = document.getElementById('m_save'); btn.disabled = true;
+  DEMOS.unshift(r); render(); closeModal('manualBg');
+  syncCreate(r).then(()=>{ flashSync(); toast('등록 완료'); })
+    .catch(()=>toast('⚠ 등록 실패 — 새로고침 후 확인'))
+    .finally(()=>{ btn.disabled = false; });
+}
+
+// ============================================================
+// 등록 — 붙여넣기 (탭 구분 16필드 → 5,7,8,10,13,14,15)
+// ============================================================
+function parsePasteLines(text) {
+  return text.split('\n').map(l=>l.replace(/\r$/,'')).filter(l=>l.trim())
+    .map(line => {
+      const c = line.split('\t');
+      return {
+        id: genId(), createdAt: new Date().toISOString().slice(0,16).replace('T',' '), updatedAt: '',
+        requestDate: parseKoreanDate(c[14]||'') || (c[14]||'').trim(),
+        director: (c[4]||'').trim(), phone: (c[6]||'').trim(), product: (c[7]||'').trim(),
+        notes: (c[9]||'').trim(), supplier: (c[12]||'').trim(), manager: (c[13]||'').trim(),
+        hospital: '', address: '', desiredDate: '', demoDate: '', demoTime: '',
+        status: '대기', fuManager: '', fuStatus: '', collectionDate: '', stage: 'Follow', remarks: ''
+      };
+    });
+}
+function openPaste() {
+  document.getElementById('pasteText').value = '';
+  document.getElementById('pastePreview').textContent = '';
+  openModal('pasteBg');
+}
+document.addEventListener('input', e => {
+  if (e.target && e.target.id === 'pasteText') {
+    const rows = parsePasteLines(e.target.value);
+    document.getElementById('pastePreview').textContent =
+      rows.length ? `미리보기: ${rows.length}건 — 예) ${rows[0].director||'(원장명 없음)'} / ${rows[0].product||'(제품 없음)'}` : '';
+  }
+});
+function savePaste() {
+  const rows = parsePasteLines(document.getElementById('pasteText').value);
+  if (!rows.length) { toast('붙여넣은 데이터가 없습니다'); return; }
+  const btn = document.getElementById('p_save'); btn.disabled = true;
+  rows.forEach(r => DEMOS.unshift(r)); render(); closeModal('pasteBg');
+  (async () => {
+    let ok=0;
+    for (const r of rows) { try { await syncCreate(r); ok++; } catch(e){ console.warn(e); } }
+    flashSync(); toast(`${ok}/${rows.length}건 등록 완료`); btn.disabled=false;
+    setTimeout(()=>refresh(false), 1200);
+  })();
+}
+
+// ============================================================
+// 동기화 / 폴링 / UI 유틸
+// ============================================================
+function refresh(manual) {
+  if (manual) document.getElementById('syncInfo').textContent = '새로고침 중…';
+  return fetchSheet().then(records => {
+    // 편집 중인 셀이 있으면 해당 행은 로컬 유지 (stale read 방지)
+    const editingId = document.activeElement && document.activeElement.closest
+      ? (document.activeElement.closest('tr')||{}).dataset && document.activeElement.closest('tr').dataset.id : null;
+    if (editingId) {
+      const localEditing = DEMOS.find(d=>d.id===editingId);
+      DEMOS = records.map(r => r.id===editingId && localEditing ? localEditing : r);
+      if (localEditing && !records.some(r=>r.id===editingId)) DEMOS.unshift(localEditing);
+    } else {
+      DEMOS = records;
+    }
+    rebuildFilterOptions(); render();
+    document.getElementById('syncInfo').textContent = '동기화: ' + new Date().toLocaleTimeString('ko-KR');
+  }).catch(() => {
+    document.getElementById('syncInfo').textContent = '⚠ 시트 조회 실패 (공유 설정 확인)';
+  });
+}
+function flashSync() { document.getElementById('syncInfo').textContent = '저장됨 · ' + new Date().toLocaleTimeString('ko-KR'); }
+function startPolling() {
+  if (pollTimer) clearInterval(pollTimer);
+  pollTimer = setInterval(() => {
+    const anyModal = document.querySelector('.modal-bg.open');
+    const editing = document.activeElement && (document.activeElement.tagName==='INPUT' || document.activeElement.tagName==='SELECT' || document.activeElement.tagName==='TEXTAREA');
+    if (!anyModal && !editing) refresh(false);
+  }, 30000);
+}
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-bg').forEach(bg => bg.addEventListener('click', e => { if (e.target===bg) bg.classList.remove('open'); }));
+document.addEventListener('keydown', e => { if (e.key==='Escape') document.querySelectorAll('.modal-bg.open').forEach(m=>m.classList.remove('open')); });
+
+let toastTimer=null;
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2600); }
+
+// init
+refresh(true).then(startPolling);
+</script>
+</body>
+</html>
