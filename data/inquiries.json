@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-04T05:16:20.867Z",
+  "updated": "2026-06-04T06:31:20.590Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -65,6 +65,27 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "야누스 기계 비교",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 06. 04 오후 03:25:38",
+      "date": "2026-06-04",
+      "slackTs": "1780554338.289169",
+      "name": "권오경",
+      "cid": "5db80c6f0dabe405b156f833",
+      "phone": "010-2991-3988",
+      "product": "[바이오시그널랩] 정량뇌파진단기 QEEG-32FX AI (8채널/16채널)",
+      "qty": 1,
+      "price": "모릅니다.",
+      "productId": "6a0d376f7dc34bd6d0797bea",
+      "clinic": "감성한의원",
+      "region": "경기도 남양주시",
+      "caller": "김태호",
+      "supplier": "바이오시그널랩",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격",
       "leadGrade": "고가망"
     },
     {
