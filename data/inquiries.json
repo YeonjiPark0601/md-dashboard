@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-04T02:16:07.875Z",
+  "updated": "2026-06-04T03:36:10.152Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -44,6 +44,27 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "견적, 타모델과 차이점, 납품시기 등 궁금합니다.",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 06. 04 오후 12:34:02",
+      "date": "2026-06-04",
+      "slackTs": "1780544042.014999",
+      "name": "민병일",
+      "cid": "5d8988810dabe405b156d4bd",
+      "phone": "010-5191-7083",
+      "product": "[PIE] 야누스 피부진단기 (FOCUSKIN)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "68c2842c860009fbc509994a",
+      "clinic": "하단광덕안정한방병원",
+      "region": "부산시 사하구",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "야누스 기계 비교",
       "leadGrade": "고가망"
     },
     {
