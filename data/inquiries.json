@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-04T01:31:12.462Z",
+  "updated": "2026-06-04T02:16:07.875Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -24,6 +24,27 @@
       "payAmount": null,
       "inquiry": "퓨라셀mx데모",
       "leadGrade": ""
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 06. 04 오전 11:12:08",
+      "date": "2026-06-04",
+      "slackTs": "1780539128.291689",
+      "name": "김수경",
+      "cid": "5d943b3c0dabe405b156d7d1",
+      "phone": "010-2560-7222",
+      "product": "[PIE] 야누스 피부진단기 (JANUS Pro sunlike)",
+      "qty": 1,
+      "price": "300",
+      "productId": "68c28018b4ea61bdadcd40c5",
+      "clinic": "",
+      "region": "전라북도 군산시",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "견적, 타모델과 차이점, 납품시기 등 궁금합니다.",
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
