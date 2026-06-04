@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-04T07:46:22.802Z",
+  "updated": "2026-06-04T10:11:19.090Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -108,6 +108,27 @@
       "payAmount": null,
       "inquiry": "가격 할인 리스 혜택등등 as기간",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 06. 04 오후 07:09:26",
+      "date": "2026-06-04",
+      "slackTs": "1780567766.762079",
+      "name": "김수정",
+      "cid": "5da903990dabe405b156ec20",
+      "phone": "010-2970-5116",
+      "product": "[일광] 무압력 스텐/옹기 약탕기",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "60bd7a630ccc56001bc7fe19",
+      "clinic": "코비한의원",
+      "region": "서울시 마포구",
+      "caller": "",
+      "supplier": "일광",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "비용",
+      "leadGrade": "가망"
     },
     {
       "source": "총판기기",
