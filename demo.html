@@ -356,8 +356,8 @@ function rowHtml(d) {
     <td><input value="${esc(d.fuManager)}" ${T('fuManager')}></td>
     <td><select ${S('fuStatus')}>${optionsHtml(FU_OPTS, d.fuStatus)}</select></td>
     <td><select ${S('stage')}>${optionsHtml(STAGE_OPTS, d.stage||'Follow')}</select></td>
-    <td><input value="${esc(d.notes)}" ${T('notes')} style="min-width:140px"></td>
-    <td><input value="${esc(d.remarks)}" ${T('remarks')} style="min-width:140px"></td>
+    <td><input value="${esc(d.notes)}" ${T('notes')} style="min-width:240px"></td>
+    <td><input value="${esc(d.remarks)}" ${T('remarks')} style="min-width:240px"></td>
   </tr>`;
 }
 
