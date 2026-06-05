@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-05T02:31:26.928Z",
+  "updated": "2026-06-05T04:41:22.356Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -24,6 +24,27 @@
       "payAmount": null,
       "inquiry": "가격",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 06. 05 오후 01:35:38",
+      "date": "2026-06-05",
+      "slackTs": "1780634138.808479",
+      "name": "김수정",
+      "cid": "5da903990dabe405b156ec20",
+      "phone": "010-2970-5116",
+      "product": "[영일엠] TTM 경추각도 (TTM-B)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "696f25de42f7b51bb279940c",
+      "clinic": "코비한의원",
+      "region": "서울시 마포구",
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "사이즈길이가 180이 맞을까요",
+      "leadGrade": "가망"
     },
     {
       "source": "일반",
