@@ -2378,14 +2378,15 @@ function renderConversion(data, total) {
 function renderDropAnalysis(data, total) {
   var cntDrop = data.filter(function(r){ return r.stage === 'Drop'; }).length;
   var dropRate = total > 0 ? fmtPct(cntDrop / total * 100) : '-';
-  var cntDemoOnly = data.filter(function(r){ return isDemoStage(r.stage); }).length;
-  var cntDone = data.filter(function(r){ return r.stage === 'Done'; }).length;
+  // Demo/Turn-key까지 갔으나 아직 결제 안 된 정체 건
+  var cntStalled = data.filter(function(r){ return isDemoStage(r.stage) || isTurnkeyStage(r.stage); }).length;
+  var cntWon = data.filter(function(r){ return isWon(r.stage); }).length;
 
   var html = '<table class="mini-table"><tbody>' +
     '<tr><td style="font-weight:600;">Drop 건수</td><td style="text-align:right;font-weight:700;color:#e53e3e;">' + cntDrop + '</td></tr>' +
     '<tr><td style="font-weight:600;">Drop 비율</td><td style="text-align:right;">' + dropRate + '</td></tr>' +
-    '<tr><td style="font-weight:600;">Demo 후 미결제</td><td style="text-align:right;color:#5b21b6;font-weight:700;">' + cntDemoOnly + '</td></tr>' +
-    '<tr><td style="font-weight:600;">Done (전환없이 종결)</td><td style="text-align:right;color:#065f46;font-weight:700;">' + cntDone + '</td></tr>' +
+    '<tr><td style="font-weight:600;">Demo/Turn-key 미결제</td><td style="text-align:right;color:#5b21b6;font-weight:700;">' + cntStalled + '</td></tr>' +
+    '<tr><td style="font-weight:600;">결제 완료(Done)</td><td style="text-align:right;color:#065f46;font-weight:700;">' + cntWon + '</td></tr>' +
   '</tbody></table>';
   document.getElementById('chartDrop').innerHTML = html;
 }
@@ -2398,7 +2399,7 @@ function renderLeadtime(data) {
 
   data.forEach(function(r){
     var payD = r.payDate || r.buyDate;
-    if (isTurnkeyStage(r.stage) && r.date && payD) {
+    if (isWon(r.stage) && r.date && payD) {
       var d = daysBetween(r.date, payD);
       if (d >= 0) inToWin.push(d);
     }
@@ -2406,7 +2407,7 @@ function renderLeadtime(data) {
       var d2 = daysBetween(r.date, r.demoDate);
       if (d2 >= 0) inToDemo.push(d2);
     }
-    if (isTurnkeyStage(r.stage) && r.demoDate && payD) {
+    if (isWon(r.stage) && r.demoDate && payD) {
       var d3 = daysBetween(r.demoDate, payD);
       if (d3 >= 0) demoToWin.push(d3);
     }
@@ -2419,9 +2420,9 @@ function renderLeadtime(data) {
   }
 
   var metrics = [
-    { label:'인입 → Turn-key', data: stats(inToWin), n: inToWin.length },
+    { label:'인입 → 결제완료', data: stats(inToWin), n: inToWin.length },
     { label:'인입 → Demo', data: stats(inToDemo), n: inToDemo.length },
-    { label:'Demo → Turn-key', data: stats(demoToWin), n: demoToWin.length }
+    { label:'Demo → 결제완료', data: stats(demoToWin), n: demoToWin.length }
   ];
 
   var html = '<table class="mini-table"><thead><tr><th>구간</th><th style="text-align:right;">건수</th><th style="text-align:right;">평균</th><th style="text-align:right;">최소</th><th style="text-align:right;">최대</th></tr></thead><tbody>';
@@ -2444,7 +2445,7 @@ function renderMonthly(data) {
     if (!monthMap[ym]) monthMap[ym] = { total:0, demo:0, win:0, drop:0, revenue:0 };
     monthMap[ym].total++;
     if (isDemoReached(r.stage)) monthMap[ym].demo++;
-    if (isTurnkeyStage(r.stage)) { monthMap[ym].win++; monthMap[ym].revenue += parsePrice(r.price); }
+    if (isWon(r.stage)) { monthMap[ym].win++; monthMap[ym].revenue += parsePrice(r.price); }
     if (r.stage === 'Drop') monthMap[ym].drop++;
   });
   var keys = Object.keys(monthMap).sort();
@@ -2466,7 +2467,7 @@ function renderMonthly(data) {
   });
   barHtml += '</div>';
 
-  var tblHtml = '<table class="mini-table"><thead><tr><th>월</th><th style="text-align:right;">인입건</th><th style="text-align:right;">Demo 도달</th><th style="text-align:right;">Turn-key</th><th style="text-align:right;">Drop</th><th style="text-align:right;">전환율</th><th style="text-align:right;">매출(원)</th></tr></thead><tbody>';
+  var tblHtml = '<table class="mini-table"><thead><tr><th>월</th><th style="text-align:right;">인입건</th><th style="text-align:right;">Demo 도달</th><th style="text-align:right;">결제완료</th><th style="text-align:right;">Drop</th><th style="text-align:right;">전환율</th><th style="text-align:right;">매출(원)</th></tr></thead><tbody>';
   keys.forEach(function(k){
     var m = monthMap[k];
     var conv = m.total > 0 ? (m.win / m.total * 100) : 0;
@@ -2502,7 +2503,7 @@ function renderCohort(data) {
     return;
   }
 
-  var html = '<table class="mini-table"><thead><tr><th>주차</th><th>시작일</th><th>종료일</th><th style="text-align:right;">인입건</th><th style="text-align:right;">Demo전환</th><th style="text-align:right;">Turn-key전환</th><th style="text-align:right;">Demo전환율</th><th style="text-align:right;">TK전환율</th><th style="text-align:right;">Drop</th><th style="text-align:right;">Drop율</th></tr></thead><tbody>';
+  var html = '<table class="mini-table"><thead><tr><th>주차</th><th>시작일</th><th>종료일</th><th style="text-align:right;">인입건</th><th style="text-align:right;">Demo전환</th><th style="text-align:right;">결제완료</th><th style="text-align:right;">Demo전환율</th><th style="text-align:right;">결제전환율</th><th style="text-align:right;">Drop</th><th style="text-align:right;">Drop율</th></tr></thead><tbody>';
   keys.forEach(function(key){
     var wk = weekMap[key];
     var mon = getWeekMonday(wk.year, wk.week);
@@ -2510,7 +2511,7 @@ function renderCohort(data) {
     var recs = wk.records;
     var cnt = recs.length;
     var demo = recs.filter(function(r){ return isDemoReached(r.stage); }).length;
-    var win = recs.filter(function(r){ return isTurnkeyStage(r.stage); }).length;
+    var win = recs.filter(function(r){ return isWon(r.stage); }).length;
     var drop = recs.filter(function(r){ return r.stage === 'Drop'; }).length;
     html += '<tr>' +
       '<td style="font-weight:600;">W' + String(wk.week).padStart(2,'0') + '</td>' +
@@ -2536,7 +2537,7 @@ function renderActivity(data) {
     var payD = r.payDate || r.buyDate;
     var dates = [];
     if (r.demoDate) dates.push(r.demoDate);
-    if (payD && isTurnkeyStage(r.stage)) dates.push(payD);
+    if (payD && isWon(r.stage)) dates.push(payD);
     dates.forEach(function(dt){
       var w = getISOWeek(dt);
       var key = w.year + '-W' + String(w.week).padStart(2,'0');
@@ -2547,7 +2548,7 @@ function renderActivity(data) {
       var k1 = w1.year + '-W' + String(w1.week).padStart(2,'0');
       weekMap[k1].demos.push(r);
     }
-    if (payD && isTurnkeyStage(r.stage)) {
+    if (payD && isWon(r.stage)) {
       var w2 = getISOWeek(payD);
       var k2 = w2.year + '-W' + String(w2.week).padStart(2,'0');
       weekMap[k2].wins.push(r);
@@ -2560,7 +2561,7 @@ function renderActivity(data) {
     return;
   }
 
-  var html = '<table class="mini-table"><thead><tr><th>주차</th><th>시작일</th><th>종료일</th><th style="text-align:right;">Demo 건수</th><th style="text-align:right;">Turn-key 건수</th><th style="text-align:right;">결제금액</th></tr></thead><tbody>';
+  var html = '<table class="mini-table"><thead><tr><th>주차</th><th>시작일</th><th>종료일</th><th style="text-align:right;">Demo 건수</th><th style="text-align:right;">결제완료 건수</th><th style="text-align:right;">결제금액</th></tr></thead><tbody>';
   keys.forEach(function(key){
     var wk = weekMap[key];
     var mon = getWeekMonday(wk.year, wk.week);
@@ -2587,7 +2588,7 @@ function renderRepTable(data) {
     if (!reps[rep]) reps[rep] = { total:0, demo:0, win:0, revenue:0 };
     reps[rep].total++;
     if (isDemoReached(r.stage)) reps[rep].demo++;
-    if (isTurnkeyStage(r.stage)) { reps[rep].win++; reps[rep].revenue += parsePrice(r.price); }
+    if (isWon(r.stage)) { reps[rep].win++; reps[rep].revenue += parsePrice(r.price); }
   });
 
   var keys = Object.keys(reps).sort(function(a,b){ return reps[b].total - reps[a].total; });
@@ -2596,7 +2597,7 @@ function renderRepTable(data) {
     return;
   }
 
-  var html = '<table class="mini-table"><thead><tr><th>담당자</th><th style="text-align:right;">상담건수</th><th style="text-align:right;">Demo 도달</th><th style="text-align:right;">Turn-key</th><th style="text-align:right;">매출(원)</th><th style="text-align:right;">전환율</th></tr></thead><tbody>';
+  var html = '<table class="mini-table"><thead><tr><th>담당자</th><th style="text-align:right;">상담건수</th><th style="text-align:right;">Demo 도달</th><th style="text-align:right;">결제완료</th><th style="text-align:right;">매출(원)</th><th style="text-align:right;">전환율</th></tr></thead><tbody>';
   keys.forEach(function(rep){
     var d = reps[rep];
     var rate = d.total > 0 ? fmtPct(d.win / d.total * 100) : '-';
@@ -2641,10 +2642,10 @@ function renderSupplierTable(data) {
   var LIMIT = 20;
   function rowHtml(k, hidden){
     var m = map[k];
-    var conv = m.total > 0 ? (m['Turn-key'] / m.total * 100) : 0;
-    // 의사결정 강조: 인입 5건 이상인데 전환 0 → 경고(빨강), 전환율 20%+ → 양호(초록)
+    var conv = m.total > 0 ? ((m.Done||0) / m.total * 100) : 0;
+    // 의사결정 강조: 인입 5건 이상인데 결제완료 0 → 경고(빨강), 전환율 20%+ → 양호(초록)
     var convCls = '';
-    if (m.total >= 5 && m['Turn-key'] === 0) convCls = 'conv-warn';
+    if (m.total >= 5 && (m.Done||0) === 0) convCls = 'conv-warn';
     else if (conv >= 20) convCls = 'conv-good';
     return '<tr' + (hidden ? ' class="supplier-extra-row" style="display:none;"' : '') + '>' +
       '<td style="font-weight:600;">' + escHtml(k) + '</td>' +
@@ -2652,7 +2653,8 @@ function renderSupplierTable(data) {
       '<td style="text-align:right;color:#888;">' + (m.New||0) + '</td>' +
       '<td style="text-align:right;color:#92400e;">' + (m.Follow||0) + '</td>' +
       '<td style="text-align:right;color:#5b21b6;">' + (m.Demo||0) + '</td>' +
-      '<td style="text-align:right;color:#065f46;font-weight:700;">' + (m['Turn-key']||0) + '</td>' +
+      '<td style="text-align:right;color:#1967d2;">' + (m['Turn-key']||0) + '</td>' +
+      '<td style="text-align:right;color:#065f46;font-weight:700;">' + (m.Done||0) + '</td>' +
       '<td style="text-align:right;color:#e53e3e;">' + (m.Drop||0) + '</td>' +
       '<td style="text-align:right;" class="' + convCls + '">' + fmtPct(conv) + '</td>' +
     '</tr>';
@@ -2665,6 +2667,7 @@ function renderSupplierTable(data) {
     '<th style="text-align:right;">Follow</th>' +
     '<th style="text-align:right;">Demo</th>' +
     '<th style="text-align:right;">Turn-key</th>' +
+    '<th style="text-align:right;">Done</th>' +
     '<th style="text-align:right;">Drop</th>' +
     '<th style="text-align:right;">전환율</th>' +
     '</tr></thead><tbody>';
@@ -2726,7 +2729,7 @@ function renderSupplierMonthly() {
     var ym = String(r.date).slice(0,7);
     if (!monthMap[ym]) monthMap[ym] = { total:0, win:0 };
     monthMap[ym].total++;
-    if (isTurnkeyStage(r.stage)) monthMap[ym].win++;
+    if (isWon(r.stage)) monthMap[ym].win++;
   });
   var keys = Object.keys(monthMap).sort();
   var box = document.getElementById('supplierMonthlyContent');
@@ -2748,7 +2751,7 @@ function renderSupplierMonthly() {
   });
   barHtml += '</div>';
 
-  var tblHtml = '<table class="mini-table"><thead><tr><th>월</th><th style="text-align:right;">인입건</th><th style="text-align:right;">Turn-key</th><th style="text-align:right;">전환율</th></tr></thead><tbody>';
+  var tblHtml = '<table class="mini-table"><thead><tr><th>월</th><th style="text-align:right;">인입건</th><th style="text-align:right;">결제완료</th><th style="text-align:right;">전환율</th></tr></thead><tbody>';
   keys.forEach(function(k){
     var m = monthMap[k];
     var conv = m.total > 0 ? (m.win / m.total * 100) : 0;
