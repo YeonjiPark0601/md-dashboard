@@ -1636,10 +1636,11 @@ function getColumnValues(col) {
   data.forEach(function(r){
     var v = col === 'caller' ? (r.caller || r.rep || '') : (r[col] || '');
     if (v !== '' && v != null) vals[String(v)] = true;
-    else if (col === 'caller') hasEmpty = true;
+    else if (col === 'caller' || col === 'supplier') hasEmpty = true;
   });
   var out = Object.keys(vals).sort();
   if (col === 'caller' && hasEmpty) out.push('(미지정)');
+  if (col === 'supplier' && hasEmpty) out.push('미입력');
   return out;
 }
 
@@ -1771,6 +1772,7 @@ function getFilteredData() {
     data = data.filter(function(r){
       var v = col === 'caller' ? (r.caller || r.rep || '') : (r[col] || '');
       if (col === 'caller' && v === '') return picked.has('(미지정)');
+      if (col === 'supplier' && v === '') return picked.has('미입력');
       return picked.has(String(v));
     });
   });
