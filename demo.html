@@ -183,6 +183,7 @@ const SHEET_TAB = '시트1';
 const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
   '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(SHEET_TAB);
 const WEBHOOK_URL = 'https://n8n.datastream.co.kr/webhook/demo-crud';
+const CALENDAR_WEBHOOK_URL = 'https://n8n.datastream.co.kr/webhook/demo-calendar';
 
 // JS 필드 <-> 시트 컬럼명
 const FIELD_TO_COL = {
@@ -277,6 +278,18 @@ function callWebhook(action, payload) {
 function syncCreate(r) { return callWebhook('create', { data: recordToSheetData(r) }); }
 function syncUpdate(r) { return callWebhook('update', { data: recordToSheetData(r) }); }
 function syncDelete(id) { return callWebhook('delete', { id }); }
+
+// 구글 캘린더 연동 — 확정데모일+확정시간 입력 시 이벤트 생성/수정/삭제 (n8n demo-calendar)
+function syncCalendar(r) {
+  return fetch(CALENDAR_WEBHOOK_URL, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      id: r.id, director: r.director, hospital: r.hospital, phone: r.phone,
+      product: r.product, supplier: r.supplier, manager: r.manager, address: r.address,
+      demoDate: r.demoDate, demoTime: r.demoTime
+    })
+  }).then(res => { if (!res.ok) throw new Error('calendar '+res.status); return res.json(); });
+}
 
 // ============================================================
 // 렌더링
@@ -386,9 +399,12 @@ function toggleStats() {
 // 편집 (낙관적 업데이트 + 자동 전이)
 // ============================================================
 let editDebounce = {};
+const calPending = {};
 function edit(id, field, value) {
   const d = DEMOS.find(x => x.id === id); if (!d) return;
   d[field] = value;
+  // 확정데모일/확정시간 변경 시 캘린더 동기화 예약
+  if (field === 'demoDate' || field === 'demoTime') calPending[id] = true;
 
   // 날짜 입력 정규화
   if (['requestDate','desiredDate','demoDate','collectionDate'].includes(field) && value) {
@@ -406,7 +422,18 @@ function edit(id, field, value) {
   // 디바운스 후 시트 동기화
   clearTimeout(editDebounce[id]);
   editDebounce[id] = setTimeout(() => {
-    syncUpdate(d).then(()=>flashSync()).catch(()=>toast('⚠ 저장 실패 — 새로고침 후 재시도'));
+    syncUpdate(d).then(()=>{
+      flashSync();
+      if (calPending[id]) {
+        calPending[id] = false;
+        syncCalendar(d).then(res => {
+          const act = res && res.action;
+          if (act === 'create') toast('📅 캘린더 등록됨');
+          else if (act === 'update') toast('📅 캘린더 수정됨');
+          else if (act === 'delete') toast('📅 캘린더 삭제됨');
+        }).catch(()=>toast('⚠ 캘린더 연동 실패'));
+      }
+    }).catch(()=>toast('⚠ 저장 실패 — 새로고침 후 재시도'));
   }, 700);
 }
 
