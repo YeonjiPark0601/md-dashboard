@@ -126,6 +126,10 @@
   <button class="btn btn-danger" id="btnDel" onclick="bulkDelete()" disabled>선택 삭제 (0)</button>
 </div>
 
+<div id="editorBanner" style="display:none;align-items:center;gap:8px;background:#fef3c7;color:#92400e;padding:10px 20px;font-size:13px;font-weight:600;border-bottom:1px solid #fde68a;">
+  ✏️ 편집하려면 먼저 우측 상단에서 <b>작성자</b>를 선택하세요. <span style="font-weight:400;">(한번 선택하면 변경할 수 없습니다)</span>
+</div>
+
 <div class="stats" id="stats" style="display:none"></div>
 
 <!-- 전체 변경이력 패널 -->
@@ -301,15 +305,32 @@ function syncDelete(id) { return callWebhook('delete', { id }); }
 // ============================================================
 // 작성자
 // ============================================================
+function editorLocked() { return !!getEditor(); }
 function initEditorSel() {
   const sel = document.getElementById('editorSel');
   const cur = getEditor();
-  let opts = '<option value="">(작성자 선택)</option>' + CALLER_OPTIONS.map(n=>`<option${n===cur?' selected':''}>${esc(n)}</option>`).join('');
-  if (cur && CALLER_OPTIONS.indexOf(cur) === -1) opts += `<option selected>${esc(cur)}</option>`;
-  sel.innerHTML = opts;
-  sel.style.borderColor = cur ? 'rgba(255,255,255,.3)' : '#f87171';
+  if (cur) {
+    sel.innerHTML = `<option selected>${esc(cur)}</option>`;
+    sel.disabled = true;
+    sel.style.borderColor = 'rgba(255,255,255,.3)';
+    sel.title = '작성자 확정됨 — 변경 불가';
+  } else {
+    sel.disabled = false;
+    sel.innerHTML = '<option value="">(작성자 선택)</option>' + CALLER_OPTIONS.map(n=>`<option>${esc(n)}</option>`).join('');
+    sel.style.borderColor = '#f87171';
+    sel.title = '편집하려면 작성자를 먼저 선택하세요';
+  }
+  const banner = document.getElementById('editorBanner');
+  if (banner) banner.style.display = cur ? 'none' : 'flex';
 }
-function setEditor(v) { localStorage.setItem(EDITOR_KEY, v); initEditorSel(); }
+function setEditor(v) {
+  if (!v) return;
+  if (!confirm(`작성자를 '${v}'(으)로 확정합니다.\n확정 후에는 변경할 수 없습니다. 계속할까요?`)) { initEditorSel(); return; }
+  localStorage.setItem(EDITOR_KEY, v);
+  initEditorSel();
+  render();
+  toast(`작성자: ${v} — 이제 편집할 수 있어요`);
+}
 
 // ============================================================
 // 렌더링
@@ -351,12 +372,13 @@ function render() {
 
 function rowHtml(r, hasHist) {
   const sel = selected.has(r.id);
+  const dis = editorLocked() ? '' : ' disabled';
   const F = (f) => `onfocus="cellFocus('${r.id}','${f}',this)"`;
-  const T = (f) => `${F(f)} oninput="edit('${r.id}','${f}',this.value)" onchange="cellCommit('${r.id}','${f}',this)"`;
-  const S = (f) => `${F(f)} onchange="edit('${r.id}','${f}',this.value);cellCommit('${r.id}','${f}',this)"`;
+  const T = (f) => `${F(f)} oninput="edit('${r.id}','${f}',this.value)" onchange="cellCommit('${r.id}','${f}',this)"${dis}`;
+  const S = (f) => `${F(f)} onchange="edit('${r.id}','${f}',this.value);cellCommit('${r.id}','${f}',this)"${dis}`;
   const marker = hasHist ? `<span class="hist-marker" title="변경 이력 보기" onclick="openHist('${r.id}')">●</span>` : '';
   return `<tr data-id="${r.id}" class="${sel?'sel':''}">
-    <td><input type="checkbox" ${sel?'checked':''} onclick="toggleSel('${r.id}',this)"></td>
+    <td><input type="checkbox" ${sel?'checked':''} onclick="toggleSel('${r.id}',this)"${dis}></td>
     <td class="col-name"><input value="${esc(r.supplierName)}" ${T('supplierName')}>${marker}</td>
     <td><select ${S('demoAvailable')}>${optionsHtml(DEMO_OPTS, r.demoAvailable)}</select></td>
     <td><input value="${esc(r.demoCondition)}" ${T('demoCondition')} style="min-width:160px"></td>
@@ -506,6 +528,7 @@ function bulkDelete() {
 // 등록 — 공급처 추가
 // ============================================================
 function openManual() {
+  if (!editorLocked()) { toast('작성자를 먼저 선택하세요'); return; }
   ['supplierName','demoAvailable','demoCondition','promotion','discount','promoPeriod','managerName','managerPhone','managerEmail','products','supplyLimit','remarks']
     .forEach(f => { const el=document.getElementById('m_'+f); if(el) el.value=''; });
   openModal('manualBg');
