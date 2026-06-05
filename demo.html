@@ -352,21 +352,21 @@ function rowHtml(d) {
   const S = (f) => `onchange="edit('${d.id}','${f}',this.value)"`;
   return `<tr data-id="${d.id}" class="${sel?'sel':''}">
     <td><input type="checkbox" ${sel?'checked':''} onclick="toggleSel('${d.id}',this)"></td>
-    <td><input value="${esc(d.requestDate)}" ${T('requestDate')} placeholder="YYYY-MM-DD"></td>
-    <td><input value="${esc(d.director)}" ${T('director')}></td>
-    <td><input value="${esc(d.phone)}" ${T('phone')}></td>
-    <td><input value="${esc(d.hospital)}" ${T('hospital')}></td>
-    <td><input value="${esc(d.address)}" ${T('address')} style="min-width:140px"></td>
+    <td><input value="${esc(d.requestDate)}" ${T('requestDate')} placeholder="YYYY-MM-DD" style="min-width:110px"></td>
+    <td><input value="${esc(d.director)}" ${T('director')} style="min-width:90px"></td>
+    <td><input value="${esc(d.phone)}" ${T('phone')} style="min-width:120px"></td>
+    <td><input value="${esc(d.hospital)}" ${T('hospital')} style="min-width:160px"></td>
+    <td><input value="${esc(d.address)}" ${T('address')} style="min-width:160px"></td>
     <td><span class="region-tag region-${region}">${region}</span></td>
-    <td><input value="${esc(d.supplier)}" ${T('supplier')}></td>
-    <td><input value="${esc(d.product)}" ${T('product')}></td>
-    <td><input value="${esc(d.desiredDate)}" ${T('desiredDate')} placeholder="YYYY-MM-DD"></td>
-    <td><input value="${esc(d.demoDate)}" ${S('demoDate')} placeholder="YYYY-MM-DD"></td>
-    <td><input value="${esc(d.demoTime)}" ${T('demoTime')} placeholder="14:00"></td>
+    <td><input value="${esc(d.supplier)}" ${T('supplier')} style="min-width:110px"></td>
+    <td><input value="${esc(d.product)}" ${T('product')} style="min-width:300px"></td>
+    <td><input value="${esc(d.desiredDate)}" ${T('desiredDate')} placeholder="YYYY-MM-DD" style="min-width:110px"></td>
+    <td><input type="date" value="${esc(d.demoDate)}" ${S('demoDate')} style="min-width:140px"></td>
+    <td><input type="time" value="${esc(d.demoTime)}" ${S('demoTime')} style="min-width:100px"></td>
     <td><select ${S('status')}>${optionsHtml(STATUS_OPTS, d.status||'대기')}</select></td>
-    <td><input value="${esc(d.collectionDate)}" ${T('collectionDate')} placeholder="YYYY-MM-DD"></td>
-    <td><input value="${esc(d.manager)}" ${T('manager')}></td>
-    <td><input value="${esc(d.fuManager)}" ${T('fuManager')}></td>
+    <td><input type="date" value="${esc(d.collectionDate)}" ${S('collectionDate')} style="min-width:140px"></td>
+    <td><input value="${esc(d.manager)}" ${T('manager')} style="min-width:80px"></td>
+    <td><input value="${esc(d.fuManager)}" ${T('fuManager')} style="min-width:80px"></td>
     <td><select ${S('fuStatus')}>${optionsHtml(FU_OPTS, d.fuStatus)}</select></td>
     <td><select ${S('stage')}>${optionsHtml(STAGE_OPTS, d.stage||'Follow')}</select></td>
     <td><input value="${esc(d.notes)}" ${T('notes')} style="min-width:240px"></td>
