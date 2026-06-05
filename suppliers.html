@@ -18,7 +18,10 @@
   .header h1 { font-size: 19px; font-weight: 600; margin: 0; }
   .header a.home { color: #fff; text-decoration: none; font-size: 18px; padding: 4px 9px; border-radius: 6px; background: rgba(255,255,255,.12); }
   .header .updated { font-size: 12px; color: #8899aa; }
-  .header .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .header .actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .header .editor-wrap { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #8899aa; }
+  .editor-sel { padding: 5px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,.3); background: rgba(255,255,255,.12); color: #fff; font-size: 12.5px; font-family: inherit; }
+  .editor-sel option { color: #333; }
   .btn { border: 0; border-radius: 6px; padding: 7px 12px; font-size: 13px; cursor: pointer; font-weight: 600; }
   .btn-primary { background: #2b6cb0; color: #fff; }
   .btn-ghost { background: rgba(255,255,255,.15); color: #fff; }
@@ -42,6 +45,17 @@
   .stat-card .v { font-size: 22px; font-weight: 700; color: #1a1a2e; }
   .stat-card .l { font-size: 12px; color: #7b8696; margin-top: 2px; }
 
+  /* 전체 변경이력 패널 */
+  .log-panel { background: #fff; margin: 14px 20px 0; border: 1px solid #e6e8ee; border-radius: 10px; box-shadow: 0 1px 2px rgba(0,0,0,.04); overflow: hidden; }
+  .log-panel .lp-head { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; border-bottom: 1px solid #eef0f4; }
+  .log-panel .lp-head b { font-size: 13.5px; color: #1a1a2e; }
+  .log-panel .lp-body { max-height: 300px; overflow: auto; }
+  .log-panel table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
+  .log-panel th, .log-panel td { border-bottom: 1px solid #f0f2f6; padding: 6px 10px; text-align: left; }
+  .log-panel th { background: #f7f9fc; color: #5a6473; font-weight: 600; position: sticky; top: 0; }
+  .log-panel .lp-empty { color: #98a2b3; padding: 24px; text-align: center; font-size: 13px; }
+  .chg-from { color: #b91c1c; } .chg-to { color: #0d9488; font-weight: 600; }
+
   .container { padding: 14px 20px 80px; }
   .table-wrap { background: #fff; border: 1px solid #e6e8ee; border-radius: 10px; overflow: auto; }
   table { width: 100%; border-collapse: collapse; font-size: 12.5px; white-space: nowrap; }
@@ -51,11 +65,11 @@
   td input, td select { width: 100%; min-width: 70px; border: 1px solid transparent; background: transparent; padding: 4px 5px; font-size: 12.5px; border-radius: 5px; font-family: inherit; }
   td input:hover, td select:hover { border-color: #e0e3ea; }
   td input:focus, td select:focus { border-color: #2b6cb0; background: #fff; outline: none; }
-  td.col-name input { font-weight: 600; }
+  td.col-name { white-space: nowrap; }
+  td.col-name input { font-weight: 600; width: calc(100% - 18px); }
+  .hist-marker { cursor: pointer; color: #7c3aed; font-size: 12px; margin-left: 2px; vertical-align: middle; }
+  .hist-marker:hover { color: #5b21b6; }
   .demo-tag { font-size: 11px; padding: 2px 7px; border-radius: 999px; }
-  .demo-가능 { background: #e6f4ea; color: #0d9488; }
-  .demo-불가 { background: #fdeaea; color: #c0392b; }
-  .demo-조건부 { background: #fff3e0; color: #e65100; }
   tr.sel { background: #eaf2fb !important; }
 
   .empty { text-align: center; color: #98a2b3; padding: 48px 0; font-size: 14px; }
@@ -72,6 +86,11 @@
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .modal-foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
   .hint { font-size: 11.5px; color: #94a3b8; margin-top: 4px; }
+  /* 이력 팝업 리스트 */
+  .hist-list { max-height: 420px; overflow: auto; margin-top: 6px; }
+  .hist-item { padding: 8px 2px; border-bottom: 1px solid #f0f2f6; font-size: 12.5px; }
+  .hist-item .hi-top { color: #6b7280; font-size: 11.5px; margin-bottom: 2px; }
+  .hist-item .hi-field { font-weight: 600; color: #1a1a2e; }
   .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1a1a2e; color: #fff; padding: 10px 18px; border-radius: 8px; font-size: 13px; z-index: 200; opacity: 0; transition: opacity .25s; pointer-events: none; }
   .toast.show { opacity: 1; }
   @media (max-width: 640px) {
@@ -89,6 +108,8 @@
     <span class="updated" id="syncInfo">불러오는 중…</span>
   </div>
   <div class="actions">
+    <span class="editor-wrap">작성자<select class="editor-sel" id="editorSel" onchange="setEditor(this.value)" title="이력에 기록될 작성자"></select></span>
+    <button class="btn btn-light" id="btnLog" onclick="toggleLog()">변경이력 ▾</button>
     <button class="btn btn-light" id="btnStats" onclick="toggleStats()">통계 ▾</button>
     <button class="btn btn-ghost" onclick="refresh(true)">↻ 새로고침</button>
     <button class="btn btn-primary" onclick="openManual()">＋ 공급처 추가</button>
@@ -106,6 +127,12 @@
 </div>
 
 <div class="stats" id="stats" style="display:none"></div>
+
+<!-- 전체 변경이력 패널 -->
+<div class="log-panel" id="logPanel" style="display:none">
+  <div class="lp-head"><b>변경이력 (최근순)</b><span class="hint" id="logCount"></span></div>
+  <div class="lp-body" id="logBody"></div>
+</div>
 
 <div class="container">
   <div class="table-wrap">
@@ -157,6 +184,18 @@
   </div>
 </div>
 
+<!-- 공급처별 이력 팝업 -->
+<div class="modal-bg" id="histBg">
+  <div class="modal" style="max-width:520px">
+    <h2 id="histTitle">변경 이력</h2>
+    <div class="sub" id="histSub"></div>
+    <div class="hist-list" id="histList"></div>
+    <div class="modal-foot">
+      <button class="btn btn-light" onclick="closeModal('histBg')">닫기</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -165,8 +204,8 @@
 // ============================================================
 const SHEET_ID = '1kK6YcXGQ87Fep5i1d__YPI7PLuLeUiLat2lX0Mh21hM';
 const SHEET_TAB = '시트1';
-const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
-  '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(SHEET_TAB);
+const HIST_TAB = '변경이력';
+const csvUrl = (tab) => 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(tab);
 const WEBHOOK_URL = 'https://n8n.datastream.co.kr/webhook/supplier-crud';
 
 // JS 필드 <-> 시트 컬럼명
@@ -179,7 +218,11 @@ const FIELD_TO_COL = {
 };
 const COL_TO_FIELD = Object.fromEntries(Object.entries(FIELD_TO_COL).map(kv => [kv[1], kv[0]]));
 
+const CALLER_OPTIONS = ['박연지','주봉현','김태호','조성갑','유승준','박원','이예림','김진석','류창희'];
+const EDITOR_KEY = 'md_suppliers_editor';
+
 let ROWS = [];            // 화면 데이터
+let HISTORY = [];         // 변경이력 (최신순)
 const selected = new Set();
 let pollTimer = null;
 
@@ -188,6 +231,7 @@ let pollTimer = null;
 // ============================================================
 function nowStamp() { return new Date().toISOString().slice(0,16).replace('T',' '); }
 function genId() { return 's_' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function getEditor() { return localStorage.getItem(EDITOR_KEY) || ''; }
 
 // ============================================================
 // 시트 읽기 (gviz CSV)
@@ -220,10 +264,20 @@ function sheetRowToRecord(row) {
   return r;
 }
 function fetchSheet() {
-  return fetch(SHEET_CSV_URL + '&_t=' + Date.now(), { cache: 'no-store' })
+  return fetch(csvUrl(SHEET_TAB) + '&_t=' + Date.now(), { cache: 'no-store' })
     .then(res => { if (!res.ok) throw new Error('HTTP '+res.status); return res.text(); })
     .then(csv => parseCSV(csv).map(sheetRowToRecord).filter(r => r.id))
     .catch(e => { console.warn('시트 조회 실패:', e); throw e; });
+}
+function fetchHistory() {
+  return fetch(csvUrl(HIST_TAB) + '&_t=' + Date.now(), { cache: 'no-store' })
+    .then(res => { if (!res.ok) throw new Error('HTTP '+res.status); return res.text(); })
+    .then(csv => {
+      const recs = parseCSV(csv).filter(r => r['시각']);
+      recs.reverse(); // 시트는 오래된→최신 append, 화면은 최신순
+      HISTORY = recs;
+    })
+    .catch(e => { console.warn('이력 조회 실패:', e); });
 }
 
 // ============================================================
@@ -243,6 +297,19 @@ function callWebhook(action, payload) {
 function syncCreate(r) { return callWebhook('create', { data: recordToSheetData(r) }); }
 function syncUpdate(r) { return callWebhook('update', { data: recordToSheetData(r) }); }
 function syncDelete(id) { return callWebhook('delete', { id }); }
+
+// ============================================================
+// 작성자
+// ============================================================
+function initEditorSel() {
+  const sel = document.getElementById('editorSel');
+  const cur = getEditor();
+  let opts = '<option value="">(작성자 선택)</option>' + CALLER_OPTIONS.map(n=>`<option${n===cur?' selected':''}>${esc(n)}</option>`).join('');
+  if (cur && CALLER_OPTIONS.indexOf(cur) === -1) opts += `<option selected>${esc(cur)}</option>`;
+  sel.innerHTML = opts;
+  sel.style.borderColor = cur ? 'rgba(255,255,255,.3)' : '#f87171';
+}
+function setEditor(v) { localStorage.setItem(EDITOR_KEY, v); initEditorSel(); }
 
 // ============================================================
 // 렌더링
@@ -276,18 +343,21 @@ function render() {
   const tb = document.getElementById('tbody');
   document.getElementById('empty').style.display = ROWS.length ? 'none' : 'block';
   document.getElementById('countPill').textContent = list.length + '곳';
-  tb.innerHTML = list.map(rowHtml).join('');
+  const histIds = new Set(HISTORY.map(h=>h['공급처id']));
+  tb.innerHTML = list.map(r => rowHtml(r, histIds.has(r.id))).join('');
   renderStats();
   updateDelBtn();
 }
 
-function rowHtml(r) {
+function rowHtml(r, hasHist) {
   const sel = selected.has(r.id);
-  const T = (f) => `oninput="edit('${r.id}','${f}',this.value)"`;
-  const S = (f) => `onchange="edit('${r.id}','${f}',this.value)"`;
+  const F = (f) => `onfocus="cellFocus('${r.id}','${f}',this)"`;
+  const T = (f) => `${F(f)} oninput="edit('${r.id}','${f}',this.value)" onchange="cellCommit('${r.id}','${f}',this)"`;
+  const S = (f) => `${F(f)} onchange="edit('${r.id}','${f}',this.value);cellCommit('${r.id}','${f}',this)"`;
+  const marker = hasHist ? `<span class="hist-marker" title="변경 이력 보기" onclick="openHist('${r.id}')">●</span>` : '';
   return `<tr data-id="${r.id}" class="${sel?'sel':''}">
     <td><input type="checkbox" ${sel?'checked':''} onclick="toggleSel('${r.id}',this)"></td>
-    <td class="col-name"><input value="${esc(r.supplierName)}" ${T('supplierName')}></td>
+    <td class="col-name"><input value="${esc(r.supplierName)}" ${T('supplierName')}>${marker}</td>
     <td><select ${S('demoAvailable')}>${optionsHtml(DEMO_OPTS, r.demoAvailable)}</select></td>
     <td><input value="${esc(r.demoCondition)}" ${T('demoCondition')} style="min-width:160px"></td>
     <td><input value="${esc(r.promotion)}" ${T('promotion')} style="min-width:160px"></td>
@@ -324,7 +394,45 @@ function toggleStats() {
 }
 
 // ============================================================
-// 편집 (낙관적 업데이트 + 700ms 디바운스)
+// 변경이력 — 전체 패널 / 공급처별 팝업
+// ============================================================
+function chgText(h) {
+  const f = (h['이전값']||'').trim() || '∅';
+  const t = (h['새값']||'').trim() || '∅';
+  return `<span class="chg-from">${esc(f)}</span> → <span class="chg-to">${esc(t)}</span>`;
+}
+function renderLogPanel() {
+  const body = document.getElementById('logBody');
+  document.getElementById('logCount').textContent = HISTORY.length + '건';
+  if (!HISTORY.length) { body.innerHTML = '<div class="lp-empty">아직 변경 이력이 없습니다.</div>'; return; }
+  const rows = HISTORY.slice(0, 200).map(h => `<tr>
+    <td>${esc(h['시각'])}</td><td>${esc(h['작성자'])}</td>
+    <td>${esc(h['공급처명'])}</td><td>${esc(h['필드'])}</td>
+    <td>${chgText(h)}</td></tr>`).join('');
+  body.innerHTML = `<table><thead><tr><th>시각</th><th>작성자</th><th>공급처</th><th>필드</th><th>변경</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+function toggleLog() {
+  const w = document.getElementById('logPanel');
+  const show = w.style.display === 'none';
+  w.style.display = show ? 'block' : 'none';
+  document.getElementById('btnLog').textContent = '변경이력 ' + (show?'▴':'▾');
+  if (show) renderLogPanel();
+}
+function openHist(id) {
+  const r = ROWS.find(x=>x.id===id);
+  const list = HISTORY.filter(h => h['공급처id'] === id);
+  document.getElementById('histTitle').textContent = (r ? r.supplierName : '') + ' 변경 이력';
+  document.getElementById('histSub').textContent = list.length + '건';
+  const el = document.getElementById('histList');
+  el.innerHTML = list.length ? list.map(h => `<div class="hist-item">
+    <div class="hi-top">${esc(h['시각'])} · ${esc(h['작성자']||'(미지정)')}</div>
+    <div><span class="hi-field">${esc(h['필드'])}</span> &nbsp;${chgText(h)}</div></div>`).join('')
+    : '<div class="lp-empty">이력이 없습니다.</div>';
+  openModal('histBg');
+}
+
+// ============================================================
+// 편집 (낙관적 업데이트 + 700ms 디바운스) + 이력 기록
 // ============================================================
 let editDebounce = {};
 function edit(id, field, value) {
@@ -335,6 +443,32 @@ function edit(id, field, value) {
   editDebounce[id] = setTimeout(() => {
     syncUpdate(r).then(()=>flashSync()).catch(()=>toast('⚠ 저장 실패 — 새로고침 후 재시도'));
   }, 700);
+}
+
+// 셀 포커스 시 원래 값 저장 → 포커스 아웃(change) 시 이전값→새값 1건 기록
+let cellOrig = {};
+function cellFocus(id, field, el) { cellOrig[id+'|'+field] = el.value; }
+function cellCommit(id, field, el) {
+  const key = id+'|'+field;
+  const orig = cellOrig[key];
+  const now = el.value;
+  if (orig === undefined || orig === now) return;
+  cellOrig[key] = now;
+  logChange(id, field, orig, now);
+}
+function logChange(id, field, fromV, toV) {
+  const r = ROWS.find(x => x.id === id);
+  const editor = getEditor();
+  if (!editor) toast('상단에서 작성자를 선택하면 누가 바꿨는지 함께 기록돼요');
+  const entry = {
+    '시각': nowStamp(), '작성자': editor || '(미지정)',
+    '공급처id': id, '공급처명': r ? r.supplierName : '',
+    '필드': FIELD_TO_COL[field] || field, '이전값': fromV, '새값': toV
+  };
+  HISTORY.unshift(entry);
+  if (document.getElementById('logPanel').style.display !== 'none') renderLogPanel();
+  render(); // ● 마커 갱신
+  callWebhook('log', { log: entry }).catch(()=>console.warn('이력 저장 실패'));
 }
 
 // ============================================================
@@ -391,6 +525,8 @@ function saveManual() {
   syncCreate(r).then(()=>{ flashSync(); toast('등록 완료'); })
     .catch(()=>toast('⚠ 등록 실패 — 새로고침 후 확인'))
     .finally(()=>{ btn.disabled = false; });
+  // 신규 등록도 이력 1건
+  logChange(r.id, 'supplierName', '', r.supplierName);
 }
 
 // ============================================================
@@ -398,7 +534,7 @@ function saveManual() {
 // ============================================================
 function refresh(manual) {
   if (manual) document.getElementById('syncInfo').textContent = '새로고침 중…';
-  return fetchSheet().then(records => {
+  return Promise.all([fetchSheet(), fetchHistory()]).then(([records]) => {
     // 편집 중인 셀이 있으면 해당 행은 로컬 유지 (stale read 방지)
     const editingTr = document.activeElement && document.activeElement.closest ? document.activeElement.closest('tr') : null;
     const editingId = editingTr && editingTr.dataset ? editingTr.dataset.id : null;
@@ -410,6 +546,7 @@ function refresh(manual) {
       ROWS = records;
     }
     render();
+    if (document.getElementById('logPanel').style.display !== 'none') renderLogPanel();
     document.getElementById('syncInfo').textContent = '동기화: ' + new Date().toLocaleTimeString('ko-KR');
   }).catch(() => {
     document.getElementById('syncInfo').textContent = '⚠ 시트 조회 실패 (공유 설정 확인)';
@@ -433,6 +570,7 @@ let toastTimer=null;
 function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2600); }
 
 // init
+initEditorSel();
 refresh(true).then(startPolling);
 </script>
 </body>
