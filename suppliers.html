@@ -6,7 +6,7 @@
 <title>공급처 정보 관리 — MD Squad</title>
 <style>
   * { box-sizing: border-box; }
-  body { font-family: 'Segoe UI', -apple-system, "Malgun Gothic", sans-serif; background: #f0f2f5; color: #333; margin: 0; }
+  body { font-family: 'Segoe UI', -apple-system, "Malgun Gothic", sans-serif; background: #f0f2f5; color: #1f2937; margin: 0; }
 
   .header {
     background: linear-gradient(135deg, #1a1a2e, #16213e);
@@ -22,75 +22,73 @@
   .header .editor-wrap { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #8899aa; }
   .editor-sel { padding: 5px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,.3); background: rgba(255,255,255,.12); color: #fff; font-size: 12.5px; font-family: inherit; }
   .editor-sel option { color: #333; }
-  .btn { border: 0; border-radius: 6px; padding: 7px 12px; font-size: 13px; cursor: pointer; font-weight: 600; }
-  .btn-primary { background: #2b6cb0; color: #fff; }
+  .btn { border: 0; border-radius: 7px; padding: 7px 13px; font-size: 13px; cursor: pointer; font-weight: 600; transition: background .15s; }
+  .btn-primary { background: #1a73e8; color: #fff; }
+  .btn-primary:hover { background: #1557b0; }
   .btn-ghost { background: rgba(255,255,255,.15); color: #fff; }
-  .btn-danger { background: #dc2626; color: #fff; }
+  .btn-danger { background: #ef4444; color: #fff; }
   .btn-light { background: #eef2f7; color: #334; }
   .btn:disabled { opacity: .45; cursor: not-allowed; }
 
   .filters {
-    background: #fff; padding: 10px 20px; border-bottom: 1px solid #e0e0e0;
+    background: #fff; padding: 11px 20px; border-bottom: 1px solid #e8edf3;
     display: flex; gap: 14px; flex-wrap: wrap; align-items: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.06); position: sticky; top: 56px; z-index: 40;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: sticky; top: 56px; z-index: 40;
   }
   .filter-group { display: flex; align-items: center; gap: 6px; }
-  .filter-group label { font-size: 12.5px; font-weight: 600; color: #555; }
-  .filters select, .filters input[type=text] { padding: 5px 9px; border: 1px solid #d0d0d0; border-radius: 6px; font-size: 13px; background: #fff; }
-  .filters input[type=text] { min-width: 220px; }
-  .count-pill { font-size: 12.5px; color: #555; background: #eef2f7; padding: 4px 10px; border-radius: 999px; }
+  .filter-group label { font-size: 12.5px; font-weight: 600; color: #64748b; }
+  .filters select, .filters input[type=text] { padding: 6px 10px; border: 1px solid #dbe2ea; border-radius: 7px; font-size: 13px; background: #fff; color: #1f2937; }
+  .filters select:focus, .filters input[type=text]:focus { outline: none; border-color: #1a73e8; }
+  .filters input[type=text] { min-width: 230px; }
+  .count-pill { font-size: 12.5px; color: #475569; background: #eef2f7; padding: 5px 12px; border-radius: 999px; font-weight: 600; }
 
-  .stats { display: flex; gap: 10px; flex-wrap: wrap; padding: 14px 20px 0; }
-  .stat-card { background: #fff; border: 1px solid #e6e8ee; border-radius: 10px; padding: 10px 16px; min-width: 96px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
-  .stat-card .v { font-size: 22px; font-weight: 700; color: #1a1a2e; }
+  .stats { display: flex; gap: 10px; flex-wrap: wrap; padding: 16px 20px 0; }
+  .stat-card { background: #fff; border: 1px solid #e8edf3; border-radius: 12px; padding: 12px 18px; min-width: 100px; box-shadow: 0 1px 3px rgba(0,0,0,.05); }
+  .stat-card .v { font-size: 22px; font-weight: 700; color: #1a73e8; }
   .stat-card .l { font-size: 12px; color: #7b8696; margin-top: 2px; }
 
-  /* 전체 변경이력 패널 */
-  .log-panel { background: #fff; margin: 14px 20px 0; border: 1px solid #e6e8ee; border-radius: 10px; box-shadow: 0 1px 2px rgba(0,0,0,.04); overflow: hidden; }
-  .log-panel .lp-head { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; border-bottom: 1px solid #eef0f4; }
-  .log-panel .lp-head b { font-size: 13.5px; color: #1a1a2e; }
-  .log-panel .lp-body { max-height: 300px; overflow: auto; }
-  .log-panel table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
-  .log-panel th, .log-panel td { border-bottom: 1px solid #f0f2f6; padding: 6px 10px; text-align: left; }
-  .log-panel th { background: #f7f9fc; color: #5a6473; font-weight: 600; position: sticky; top: 0; }
-  .log-panel .lp-empty { color: #98a2b3; padding: 24px; text-align: center; font-size: 13px; }
-  .chg-from { color: #b91c1c; } .chg-to { color: #0d9488; font-weight: 600; }
-
-  .container { padding: 14px 20px 80px; }
-  .table-wrap { background: #fff; border: 1px solid #e6e8ee; border-radius: 10px; overflow: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: 12.5px; white-space: nowrap; }
-  th, td { border-bottom: 1px solid #eef0f4; padding: 6px 8px; text-align: left; vertical-align: middle; }
-  th { background: #f7f9fc; color: #5a6473; font-weight: 600; position: sticky; top: 0; z-index: 1; }
-  tbody tr:hover { background: #fafbfd; }
-  td input, td select { width: 100%; min-width: 70px; border: 1px solid transparent; background: transparent; padding: 4px 5px; font-size: 12.5px; border-radius: 5px; font-family: inherit; }
-  td input:hover, td select:hover { border-color: #e0e3ea; }
-  td input:focus, td select:focus { border-color: #2b6cb0; background: #fff; outline: none; }
-  td.col-name { white-space: nowrap; }
-  td.col-name input { font-weight: 600; width: calc(100% - 18px); }
-  .hist-marker { cursor: pointer; color: #7c3aed; font-size: 12px; margin-left: 2px; vertical-align: middle; }
-  .hist-marker:hover { color: #5b21b6; }
+  .container { padding: 16px 20px 80px; }
+  .table-wrap { background: #fff; border: 1px solid #e8edf3; border-radius: 14px; overflow: auto; box-shadow: 0 1px 3px rgba(0,0,0,.05); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; white-space: nowrap; }
+  th, td { padding: 10px 12px; text-align: left; vertical-align: middle; }
+  thead th { background: #f8fafc; color: #64748b; font-weight: 600; font-size: 12px; letter-spacing: .2px; border-bottom: 1px solid #e8edf3; position: sticky; top: 0; z-index: 1; }
+  tbody td { border-bottom: 1px solid #f0f3f7; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover { background: #f8fafc; }
+  td input, td select { width: 100%; min-width: 70px; border: 1px solid transparent; background: transparent; padding: 6px 8px; font-size: 13px; border-radius: 7px; font-family: inherit; color: #1f2937; transition: border-color .12s, background .12s; }
+  td input:hover, td select:hover { border-color: #dbe2ea; }
+  td input:focus, td select:focus { border-color: #1a73e8; background: #fff; outline: none; box-shadow: 0 0 0 3px rgba(26,115,232,.1); }
+  td input:disabled, td select:disabled { color: #94a3b8; cursor: not-allowed; }
+  td.col-name input { font-weight: 600; }
   .demo-tag { font-size: 11px; padding: 2px 7px; border-radius: 999px; }
   tr.sel { background: #eaf2fb !important; }
+  .col-hist { text-align: center; }
+  .btn-hist { background: #eef2ff; color: #4f46e5; border: 0; border-radius: 7px; padding: 5px 11px; font-size: 11.5px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: background .15s; }
+  .btn-hist:hover { background: #e0e7ff; }
+  .btn-hist.empty { background: #f1f5f9; color: #94a3b8; }
 
   .empty { text-align: center; color: #98a2b3; padding: 48px 0; font-size: 14px; }
 
   /* modal */
   .modal-bg { position: fixed; inset: 0; background: rgba(20,25,40,.5); display: none; align-items: flex-start; justify-content: center; z-index: 100; padding: 40px 14px; overflow: auto; }
   .modal-bg.open { display: flex; }
-  .modal { background: #fff; border-radius: 12px; width: 100%; max-width: 560px; padding: 22px; box-shadow: 0 20px 50px rgba(0,0,0,.25); }
+  .modal { background: #fff; border-radius: 14px; width: 100%; max-width: 560px; padding: 24px; box-shadow: 0 20px 50px rgba(0,0,0,.25); }
   .modal h2 { margin: 0 0 4px; font-size: 18px; }
   .modal .sub { font-size: 12.5px; color: #8893a4; margin-bottom: 14px; }
   .modal label { display: block; font-size: 12.5px; font-weight: 600; color: #4a5566; margin: 10px 0 4px; }
-  .modal input, .modal select, .modal textarea { width: 100%; padding: 8px 10px; border: 1px solid #d4d9e2; border-radius: 7px; font-size: 13.5px; font-family: inherit; }
+  .modal input, .modal select, .modal textarea { width: 100%; padding: 8px 11px; border: 1px solid #dbe2ea; border-radius: 8px; font-size: 13.5px; font-family: inherit; }
+  .modal input:focus, .modal select:focus, .modal textarea:focus { outline: none; border-color: #1a73e8; }
   .modal textarea { min-height: 64px; resize: vertical; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .modal-foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
   .hint { font-size: 11.5px; color: #94a3b8; margin-top: 4px; }
   /* 이력 팝업 리스트 */
   .hist-list { max-height: 420px; overflow: auto; margin-top: 6px; }
-  .hist-item { padding: 8px 2px; border-bottom: 1px solid #f0f2f6; font-size: 12.5px; }
-  .hist-item .hi-top { color: #6b7280; font-size: 11.5px; margin-bottom: 2px; }
+  .hist-item { padding: 9px 2px; border-bottom: 1px solid #f0f2f6; font-size: 12.5px; }
+  .hist-item:last-child { border-bottom: 0; }
+  .hist-item .hi-top { color: #6b7280; font-size: 11.5px; margin-bottom: 3px; }
   .hist-item .hi-field { font-weight: 600; color: #1a1a2e; }
+  .chg-from { color: #b91c1c; } .chg-to { color: #0d9488; font-weight: 600; }
   .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1a1a2e; color: #fff; padding: 10px 18px; border-radius: 8px; font-size: 13px; z-index: 200; opacity: 0; transition: opacity .25s; pointer-events: none; }
   .toast.show { opacity: 1; }
   @media (max-width: 640px) {
@@ -109,7 +107,6 @@
   </div>
   <div class="actions">
     <span class="editor-wrap">작성자<select class="editor-sel" id="editorSel" onchange="setEditor(this.value)" title="이력에 기록될 작성자"></select></span>
-    <button class="btn btn-light" id="btnLog" onclick="toggleLog()">변경이력 ▾</button>
     <button class="btn btn-light" id="btnStats" onclick="toggleStats()">통계 ▾</button>
     <button class="btn btn-ghost" onclick="refresh(true)">↻ 새로고침</button>
     <button class="btn btn-primary" onclick="openManual()">＋ 공급처 추가</button>
@@ -132,12 +129,6 @@
 
 <div class="stats" id="stats" style="display:none"></div>
 
-<!-- 전체 변경이력 패널 -->
-<div class="log-panel" id="logPanel" style="display:none">
-  <div class="lp-head"><b>변경이력 (최근순)</b><span class="hint" id="logCount"></span></div>
-  <div class="lp-body" id="logBody"></div>
-</div>
-
 <div class="container">
   <div class="table-wrap">
     <table>
@@ -147,7 +138,7 @@
           <th>공급처명</th><th>데모가능</th><th>데모조건</th>
           <th>프로모션</th><th>할인율/조건</th><th>프로모션기간</th>
           <th>담당자명</th><th>연락처</th><th>이메일</th>
-          <th>취급제품</th><th>공급제한</th><th>비고</th>
+          <th>취급제품</th><th>공급제한</th><th>비고</th><th>이력</th>
         </tr>
       </thead>
       <tbody id="tbody"></tbody>
@@ -303,7 +294,7 @@ function syncUpdate(r) { return callWebhook('update', { data: recordToSheetData(
 function syncDelete(id) { return callWebhook('delete', { id }); }
 
 // ============================================================
-// 작성자
+// 작성자 (미선택 시 편집 차단 · 선택 후 잠금)
 // ============================================================
 function editorLocked() { return !!getEditor(); }
 function initEditorSel() {
@@ -364,22 +355,22 @@ function render() {
   const tb = document.getElementById('tbody');
   document.getElementById('empty').style.display = ROWS.length ? 'none' : 'block';
   document.getElementById('countPill').textContent = list.length + '곳';
-  const histIds = new Set(HISTORY.map(h=>h['공급처id']));
-  tb.innerHTML = list.map(r => rowHtml(r, histIds.has(r.id))).join('');
+  const histCount = {};
+  HISTORY.forEach(h => { const k=h['공급처id']; histCount[k]=(histCount[k]||0)+1; });
+  tb.innerHTML = list.map(r => rowHtml(r, histCount[r.id]||0)).join('');
   renderStats();
   updateDelBtn();
 }
 
-function rowHtml(r, hasHist) {
+function rowHtml(r, histN) {
   const sel = selected.has(r.id);
   const dis = editorLocked() ? '' : ' disabled';
   const F = (f) => `onfocus="cellFocus('${r.id}','${f}',this)"`;
   const T = (f) => `${F(f)} oninput="edit('${r.id}','${f}',this.value)" onchange="cellCommit('${r.id}','${f}',this)"${dis}`;
   const S = (f) => `${F(f)} onchange="edit('${r.id}','${f}',this.value);cellCommit('${r.id}','${f}',this)"${dis}`;
-  const marker = hasHist ? `<span class="hist-marker" title="변경 이력 보기" onclick="openHist('${r.id}')">●</span>` : '';
   return `<tr data-id="${r.id}" class="${sel?'sel':''}">
     <td><input type="checkbox" ${sel?'checked':''} onclick="toggleSel('${r.id}',this)"${dis}></td>
-    <td class="col-name"><input value="${esc(r.supplierName)}" ${T('supplierName')}>${marker}</td>
+    <td class="col-name"><input value="${esc(r.supplierName)}" ${T('supplierName')}></td>
     <td><select ${S('demoAvailable')}>${optionsHtml(DEMO_OPTS, r.demoAvailable)}</select></td>
     <td><input value="${esc(r.demoCondition)}" ${T('demoCondition')} style="min-width:160px"></td>
     <td><input value="${esc(r.promotion)}" ${T('promotion')} style="min-width:160px"></td>
@@ -391,6 +382,7 @@ function rowHtml(r, hasHist) {
     <td><input value="${esc(r.products)}" ${T('products')} style="min-width:180px"></td>
     <td><input value="${esc(r.supplyLimit)}" ${T('supplyLimit')} style="min-width:160px"></td>
     <td><input value="${esc(r.remarks)}" ${T('remarks')} style="min-width:140px"></td>
+    <td class="col-hist"><button class="btn-hist${histN?'':' empty'}" onclick="openHist('${r.id}')">🕘 이력${histN?' '+histN:''}</button></td>
   </tr>`;
 }
 
@@ -416,29 +408,12 @@ function toggleStats() {
 }
 
 // ============================================================
-// 변경이력 — 전체 패널 / 공급처별 팝업
+// 변경이력 — 공급처별 팝업
 // ============================================================
 function chgText(h) {
   const f = (h['이전값']||'').trim() || '∅';
   const t = (h['새값']||'').trim() || '∅';
   return `<span class="chg-from">${esc(f)}</span> → <span class="chg-to">${esc(t)}</span>`;
-}
-function renderLogPanel() {
-  const body = document.getElementById('logBody');
-  document.getElementById('logCount').textContent = HISTORY.length + '건';
-  if (!HISTORY.length) { body.innerHTML = '<div class="lp-empty">아직 변경 이력이 없습니다.</div>'; return; }
-  const rows = HISTORY.slice(0, 200).map(h => `<tr>
-    <td>${esc(h['시각'])}</td><td>${esc(h['작성자'])}</td>
-    <td>${esc(h['공급처명'])}</td><td>${esc(h['필드'])}</td>
-    <td>${chgText(h)}</td></tr>`).join('');
-  body.innerHTML = `<table><thead><tr><th>시각</th><th>작성자</th><th>공급처</th><th>필드</th><th>변경</th></tr></thead><tbody>${rows}</tbody></table>`;
-}
-function toggleLog() {
-  const w = document.getElementById('logPanel');
-  const show = w.style.display === 'none';
-  w.style.display = show ? 'block' : 'none';
-  document.getElementById('btnLog').textContent = '변경이력 ' + (show?'▴':'▾');
-  if (show) renderLogPanel();
 }
 function openHist(id) {
   const r = ROWS.find(x=>x.id===id);
@@ -449,7 +424,7 @@ function openHist(id) {
   el.innerHTML = list.length ? list.map(h => `<div class="hist-item">
     <div class="hi-top">${esc(h['시각'])} · ${esc(h['작성자']||'(미지정)')}</div>
     <div><span class="hi-field">${esc(h['필드'])}</span> &nbsp;${chgText(h)}</div></div>`).join('')
-    : '<div class="lp-empty">이력이 없습니다.</div>';
+    : '<div class="hint" style="padding:16px;text-align:center;">아직 변경 이력이 없습니다.</div>';
   openModal('histBg');
 }
 
@@ -481,15 +456,13 @@ function cellCommit(id, field, el) {
 function logChange(id, field, fromV, toV) {
   const r = ROWS.find(x => x.id === id);
   const editor = getEditor();
-  if (!editor) toast('상단에서 작성자를 선택하면 누가 바꿨는지 함께 기록돼요');
   const entry = {
     '시각': nowStamp(), '작성자': editor || '(미지정)',
     '공급처id': id, '공급처명': r ? r.supplierName : '',
     '필드': FIELD_TO_COL[field] || field, '이전값': fromV, '새값': toV
   };
   HISTORY.unshift(entry);
-  if (document.getElementById('logPanel').style.display !== 'none') renderLogPanel();
-  render(); // ● 마커 갱신
+  render(); // 이력 버튼 카운트 갱신
   callWebhook('log', { log: entry }).catch(()=>console.warn('이력 저장 실패'));
 }
 
@@ -569,7 +542,6 @@ function refresh(manual) {
       ROWS = records;
     }
     render();
-    if (document.getElementById('logPanel').style.display !== 'none') renderLogPanel();
     document.getElementById('syncInfo').textContent = '동기화: ' + new Date().toLocaleTimeString('ko-KR');
   }).catch(() => {
     document.getElementById('syncInfo').textContent = '⚠ 시트 조회 실패 (공유 설정 확인)';
