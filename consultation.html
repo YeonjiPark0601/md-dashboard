@@ -53,8 +53,8 @@ body { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; b
 .consult-scroll { -webkit-overflow-scrolling: touch; overflow: auto; max-height: calc(100vh - 240px); }
 #consultTable { min-width: 1600px; }
 #consultTable th:nth-child(1), #consultTable td:nth-child(1),
-#consultTable th:nth-child(15), #consultTable td:nth-child(15),
 #consultTable th:nth-child(16), #consultTable td:nth-child(16) { width: 120px; min-width: 120px; }
+#consultTable th:nth-child(15), #consultTable td:nth-child(15) { width: 130px; min-width: 130px; }
 #consultTable td:nth-child(1),
 #consultTable td:nth-child(15),
 #consultTable td:nth-child(16) { overflow: visible; text-overflow: clip; }
@@ -3305,8 +3305,8 @@ var DEFAULT_COL_WIDTHS = {
   10: 80,  // 담당자
   11: 80,  // Stage
   12: 260, // 문의내용 (220→260)
-  13: 260, // 담당자메모 (220→260)
-  14: 95,  // 데모일정
+  13: 225, // 담당자메모 (260→225, 데모예정일에 양보)
+  14: 130, // 데모 예정일 (95→130, 날짜입력란 확보)
   15: 95,  // 결제일자
   16: 70   // 상세
 };
