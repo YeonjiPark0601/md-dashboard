@@ -40,11 +40,6 @@
 
   /* 본문 */
   .container { max-width: 1400px; margin: 0 auto; padding: 20px 30px 80px; }
-  .stats { display: none; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
-  .stats.show { display: flex; }
-  .stat-card { background: #fff; border: 1px solid #e5e9f0; border-radius: 14px; padding: 14px 20px; min-width: 112px; box-shadow: 0 1px 3px rgba(0,0,0,.05); }
-  .stat-card .v { font-size: 24px; font-weight: 700; color: #1a73e8; }
-  .stat-card .l { font-size: 12px; color: #7b8696; margin-top: 3px; }
 
   .card { background: #fff; border: 1px solid #e5e9f0; border-radius: 14px; box-shadow: 0 1px 3px rgba(0,0,0,.05); overflow: hidden; }
   table { width: 100%; border-collapse: collapse; font-size: 13.5px; table-layout: fixed; }
@@ -116,7 +111,6 @@
     <span class="flabel">프로모션</span>
     <select class="sel" id="fPromo" onchange="render()"><option value="">전체</option><option value="Y">진행중</option><option value="N">없음</option></select>
     <span class="count-pill" id="countPill">0곳</span>
-    <button class="btn btn-light" id="btnStats" onclick="toggleStats()">통계 ▾</button>
     <button class="btn btn-light" onclick="refresh(true)">↻ 새로고침</button>
     <button class="btn btn-danger" id="btnDel" onclick="bulkDelete()" disabled>선택 삭제 (0)</button>
     <button class="btn btn-primary" style="margin-left:auto" onclick="openManual()">＋ 공급처 추가</button>
@@ -125,7 +119,6 @@
 </div>
 
 <div class="container">
-  <div class="stats" id="stats"></div>
   <div class="card">
     <table>
       <colgroup>
@@ -346,7 +339,6 @@ function render() {
   const histCount = {};
   HISTORY.forEach(h => { const k=h['공급처id']; histCount[k]=(histCount[k]||0)+1; });
   tb.innerHTML = list.map(r => rowHtml(r, histCount[r.id]||0)).join('');
-  renderStats();
   updateDelBtn();
 }
 
@@ -374,24 +366,6 @@ function rowHtml(r, histN) {
     <td><input value="${esc(r.remarks)}" ${T('remarks')} class="cell"></td>
     <td class="col-hist">${histBtn}</td>
   </tr>`;
-}
-
-function renderStats() {
-  const wrap = document.getElementById('stats');
-  if (!wrap.classList.contains('show')) return;
-  const demoOk = ROWS.filter(r => r.demoAvailable==='가능').length;
-  const demoCond = ROWS.filter(r => r.demoAvailable==='조건부').length;
-  const promo = ROWS.filter(r => (r.promotion||'').trim()).length;
-  const limited = ROWS.filter(r => (r.supplyLimit||'').trim()).length;
-  const cards = [['전체', ROWS.length],['데모 가능', demoOk],['데모 조건부', demoCond],['프로모션 진행', promo],['공급제한 있음', limited]];
-  wrap.innerHTML = cards.map(c=>`<div class="stat-card"><div class="v">${c[1]}</div><div class="l">${c[0]}</div></div>`).join('');
-}
-function toggleStats() {
-  const w = document.getElementById('stats');
-  const show = !w.classList.contains('show');
-  w.classList.toggle('show', show);
-  document.getElementById('btnStats').textContent = '통계 ' + (show?'▴':'▾');
-  renderStats();
 }
 
 // ============================================================
