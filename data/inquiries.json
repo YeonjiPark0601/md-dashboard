@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-05T09:11:12.227Z",
+  "updated": "2026-06-05T14:01:04.163Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -65,6 +65,27 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "금액궁금합니다.",
+      "leadGrade": "가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 06. 05 오후 10:57:44",
+      "date": "2026-06-05",
+      "slackTs": "1780667864.598079",
+      "name": "이수아",
+      "cid": "629443fb9d93880024070597",
+      "phone": "010-9515-9768",
+      "product": "아쿠아필 (Aqua Peel)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "685b73335c71a5d66aa83127",
+      "clinic": "자연안에한의원중구점",
+      "region": "부산시 중구",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "금액",
       "leadGrade": "가망"
     },
     {
