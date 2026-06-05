@@ -2355,6 +2355,7 @@ function kpiCard(label, value, sub) {
 
 // ===== 1층 북극성 (전환율 vs 팀 목표) =====
 var TARGET_CONV_RATE = 10; // 팀 목표 전환율(%) — 추후 시트 연동 가능
+var LEADING_OPS_START = '2026-05-01'; // 정체·미배정은 운영 개시(26년 5월) 이후 인입건만 집계
 function renderNorthStar(data, total) {
   var box = document.getElementById('dashNorthStar');
   if (!box) return;
@@ -2390,21 +2391,22 @@ function renderLeading(data, total) {
   var demoConv = total > 0 ? (demoReach / total * 100) : 0;
   var closeConv = demoReach > 0 ? (won / demoReach * 100) : 0;
   var today = fmtDate(new Date());
-  var stalled = data.filter(function(r){
+  // 정체·미배정은 운영 개시(26년 5월) 이후 인입건만
+  var opsData = data.filter(function(r){ return r.date && r.date >= LEADING_OPS_START; });
+  var stalled = opsData.filter(function(r){
     var s = (r.stage || '').trim();
     if (s !== 'Follow' && s !== 'Demo') return false;
-    if (!r.date) return false;
     return daysBetween(r.date, today) >= 14;
   }).length;
-  var unassigned = data.filter(function(r){ return !((r.caller || r.rep || '').trim()); }).length;
+  var unassigned = opsData.filter(function(r){ return !((r.caller || r.rep || '').trim()); }).length;
 
   box.innerHTML =
     leadCard('데모 전환율', fmtPct(demoConv), '상담→데모. 낮으면 리드 품질·초기 응대 점검', '') +
     leadCard('클로징 전환율', fmtPct(closeConv), '데모→결제. 낮으면 가격·경쟁·클로징 코칭', '') +
     leadCard('정체 14일+', '<span style="color:' + (stalled > 0 ? '#e53e3e' : '#0d9488') + '">' + fmtNum(stalled) + '</span>',
-      'Follow/Demo 14일+ 미진행(인입일 기준) → 즉시 팔로업', stalled > 0 ? 'lead-warn' : 'lead-ok') +
+      'Follow/Demo 14일+ 미진행 · 26.5월~ 인입일 기준 → 즉시 팔로업', stalled > 0 ? 'lead-warn' : 'lead-ok') +
     leadCard('미배정', '<span style="color:' + (unassigned > 0 ? '#e53e3e' : '#0d9488') + '">' + fmtNum(unassigned) + '</span>',
-      '담당자 없는 인입 → 배정 필요', unassigned > 0 ? 'lead-warn' : 'lead-ok');
+      '담당자 없는 인입 · 26.5월~ → 배정 필요', unassigned > 0 ? 'lead-warn' : 'lead-ok');
 }
 
 // --- Pipeline ---
