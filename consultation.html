@@ -276,8 +276,9 @@ th.sortable:hover { background: #eef0f4; }
 .dash-extra[open] > summary::before { content: '▾ '; }
 .dash-extra > summary:hover { color: #1a73e8; border-color: #1a73e8; }
 
-/* 전환율 경고 강조 */
+/* 전환율 경고 강조: <10% 빨강 / 10~20% 주황 / ≥20% 초록 */
 .conv-warn { color: #e53e3e; font-weight: 700; }
+.conv-mid { color: #d97706; font-weight: 700; }
 .conv-good { color: #0d9488; font-weight: 700; }
 
 /* ===== TAB PANELS ===== */
@@ -2645,15 +2646,15 @@ function renderSupplierTable(data) {
   }
 
   var LIMIT = 20;
+  function convOf(m){ return m.total > 0 ? ((m.Done||0) / m.total * 100) : 0; }
   function rowHtml(k, hidden){
     var m = map[k];
-    var conv = m.total > 0 ? ((m.Done||0) / m.total * 100) : 0;
-    // 의사결정 강조: 인입 5건 이상인데 결제완료 0 → 경고(빨강), 전환율 20%+ → 양호(초록)
-    var convCls = '';
-    if (m.total >= 5 && (m.Done||0) === 0) convCls = 'conv-warn';
-    else if (conv >= 20) convCls = 'conv-good';
+    var conv = convOf(m);
+    // 의사결정 강조(절대 기준): <10% 빨강 / 10~20% 주황 / ≥20% 초록
+    var convCls = conv < 10 ? 'conv-warn' : (conv < 20 ? 'conv-mid' : 'conv-good');
+    var icon = conv < 10 ? '<span title="전환율 10% 미만 — 전략 점검" style="margin-left:4px;">⚠️</span>' : '';
     return '<tr' + (hidden ? ' class="supplier-extra-row" style="display:none;"' : '') + '>' +
-      '<td style="font-weight:600;">' + escHtml(k) + '</td>' +
+      '<td style="font-weight:600;white-space:nowrap;">' + escHtml(k) + icon + '</td>' +
       '<td style="text-align:right;font-weight:700;">' + m.total + '</td>' +
       '<td style="text-align:right;color:#888;">' + (m.New||0) + '</td>' +
       '<td style="text-align:right;color:#92400e;">' + (m.Follow||0) + '</td>' +
@@ -2665,7 +2666,10 @@ function renderSupplierTable(data) {
     '</tr>';
   }
 
-  var html = '<table class="mini-table"><thead><tr>' +
+  var redCnt = keys.filter(function(k){ return convOf(map[k]) < 10; }).length;
+  var summary = redCnt > 0 ? '<div style="margin-bottom:10px;padding:8px 12px;background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;font-size:13px;color:#991b1b;font-weight:600;">⚠️ 전환율 10% 미만 공급처 ' + redCnt + '곳 — 인입 대비 결제 전환 저조, 전략 점검 필요.</div>' : '';
+
+  var html = summary + '<table class="mini-table"><thead><tr>' +
     '<th>공급처</th>' +
     '<th style="text-align:right;">인입</th>' +
     '<th style="text-align:right;">New</th>' +
@@ -2674,7 +2678,7 @@ function renderSupplierTable(data) {
     '<th style="text-align:right;">Turn-key</th>' +
     '<th style="text-align:right;">Done</th>' +
     '<th style="text-align:right;">Drop</th>' +
-    '<th style="text-align:right;">전환율</th>' +
+    '<th style="text-align:right;">전환율 <span style="font-weight:400;color:#888;font-size:11px;">🔴&lt;10% 🟡10~20% 🟢≥20%</span></th>' +
     '</tr></thead><tbody>';
   keys.forEach(function(k, i){ html += rowHtml(k, i >= LIMIT); });
   html += '</tbody></table>';
