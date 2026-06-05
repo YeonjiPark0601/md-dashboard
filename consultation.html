@@ -299,6 +299,11 @@ th.sortable:hover { background: #eef0f4; }
 .lead-act { display:block; color:#999; font-size:11px; line-height:1.4; margin-top:8px; }
 @media (max-width:900px){ .northstar { flex-direction:column; align-items:flex-start; } .northstar .ns-right { text-align:left; } #dashLeading { grid-template-columns:repeat(2,1fr)!important; } }
 @media (max-width:420px){ #dashLeading { grid-template-columns:1fr!important; } }
+/* ===== AI 인사이트 카드 ===== */
+.insight-box { background:#fff; border-radius:12px; padding:16px 20px; margin-bottom:18px; box-shadow:0 1px 3px rgba(0,0,0,0.08); border-left:6px solid #6366f1; }
+.insight-box h4 { font-size:14px; font-weight:700; color:#1a1a2e; margin-bottom:10px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.insight-item { display:flex; gap:8px; align-items:flex-start; padding:5px 0; font-size:13px; color:#333; line-height:1.5; }
+.insight-item .insight-icon { flex-shrink:0; }
 
 /* ===== TAB PANELS ===== */
 .tab-panel { display: none; }
@@ -712,6 +717,8 @@ th.sortable:hover { background: #eef0f4; }
     <span class="dash-period-range" id="dashPeriodRange"></span>
   </div>
 
+  <!-- AI 인사이트 (오늘의 인사이트) -->
+  <div id="dashInsights"></div>
   <!-- 1층: 북극성 (객관화 - 잘하나?) -->
   <div id="dashNorthStar"></div>
   <!-- 2층: 선행지표 (의사결정 - 낮아지면 액션) -->
@@ -2306,7 +2313,8 @@ function renderDashboard() {
   var data = getDashboardData();
   var total = data.length;
 
-  // 1층 북극성(전환율 vs 목표) + 2층 선행지표(데모전환·클로징전환·정체·미배정)
+  // AI 인사이트(룰 기반) + 1층 북극성 + 2층 선행지표
+  renderInsights(data, total);
   renderNorthStar(data, total);
   renderLeading(data, total);
 
@@ -2363,6 +2371,71 @@ function kpiCard(label, value, sub) {
 // ===== 1층 북극성 (전환율 vs 팀 목표) =====
 var TARGET_CONV_RATE = 10; // 팀 목표 전환율(%) — 추후 시트 연동 가능
 var LEADING_OPS_START = '2026-05-01'; // 정체·미배정은 운영 개시(26년 5월) 이후 인입건만 집계
+
+// ===== AI 인사이트 (룰 기반 — 숫자는 실데이터로 계산, 환각 0) =====
+// 규칙으로 "지금 봐야 할 것"을 우선순위(sev: 3=긴급/2=주의/1=참고/0=긍정)로 생성.
+// 추후 n8n+Claude 연동 시, 이 함수가 만든 팩트를 LLM이 자연어로 다듬고 본 함수는 폴백이 됨.
+function buildInsights(data, total) {
+  var out = [];
+  var today = fmtDate(new Date());
+  var won = data.filter(function(r){ return isWon(r.stage); }).length;
+  var demoReach = data.filter(function(r){ return isDemoReached(r.stage); }).length;
+  var conv = total > 0 ? (won / total * 100) : 0;
+  var closeConv = demoReach > 0 ? (won / demoReach * 100) : 0;
+
+  // 1. 북극성 전환율 vs 목표 (소표본 제외)
+  if (total >= 10) {
+    if (conv < TARGET_CONV_RATE) out.push({ sev:3, icon:'🔴', text:'전환율 ' + fmtPct(conv) + ' — 목표 ' + TARGET_CONV_RATE + '% 미달. 결제 전환에 집중 필요' });
+    else out.push({ sev:0, icon:'🟢', text:'전환율 ' + fmtPct(conv) + ' — 목표 ' + TARGET_CONV_RATE + '% 달성. 잘하고 있음' });
+  }
+  // 2. 클로징 약점 (데모는 가는데 결제가 안 됨)
+  if (demoReach >= 10 && closeConv < 30) {
+    out.push({ sev:2, icon:'🟡', text:'클로징 전환율 ' + fmtPct(closeConv) + ' — 데모는 가는데 결제가 안 됨. 가격·경쟁·클로징 점검' });
+  }
+  // 3. 정체 / 미배정 (26.5월 이후)
+  var ops = data.filter(function(r){ return r.date && r.date >= LEADING_OPS_START; });
+  var stalled = ops.filter(function(r){ var s=(r.stage||'').trim(); return (s==='Follow'||s==='Demo') && daysBetween(r.date, today) >= 14; }).length;
+  var unassigned = ops.filter(function(r){ return !((r.caller||r.rep||'').trim()); }).length;
+  if (unassigned > 0) out.push({ sev:3, icon:'🔴', text:'미배정 ' + unassigned + '건(26.5월~) — 담당자 배정 필요' });
+  if (stalled > 0) out.push({ sev:2, icon:'🟡', text:'정체 ' + stalled + '건 — Follow/Demo 14일+ 방치. 즉시 팔로업' });
+
+  // 4. 문제 공급처 (인입 10+ & 전환율 <10%) 인입순 상위 2
+  var sup = {};
+  data.forEach(function(r){ var k=supplierKey(r); if(!sup[k]) sup[k]={t:0,w:0}; sup[k].t++; if(isWon(r.stage)) sup[k].w++; });
+  Object.keys(sup).filter(function(k){ return sup[k].t>=10 && (sup[k].w/sup[k].t*100) < 10; })
+    .sort(function(a,b){ return sup[b].t - sup[a].t; }).slice(0,2)
+    .forEach(function(k){ var m=sup[k]; out.push({ sev:3, icon:'🔴', text:'공급처 ' + k + ': 인입 ' + m.t + '건인데 전환율 ' + fmtPct(m.w/m.t*100) + ' — 전략 점검 최우선' }); });
+
+  // 5. 잘하는 공급처 (인입 5+ & 전환율 20%+) 1개
+  Object.keys(sup).filter(function(k){ return sup[k].t>=5 && (sup[k].w/sup[k].t*100) >= 20; })
+    .sort(function(a,b){ return (sup[b].w/sup[b].t) - (sup[a].w/sup[a].t); }).slice(0,1)
+    .forEach(function(k){ var m=sup[k]; out.push({ sev:0, icon:'🟢', text:'공급처 ' + k + ' 전환율 ' + fmtPct(m.w/m.t*100) + ' — 잘하고 있음' }); });
+
+  // 6. 채널 격차 (인입 10+ 채널 중 최고 vs 최저)
+  var src = {};
+  data.forEach(function(r){ var k=(r.source||'').trim(); if(!k) return; if(!src[k]) src[k]={t:0,w:0}; src[k].t++; if(isWon(r.stage)) src[k].w++; });
+  var sk = Object.keys(src).filter(function(k){ return src[k].t>=10; });
+  if (sk.length >= 2) {
+    sk.sort(function(a,b){ return (src[b].w/src[b].t) - (src[a].w/src[a].t); });
+    var best=sk[0], worst=sk[sk.length-1];
+    var bC=src[best].w/src[best].t*100, wC=src[worst].w/src[worst].t*100;
+    if (bC - wC >= 10) out.push({ sev:1, icon:'📊', text:'채널 격차: ' + best + ' ' + fmtPct(bC) + ' vs ' + worst + ' ' + fmtPct(wC) + ' — ' + best + '에 리소스 집중 검토' });
+  }
+
+  out.sort(function(a,b){ return b.sev - a.sev; });
+  return out.slice(0, 6);
+}
+function renderInsights(data, total) {
+  var box = document.getElementById('dashInsights');
+  if (!box) return;
+  var ins = buildInsights(data, total);
+  if (!ins.length) { box.innerHTML = ''; return; }
+  var items = ins.map(function(i){
+    return '<div class="insight-item"><span class="insight-icon">' + i.icon + '</span><span>' + escHtml(i.text) + '</span></div>';
+  }).join('');
+  box.innerHTML = '<div class="insight-box"><h4>🧭 오늘의 인사이트 <span style="font-weight:400;color:#888;font-size:11px;">규칙 기반 · 숫자는 실데이터</span></h4>' + items + '</div>';
+}
+
 function renderNorthStar(data, total) {
   var box = document.getElementById('dashNorthStar');
   if (!box) return;
