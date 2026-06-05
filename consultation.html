@@ -717,14 +717,9 @@ th.sortable:hover { background: #eef0f4; }
     <div id="supplierContent"></div>
   </div>
 
-  <!-- Section 4: 공급처별 월별 인입 추이 (선택) -->
+  <!-- Section 4: 공급처 × 월 인입 매트릭스 (마케팅 효과 추적) -->
   <div class="table-card" id="sectionSupplierMonthly">
-    <h3 style="gap:10px;flex-wrap:wrap;">
-      <span>공급처별 월별 인입 추이 <span style="font-weight:400;color:#888;font-size:12px;">마케팅 효과 추적</span></span>
-      <select id="supplierMonthlySelect" onchange="renderSupplierMonthly()" style="font-weight:600;padding:5px 10px;border:1px solid #d0d0d0;border-radius:6px;font-size:13px;background:#fff;color:#333;">
-        <option value="__ALL__">전체 합계</option>
-      </select>
-    </h3>
+    <h3><span>공급처 × 월 인입 매트릭스 <span style="font-weight:400;color:#888;font-size:12px;">마케팅 효과 추적 · 셀이 진할수록 인입 많음 · 인입건수 순</span></span></h3>
     <div id="supplierMonthlyContent"></div>
   </div>
 
@@ -2297,9 +2292,8 @@ function renderDashboard() {
   renderConversion(data, total);
   renderDropAnalysis(data, total);
 
-  // Section 3: 공급처별 종합 + Section 4: 공급처 월별 추이
+  // Section 3: 공급처별 종합 + Section 4: 공급처 × 월 인입 매트릭스
   renderSupplierTable(data);
-  populateSupplierSelect(data);
   renderSupplierMonthly();
 
   // Section 5: Monthly
@@ -2706,76 +2700,78 @@ function toggleSupplierExtra() {
 }
 
 // --- 공급처 선택 드롭다운 채우기 (건수순) ---
-function populateSupplierSelect(data) {
-  var sel = document.getElementById('supplierMonthlySelect');
-  if (!sel) return;
-  var prev = sel.value;
-  var map = {};
-  data.forEach(function(r){ var k = supplierKey(r); map[k] = (map[k]||0) + 1; });
-  var keys = Object.keys(map).sort(function(a,b){ return map[b] - map[a]; });
-  var opts = '<option value="__ALL__">전체 합계</option>';
-  keys.forEach(function(k){
-    opts += '<option value="' + escHtml(k) + '">' + escHtml(k) + ' (' + map[k] + ')</option>';
-  });
-  sel.innerHTML = opts;
-  // 이전 선택 유지 (없으면 전체)
-  if (prev && Array.prototype.some.call(sel.options, function(o){ return o.value === prev; })) {
-    sel.value = prev;
-  } else {
-    sel.value = '__ALL__';
-  }
-}
-
-// --- 선택 공급처의 월별 인입 추이 ---
+// --- 공급처 × 월 인입 매트릭스 (행=공급처, 열=월, 셀=인입건수, 히트맵 음영) ---
 function renderSupplierMonthly() {
-  var sel = document.getElementById('supplierMonthlySelect');
-  var pick = sel ? sel.value : '__ALL__';
   var data = getDashboardData();
-  if (pick !== '__ALL__') {
-    data = data.filter(function(r){ return supplierKey(r) === pick; });
-  }
-  var monthMap = {};
+  var monthsSet = {};
+  var supMap = {}; // supplier -> { total, months:{ym:count} }
   data.forEach(function(r){
     if (!r.date) return;
     var ym = String(r.date).slice(0,7);
-    if (!monthMap[ym]) monthMap[ym] = { total:0, win:0 };
-    monthMap[ym].total++;
-    if (isWon(r.stage)) monthMap[ym].win++;
+    monthsSet[ym] = true;
+    var k = supplierKey(r);
+    if (!supMap[k]) supMap[k] = { total:0, months:{} };
+    supMap[k].total++;
+    supMap[k].months[ym] = (supMap[k].months[ym]||0) + 1;
   });
-  var keys = Object.keys(monthMap).sort();
+  var months = Object.keys(monthsSet).sort();
   var box = document.getElementById('supplierMonthlyContent');
-  if (keys.length === 0) {
+  if (months.length === 0) {
     box.innerHTML = '<div class="empty-state"><p>해당 조건의 인입 데이터가 없습니다.</p></div>';
     return;
   }
-  var maxCnt = Math.max.apply(null, keys.map(function(k){ return monthMap[k].total; })) || 1;
+  var sups = Object.keys(supMap).sort(function(a,b){ return supMap[b].total - supMap[a].total; });
 
-  var barHtml = '<div class="bar-chart" style="margin-bottom:16px;">';
-  keys.forEach(function(k){
-    var m = monthMap[k];
-    var w = (m.total / maxCnt * 100);
-    barHtml += '<div class="bar-row">' +
-      '<div class="bar-label">' + escHtml(k) + '</div>' +
-      '<div class="bar-track"><div class="bar-fill bar-teal" style="width:' + Math.max(2,w).toFixed(1) + '%;"><span>' + m.total + '건</span></div></div>' +
-      '<div class="bar-count">' + m.total + '</div>' +
-    '</div>';
+  // 월별 합계(열 합계) + 전체 합계 + 히트맵 최대 셀값
+  var colTotals = {}; months.forEach(function(m){ colTotals[m] = 0; });
+  var grandTotal = 0, maxCell = 1;
+  sups.forEach(function(s){
+    grandTotal += supMap[s].total;
+    months.forEach(function(m){
+      var v = supMap[s].months[m]||0;
+      colTotals[m] += v;
+      if (v > maxCell) maxCell = v;
+    });
   });
-  barHtml += '</div>';
 
-  var tblHtml = '<table class="mini-table"><thead><tr><th>월</th><th style="text-align:right;">인입건</th><th style="text-align:right;">결제완료</th><th style="text-align:right;">전환율</th></tr></thead><tbody>';
-  keys.forEach(function(k){
-    var m = monthMap[k];
-    var conv = m.total > 0 ? (m.win / m.total * 100) : 0;
-    tblHtml += '<tr>' +
-      '<td style="font-weight:600;">' + escHtml(k) + '</td>' +
-      '<td style="text-align:right;">' + m.total + '</td>' +
-      '<td style="text-align:right;color:#065f46;font-weight:700;">' + m.win + '</td>' +
-      '<td style="text-align:right;">' + fmtPct(conv) + '</td>' +
-    '</tr>';
-  });
-  tblHtml += '</tbody></table>';
+  function cell(v){
+    if (!v) return '<td style="text-align:right;color:#ccc;">·</td>';
+    var alpha = (0.08 + (v / maxCell) * 0.50).toFixed(2); // 진할수록 인입 많음
+    return '<td style="text-align:right;font-weight:600;background:rgba(26,115,232,' + alpha + ');">' + v + '</td>';
+  }
 
-  box.innerHTML = barHtml + tblHtml;
+  var LIMIT = 20;
+  function rowHtml(s, hidden){
+    var mo = supMap[s].months;
+    var tds = months.map(function(m){ return cell(mo[m]||0); }).join('');
+    return '<tr' + (hidden ? ' class="supmx-extra-row" style="display:none;"' : '') + '>' +
+      '<td style="font-weight:600;white-space:nowrap;">' + escHtml(s) + '</td>' + tds +
+      '<td style="text-align:right;font-weight:700;">' + supMap[s].total + '</td></tr>';
+  }
+
+  var thMonths = months.map(function(m){ return '<th style="text-align:right;">' + escHtml(m.slice(2)) + '</th>'; }).join('');
+  var html = '<div style="overflow-x:auto;"><table class="mini-table" style="min-width:' + (180 + months.length*56) + 'px;"><thead><tr>' +
+    '<th>공급처</th>' + thMonths + '<th style="text-align:right;">합계</th></tr></thead><tbody>';
+  sups.forEach(function(s,i){ html += rowHtml(s, i >= LIMIT); });
+  var totTds = months.map(function(m){ return '<td style="text-align:right;font-weight:700;background:#f0f4f9;">' + colTotals[m] + '</td>'; }).join('');
+  html += '<tr style="border-top:2px solid #e0e0e0;"><td style="font-weight:700;">월 합계</td>' + totTds +
+    '<td style="text-align:right;font-weight:800;">' + grandTotal + '</td></tr>';
+  html += '</tbody></table></div>';
+
+  if (sups.length > LIMIT) {
+    html += '<div style="text-align:center;margin-top:10px;">' +
+      '<button type="button" class="dash-period-btn" id="supmxMoreBtn" onclick="toggleSupMxExtra()">나머지 ' + (sups.length - LIMIT) + '개 더보기 ▾</button></div>';
+  }
+  box.innerHTML = html;
+}
+
+function toggleSupMxExtra() {
+  var rows = document.querySelectorAll('#supplierMonthlyContent .supmx-extra-row');
+  var btn = document.getElementById('supmxMoreBtn');
+  if (!rows.length) return;
+  var nowHidden = rows[0].style.display === 'none';
+  rows.forEach(function(tr){ tr.style.display = nowHidden ? '' : 'none'; });
+  if (btn) btn.innerHTML = nowHidden ? '접기 ▴' : ('나머지 ' + rows.length + '개 더보기 ▾');
 }
 
 // ============================================================
