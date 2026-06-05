@@ -1640,7 +1640,7 @@ function getColumnValues(col) {
   });
   var out = Object.keys(vals).sort();
   if (col === 'caller' && hasEmpty) out.push('(미지정)');
-  if (col === 'supplier' && hasEmpty) out.push('미입력');
+  if (col === 'supplier' && hasEmpty) out.unshift('미입력');
   return out;
 }
 
@@ -2201,8 +2201,10 @@ function daysBetween(d1, d2) {
 // DASHBOARD
 // ============================================================
 function isDemoStage(s) { return s === 'Demo' || s === 'BO-2'; }
-function isTurnkeyStage(s) { return s === 'Turn-key' || s === 'WIN'; }
-function isDemoReached(s) { return isDemoStage(s) || isTurnkeyStage(s); }
+function isTurnkeyStage(s) { return s === 'Turn-key' || s === 'WIN'; } // 중간 단계 (성공 아님)
+function isWon(s) { return s === 'Done'; } // 결제 완료 = 최종 성공 지표
+// Demo 이상 단계 도달 (Demo · Turn-key · Done)
+function isDemoReached(s) { return isDemoStage(s) || isTurnkeyStage(s) || isWon(s); }
 
 // 대시보드 전용 기간 토글 (등록탭 필터와 독립)
 var dashPeriod = 'year';
@@ -2274,21 +2276,21 @@ function renderDashboard() {
   var total = data.length;
 
   var cntDemoReach = data.filter(function(r){ return isDemoReached(r.stage); }).length;
-  var cntTK = data.filter(function(r){ return isTurnkeyStage(r.stage); }).length;
-  var tkRevenue = 0;
-  data.forEach(function(r){ if (isTurnkeyStage(r.stage)) tkRevenue += parsePrice(r.price); });
-  var cntFollow = data.filter(function(r){ return r.stage === 'Follow' || r.stage === 'New' || !r.stage || r.stage === 'BO-0' || r.stage === 'BO-1'; }).length;
-  var cntDone = data.filter(function(r){ return r.stage === 'Done'; }).length;
+  var cntWon = data.filter(function(r){ return isWon(r.stage); }).length;
+  var wonRevenue = 0;
+  data.forEach(function(r){ if (isWon(r.stage)) wonRevenue += parsePrice(r.price); });
+  // 진행중 = Done · Drop 제외 (New · Follow · Demo · Turn-key)
+  var cntActive = data.filter(function(r){ return !isWon(r.stage) && r.stage !== 'Drop'; }).length;
   var cntDrop = data.filter(function(r){ return r.stage === 'Drop'; }).length;
-  var convRate = total > 0 ? (cntTK / total * 100) : 0;
+  var convRate = total > 0 ? (cntWon / total * 100) : 0;
 
   document.getElementById('dashKpi').innerHTML =
-    kpiCard('총 상담건수', fmtNum(total), '누적 인입') +
-    kpiCard('Demo 도달', fmtNum(cntDemoReach), 'Demo + Turn-key') +
-    kpiCard('Turn-key(결제)', fmtNum(cntTK), '전환 성공') +
-    kpiCard('Turn-key 매출(원)', fmtNum(tkRevenue), '견적가 합계') +
-    kpiCard('Drop 건수', fmtNum(cntDrop), 'Follow 진행중 ' + cntFollow) +
-    kpiCard('전환율', fmtPct(convRate), 'Turn-key / 전체');
+    kpiCard('총 상담건수', fmtNum(total), '선택 기간 인입') +
+    kpiCard('Demo 도달', fmtNum(cntDemoReach), 'Demo 이상 단계') +
+    kpiCard('결제 완료(Done)', fmtNum(cntWon), '전환 성공 · 최종지표') +
+    kpiCard('결제 매출(원)', fmtNum(wonRevenue), '견적가 합계 · 추정') +
+    kpiCard('Drop 건수', fmtNum(cntDrop), '진행중 ' + cntActive) +
+    kpiCard('전환율', fmtPct(convRate), '결제완료 / 전체');
 
   // Section 2: Pipeline
   renderPipeline(data, total);
@@ -2355,12 +2357,12 @@ function renderPipeline(data, total) {
 // --- Conversion ---
 function renderConversion(data, total) {
   var cDemoReach = data.filter(function(r){ return isDemoReached(r.stage); }).length;
-  var cTK = data.filter(function(r){ return isTurnkeyStage(r.stage); }).length;
+  var cWon = data.filter(function(r){ return isWon(r.stage); }).length;
 
   var rows = [
     { label: '인입 → Demo 도달', num: cDemoReach, den: total },
-    { label: 'Demo → Turn-key', num: cTK, den: cDemoReach },
-    { label: '전체 인입 → Turn-key', num: cTK, den: total }
+    { label: 'Demo → 결제완료', num: cWon, den: cDemoReach },
+    { label: '전체 인입 → 결제완료', num: cWon, den: total }
   ];
 
   var html = '<table class="mini-table"><thead><tr><th>구간</th><th style="text-align:right;">건수</th><th style="text-align:right;">전환율</th></tr></thead><tbody>';
