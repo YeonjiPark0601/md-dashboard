@@ -763,6 +763,12 @@ th.sortable:hover { background: #eef0f4; }
     <div id="repContent"></div>
   </div>
 
+  <!-- Section 6.5: 인입경로별 전환율 (채널 성과) -->
+  <div class="table-card" id="sectionSource">
+    <h3>인입경로별 전환율 <span style="font-weight:400;color:#888;font-size:12px;">채널 성과 · 어디에 투자할지 · 인입순</span></h3>
+    <div id="sourceContent"></div>
+  </div>
+
   <!-- Section 7: 리드타임 분석 -->
   <div class="table-card" id="sectionLeadtime">
     <h3>리드타임 분석</h3>
@@ -2317,8 +2323,9 @@ function renderDashboard() {
   // Section 5: Monthly
   renderMonthly(data);
 
-  // Section 6: Rep
+  // Section 6: Rep + 6.5: 인입경로별
   renderRepTable(data);
+  renderSourceTable(data);
 
   // Section 7: Leadtime
   renderLeadtime(data);
@@ -2686,6 +2693,44 @@ function renderRepTable(data) {
   });
   html += '</tbody></table>';
   document.getElementById('repContent').innerHTML = html;
+}
+
+// --- 인입경로별 전환율 (채널 성과) ---
+function renderSourceTable(data) {
+  var map = {};
+  data.forEach(function(r){
+    var k = (r.source || '').trim() || '(미입력)';
+    if (!map[k]) map[k] = { total:0, demo:0, won:0, drop:0 };
+    map[k].total++;
+    if (isDemoReached(r.stage)) map[k].demo++;
+    if (isWon(r.stage)) map[k].won++;
+    if (r.stage === 'Drop') map[k].drop++;
+  });
+  var keys = Object.keys(map).sort(function(a,b){ return map[b].total - map[a].total; });
+  var box = document.getElementById('sourceContent');
+  if (keys.length === 0) { box.innerHTML = '<div class="empty-state"><p>데이터가 부족합니다.</p></div>'; return; }
+  var html = '<table class="mini-table"><thead><tr><th>인입경로</th>' +
+    '<th style="text-align:right;">인입</th>' +
+    '<th style="text-align:right;">Demo 도달</th>' +
+    '<th style="text-align:right;">결제완료</th>' +
+    '<th style="text-align:right;">Drop</th>' +
+    '<th style="text-align:right;">전환율 <span style="font-weight:400;color:#888;font-size:11px;">🔴&lt;10% 🟡10~20% 🟢≥20%</span></th>' +
+    '</tr></thead><tbody>';
+  keys.forEach(function(k){
+    var m = map[k];
+    var conv = m.total > 0 ? (m.won / m.total * 100) : 0;
+    var cls = conv < 10 ? 'conv-warn' : (conv < 20 ? 'conv-mid' : 'conv-good');
+    html += '<tr>' +
+      '<td style="font-weight:600;">' + escHtml(k) + '</td>' +
+      '<td style="text-align:right;font-weight:700;">' + m.total + '</td>' +
+      '<td style="text-align:right;color:#5b21b6;">' + m.demo + '</td>' +
+      '<td style="text-align:right;color:#065f46;font-weight:700;">' + m.won + '</td>' +
+      '<td style="text-align:right;color:#e53e3e;">' + m.drop + '</td>' +
+      '<td style="text-align:right;" class="' + cls + '">' + fmtPct(conv) + '</td>' +
+    '</tr>';
+  });
+  html += '</tbody></table>';
+  box.innerHTML = html;
 }
 
 // --- 공급처별 월별 인입 누적 그래프 (Chart.js stacked bar, 범례 클릭 시 공급처 토글) ---
