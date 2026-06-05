@@ -4,194 +4,136 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>공급처 정보 관리 — MD Squad</title>
+<script src="https://cdn.tailwindcss.com"></script>
 <style>
-  * { box-sizing: border-box; }
-  body { font-family: 'Segoe UI', -apple-system, "Malgun Gothic", sans-serif; background: #f0f2f5; color: #1f2937; margin: 0; }
-
-  .header {
-    background: linear-gradient(135deg, #1a1a2e, #16213e);
-    color: #fff; padding: 14px 20px;
-    display: flex; justify-content: space-between; align-items: center;
-    flex-wrap: wrap; gap: 10px; position: sticky; top: 0; z-index: 50;
-  }
-  .header .left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-  .header h1 { font-size: 19px; font-weight: 600; margin: 0; }
-  .header a.home { color: #fff; text-decoration: none; font-size: 18px; padding: 4px 9px; border-radius: 6px; background: rgba(255,255,255,.12); }
-  .header .updated { font-size: 12px; color: #8899aa; }
-  .header .actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-  .header .editor-wrap { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #8899aa; }
-  .editor-sel { padding: 5px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,.3); background: rgba(255,255,255,.12); color: #fff; font-size: 12.5px; font-family: inherit; }
-  .editor-sel option { color: #333; }
-  .btn { border: 0; border-radius: 7px; padding: 7px 13px; font-size: 13px; cursor: pointer; font-weight: 600; transition: background .15s; }
-  .btn-primary { background: #1a73e8; color: #fff; }
-  .btn-primary:hover { background: #1557b0; }
-  .btn-ghost { background: rgba(255,255,255,.15); color: #fff; }
-  .btn-danger { background: #ef4444; color: #fff; }
-  .btn-light { background: #eef2f7; color: #334; }
-  .btn:disabled { opacity: .45; cursor: not-allowed; }
-
-  .filters {
-    background: #fff; padding: 11px 20px; border-bottom: 1px solid #e8edf3;
-    display: flex; gap: 14px; flex-wrap: wrap; align-items: center;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: sticky; top: 56px; z-index: 40;
-  }
-  .filter-group { display: flex; align-items: center; gap: 6px; }
-  .filter-group label { font-size: 12.5px; font-weight: 600; color: #64748b; }
-  .filters select, .filters input[type=text] { padding: 6px 10px; border: 1px solid #dbe2ea; border-radius: 7px; font-size: 13px; background: #fff; color: #1f2937; }
-  .filters select:focus, .filters input[type=text]:focus { outline: none; border-color: #1a73e8; }
-  .filters input[type=text] { min-width: 230px; }
-  .count-pill { font-size: 12.5px; color: #475569; background: #eef2f7; padding: 5px 12px; border-radius: 999px; font-weight: 600; }
-
-  .stats { display: flex; gap: 10px; flex-wrap: wrap; padding: 16px 20px 0; }
-  .stat-card { background: #fff; border: 1px solid #e8edf3; border-radius: 12px; padding: 12px 18px; min-width: 100px; box-shadow: 0 1px 3px rgba(0,0,0,.05); }
-  .stat-card .v { font-size: 22px; font-weight: 700; color: #1a73e8; }
-  .stat-card .l { font-size: 12px; color: #7b8696; margin-top: 2px; }
-
-  .container { padding: 16px 20px 80px; }
-  .table-wrap { background: #fff; border: 1px solid #e8edf3; border-radius: 14px; overflow: auto; box-shadow: 0 1px 3px rgba(0,0,0,.05); }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; white-space: nowrap; }
-  th, td { padding: 10px 12px; text-align: left; vertical-align: middle; }
-  thead th { background: #f8fafc; color: #64748b; font-weight: 600; font-size: 12px; letter-spacing: .2px; border-bottom: 1px solid #e8edf3; position: sticky; top: 0; z-index: 1; }
-  tbody td { border-bottom: 1px solid #f0f3f7; }
-  tbody tr:last-child td { border-bottom: 0; }
-  tbody tr:hover { background: #f8fafc; }
-  td input, td select { width: 100%; min-width: 70px; border: 1px solid transparent; background: transparent; padding: 6px 8px; font-size: 13px; border-radius: 7px; font-family: inherit; color: #1f2937; transition: border-color .12s, background .12s; }
-  td input:hover, td select:hover { border-color: #dbe2ea; }
-  td input:focus, td select:focus { border-color: #1a73e8; background: #fff; outline: none; box-shadow: 0 0 0 3px rgba(26,115,232,.1); }
-  td input:disabled, td select:disabled { color: #94a3b8; cursor: not-allowed; }
-  td.col-name input { font-weight: 600; }
-  .demo-tag { font-size: 11px; padding: 2px 7px; border-radius: 999px; }
-  tr.sel { background: #eaf2fb !important; }
-  .col-hist { text-align: center; }
-  .btn-hist { background: #eef2ff; color: #4f46e5; border: 0; border-radius: 7px; padding: 5px 11px; font-size: 11.5px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: background .15s; }
-  .btn-hist:hover { background: #e0e7ff; }
-  .btn-hist.empty { background: #f1f5f9; color: #94a3b8; }
-
-  .empty { text-align: center; color: #98a2b3; padding: 48px 0; font-size: 14px; }
-
-  /* modal */
-  .modal-bg { position: fixed; inset: 0; background: rgba(20,25,40,.5); display: none; align-items: flex-start; justify-content: center; z-index: 100; padding: 40px 14px; overflow: auto; }
+  body { font-family: ui-sans-serif, system-ui, -apple-system, "Malgun Gothic", sans-serif; }
+  /* 인라인 편집 셀 */
+  .cell { width: 100%; background: transparent; border: 1px solid transparent; border-radius: 7px; padding: 6px 9px; font-size: 13.5px; color: #1e293b; font-family: inherit; transition: border-color .12s, background .12s, box-shadow .12s; }
+  .cell:hover { border-color: #e2e8f0; }
+  .cell:focus { outline: none; border-color: #3b82f6; background: #fff; box-shadow: 0 0 0 3px rgba(59,130,246,.12); }
+  .cell:disabled { color: #94a3b8; cursor: not-allowed; background: transparent !important; }
+  .modal-bg { display: none; }
   .modal-bg.open { display: flex; }
-  .modal { background: #fff; border-radius: 14px; width: 100%; max-width: 560px; padding: 24px; box-shadow: 0 20px 50px rgba(0,0,0,.25); }
-  .modal h2 { margin: 0 0 4px; font-size: 18px; }
-  .modal .sub { font-size: 12.5px; color: #8893a4; margin-bottom: 14px; }
-  .modal label { display: block; font-size: 12.5px; font-weight: 600; color: #4a5566; margin: 10px 0 4px; }
-  .modal input, .modal select, .modal textarea { width: 100%; padding: 8px 11px; border: 1px solid #dbe2ea; border-radius: 8px; font-size: 13.5px; font-family: inherit; }
-  .modal input:focus, .modal select:focus, .modal textarea:focus { outline: none; border-color: #1a73e8; }
-  .modal textarea { min-height: 64px; resize: vertical; }
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .modal-foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
-  .hint { font-size: 11.5px; color: #94a3b8; margin-top: 4px; }
-  /* 이력 팝업 리스트 */
-  .hist-list { max-height: 420px; overflow: auto; margin-top: 6px; }
-  .hist-item { padding: 9px 2px; border-bottom: 1px solid #f0f2f6; font-size: 12.5px; }
-  .hist-item:last-child { border-bottom: 0; }
-  .hist-item .hi-top { color: #6b7280; font-size: 11.5px; margin-bottom: 3px; }
-  .hist-item .hi-field { font-weight: 600; color: #1a1a2e; }
-  .chg-from { color: #b91c1c; } .chg-to { color: #0d9488; font-weight: 600; }
-  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1a1a2e; color: #fff; padding: 10px 18px; border-radius: 8px; font-size: 13px; z-index: 200; opacity: 0; transition: opacity .25s; pointer-events: none; }
+  .toast { opacity: 0; transition: opacity .25s; pointer-events: none; }
   .toast.show { opacity: 1; }
-  @media (max-width: 640px) {
-    .filters { top: 92px; }
-    .filters input[type=text] { min-width: 140px; }
-  }
+  ::-webkit-scrollbar { height: 10px; width: 10px; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
 </style>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800">
 
-<div class="header">
-  <div class="left">
-    <a class="home" href="home.html" title="홈으로">🏠</a>
-    <h1>공급처 정보 관리</h1>
-    <span class="updated" id="syncInfo">불러오는 중…</span>
+<!-- 헤더 -->
+<header class="bg-white border-b border-slate-200 sticky top-0 z-40">
+  <div class="px-5 py-3 flex items-center justify-between gap-3 flex-wrap">
+    <div class="flex items-center gap-3">
+      <a href="home.html" title="홈으로" class="w-9 h-9 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-lg no-underline">🏠</a>
+      <h1 class="text-lg font-bold text-slate-800">공급처 정보 관리</h1>
+      <span id="syncInfo" class="text-xs text-slate-400">불러오는 중…</span>
+    </div>
+    <div class="flex items-center gap-2 flex-wrap">
+      <div class="flex items-center gap-1.5 text-xs text-slate-500">작성자
+        <select id="editorSel" onchange="setEditor(this.value)" title="이력에 기록될 작성자"
+          class="border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 bg-white focus:outline-none focus:border-blue-500 disabled:bg-slate-100 disabled:text-slate-600"></select>
+      </div>
+      <button onclick="toggleStats()" id="btnStats" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-sm font-semibold text-slate-700">통계 ▾</button>
+      <button onclick="refresh(true)" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-sm font-semibold text-slate-700">↻ 새로고침</button>
+      <button onclick="openManual()" class="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-sm font-semibold text-white shadow-sm">＋ 공급처 추가</button>
+    </div>
   </div>
-  <div class="actions">
-    <span class="editor-wrap">작성자<select class="editor-sel" id="editorSel" onchange="setEditor(this.value)" title="이력에 기록될 작성자"></select></span>
-    <button class="btn btn-light" id="btnStats" onclick="toggleStats()">통계 ▾</button>
-    <button class="btn btn-ghost" onclick="refresh(true)">↻ 새로고침</button>
-    <button class="btn btn-primary" onclick="openManual()">＋ 공급처 추가</button>
+  <!-- 필터바 -->
+  <div class="px-5 py-2.5 flex items-center gap-3 flex-wrap border-t border-slate-100 bg-slate-50/60">
+    <input id="fSearch" oninput="render()" placeholder="🔍 공급처 · 담당자 · 제품 · 프로모션 검색"
+      class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm min-w-[260px] bg-white focus:outline-none focus:border-blue-500">
+    <div class="flex items-center gap-1.5"><label class="text-xs font-semibold text-slate-500">데모가능</label>
+      <select id="fDemo" onchange="render()" class="border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm bg-white focus:outline-none focus:border-blue-500"><option value="">전체</option><option>가능</option><option>조건부</option><option>불가</option></select></div>
+    <div class="flex items-center gap-1.5"><label class="text-xs font-semibold text-slate-500">프로모션</label>
+      <select id="fPromo" onchange="render()" class="border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm bg-white focus:outline-none focus:border-blue-500"><option value="">전체</option><option value="Y">진행중</option><option value="N">없음</option></select></div>
+    <span id="countPill" class="text-xs font-semibold text-slate-600 bg-white border border-slate-200 px-3 py-1 rounded-full">0곳</span>
+    <button id="btnDel" onclick="bulkDelete()" disabled class="ml-auto px-3 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 text-white text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed">선택 삭제 (0)</button>
   </div>
+</header>
+
+<!-- 작성자 안내 배너 -->
+<div id="editorBanner" class="hidden items-center gap-2 bg-amber-50 text-amber-800 px-5 py-2.5 text-sm font-semibold border-b border-amber-200">
+  ✏️ 편집하려면 먼저 우측 상단에서 <b>작성자</b>를 선택하세요. <span class="font-normal text-amber-700">(한번 선택하면 변경할 수 없습니다)</span>
 </div>
 
-<div class="filters">
-  <div class="filter-group">
-    <input type="text" id="fSearch" placeholder="🔍 공급처/담당자/제품/프로모션 검색" oninput="render()">
-  </div>
-  <div class="filter-group"><label>데모가능</label><select id="fDemo" onchange="render()"><option value="">전체</option><option>가능</option><option>조건부</option><option>불가</option></select></div>
-  <div class="filter-group"><label>프로모션</label><select id="fPromo" onchange="render()"><option value="">전체</option><option value="Y">진행중</option><option value="N">없음</option></select></div>
-  <span class="count-pill" id="countPill">0곳</span>
-  <button class="btn btn-danger" id="btnDel" onclick="bulkDelete()" disabled>선택 삭제 (0)</button>
-</div>
+<!-- 통계 -->
+<div id="stats" class="hidden px-5 pt-4 flex gap-3 flex-wrap"></div>
 
-<div id="editorBanner" style="display:none;align-items:center;gap:8px;background:#fef3c7;color:#92400e;padding:10px 20px;font-size:13px;font-weight:600;border-bottom:1px solid #fde68a;">
-  ✏️ 편집하려면 먼저 우측 상단에서 <b>작성자</b>를 선택하세요. <span style="font-weight:400;">(한번 선택하면 변경할 수 없습니다)</span>
-</div>
-
-<div class="stats" id="stats" style="display:none"></div>
-
-<div class="container">
-  <div class="table-wrap">
-    <table>
+<!-- 테이블 -->
+<div class="p-5">
+  <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-auto">
+    <table class="w-full text-sm whitespace-nowrap border-collapse">
       <thead>
-        <tr>
-          <th><input type="checkbox" id="chkAll" onclick="toggleAll(this)"></th>
-          <th>공급처명</th><th>데모가능</th><th>데모조건</th>
-          <th>프로모션</th><th>할인율/조건</th><th>프로모션기간</th>
-          <th>담당자명</th><th>연락처</th><th>이메일</th>
-          <th>취급제품</th><th>공급제한</th><th>비고</th><th>이력</th>
+        <tr class="bg-slate-50 text-slate-500">
+          <th class="px-4 py-3 text-left font-semibold text-xs sticky top-0 bg-slate-50"><input type="checkbox" id="chkAll" onclick="toggleAll(this)" class="align-middle"></th>
+          <th class="px-4 py-3 text-left font-semibold text-xs sticky top-0 bg-slate-50">공급처명</th>
+          <th class="px-4 py-3 text-left font-semibold text-xs sticky top-0 bg-slate-50">데모가능</th>
+          <th class="px-4 py-3 text-left font-semibold text-xs sticky top-0 bg-slate-50">데모조건</th>
+          <th class="px-4 py-3 text-left font-semibold text-xs sticky top-0 bg-slate-50">프로모션</th>
+          <th class="px-4 py-3 text-left font-semibold text-xs sticky top-0 bg-slate-50">할인율/조건</th>
+          <th class="px-4 py-3 text-left font-semibold text-xs sticky top-0 bg-slate-50">프로모션기간</th>
+          <th class="px-4 py-3 text-left font-semibold text-xs sticky top-0 bg-slate-50">담당자명</th>
+          <th class="px-4 py-3 text-left font-semibold text-xs sticky top-0 bg-slate-50">연락처</th>
+          <th class="px-4 py-3 text-left font-semibold text-xs sticky top-0 bg-slate-50">이메일</th>
+          <th class="px-4 py-3 text-left font-semibold text-xs sticky top-0 bg-slate-50">취급제품</th>
+          <th class="px-4 py-3 text-left font-semibold text-xs sticky top-0 bg-slate-50">공급제한</th>
+          <th class="px-4 py-3 text-left font-semibold text-xs sticky top-0 bg-slate-50">비고</th>
+          <th class="px-4 py-3 text-center font-semibold text-xs sticky top-0 bg-slate-50">이력</th>
         </tr>
       </thead>
       <tbody id="tbody"></tbody>
     </table>
   </div>
-  <div class="empty" id="empty" style="display:none">데이터가 없습니다. 우측 상단 “공급처 추가”로 등록하세요.</div>
+  <div class="hidden text-center text-slate-400 py-12 text-sm" id="empty">데이터가 없습니다. 우측 상단 “공급처 추가”로 등록하세요.</div>
 </div>
 
 <!-- 공급처 추가 모달 -->
-<div class="modal-bg" id="manualBg">
-  <div class="modal">
-    <h2>공급처 추가</h2>
-    <div class="sub">공급처명만 입력해도 됩니다. 나머지는 표에서 바로 편집할 수 있어요.</div>
-    <div class="grid2">
-      <div><label>공급처명 *</label><input id="m_supplierName"></div>
-      <div><label>데모가능</label><select id="m_demoAvailable"><option value=""></option><option>가능</option><option>조건부</option><option>불가</option></select></div>
+<div class="modal-bg fixed inset-0 bg-slate-900/50 items-start justify-center z-50 p-10 overflow-auto" id="manualBg">
+  <div class="bg-white rounded-2xl w-full max-w-xl p-6 shadow-2xl">
+    <h2 class="text-lg font-bold text-slate-800">공급처 추가</h2>
+    <p class="text-xs text-slate-400 mt-1 mb-3">공급처명만 입력해도 됩니다. 나머지는 표에서 바로 편집할 수 있어요.</p>
+    <div class="grid grid-cols-2 gap-3">
+      <div><label class="block text-xs font-semibold text-slate-600 mb-1">공급처명 *</label><input id="m_supplierName" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"></div>
+      <div><label class="block text-xs font-semibold text-slate-600 mb-1">데모가능</label><select id="m_demoAvailable" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"><option value=""></option><option>가능</option><option>조건부</option><option>불가</option></select></div>
     </div>
-    <label>데모조건 <span class="hint">(데모기 보유, 회수기간 등)</span></label>
-    <input id="m_demoCondition">
-    <div class="grid2">
-      <div><label>프로모션</label><input id="m_promotion"></div>
-      <div><label>할인율/조건</label><input id="m_discount"></div>
-      <div><label>프로모션기간</label><input id="m_promoPeriod" placeholder="예: 2026-06 ~ 07"></div>
-      <div><label>담당자명</label><input id="m_managerName"></div>
-      <div><label>담당자 연락처</label><input id="m_managerPhone" placeholder="010-0000-0000"></div>
-      <div><label>담당자 이메일</label><input id="m_managerEmail"></div>
+    <label class="block text-xs font-semibold text-slate-600 mt-2.5 mb-1">데모조건 <span class="text-slate-400 font-normal">(데모기 보유, 회수기간 등)</span></label>
+    <input id="m_demoCondition" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+    <div class="grid grid-cols-2 gap-3 mt-2.5">
+      <div><label class="block text-xs font-semibold text-slate-600 mb-1">프로모션</label><input id="m_promotion" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"></div>
+      <div><label class="block text-xs font-semibold text-slate-600 mb-1">할인율/조건</label><input id="m_discount" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"></div>
+      <div><label class="block text-xs font-semibold text-slate-600 mb-1">프로모션기간</label><input id="m_promoPeriod" placeholder="예: 2026-06 ~ 07" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"></div>
+      <div><label class="block text-xs font-semibold text-slate-600 mb-1">담당자명</label><input id="m_managerName" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"></div>
+      <div><label class="block text-xs font-semibold text-slate-600 mb-1">담당자 연락처</label><input id="m_managerPhone" placeholder="010-0000-0000" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"></div>
+      <div><label class="block text-xs font-semibold text-slate-600 mb-1">담당자 이메일</label><input id="m_managerEmail" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"></div>
     </div>
-    <label>취급제품</label>
-    <input id="m_products">
-    <label>공급제한 <span class="hint">(지역 대리점 제한·독점 등)</span></label>
-    <input id="m_supplyLimit">
-    <label>비고</label>
-    <textarea id="m_remarks"></textarea>
-    <div class="modal-foot">
-      <button class="btn btn-light" onclick="closeModal('manualBg')">취소</button>
-      <button class="btn btn-primary" id="m_save" onclick="saveManual()">등록</button>
+    <label class="block text-xs font-semibold text-slate-600 mt-2.5 mb-1">취급제품</label>
+    <input id="m_products" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+    <label class="block text-xs font-semibold text-slate-600 mt-2.5 mb-1">공급제한 <span class="text-slate-400 font-normal">(지역 대리점 제한·독점 등)</span></label>
+    <input id="m_supplyLimit" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+    <label class="block text-xs font-semibold text-slate-600 mt-2.5 mb-1">비고</label>
+    <textarea id="m_remarks" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 min-h-[64px]"></textarea>
+    <div class="flex justify-end gap-2 mt-4">
+      <button onclick="closeModal('manualBg')" class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-sm font-semibold text-slate-700">취소</button>
+      <button id="m_save" onclick="saveManual()" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-sm font-semibold text-white">등록</button>
     </div>
   </div>
 </div>
 
 <!-- 공급처별 이력 팝업 -->
-<div class="modal-bg" id="histBg">
-  <div class="modal" style="max-width:520px">
-    <h2 id="histTitle">변경 이력</h2>
-    <div class="sub" id="histSub"></div>
-    <div class="hist-list" id="histList"></div>
-    <div class="modal-foot">
-      <button class="btn btn-light" onclick="closeModal('histBg')">닫기</button>
+<div class="modal-bg fixed inset-0 bg-slate-900/50 items-start justify-center z-50 p-10 overflow-auto" id="histBg">
+  <div class="bg-white rounded-2xl w-full max-w-lg p-6 shadow-2xl">
+    <h2 id="histTitle" class="text-lg font-bold text-slate-800">변경 이력</h2>
+    <p id="histSub" class="text-xs text-slate-400 mt-1 mb-2"></p>
+    <div id="histList" class="max-h-[420px] overflow-auto"></div>
+    <div class="flex justify-end gap-2 mt-4">
+      <button onclick="closeModal('histBg')" class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-sm font-semibold text-slate-700">닫기</button>
     </div>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast fixed bottom-5 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-5 py-2.5 rounded-lg text-sm z-[60]" id="toast"></div>
 
 <script>
 // ============================================================
@@ -203,7 +145,6 @@ const HIST_TAB = '변경이력';
 const csvUrl = (tab) => 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(tab);
 const WEBHOOK_URL = 'https://n8n.datastream.co.kr/webhook/supplier-crud';
 
-// JS 필드 <-> 시트 컬럼명
 const FIELD_TO_COL = {
   id: 'id', createdAt: '생성일', updatedAt: '수정일',
   supplierName: '공급처명', demoAvailable: '데모가능', demoCondition: '데모조건',
@@ -216,17 +157,15 @@ const COL_TO_FIELD = Object.fromEntries(Object.entries(FIELD_TO_COL).map(kv => [
 const CALLER_OPTIONS = ['박연지','주봉현','김태호','조성갑','유승준','박원','이예림','김진석','류창희'];
 const EDITOR_KEY = 'md_suppliers_editor';
 
-let ROWS = [];            // 화면 데이터
-let HISTORY = [];         // 변경이력 (최신순)
+let ROWS = [];
+let HISTORY = [];
 const selected = new Set();
 let pollTimer = null;
 
-// ============================================================
-// 유틸
-// ============================================================
 function nowStamp() { return new Date().toISOString().slice(0,16).replace('T',' '); }
 function genId() { return 's_' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
 function getEditor() { return localStorage.getItem(EDITOR_KEY) || ''; }
+function esc(s){ return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 // ============================================================
 // 시트 읽기 (gviz CSV)
@@ -267,11 +206,7 @@ function fetchSheet() {
 function fetchHistory() {
   return fetch(csvUrl(HIST_TAB) + '&_t=' + Date.now(), { cache: 'no-store' })
     .then(res => { if (!res.ok) throw new Error('HTTP '+res.status); return res.text(); })
-    .then(csv => {
-      const recs = parseCSV(csv).filter(r => r['시각']);
-      recs.reverse(); // 시트는 오래된→최신 append, 화면은 최신순
-      HISTORY = recs;
-    })
+    .then(csv => { const recs = parseCSV(csv).filter(r => r['시각']); recs.reverse(); HISTORY = recs; })
     .catch(e => { console.warn('이력 조회 실패:', e); });
 }
 
@@ -284,8 +219,7 @@ function recordToSheetData(r) {
   return d;
 }
 function callWebhook(action, payload) {
-  return fetch(WEBHOOK_URL, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
+  return fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(Object.assign({ action }, payload))
   }).then(res => { if (!res.ok) throw new Error('webhook '+res.status); return res.json(); });
 }
@@ -303,23 +237,23 @@ function initEditorSel() {
   if (cur) {
     sel.innerHTML = `<option selected>${esc(cur)}</option>`;
     sel.disabled = true;
-    sel.style.borderColor = 'rgba(255,255,255,.3)';
+    sel.classList.remove('border-red-400');
     sel.title = '작성자 확정됨 — 변경 불가';
   } else {
     sel.disabled = false;
     sel.innerHTML = '<option value="">(작성자 선택)</option>' + CALLER_OPTIONS.map(n=>`<option>${esc(n)}</option>`).join('');
-    sel.style.borderColor = '#f87171';
+    sel.classList.add('border-red-400');
     sel.title = '편집하려면 작성자를 먼저 선택하세요';
   }
   const banner = document.getElementById('editorBanner');
-  if (banner) banner.style.display = cur ? 'none' : 'flex';
+  banner.classList.toggle('hidden', !!cur);
+  banner.classList.toggle('flex', !cur);
 }
 function setEditor(v) {
   if (!v) return;
   if (!confirm(`작성자를 '${v}'(으)로 확정합니다.\n확정 후에는 변경할 수 없습니다. 계속할까요?`)) { initEditorSel(); return; }
   localStorage.setItem(EDITOR_KEY, v);
-  initEditorSel();
-  render();
+  initEditorSel(); render();
   toast(`작성자: ${v} — 이제 편집할 수 있어요`);
 }
 
@@ -327,8 +261,7 @@ function setEditor(v) {
 // 렌더링
 // ============================================================
 const DEMO_OPTS = ['', '가능', '조건부', '불가'];
-
-function esc(s){ return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+const DEMO_CLS = { '가능':'bg-green-100 text-green-800', '조건부':'bg-amber-100 text-amber-800', '불가':'bg-red-100 text-red-700' };
 
 function optionsHtml(opts, val) {
   return opts.map(o => `<option value="${esc(o)}"${o===(val||'')?' selected':''}>${esc(o||'-')}</option>`).join('');
@@ -353,7 +286,7 @@ function applyFilters() {
 function render() {
   const list = applyFilters().slice().sort((a,b)=>(a.supplierName||'').localeCompare(b.supplierName||'','ko'));
   const tb = document.getElementById('tbody');
-  document.getElementById('empty').style.display = ROWS.length ? 'none' : 'block';
+  document.getElementById('empty').classList.toggle('hidden', !!ROWS.length);
   document.getElementById('countPill').textContent = list.length + '곳';
   const histCount = {};
   HISTORY.forEach(h => { const k=h['공급처id']; histCount[k]=(histCount[k]||0)+1; });
@@ -368,42 +301,44 @@ function rowHtml(r, histN) {
   const F = (f) => `onfocus="cellFocus('${r.id}','${f}',this)"`;
   const T = (f) => `${F(f)} oninput="edit('${r.id}','${f}',this.value)" onchange="cellCommit('${r.id}','${f}',this)"${dis}`;
   const S = (f) => `${F(f)} onchange="edit('${r.id}','${f}',this.value);cellCommit('${r.id}','${f}',this)"${dis}`;
-  return `<tr data-id="${r.id}" class="${sel?'sel':''}">
-    <td><input type="checkbox" ${sel?'checked':''} onclick="toggleSel('${r.id}',this)"${dis}></td>
-    <td class="col-name"><input value="${esc(r.supplierName)}" ${T('supplierName')}></td>
-    <td><select ${S('demoAvailable')}>${optionsHtml(DEMO_OPTS, r.demoAvailable)}</select></td>
-    <td><input value="${esc(r.demoCondition)}" ${T('demoCondition')} style="min-width:160px"></td>
-    <td><input value="${esc(r.promotion)}" ${T('promotion')} style="min-width:160px"></td>
-    <td><input value="${esc(r.discount)}" ${T('discount')}></td>
-    <td><input value="${esc(r.promoPeriod)}" ${T('promoPeriod')}></td>
-    <td><input value="${esc(r.managerName)}" ${T('managerName')}></td>
-    <td><input value="${esc(r.managerPhone)}" ${T('managerPhone')}></td>
-    <td><input value="${esc(r.managerEmail)}" ${T('managerEmail')}></td>
-    <td><input value="${esc(r.products)}" ${T('products')} style="min-width:180px"></td>
-    <td><input value="${esc(r.supplyLimit)}" ${T('supplyLimit')} style="min-width:160px"></td>
-    <td><input value="${esc(r.remarks)}" ${T('remarks')} style="min-width:140px"></td>
-    <td class="col-hist"><button class="btn-hist${histN?'':' empty'}" onclick="openHist('${r.id}')">🕘 이력${histN?' '+histN:''}</button></td>
+  const demoCls = DEMO_CLS[r.demoAvailable] || 'text-slate-400';
+  const histBtn = histN
+    ? `<button onclick="openHist('${r.id}')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-lg px-2.5 py-1 text-xs font-semibold whitespace-nowrap">🕘 ${histN}</button>`
+    : `<button onclick="openHist('${r.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-400 rounded-lg px-2.5 py-1 text-xs font-semibold whitespace-nowrap">🕘</button>`;
+  const td = 'px-4 py-2 border-t border-slate-100';
+  return `<tr data-id="${r.id}" class="hover:bg-slate-50 ${sel?'bg-blue-50':''}">
+    <td class="${td}"><input type="checkbox" ${sel?'checked':''} onclick="toggleSel('${r.id}',this)"${dis} class="align-middle"></td>
+    <td class="${td}"><input value="${esc(r.supplierName)}" ${T('supplierName')} class="cell font-semibold"></td>
+    <td class="${td}"><select ${S('demoAvailable')} class="cell font-semibold ${demoCls} rounded-md">${optionsHtml(DEMO_OPTS, r.demoAvailable)}</select></td>
+    <td class="${td}"><input value="${esc(r.demoCondition)}" ${T('demoCondition')} class="cell min-w-[160px]"></td>
+    <td class="${td}"><input value="${esc(r.promotion)}" ${T('promotion')} class="cell min-w-[160px]"></td>
+    <td class="${td}"><input value="${esc(r.discount)}" ${T('discount')} class="cell"></td>
+    <td class="${td}"><input value="${esc(r.promoPeriod)}" ${T('promoPeriod')} class="cell"></td>
+    <td class="${td}"><input value="${esc(r.managerName)}" ${T('managerName')} class="cell"></td>
+    <td class="${td}"><input value="${esc(r.managerPhone)}" ${T('managerPhone')} class="cell"></td>
+    <td class="${td}"><input value="${esc(r.managerEmail)}" ${T('managerEmail')} class="cell"></td>
+    <td class="${td}"><input value="${esc(r.products)}" ${T('products')} class="cell min-w-[180px]"></td>
+    <td class="${td}"><input value="${esc(r.supplyLimit)}" ${T('supplyLimit')} class="cell min-w-[160px]"></td>
+    <td class="${td}"><input value="${esc(r.remarks)}" ${T('remarks')} class="cell min-w-[140px]"></td>
+    <td class="${td} text-center">${histBtn}</td>
   </tr>`;
 }
 
 function renderStats() {
   const wrap = document.getElementById('stats');
-  if (wrap.style.display === 'none') return;
+  if (wrap.classList.contains('hidden')) return;
   const demoOk = ROWS.filter(r => r.demoAvailable==='가능').length;
   const demoCond = ROWS.filter(r => r.demoAvailable==='조건부').length;
   const promo = ROWS.filter(r => (r.promotion||'').trim()).length;
   const limited = ROWS.filter(r => (r.supplyLimit||'').trim()).length;
-  const cards = [
-    ['전체', ROWS.length],
-    ['데모 가능', demoOk], ['데모 조건부', demoCond],
-    ['프로모션 진행', promo], ['공급제한 있음', limited],
-  ];
-  wrap.innerHTML = cards.map(c=>`<div class="stat-card"><div class="v">${c[1]}</div><div class="l">${c[0]}</div></div>`).join('');
+  const cards = [['전체', ROWS.length],['데모 가능', demoOk],['데모 조건부', demoCond],['프로모션 진행', promo],['공급제한 있음', limited]];
+  wrap.innerHTML = cards.map(c=>`<div class="bg-white rounded-xl border border-slate-200 shadow-sm px-4 py-3 min-w-[104px]"><div class="text-2xl font-bold text-blue-600">${c[1]}</div><div class="text-xs text-slate-500 mt-0.5">${c[0]}</div></div>`).join('');
 }
 function toggleStats() {
   const w = document.getElementById('stats');
-  w.style.display = w.style.display === 'none' ? 'flex' : 'none';
-  document.getElementById('btnStats').textContent = '통계 ' + (w.style.display==='none'?'▾':'▴');
+  const show = w.classList.contains('hidden');
+  w.classList.toggle('hidden', !show); w.classList.toggle('flex', show);
+  document.getElementById('btnStats').textContent = '통계 ' + (show?'▴':'▾');
   renderStats();
 }
 
@@ -413,7 +348,7 @@ function toggleStats() {
 function chgText(h) {
   const f = (h['이전값']||'').trim() || '∅';
   const t = (h['새값']||'').trim() || '∅';
-  return `<span class="chg-from">${esc(f)}</span> → <span class="chg-to">${esc(t)}</span>`;
+  return `<span class="text-red-600">${esc(f)}</span> <span class="text-slate-400">→</span> <span class="text-teal-600 font-semibold">${esc(t)}</span>`;
 }
 function openHist(id) {
   const r = ROWS.find(x=>x.id===id);
@@ -421,34 +356,30 @@ function openHist(id) {
   document.getElementById('histTitle').textContent = (r ? r.supplierName : '') + ' 변경 이력';
   document.getElementById('histSub').textContent = list.length + '건';
   const el = document.getElementById('histList');
-  el.innerHTML = list.length ? list.map(h => `<div class="hist-item">
-    <div class="hi-top">${esc(h['시각'])} · ${esc(h['작성자']||'(미지정)')}</div>
-    <div><span class="hi-field">${esc(h['필드'])}</span> &nbsp;${chgText(h)}</div></div>`).join('')
-    : '<div class="hint" style="padding:16px;text-align:center;">아직 변경 이력이 없습니다.</div>';
+  el.innerHTML = list.length ? list.map(h => `<div class="py-2.5 border-b border-slate-100 last:border-0 text-[13px]">
+    <div class="text-[11.5px] text-slate-500 mb-1">${esc(h['시각'])} · ${esc(h['작성자']||'(미지정)')}</div>
+    <div><span class="font-semibold text-slate-800">${esc(h['필드'])}</span> &nbsp;${chgText(h)}</div></div>`).join('')
+    : '<div class="text-center text-slate-400 py-6 text-sm">아직 변경 이력이 없습니다.</div>';
   openModal('histBg');
 }
 
 // ============================================================
-// 편집 (낙관적 업데이트 + 700ms 디바운스) + 이력 기록
+// 편집 + 이력 기록
 // ============================================================
 let editDebounce = {};
 function edit(id, field, value) {
   const r = ROWS.find(x => x.id === id); if (!r) return;
-  r[field] = value;
-  r.updatedAt = nowStamp();
+  r[field] = value; r.updatedAt = nowStamp();
+  if (field === 'demoAvailable') render(); // 뱃지 색 즉시 반영
   clearTimeout(editDebounce[id]);
   editDebounce[id] = setTimeout(() => {
     syncUpdate(r).then(()=>flashSync()).catch(()=>toast('⚠ 저장 실패 — 새로고침 후 재시도'));
   }, 700);
 }
-
-// 셀 포커스 시 원래 값 저장 → 포커스 아웃(change) 시 이전값→새값 1건 기록
 let cellOrig = {};
 function cellFocus(id, field, el) { cellOrig[id+'|'+field] = el.value; }
 function cellCommit(id, field, el) {
-  const key = id+'|'+field;
-  const orig = cellOrig[key];
-  const now = el.value;
+  const key = id+'|'+field, orig = cellOrig[key], now = el.value;
   if (orig === undefined || orig === now) return;
   cellOrig[key] = now;
   logChange(id, field, orig, now);
@@ -456,13 +387,9 @@ function cellCommit(id, field, el) {
 function logChange(id, field, fromV, toV) {
   const r = ROWS.find(x => x.id === id);
   const editor = getEditor();
-  const entry = {
-    '시각': nowStamp(), '작성자': editor || '(미지정)',
-    '공급처id': id, '공급처명': r ? r.supplierName : '',
-    '필드': FIELD_TO_COL[field] || field, '이전값': fromV, '새값': toV
-  };
+  const entry = { '시각': nowStamp(), '작성자': editor || '(미지정)', '공급처id': id, '공급처명': r ? r.supplierName : '', '필드': FIELD_TO_COL[field] || field, '이전값': fromV, '새값': toV };
   HISTORY.unshift(entry);
-  render(); // 이력 버튼 카운트 갱신
+  render();
   callWebhook('log', { log: entry }).catch(()=>console.warn('이력 저장 실패'));
 }
 
@@ -471,7 +398,7 @@ function logChange(id, field, fromV, toV) {
 // ============================================================
 function toggleSel(id, cb) {
   if (cb.checked) selected.add(id); else selected.delete(id);
-  cb.closest('tr').classList.toggle('sel', cb.checked);
+  cb.closest('tr').classList.toggle('bg-blue-50', cb.checked);
   updateDelBtn();
 }
 function toggleAll(cb) {
@@ -489,16 +416,14 @@ function bulkDelete() {
   if (!ids.length || !confirm(`${ids.length}곳을 삭제할까요? 시트에서도 영구 삭제됩니다.`)) return;
   ROWS = ROWS.filter(r => !selected.has(r.id));
   selected.clear(); render();
-  // 시트 삭제는 행 번호 시프트 방지를 위해 순차 처리
   (async () => {
     for (const id of ids) { try { await syncDelete(id); } catch(e){ console.warn('삭제 실패', id, e); } }
-    flashSync(); toast('삭제 완료');
-    setTimeout(()=>refresh(false), 1200);
+    flashSync(); toast('삭제 완료'); setTimeout(()=>refresh(false), 1200);
   })();
 }
 
 // ============================================================
-// 등록 — 공급처 추가
+// 등록
 // ============================================================
 function openManual() {
   if (!editorLocked()) { toast('작성자를 먼저 선택하세요'); return; }
@@ -518,34 +443,26 @@ function saveManual() {
   if (!r.supplierName) { toast('공급처명은 입력하세요'); return; }
   const btn = document.getElementById('m_save'); btn.disabled = true;
   ROWS.unshift(r); render(); closeModal('manualBg');
-  syncCreate(r).then(()=>{ flashSync(); toast('등록 완료'); })
-    .catch(()=>toast('⚠ 등록 실패 — 새로고침 후 확인'))
-    .finally(()=>{ btn.disabled = false; });
-  // 신규 등록도 이력 1건
+  syncCreate(r).then(()=>{ flashSync(); toast('등록 완료'); }).catch(()=>toast('⚠ 등록 실패 — 새로고침 후 확인')).finally(()=>{ btn.disabled = false; });
   logChange(r.id, 'supplierName', '', r.supplierName);
 }
 
 // ============================================================
-// 동기화 / 폴링 / UI 유틸
+// 동기화 / 폴링 / UI
 // ============================================================
 function refresh(manual) {
   if (manual) document.getElementById('syncInfo').textContent = '새로고침 중…';
   return Promise.all([fetchSheet(), fetchHistory()]).then(([records]) => {
-    // 편집 중인 셀이 있으면 해당 행은 로컬 유지 (stale read 방지)
     const editingTr = document.activeElement && document.activeElement.closest ? document.activeElement.closest('tr') : null;
     const editingId = editingTr && editingTr.dataset ? editingTr.dataset.id : null;
     if (editingId) {
       const localEditing = ROWS.find(r=>r.id===editingId);
       ROWS = records.map(r => r.id===editingId && localEditing ? localEditing : r);
       if (localEditing && !records.some(r=>r.id===editingId)) ROWS.unshift(localEditing);
-    } else {
-      ROWS = records;
-    }
+    } else { ROWS = records; }
     render();
     document.getElementById('syncInfo').textContent = '동기화: ' + new Date().toLocaleTimeString('ko-KR');
-  }).catch(() => {
-    document.getElementById('syncInfo').textContent = '⚠ 시트 조회 실패 (공유 설정 확인)';
-  });
+  }).catch(() => { document.getElementById('syncInfo').textContent = '⚠ 시트 조회 실패 (공유 설정 확인)'; });
 }
 function flashSync() { document.getElementById('syncInfo').textContent = '저장됨 · ' + new Date().toLocaleTimeString('ko-KR'); }
 function startPolling() {
