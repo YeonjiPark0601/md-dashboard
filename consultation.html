@@ -1631,6 +1631,7 @@ function getColumnValues(col) {
   var hasEmpty = false;
   data.forEach(function(r){
     var v = col === 'caller' ? (r.caller || r.rep || '') : (r[col] || '');
+    if (col === 'supplier') v = canonicalizeSupplier(r.supplier); // 동의어 통일 표기로 묶기
     if (v !== '' && v != null) vals[String(v)] = true;
     else if (col === 'caller' || col === 'supplier') hasEmpty = true;
   });
@@ -1767,6 +1768,7 @@ function getFilteredData() {
     if (!picked) return;
     data = data.filter(function(r){
       var v = col === 'caller' ? (r.caller || r.rep || '') : (r[col] || '');
+      if (col === 'supplier') v = canonicalizeSupplier(r.supplier); // 원본이 네오펙트여도 통일 표기로 매칭
       if (col === 'caller' && v === '') return picked.has('(미지정)');
       if (col === 'supplier' && v === '') return picked.has('미입력');
       return picked.has(String(v));
