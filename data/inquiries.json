@@ -1,9 +1,30 @@
 {
-  "updated": "2026-06-04T10:11:19.090Z",
+  "updated": "2026-06-05T02:31:26.928Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "일반",
+      "timestamp": "2026. 06. 05 오전 11:25:36",
+      "date": "2026-06-05",
+      "slackTs": "1780626336.298379",
+      "name": "이수진",
+      "cid": "5fa1166c51203163343214c5",
+      "phone": "010-7560-6655",
+      "product": "[라메디텍] 퓨라셀 MX(FX-7000)",
+      "qty": 1,
+      "price": "1270(부가세포함)",
+      "productId": "6a057b0fa01aaa992bcf44a8",
+      "clinic": "행신365한의원",
+      "region": "경기도 고양시",
+      "caller": "",
+      "supplier": "라메디텍",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격",
+      "leadGrade": "고가망"
+    },
     {
       "source": "일반",
       "timestamp": "2026. 06. 04 오전 10:27:50",
