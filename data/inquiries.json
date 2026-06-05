@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-05T08:31:15.150Z",
+  "updated": "2026-06-05T08:36:12.122Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -2623,7 +2623,7 @@
       "clinic": "사상연세비앤이치과병원",
       "region": "부산시 사상구",
       "caller": "김진석",
-      "supplier": "",
+      "supplier": "새서울메디칼",
       "payDate": "",
       "payAmount": null,
       "inquiry": "더마쿨, 더마스킨 가격 정보를 원합니다",
