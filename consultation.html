@@ -282,6 +282,24 @@ th.sortable:hover { background: #eef0f4; }
 .conv-mid { color: #d97706; font-weight: 700; }
 .conv-good { color: #0d9488; font-weight: 700; }
 
+/* ===== 1층 북극성 ===== */
+.northstar { display:flex; justify-content:space-between; align-items:center; gap:20px; background:#fff; border-radius:12px; padding:22px 26px; margin-bottom:18px; box-shadow:0 1px 3px rgba(0,0,0,0.08); border-left:6px solid #0d9488; }
+.northstar.ns-bad { border-left-color:#e53e3e; }
+.northstar .ns-label { font-size:13px; color:#888; font-weight:600; margin-bottom:6px; }
+.northstar .ns-value { font-size:44px; font-weight:800; color:#1a1a2e; line-height:1; }
+.northstar .ns-right { text-align:right; }
+.northstar .ns-target { font-size:13px; color:#888; }
+.northstar .ns-badge { font-size:15px; font-weight:700; margin:4px 0; }
+.northstar.ns-good .ns-badge { color:#0d9488; }
+.northstar.ns-bad .ns-badge { color:#e53e3e; }
+.northstar .ns-sub { font-size:12px; color:#999; }
+/* ===== 2층 선행지표 ===== */
+#dashLeading .lead-card.lead-warn { border-top:3px solid #e53e3e; }
+#dashLeading .lead-card.lead-ok { border-top:3px solid #0d9488; }
+.lead-act { display:block; color:#999; font-size:11px; line-height:1.4; margin-top:8px; }
+@media (max-width:900px){ .northstar { flex-direction:column; align-items:flex-start; } .northstar .ns-right { text-align:left; } #dashLeading { grid-template-columns:repeat(2,1fr)!important; } }
+@media (max-width:420px){ #dashLeading { grid-template-columns:1fr!important; } }
+
 /* ===== TAB PANELS ===== */
 .tab-panel { display: none; }
 .tab-panel.active { display: block; }
@@ -694,8 +712,10 @@ th.sortable:hover { background: #eef0f4; }
     <span class="dash-period-range" id="dashPeriodRange"></span>
   </div>
 
-  <!-- Section 1: KPI 요약 -->
-  <div class="kpi-row-6" id="dashKpi"></div>
+  <!-- 1층: 북극성 (객관화 - 잘하나?) -->
+  <div id="dashNorthStar"></div>
+  <!-- 2층: 선행지표 (의사결정 - 낮아지면 액션) -->
+  <div class="kpi-row" id="dashLeading" style="grid-template-columns:repeat(4,1fr);"></div>
 
   <!-- Section 2: Pipeline / Conversion / Drop -->
   <div class="chart-row-3" id="dashRow2">
@@ -2280,20 +2300,9 @@ function renderDashboard() {
   var data = getDashboardData();
   var total = data.length;
 
-  var cntDemoReach = data.filter(function(r){ return isDemoReached(r.stage); }).length;
-  var cntWon = data.filter(function(r){ return isWon(r.stage); }).length;
-  // 진행중 = Done · Drop 제외 (New · Follow · Demo · Turn-key)
-  var cntActive = data.filter(function(r){ return !isWon(r.stage) && r.stage !== 'Drop'; }).length;
-  var cntDrop = data.filter(function(r){ return r.stage === 'Drop'; }).length;
-  var convRate = total > 0 ? (cntWon / total * 100) : 0;
-
-  document.getElementById('dashKpi').innerHTML =
-    kpiCard('총 상담건수', fmtNum(total), '선택 기간 인입') +
-    kpiCard('Demo 도달', fmtNum(cntDemoReach), 'Demo 이상 단계') +
-    kpiCard('결제 완료(Done)', fmtNum(cntWon), '전환 성공 · 최종지표') +
-    kpiCard('진행중', fmtNum(cntActive), 'New·Follow·Demo·Turn-key') +
-    kpiCard('Drop 건수', fmtNum(cntDrop), total > 0 ? fmtPct(cntDrop/total*100) + ' 이탈' : '') +
-    kpiCard('전환율', fmtPct(convRate), '결제완료 / 전체');
+  // 1층 북극성(전환율 vs 목표) + 2층 선행지표(데모전환·클로징전환·정체·미배정)
+  renderNorthStar(data, total);
+  renderLeading(data, total);
 
   // Section 2: Pipeline
   renderPipeline(data, total);
@@ -2342,6 +2351,60 @@ function kpiCard(label, value, sub) {
     '<div class="value">' + escHtml(value) + '</div>' +
     (sub ? '<div class="sub-row"><span>' + escHtml(sub) + '</span></div>' : '') +
   '</div>';
+}
+
+// ===== 1층 북극성 (전환율 vs 팀 목표) =====
+var TARGET_CONV_RATE = 10; // 팀 목표 전환율(%) — 추후 시트 연동 가능
+function renderNorthStar(data, total) {
+  var box = document.getElementById('dashNorthStar');
+  if (!box) return;
+  var won = data.filter(function(r){ return isWon(r.stage); }).length;
+  var conv = total > 0 ? (won / total * 100) : 0;
+  var hit = conv >= TARGET_CONV_RATE;
+  var diff = (conv - TARGET_CONV_RATE).toFixed(1);
+  box.innerHTML =
+    '<div class="northstar ' + (hit ? 'ns-good' : 'ns-bad') + '">' +
+      '<div><div class="ns-label">전환율 · 결제완료(Done) ÷ 전체 인입</div>' +
+        '<div class="ns-value">' + fmtPct(conv) + '</div></div>' +
+      '<div class="ns-right">' +
+        '<div class="ns-target">팀 목표 ' + TARGET_CONV_RATE + '%</div>' +
+        '<div class="ns-badge">' + (hit ? '🟢 목표 달성' : '🔴 목표 미달') + ' (' + (diff >= 0 ? '+' : '') + diff + '%p)</div>' +
+        '<div class="ns-sub">결제완료 ' + fmtNum(won) + ' / 인입 ' + fmtNum(total) + '</div>' +
+      '</div>' +
+    '</div>';
+}
+
+// ===== 2층 선행지표 (낮아지면 액션) =====
+function leadCard(label, valueHtml, action, cls) {
+  return '<div class="kpi-card lead-card ' + (cls || '') + '">' +
+    '<div class="label">' + escHtml(label) + '</div>' +
+    '<div class="value">' + valueHtml + '</div>' +
+    '<span class="lead-act">' + action + '</span>' +
+  '</div>';
+}
+function renderLeading(data, total) {
+  var box = document.getElementById('dashLeading');
+  if (!box) return;
+  var demoReach = data.filter(function(r){ return isDemoReached(r.stage); }).length;
+  var won = data.filter(function(r){ return isWon(r.stage); }).length;
+  var demoConv = total > 0 ? (demoReach / total * 100) : 0;
+  var closeConv = demoReach > 0 ? (won / demoReach * 100) : 0;
+  var today = fmtDate(new Date());
+  var stalled = data.filter(function(r){
+    var s = (r.stage || '').trim();
+    if (s !== 'Follow' && s !== 'Demo') return false;
+    if (!r.date) return false;
+    return daysBetween(r.date, today) >= 14;
+  }).length;
+  var unassigned = data.filter(function(r){ return !((r.caller || r.rep || '').trim()); }).length;
+
+  box.innerHTML =
+    leadCard('데모 전환율', fmtPct(demoConv), '상담→데모. 낮으면 리드 품질·초기 응대 점검', '') +
+    leadCard('클로징 전환율', fmtPct(closeConv), '데모→결제. 낮으면 가격·경쟁·클로징 코칭', '') +
+    leadCard('정체 14일+', '<span style="color:' + (stalled > 0 ? '#e53e3e' : '#0d9488') + '">' + fmtNum(stalled) + '</span>',
+      'Follow/Demo 14일+ 미진행(인입일 기준) → 즉시 팔로업', stalled > 0 ? 'lead-warn' : 'lead-ok') +
+    leadCard('미배정', '<span style="color:' + (unassigned > 0 ? '#e53e3e' : '#0d9488') + '">' + fmtNum(unassigned) + '</span>',
+      '담당자 없는 인입 → 배정 필요', unassigned > 0 ? 'lead-warn' : 'lead-ok');
 }
 
 // --- Pipeline ---
