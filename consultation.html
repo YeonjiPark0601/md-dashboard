@@ -260,6 +260,26 @@ th.sortable:hover { background: #eef0f4; }
 .assign-banner .btn-close { background: none; border: none; color: #9a3412; font-size: 18px; cursor: pointer; padding: 0 6px; opacity: 0.6; }
 .assign-banner .btn-close:hover { opacity: 1; }
 
+/* ===== DASHBOARD PERIOD TOGGLE ===== */
+.dash-period-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+.dash-period-label { font-size: 13px; font-weight: 600; color: #555; margin-right: 2px; }
+.dash-period-btn { padding: 6px 16px; border: 1px solid #d0d0d0; border-radius: 18px; background: #fff; color: #555; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+.dash-period-btn:hover { border-color: #1a73e8; color: #1a73e8; }
+.dash-period-btn.active { background: #1a1a2e; border-color: #1a1a2e; color: #fff; }
+.dash-period-range { font-size: 12px; color: #999; margin-left: 4px; }
+
+/* ===== DASHBOARD EXTRA (collapsible) ===== */
+.dash-extra { margin-bottom: 20px; }
+.dash-extra > summary { cursor: pointer; padding: 12px 18px; background: #fff; border: 1px solid #e0e0e0; border-radius: 12px; font-size: 13px; font-weight: 600; color: #888; box-shadow: 0 1px 3px rgba(0,0,0,0.08); list-style: none; user-select: none; }
+.dash-extra > summary::-webkit-details-marker { display: none; }
+.dash-extra > summary::before { content: '▸ '; color: #1a73e8; }
+.dash-extra[open] > summary::before { content: '▾ '; }
+.dash-extra > summary:hover { color: #1a73e8; border-color: #1a73e8; }
+
+/* 전환율 경고 강조 */
+.conv-warn { color: #e53e3e; font-weight: 700; }
+.conv-good { color: #0d9488; font-weight: 700; }
+
 /* ===== TAB PANELS ===== */
 .tab-panel { display: none; }
 .tab-panel.active { display: block; }
@@ -657,6 +677,15 @@ th.sortable:hover { background: #eef0f4; }
 <div id="tab-dash" class="tab-panel">
 <div class="container">
 
+  <!-- 대시보드 기간 토글 (등록탭 필터와 독립) -->
+  <div class="dash-period-bar" id="dashPeriodBar">
+    <span class="dash-period-label">기간</span>
+    <button type="button" class="dash-period-btn active" data-dp="all" onclick="setDashPeriod('all')">전체</button>
+    <button type="button" class="dash-period-btn" data-dp="year" onclick="setDashPeriod('year')">2026년</button>
+    <button type="button" class="dash-period-btn" data-dp="1m" onclick="setDashPeriod('1m')">최근 1개월</button>
+    <span class="dash-period-range" id="dashPeriodRange"></span>
+  </div>
+
   <!-- Section 1: KPI 요약 -->
   <div class="kpi-row-6" id="dashKpi"></div>
 
@@ -676,28 +705,27 @@ th.sortable:hover { background: #eef0f4; }
     </div>
   </div>
 
-  <!-- Section 2.5: 월별 인입 건수 -->
+  <!-- Section 3: 공급처별 상담·전환 종합 (전체 공급처) -->
+  <div class="table-card" id="sectionSupplier">
+    <h3>공급처별 상담·전환 종합 <span style="font-weight:400;color:#888;font-size:12px;">전체 공급처 · 인입건수 순</span></h3>
+    <div id="supplierContent"></div>
+  </div>
+
+  <!-- Section 4: 공급처별 월별 인입 추이 (선택) -->
+  <div class="table-card" id="sectionSupplierMonthly">
+    <h3 style="gap:10px;flex-wrap:wrap;">
+      <span>공급처별 월별 인입 추이 <span style="font-weight:400;color:#888;font-size:12px;">마케팅 효과 추적</span></span>
+      <select id="supplierMonthlySelect" onchange="renderSupplierMonthly()" style="font-weight:600;padding:5px 10px;border:1px solid #d0d0d0;border-radius:6px;font-size:13px;background:#fff;color:#333;">
+        <option value="__ALL__">전체 합계</option>
+      </select>
+    </h3>
+    <div id="supplierMonthlyContent"></div>
+  </div>
+
+  <!-- Section 5: 월별 인입 건수 -->
   <div class="table-card" id="sectionMonthly">
     <h3>월별 인입 건수</h3>
     <div id="monthlyContent"></div>
-  </div>
-
-  <!-- Section 3: 리드타임 분석 -->
-  <div class="table-card" id="sectionLeadtime">
-    <h3>리드타임 분석</h3>
-    <div id="leadtimeContent"></div>
-  </div>
-
-  <!-- Section 4: 코호트 뷰 -->
-  <div class="table-card" id="sectionCohort">
-    <h3>코호트 뷰 (최근 8주)</h3>
-    <div id="cohortContent"></div>
-  </div>
-
-  <!-- Section 5: 영업 활동 뷰 -->
-  <div class="table-card" id="sectionActivity">
-    <h3>영업 활동 뷰 (최근 8주)</h3>
-    <div id="activityContent"></div>
   </div>
 
   <!-- Section 6: 담당자별 실적 -->
@@ -706,11 +734,24 @@ th.sortable:hover { background: #eef0f4; }
     <div id="repContent"></div>
   </div>
 
-  <!-- Section 7: 제조사별 상담 건수 -->
-  <div class="table-card" id="sectionMfr">
-    <h3>제조사별 상담 건수 (Top 10)</h3>
-    <div id="mfrContent"></div>
+  <!-- Section 7: 리드타임 분석 -->
+  <div class="table-card" id="sectionLeadtime">
+    <h3>리드타임 분석</h3>
+    <div id="leadtimeContent"></div>
   </div>
+
+  <!-- 보조 지표 (접기) — 활용도 낮은 코호트/영업활동 뷰 -->
+  <details class="dash-extra" id="sectionExtra">
+    <summary>보조 지표 더보기 (코호트 · 영업 활동 뷰)</summary>
+    <div class="table-card" id="sectionCohort" style="margin-top:14px;">
+      <h3>코호트 뷰 (최근 8주)</h3>
+      <div id="cohortContent"></div>
+    </div>
+    <div class="table-card" id="sectionActivity">
+      <h3>영업 활동 뷰 (최근 8주)</h3>
+      <div id="activityContent"></div>
+    </div>
+  </details>
 
 </div>
 </div><!-- /tab-dash -->
@@ -2148,8 +2189,42 @@ function isDemoStage(s) { return s === 'Demo' || s === 'BO-2'; }
 function isTurnkeyStage(s) { return s === 'Turn-key' || s === 'WIN'; }
 function isDemoReached(s) { return isDemoStage(s) || isTurnkeyStage(s); }
 
-function renderDashboard() {
+// 대시보드 전용 기간 토글 (등록탭 필터와 독립)
+var dashPeriod = 'all';
+function getDashPeriodRange() {
+  var now = new Date();
+  var y = now.getFullYear(), m = now.getMonth(), d = now.getDate();
+  if (dashPeriod === 'year') return [new Date(2026,0,1), new Date(2026,11,31,23,59,59)];
+  if (dashPeriod === '1m') return [new Date(y,m,d-30), new Date(y,m,d,23,59,59)];
+  return null; // all
+}
+function getDashboardData() {
   var data = loadData();
+  var range = getDashPeriodRange();
+  if (!range) return data;
+  return data.filter(function(r){
+    if (!r.date) return false;
+    var dt = new Date(r.date);
+    return dt >= range[0] && dt <= range[1];
+  });
+}
+function setDashPeriod(p) {
+  dashPeriod = p;
+  document.querySelectorAll('#dashPeriodBar .dash-period-btn').forEach(function(b){
+    b.classList.toggle('active', b.getAttribute('data-dp') === p);
+  });
+  var rng = getDashPeriodRange();
+  var label = '';
+  if (rng) {
+    label = fmtDate(rng[0]) + ' ~ ' + fmtDate(rng[1]);
+  }
+  var el = document.getElementById('dashPeriodRange');
+  if (el) el.textContent = label;
+  renderDashboard();
+}
+
+function renderDashboard() {
+  var data = getDashboardData();
   var total = data.length;
 
   var cntDemoReach = data.filter(function(r){ return isDemoReached(r.stage); }).length;
@@ -2174,23 +2249,29 @@ function renderDashboard() {
   renderConversion(data, total);
   renderDropAnalysis(data, total);
 
-  // Section 2.5: Monthly
+  // Section 3: 공급처별 종합 + Section 4: 공급처 월별 추이
+  renderSupplierTable(data);
+  populateSupplierSelect(data);
+  renderSupplierMonthly();
+
+  // Section 5: Monthly
   renderMonthly(data);
-
-  // Section 3: Leadtime
-  renderLeadtime(data);
-
-  // Section 4: Cohort
-  renderCohort(data);
-
-  // Section 5: Activity
-  renderActivity(data);
 
   // Section 6: Rep
   renderRepTable(data);
 
-  // Section 7: Manufacturer
-  renderMfrChart(data);
+  // Section 7: Leadtime
+  renderLeadtime(data);
+
+  // 보조(접기): Cohort + Activity
+  renderCohort(data);
+  renderActivity(data);
+}
+
+// 공급처명 정규화 (빈값 → 미입력)
+function supplierKey(r) {
+  var s = (r.supplier || '').trim();
+  return s || '(미입력)';
 }
 
 function kpiCard(label, value, sub) {
@@ -2484,49 +2565,134 @@ function renderRepTable(data) {
   document.getElementById('repContent').innerHTML = html;
 }
 
-// --- Manufacturer Chart ---
-function renderMfrChart(data) {
-  var MFR_KEYWORDS = [
-    '인바디','영일엠','스트라텍','HCK','원효','굿플','리메드','필립스',
-    '한일','메가메디칼','이카이로','썸텍','알피니언','마인드레이','대요메디',
-    '아큐닉','코랩','옴니핏','카리스'
-  ];
+// --- 공급처별 종합 (전체 공급처: 인입 + 단계별 숫자 + 전환율) ---
+function supplierStageBucket(s) {
+  if (s === 'New' || !s) return 'New';
+  if (s === 'Follow' || s === 'BO-0' || s === 'BO-1') return 'Follow';
+  if (s === 'Demo' || s === 'BO-2') return 'Demo';
+  if (s === 'Turn-key' || s === 'WIN') return 'Turn-key';
+  if (s === 'Drop') return 'Drop';
+  if (s === 'Done') return 'Done';
+  return 'New';
+}
 
-  var counts = {};
-  MFR_KEYWORDS.forEach(function(k){ counts[k] = 0; });
-
+function renderSupplierTable(data) {
+  var map = {};
   data.forEach(function(r){
-    if (!r.product) return;
-    var p = r.product;
-    MFR_KEYWORDS.forEach(function(k){
-      if (p.indexOf(k) !== -1) counts[k]++;
-    });
+    var k = supplierKey(r);
+    if (!map[k]) map[k] = { total:0, New:0, Follow:0, Demo:0, 'Turn-key':0, Drop:0, Done:0 };
+    map[k].total++;
+    map[k][supplierStageBucket(r.stage)]++;
   });
-
-  var sorted = MFR_KEYWORDS
-    .filter(function(k){ return counts[k] > 0; })
-    .sort(function(a,b){ return counts[b] - counts[a]; })
-    .slice(0, 10);
-
-  if (sorted.length === 0) {
-    document.getElementById('mfrContent').innerHTML = '<div class="empty-state"><p>제조사 키워드가 포함된 데이터가 없습니다.</p></div>';
+  var keys = Object.keys(map).sort(function(a,b){ return map[b].total - map[a].total; });
+  if (keys.length === 0) {
+    document.getElementById('supplierContent').innerHTML = '<div class="empty-state"><p>데이터가 부족합니다.</p></div>';
     return;
   }
 
-  var mx = counts[sorted[0]] || 1;
-  var barColors = ['bar-blue','bar-teal','bar-indigo','bar-purple','bar-green','bar-amber','bar-orange','bar-pink','bar-red','bar-gray'];
+  var html = '<table class="mini-table"><thead><tr>' +
+    '<th>공급처</th>' +
+    '<th style="text-align:right;">인입</th>' +
+    '<th style="text-align:right;">New</th>' +
+    '<th style="text-align:right;">Follow</th>' +
+    '<th style="text-align:right;">Demo</th>' +
+    '<th style="text-align:right;">Turn-key</th>' +
+    '<th style="text-align:right;">Drop</th>' +
+    '<th style="text-align:right;">전환율</th>' +
+    '</tr></thead><tbody>';
+  keys.forEach(function(k){
+    var m = map[k];
+    var conv = m.total > 0 ? (m['Turn-key'] / m.total * 100) : 0;
+    // 의사결정 강조: 인입 5건 이상인데 전환 0 → 경고(빨강), 전환율 20%+ → 양호(초록)
+    var convCls = '';
+    if (m.total >= 5 && m['Turn-key'] === 0) convCls = 'conv-warn';
+    else if (conv >= 20) convCls = 'conv-good';
+    html += '<tr>' +
+      '<td style="font-weight:600;">' + escHtml(k) + '</td>' +
+      '<td style="text-align:right;font-weight:700;">' + m.total + '</td>' +
+      '<td style="text-align:right;color:#888;">' + (m.New||0) + '</td>' +
+      '<td style="text-align:right;color:#92400e;">' + (m.Follow||0) + '</td>' +
+      '<td style="text-align:right;color:#5b21b6;">' + (m.Demo||0) + '</td>' +
+      '<td style="text-align:right;color:#065f46;font-weight:700;">' + (m['Turn-key']||0) + '</td>' +
+      '<td style="text-align:right;color:#e53e3e;">' + (m.Drop||0) + '</td>' +
+      '<td style="text-align:right;" class="' + convCls + '">' + fmtPct(conv) + '</td>' +
+    '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('supplierContent').innerHTML = html;
+}
 
-  var html = '<div class="bar-chart">';
-  sorted.forEach(function(k, i){
-    var pct = data.length > 0 ? fmtPct(counts[k] / data.length * 100) : '0%';
-    html += '<div class="bar-row">' +
+// --- 공급처 선택 드롭다운 채우기 (건수순) ---
+function populateSupplierSelect(data) {
+  var sel = document.getElementById('supplierMonthlySelect');
+  if (!sel) return;
+  var prev = sel.value;
+  var map = {};
+  data.forEach(function(r){ var k = supplierKey(r); map[k] = (map[k]||0) + 1; });
+  var keys = Object.keys(map).sort(function(a,b){ return map[b] - map[a]; });
+  var opts = '<option value="__ALL__">전체 합계</option>';
+  keys.forEach(function(k){
+    opts += '<option value="' + escHtml(k) + '">' + escHtml(k) + ' (' + map[k] + ')</option>';
+  });
+  sel.innerHTML = opts;
+  // 이전 선택 유지 (없으면 전체)
+  if (prev && Array.prototype.some.call(sel.options, function(o){ return o.value === prev; })) {
+    sel.value = prev;
+  } else {
+    sel.value = '__ALL__';
+  }
+}
+
+// --- 선택 공급처의 월별 인입 추이 ---
+function renderSupplierMonthly() {
+  var sel = document.getElementById('supplierMonthlySelect');
+  var pick = sel ? sel.value : '__ALL__';
+  var data = getDashboardData();
+  if (pick !== '__ALL__') {
+    data = data.filter(function(r){ return supplierKey(r) === pick; });
+  }
+  var monthMap = {};
+  data.forEach(function(r){
+    if (!r.date) return;
+    var ym = String(r.date).slice(0,7);
+    if (!monthMap[ym]) monthMap[ym] = { total:0, win:0 };
+    monthMap[ym].total++;
+    if (isTurnkeyStage(r.stage)) monthMap[ym].win++;
+  });
+  var keys = Object.keys(monthMap).sort();
+  var box = document.getElementById('supplierMonthlyContent');
+  if (keys.length === 0) {
+    box.innerHTML = '<div class="empty-state"><p>해당 조건의 인입 데이터가 없습니다.</p></div>';
+    return;
+  }
+  var maxCnt = Math.max.apply(null, keys.map(function(k){ return monthMap[k].total; })) || 1;
+
+  var barHtml = '<div class="bar-chart" style="margin-bottom:16px;">';
+  keys.forEach(function(k){
+    var m = monthMap[k];
+    var w = (m.total / maxCnt * 100);
+    barHtml += '<div class="bar-row">' +
       '<div class="bar-label">' + escHtml(k) + '</div>' +
-      '<div class="bar-track"><div class="bar-fill ' + barColors[i % barColors.length] + '" style="width:' + Math.max(2, counts[k]/mx*100) + '%"><span>' + counts[k] + '</span></div></div>' +
-      '<div class="bar-count">' + pct + '</div>' +
+      '<div class="bar-track"><div class="bar-fill bar-teal" style="width:' + Math.max(2,w).toFixed(1) + '%;"><span>' + m.total + '건</span></div></div>' +
+      '<div class="bar-count">' + m.total + '</div>' +
     '</div>';
   });
-  html += '</div>';
-  document.getElementById('mfrContent').innerHTML = html;
+  barHtml += '</div>';
+
+  var tblHtml = '<table class="mini-table"><thead><tr><th>월</th><th style="text-align:right;">인입건</th><th style="text-align:right;">Turn-key</th><th style="text-align:right;">전환율</th></tr></thead><tbody>';
+  keys.forEach(function(k){
+    var m = monthMap[k];
+    var conv = m.total > 0 ? (m.win / m.total * 100) : 0;
+    tblHtml += '<tr>' +
+      '<td style="font-weight:600;">' + escHtml(k) + '</td>' +
+      '<td style="text-align:right;">' + m.total + '</td>' +
+      '<td style="text-align:right;color:#065f46;font-weight:700;">' + m.win + '</td>' +
+      '<td style="text-align:right;">' + fmtPct(conv) + '</td>' +
+    '</tr>';
+  });
+  tblHtml += '</tbody></table>';
+
+  box.innerHTML = barHtml + tblHtml;
 }
 
 // ============================================================
