@@ -2456,8 +2456,9 @@ function renderNorthStar(data, total) {
 }
 
 // ===== 2층 선행지표 (낮아지면 액션) =====
-function leadCard(label, valueHtml, action, cls) {
-  return '<div class="kpi-card lead-card ' + (cls || '') + '">' +
+function leadCard(label, valueHtml, action, cls, onclick) {
+  var attr = onclick ? ' onclick="' + onclick + '" style="cursor:pointer;" title="클릭 시 등록/조회 탭에서 필터"' : '';
+  return '<div class="kpi-card lead-card ' + (cls || '') + '"' + attr + '>' +
     '<div class="label">' + escHtml(label) + '</div>' +
     '<div class="value">' + valueHtml + '</div>' +
     '<span class="lead-act">' + action + '</span>' +
@@ -2484,9 +2485,33 @@ function renderLeading(data, total) {
     leadCard('데모 전환율', fmtPct(demoConv), '상담→데모. 낮으면 리드 품질·초기 응대 점검', '') +
     leadCard('클로징 전환율', fmtPct(closeConv), '데모→결제. 낮으면 가격·경쟁·클로징 코칭', '') +
     leadCard('정체 14일+', '<span style="color:' + (stalled > 0 ? '#e53e3e' : '#0d9488') + '">' + fmtNum(stalled) + '</span>',
-      'Follow/Demo 14일+ 미진행 · 26.5월~ 인입일 기준 → 즉시 팔로업', stalled > 0 ? 'lead-warn' : 'lead-ok') +
+      'Follow/Demo 14일+ 미진행 · 26.5월~ · 클릭 시 등록탭 필터', stalled > 0 ? 'lead-warn' : 'lead-ok', 'goToStaleFromDash()') +
     leadCard('미배정', '<span style="color:' + (unassigned > 0 ? '#e53e3e' : '#0d9488') + '">' + fmtNum(unassigned) + '</span>',
-      '담당자 없는 인입 · 26.5월~ → 배정 필요', unassigned > 0 ? 'lead-warn' : 'lead-ok');
+      '담당자 없는 인입 · 26.5월~ · 클릭 시 등록탭 필터', unassigned > 0 ? 'lead-warn' : 'lead-ok', 'goToUnassignedFromDash()');
+}
+
+// 대시보드 선행지표 카드 → 등록/조회 탭으로 이동 + 필터
+function goToStaleFromDash() {
+  switchTab('tab-reg');
+  if (typeof columnFilters !== 'undefined') {
+    delete columnFilters.caller; delete columnFilters.supplier; delete columnFilters.source;
+    columnFilters.stage = new Set(['Follow','Demo']);
+  }
+  if (typeof unassignedFilter !== 'undefined') unassignedFilter = false;
+  staleFilter = null;
+  currentPage = 1;
+  applyFilters();
+  if (typeof updateTopFilterLabels === 'function') updateTopFilterLabels();
+}
+function goToUnassignedFromDash() {
+  switchTab('tab-reg');
+  if (typeof columnFilters !== 'undefined') { delete columnFilters.stage; }
+  staleFilter = null;
+  unassignedFilter = true;
+  currentPage = 1;
+  applyFilters();
+  if (typeof updateTopFilterLabels === 'function') updateTopFilterLabels();
+  if (typeof updateUnassignedBanner === 'function') updateUnassignedBanner();
 }
 
 // --- Pipeline ---
@@ -2524,10 +2549,10 @@ function renderConversion(data, total) {
     { label: '전체 인입 → 결제완료', num: cWon, den: total }
   ];
 
-  var html = '<table class="mini-table"><thead><tr><th>구간</th><th style="text-align:right;">건수</th><th style="text-align:right;">전환율</th></tr></thead><tbody>';
+  var html = '<table class="mini-table" style="table-layout:auto;"><thead><tr><th style="white-space:nowrap;">구간</th><th style="text-align:right;">건수</th><th style="text-align:right;">전환율</th></tr></thead><tbody>';
   rows.forEach(function(r){
     var rate = r.den > 0 ? fmtPct(r.num / r.den * 100) : '-';
-    html += '<tr><td>' + r.label + '</td><td style="text-align:right;">' + r.num + ' / ' + r.den + '</td><td style="text-align:right;font-weight:700;">' + rate + '</td></tr>';
+    html += '<tr><td style="white-space:nowrap;">' + r.label + '</td><td style="text-align:right;">' + r.num + ' / ' + r.den + '</td><td style="text-align:right;font-weight:700;">' + rate + '</td></tr>';
   });
   html += '</tbody></table>';
   document.getElementById('chartConversion').innerHTML = html;
