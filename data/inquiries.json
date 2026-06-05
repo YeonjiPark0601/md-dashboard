@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-05T07:15:56.751Z",
+  "updated": "2026-06-05T08:31:15.150Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -40,7 +40,7 @@
       "clinic": "코비한의원",
       "region": "서울시 마포구",
       "caller": "이예림",
-      "supplier": "",
+      "supplier": "영일엠",
       "payDate": "",
       "payAmount": null,
       "inquiry": "사이즈길이가 180이 맞을까요",
