@@ -388,7 +388,7 @@ th.sortable:hover { background: #eef0f4; }
   #consultTable td:nth-of-type(12)::before { content: "Stage"; }
   #consultTable td:nth-of-type(13)::before { content: "문의내용"; }
   #consultTable td:nth-of-type(14)::before { content: "담당자메모"; }
-  #consultTable td:nth-of-type(15)::before { content: "데모일정"; }
+  #consultTable td:nth-of-type(15)::before { content: "데모 예정일"; }
   #consultTable td:nth-of-type(16)::before { content: "결제일자"; }
   #consultTable td:nth-of-type(17)::before { content: "상세"; }
   #consultTable td:nth-of-type(3) { font-size: 15px; font-weight: 700; padding-top: 2px; padding-bottom: 6px; border-bottom: 1px solid #f0f0f0; margin-bottom: 4px; }
@@ -594,7 +594,7 @@ th.sortable:hover { background: #eef0f4; }
             </select>
           </div>
           <div class="form-group" id="fg_demoDate" style="display:none">
-            <label>데모일정</label>
+            <label>데모 예정일</label>
             <input type="date" id="f_demoDate" name="demoDate">
           </div>
         </div>
@@ -647,7 +647,7 @@ th.sortable:hover { background: #eef0f4; }
             <th>Stage</th>
             <th>문의내용</th>
             <th>담당자메모</th>
-            <th>데모일정</th>
+            <th>데모 예정일</th>
             <th>결제일자</th>
             <th>상세</th>
           </tr>
@@ -680,8 +680,8 @@ th.sortable:hover { background: #eef0f4; }
   <!-- 대시보드 기간 토글 (등록탭 필터와 독립) -->
   <div class="dash-period-bar" id="dashPeriodBar">
     <span class="dash-period-label">기간</span>
-    <button type="button" class="dash-period-btn active" data-dp="all" onclick="setDashPeriod('all')">전체</button>
-    <button type="button" class="dash-period-btn" data-dp="year" onclick="setDashPeriod('year')">2026년</button>
+    <button type="button" class="dash-period-btn" data-dp="all" onclick="setDashPeriod('all')">전체</button>
+    <button type="button" class="dash-period-btn active" data-dp="year" onclick="setDashPeriod('year')">2026년</button>
     <button type="button" class="dash-period-btn" data-dp="1m" onclick="setDashPeriod('1m')">최근 1개월</button>
     <button type="button" class="dash-period-btn" data-dp="custom" onclick="setDashPeriod('custom')">직접 지정</button>
     <span id="dashCustomWrap" style="display:none;align-items:center;gap:4px;">
@@ -2096,7 +2096,7 @@ function openDetailModal(id) {
     ['견적가', (r.price || '') + (r.leadGrade ? '  · ' + r.leadGrade : '')],
     ['담당자', r.caller || ''],
     ['Stage', r.stage || ''],
-    ['데모일정', r.demoDate || ''],
+    ['데모 예정일', r.demoDate || ''],
     ['결제일자', r.payDate || '']
   ];
   var infoHtml = '<table style="width:100%;border-collapse:collapse;margin-bottom:16px;">' +
@@ -2203,7 +2203,7 @@ function isTurnkeyStage(s) { return s === 'Turn-key' || s === 'WIN'; }
 function isDemoReached(s) { return isDemoStage(s) || isTurnkeyStage(s); }
 
 // 대시보드 전용 기간 토글 (등록탭 필터와 독립)
-var dashPeriod = 'all';
+var dashPeriod = 'year';
 function getDashPeriodRange() {
   var now = new Date();
   var y = now.getFullYear(), m = now.getMonth(), d = now.getDate();
@@ -2255,7 +2255,19 @@ function setDashPeriod(p) {
   renderDashboard();
 }
 
+function syncDashPeriodUI() {
+  document.querySelectorAll('#dashPeriodBar .dash-period-btn').forEach(function(b){
+    b.classList.toggle('active', b.getAttribute('data-dp') === dashPeriod);
+  });
+  var customWrap = document.getElementById('dashCustomWrap');
+  if (customWrap) customWrap.style.display = (dashPeriod === 'custom') ? 'inline-flex' : 'none';
+  var rng = getDashPeriodRange();
+  var el = document.getElementById('dashPeriodRange');
+  if (el) el.textContent = rng ? (fmtDate(rng[0]) + ' ~ ' + fmtDate(rng[1])) : (dashPeriod === 'custom' ? '날짜를 선택하세요' : '');
+}
+
 function renderDashboard() {
+  syncDashPeriodUI();
   var data = getDashboardData();
   var total = data.length;
 
