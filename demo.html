@@ -45,13 +45,14 @@
 
   .container { padding: 14px 20px 80px; }
   .table-wrap { background: #fff; border: 1px solid #e6e8ee; border-radius: 10px; overflow: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: 12.5px; white-space: nowrap; }
-  th, td { border-bottom: 1px solid #eef0f4; padding: 6px 8px; text-align: left; vertical-align: middle; }
+  table { width: 100%; border-collapse: collapse; font-size: 11px; table-layout: fixed; }
+  th, td { border-bottom: 1px solid #eef0f4; padding: 3px 4px; text-align: left; vertical-align: middle; overflow-wrap: anywhere; word-break: break-word; }
   th { background: #f7f9fc; color: #5a6473; font-weight: 600; position: sticky; top: 0; z-index: 1; }
   tbody tr:hover { background: #fafbfd; }
-  td input, td select { width: 100%; min-width: 70px; border: 1px solid transparent; background: transparent; padding: 4px 5px; font-size: 12.5px; border-radius: 5px; font-family: inherit; }
-  td input:hover, td select:hover { border-color: #e0e3ea; }
-  td input:focus, td select:focus { border-color: #2b6cb0; background: #fff; outline: none; }
+  td input, td select, td textarea { width: 100%; min-width: 0; border: 1px solid transparent; background: transparent; padding: 2px 3px; font-size: 11px; border-radius: 5px; font-family: inherit; color: inherit; }
+  td textarea { resize: none; min-height: 1.4em; line-height: 1.3; white-space: pre-wrap; overflow: hidden; display: block; }
+  td input:hover, td select:hover, td textarea:hover { border-color: #e0e3ea; }
+  td input:focus, td select:focus, td textarea:focus { border-color: #2b6cb0; background: #fff; outline: none; }
   td.col-id { color: #aab; font-size: 10.5px; }
   .region-tag { font-size: 11px; padding: 2px 7px; border-radius: 999px; background: #eef2f7; color: #555; }
   .region-수도권 { background: #e8f0fe; color: #1a73e8; }
@@ -114,6 +115,13 @@
 <div class="container">
   <div class="table-wrap">
     <table>
+      <colgroup>
+        <col style="width:24px"><col style="width:66px"><col style="width:52px"><col style="width:86px">
+        <col style="width:94px"><col style="width:84px"><col style="width:40px"><col style="width:68px">
+        <col style="width:140px"><col style="width:70px"><col style="width:108px"><col style="width:72px">
+        <col style="width:52px"><col style="width:108px"><col style="width:50px"><col style="width:50px">
+        <col style="width:50px"><col style="width:54px"><col style="width:110px"><col style="width:110px">
+      </colgroup>
       <thead>
         <tr>
           <th><input type="checkbox" id="chkAll" onclick="toggleAll(this)"></th>
@@ -343,6 +351,7 @@ function render() {
   tb.innerHTML = list.map(rowHtml).join('');
   renderStats();
   updateDelBtn();
+  autoSizeTextareas();
 }
 
 function rowHtml(d) {
@@ -350,28 +359,37 @@ function rowHtml(d) {
   const sel = selected.has(d.id);
   const T = (f) => `oninput="edit('${d.id}','${f}',this.value)"`;
   const S = (f) => `onchange="edit('${d.id}','${f}',this.value)"`;
+  const IN = (f, extra='') => `<input value="${esc(d[f])}" ${T(f)} ${extra}>`;
+  const TA = (f) => `<textarea ${T(f)} rows="1">${esc(d[f])}</textarea>`;
   return `<tr data-id="${d.id}" class="${sel?'sel':''}">
     <td><input type="checkbox" ${sel?'checked':''} onclick="toggleSel('${d.id}',this)"></td>
-    <td><input value="${esc(d.requestDate)}" ${T('requestDate')} placeholder="YYYY-MM-DD" style="min-width:110px"></td>
-    <td><input value="${esc(d.director)}" ${T('director')} style="min-width:90px"></td>
-    <td><input value="${esc(d.phone)}" ${T('phone')} style="min-width:120px"></td>
-    <td><input value="${esc(d.hospital)}" ${T('hospital')} style="min-width:160px"></td>
-    <td><input value="${esc(d.address)}" ${T('address')} style="min-width:160px"></td>
+    <td>${IN('requestDate')}</td>
+    <td>${IN('director')}</td>
+    <td>${IN('phone')}</td>
+    <td>${TA('hospital')}</td>
+    <td>${TA('address')}</td>
     <td><span class="region-tag region-${region}">${region}</span></td>
-    <td><input value="${esc(d.supplier)}" ${T('supplier')} style="min-width:110px"></td>
-    <td><input value="${esc(d.product)}" ${T('product')} style="min-width:300px"></td>
-    <td><input value="${esc(d.desiredDate)}" ${T('desiredDate')} placeholder="YYYY-MM-DD" style="min-width:110px"></td>
-    <td><input type="date" value="${esc(d.demoDate)}" ${S('demoDate')} style="min-width:140px"></td>
-    <td><input type="time" value="${esc(d.demoTime)}" ${S('demoTime')} style="min-width:100px"></td>
+    <td>${TA('supplier')}</td>
+    <td>${TA('product')}</td>
+    <td>${IN('desiredDate')}</td>
+    <td><input type="date" value="${esc(d.demoDate)}" ${S('demoDate')}></td>
+    <td><input type="time" value="${esc(d.demoTime)}" ${S('demoTime')}></td>
     <td><select ${S('status')}>${optionsHtml(STATUS_OPTS, d.status||'대기')}</select></td>
-    <td><input type="date" value="${esc(d.collectionDate)}" ${S('collectionDate')} style="min-width:140px"></td>
-    <td><input value="${esc(d.manager)}" ${T('manager')} style="min-width:80px"></td>
-    <td><input value="${esc(d.fuManager)}" ${T('fuManager')} style="min-width:80px"></td>
+    <td><input type="date" value="${esc(d.collectionDate)}" ${S('collectionDate')}></td>
+    <td>${IN('manager')}</td>
+    <td>${IN('fuManager')}</td>
     <td><select ${S('fuStatus')}>${optionsHtml(FU_OPTS, d.fuStatus)}</select></td>
     <td><select ${S('stage')}>${optionsHtml(STAGE_OPTS, d.stage||'Follow')}</select></td>
-    <td><input value="${esc(d.notes)}" ${T('notes')} style="min-width:240px"></td>
-    <td><input value="${esc(d.remarks)}" ${T('remarks')} style="min-width:240px"></td>
+    <td>${TA('notes')}</td>
+    <td>${TA('remarks')}</td>
   </tr>`;
+}
+
+// textarea 높이를 내용에 맞춰 자동 조정 (가로 스크롤 없이 줄바꿈 표시)
+function autoSizeTextareas() {
+  document.querySelectorAll('#tbody textarea').forEach(ta => {
+    ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px';
+  });
 }
 
 function renderStats() {
@@ -522,6 +540,10 @@ document.addEventListener('input', e => {
     const rows = parsePasteLines(e.target.value);
     document.getElementById('pastePreview').textContent =
       rows.length ? `미리보기: ${rows.length}건 — 예) ${rows[0].director||'(원장명 없음)'} / ${rows[0].product||'(제품 없음)'}` : '';
+  }
+  // 표 안 textarea 편집 시 높이 자동 조정
+  if (e.target && e.target.tagName === 'TEXTAREA' && e.target.closest('#tbody')) {
+    e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px';
   }
 });
 function savePaste() {
