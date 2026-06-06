@@ -1,9 +1,30 @@
 {
-  "updated": "2026-06-06T00:05:43.600Z",
+  "updated": "2026-06-06T01:40:45.285Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "일반",
+      "timestamp": "2026. 06. 06 오전 10:35:53",
+      "date": "2026-06-06",
+      "slackTs": "1780709753.679129",
+      "name": "정희진",
+      "cid": "5da03f2a0dabe405b156e5e8",
+      "phone": "010-5687-1130",
+      "product": "[바이오시그널랩] 정량뇌파진단기 QEEG-32FX AI (8채널/16채널)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "6a0d376f7dc34bd6d0797bea",
+      "clinic": "맑음한의원",
+      "region": "서울시 강동구",
+      "caller": "",
+      "supplier": "바이오시그널랩",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격, 결과지, 결과지해석방법",
+      "leadGrade": "고가망"
+    },
     {
       "source": "일반",
       "timestamp": "2026. 06. 05 오전 11:25:36",
