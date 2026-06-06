@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-05T14:01:04.163Z",
+  "updated": "2026-06-06T00:05:43.600Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -776,8 +776,8 @@
       "region": "강원도 강릉시",
       "caller": "주봉현",
       "supplier": "메디코아",
-      "payDate": "",
-      "payAmount": null,
+      "payDate": "2026-06-05",
+      "payAmount": 1650000,
       "inquiry": "가격",
       "leadGrade": "고가망"
     },
@@ -1763,8 +1763,8 @@
       "region": "강원도 원주시",
       "caller": "주봉현",
       "supplier": "에이치씨케이",
-      "payDate": "",
-      "payAmount": null,
+      "payDate": "2026-06-05",
+      "payAmount": 3158400,
       "inquiry": "800",
       "leadGrade": "가망"
     },
