@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-06T01:40:45.285Z",
+  "updated": "2026-06-06T05:20:41.801Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -23,6 +23,27 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "가격, 결과지, 결과지해석방법",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 06. 06 오후 02:19:43",
+      "date": "2026-06-06",
+      "slackTs": "1780723183.033079",
+      "name": "홍석민",
+      "cid": "5df43df64267e105dffef8ab",
+      "phone": "010-9484-6182",
+      "product": "굿플 ICT GP-512D",
+      "qty": 2,
+      "price": "N/A",
+      "productId": "5ea7cee61a3ca36b96784cfe",
+      "clinic": "친절한홍한의원",
+      "region": "서울시 중랑구",
+      "caller": "",
+      "supplier": "굿플",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격",
       "leadGrade": "고가망"
     },
     {
