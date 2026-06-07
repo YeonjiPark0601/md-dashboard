@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-07T07:45:44.194Z",
+  "updated": "2026-06-07T10:15:41.996Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -44,6 +44,27 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "작년 12월에 한번 문의드렿는데 비용 동일한지 ,as나 출고기강 궁금합니다",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 06. 07 오후 07:13:38",
+      "date": "2026-06-07",
+      "slackTs": "1780827218.674479",
+      "name": "김희원",
+      "cid": "62fc7c710b5b9e002b2e038c",
+      "phone": "010-5546-3126",
+      "product": "[DSE] CO2 레이저 (DS-40U B)",
+      "qty": 1,
+      "price": "250만",
+      "productId": "67bc1cd05a4f59cacd7839f8",
+      "clinic": "바올한의원",
+      "region": "대구시 북구",
+      "caller": "",
+      "supplier": "DSE",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "엔디야그 가격도 궁금합니다",
       "leadGrade": "고가망"
     },
     {
@@ -1325,7 +1346,7 @@
       "payDate": "2026-06-02",
       "payAmount": 2510000.01,
       "inquiry": "",
-      "leadGrade": ""
+      "leadGrade": "고가망"
     },
     {
       "source": "일반",
@@ -7667,7 +7688,7 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "",
-      "leadGrade": ""
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
