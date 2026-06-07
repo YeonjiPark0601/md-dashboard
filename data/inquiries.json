@@ -1,9 +1,30 @@
 {
-  "updated": "2026-06-06T05:20:41.801Z",
+  "updated": "2026-06-07T00:25:42.564Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 06. 07 오전 09:23:56",
+      "date": "2026-06-07",
+      "slackTs": "1780791836.076909",
+      "name": "박정민",
+      "cid": "5e6c2747bfe42609447836df",
+      "phone": "010-4035-3841",
+      "product": "[제우스웨이브 ] 체외충격파 (ESWT Piezo-type)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "6914257d29e7c5ac4ac44c05",
+      "clinic": "365백세부부한의원",
+      "region": "경기도 부천시",
+      "caller": "",
+      "supplier": "다이나믹솔루션",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "작년 12월에 한번 문의드렿는데 비용 동일한지 ,as나 출고기강 궁금합니다",
+      "leadGrade": "고가망"
+    },
     {
       "source": "일반",
       "timestamp": "2026. 06. 06 오전 10:35:53",
