@@ -742,7 +742,12 @@ th.sortable:hover { background: #eef0f4; }
 
   <!-- Section 2.5: 공급처별 월별 인입 누적 그래프 (범례 클릭 토글) -->
   <div class="chart-card" id="sectionSupplierStack">
-    <h3>공급처별 월별 인입 추이 <span style="font-weight:400;color:#888;font-size:12px;">누적 막대 · 범례 클릭 시 해당 공급처 켜고 끄기 · 상위 12개 + 기타</span></h3>
+    <h3>공급처별 월별 인입 추이 <span style="font-weight:400;color:#888;font-size:12px;">누적 막대 · 범례 클릭 시 해당 공급처 켜고 끄기 · 상위 12개 + 기타</span>
+      <span style="float:right;font-weight:400;">
+        <button type="button" id="supStackAll" style="font-size:11px;padding:3px 10px;border:1px solid #ccc;border-radius:4px;background:#fff;cursor:pointer;">전체 선택</button>
+        <button type="button" id="supStackNone" style="font-size:11px;padding:3px 10px;border:1px solid #ccc;border-radius:4px;background:#fff;cursor:pointer;">전체 해제</button>
+      </span>
+    </h3>
     <div style="height:340px;position:relative;"><canvas id="supplierStackChart"></canvas></div>
   </div>
 
@@ -2872,6 +2877,17 @@ function renderSupplierStack(data) {
       scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true, ticks: { precision: 0 } } }
     }
   });
+  var btnAll = document.getElementById('supStackAll');
+  var btnNone = document.getElementById('supStackNone');
+  if (btnAll) btnAll.onclick = function(){ setSupStackVisibility(true); };
+  if (btnNone) btnNone.onclick = function(){ setSupStackVisibility(false); };
+}
+function setSupStackVisibility(visible) {
+  if (!supplierStackChart) return;
+  supplierStackChart.data.datasets.forEach(function(_, i){
+    supplierStackChart.setDatasetVisibility(i, visible);
+  });
+  supplierStackChart.update();
 }
 
 // --- 공급처별 종합 (전체 공급처: 인입 + 단계별 숫자 + 전환율) ---
