@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-08T02:40:47.912Z",
+  "updated": "2026-06-08T02:45:49.057Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -81,7 +81,7 @@
       "productId": "67bc1cd05a4f59cacd7839f8",
       "clinic": "바올한의원",
       "region": "대구시 북구",
-      "caller": "",
+      "caller": "김진석",
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
