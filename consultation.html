@@ -1041,14 +1041,96 @@ function fetchSheetRecords() {
     .catch(function(e){ console.warn('시트 조회 실패:', e); return []; });
 }
 
+// ===== 메모 동기화 안전망 (sync 실패/race로 인한 메모 소실 방지) =====
+// 원인: 신규 인입 행이 시트에 append 되기 전 메모 저장 → update가 매칭 행이 없어 미저장 →
+//       로컬에만 남았다가 mergeSheetIntoLocal이 빈 시트값으로 덮어써 영구 소실.
+// 대책: 저장 직후 pending 큐 적재 → 시트에 동일 메모가 확인될 때까지 재시도 + 로컬 보호 + 미반영 경고.
+var PENDING_MEMO_KEY = 'md_consult_pending_memo';
+function loadPendingMemos() {
+  try { return JSON.parse(localStorage.getItem(PENDING_MEMO_KEY) || '{}'); } catch (e) { return {}; }
+}
+function savePendingMemos(obj) {
+  try { localStorage.setItem(PENDING_MEMO_KEY, JSON.stringify(obj)); } catch (e) {}
+}
+// id의 note를 "시트에 반영 확인될 때까지" 추적 대상으로 등록
+function enqueuePendingMemo(id, note) {
+  if (!id) return;
+  var p = loadPendingMemos();
+  p[id] = { note: note || '', ts: Date.now(), tries: 0 };
+  savePendingMemos(p);
+  updatePendingMemoBanner();
+}
+function findRecordAnywhereById(id) {
+  var r = loadLocalOnly().find(function(x){ return x.id === id; });
+  if (r) return r;
+  return EXTERNAL_DATA.find(function(x){ return x.id === id; }) || null;
+}
+// pending 메모를 시트로 재전송 (행이 늦게 생겨도 결국 반영됨)
+function resendPendingMemos() {
+  var p = loadPendingMemos();
+  var ids = Object.keys(p);
+  if (!ids.length) return;
+  ids.forEach(function(id){
+    var rec = findRecordAnywhereById(id);
+    if (!rec) return;
+    var send = Object.assign({}, rec, { note: p[id].note });
+    syncUpdate(send).catch(function(){});
+    p[id].tries = (p[id].tries || 0) + 1;
+  });
+  savePendingMemos(p);
+}
+// 시트를 다시 읽어 pending이 실제로 반영됐는지 확인 + 미반영분 재전송
+function reconcilePendingMemos() {
+  if (!Object.keys(loadPendingMemos()).length) return;
+  resendPendingMemos();
+  fetchSheetRecords().then(function(records){
+    if (records && records.length) { mergeSheetIntoLocal(records); renderTable(); }
+  }).catch(function(){});
+}
+// 시트에 아직 저장 안 된 메모가 있으면 눈에 띄게 경고 (조용한 소실 방지)
+function updatePendingMemoBanner() {
+  var p = loadPendingMemos();
+  var n = Object.keys(p).length;
+  var el = document.getElementById('pendingMemoBanner');
+  if (!n) { if (el) el.remove(); return; }
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'pendingMemoBanner';
+    el.style.cssText = 'position:fixed;right:16px;bottom:16px;z-index:9999;background:#b91c1c;color:#fff;padding:10px 14px;border-radius:8px;font-size:13px;box-shadow:0 4px 14px rgba(0,0,0,.25);cursor:pointer;max-width:300px;line-height:1.4;';
+    el.title = '클릭 시 즉시 재시도';
+    el.onclick = function(){ reconcilePendingMemos(); showToast('메모 시트 반영 재시도 중…', 'success'); };
+    document.body.appendChild(el);
+  }
+  el.innerHTML = '⚠️ 시트에 저장 대기 중인 메모 <b>' + n + '건</b><br><span style="font-size:11px;opacity:.85;">자동 재시도 중 · 이 PC를 닫지 마세요 · 클릭=즉시 재시도</span>';
+}
+
 // 시트에서 가져온 데이터를 localStorage와 병합 (sheet 우선)
+// 단, 아직 시트에 반영 안 된 pending 메모는 보호: 빈 시트값이 내 메모를 덮어쓰지 못하게 한다.
 function mergeSheetIntoLocal(sheetRecords) {
   var local = loadLocalOnly();
+  var pending = loadPendingMemos();
+  var pendingIds = Object.keys(pending);
+  if (pendingIds.length) {
+    var sheetById = {};
+    sheetRecords.forEach(function(r){ sheetById[r.id] = r; });
+    pendingIds.forEach(function(id){
+      var sr = sheetById[id];
+      if (!sr) return;                                   // 행이 아직 시트에 없음 → 아래 localKept로 보존
+      if ((sr.note || '') === pending[id].note) {
+        delete pending[id];                              // 시트에 정상 반영 확인됨
+      } else if (!(sr.note || '').trim()) {
+        sr.note = pending[id].note;                      // 시트가 비어있음(미반영) → 내 메모 유지, 재시도 지속
+      } else {
+        delete pending[id];                              // 시트에 다른 내용 있음(타 PC 반영 등) → 양보(클로버 방지)
+      }
+    });
+    savePendingMemos(pending);
+  }
   var sheetIds = new Set(sheetRecords.map(function(r){ return r.id; }));
-  // 시트에 있는 id는 시트 데이터로 덮어씀
   var localKept = local.filter(function(r){ return !sheetIds.has(r.id); });
   var merged = localKept.concat(sheetRecords);
   saveData(merged);
+  updatePendingMemoBanner();
 }
 
 // 폼으로 만든 c_* 행 중 시트에 없는 것(이전 sync 실패 잔재)을 자동 재동기화
@@ -3512,9 +3594,11 @@ document.addEventListener('change', function(e){
       saveExtNoteOverrides(overrides);
       if (idx !== -1) EXTERNAL_DATA[idx].note = serialized;
       payload[FIELD_TO_COL.note] = serialized;
+      enqueuePendingMemo(id, serialized);
     }
     callWebhook('update', { data: payload })
-      .catch(function(){ showToast('시트 동기화 실패 (로컬만 반영됨)', 'error'); });
+      .then(function(){ if (doneMemo) setTimeout(reconcilePendingMemos, 1500); })
+      .catch(function(){ showToast('시트 동기화 실패 (자동 재시도)', 'error'); if (doneMemo) setTimeout(reconcilePendingMemos, 1500); });
   } else {
     var d = loadLocalOnly();
     var idx = d.findIndex(function(r){ return r.id === id; });
@@ -3526,7 +3610,10 @@ document.addEventListener('change', function(e){
         d[idx].note = serializeMemos(memos2);
       }
       saveData(d);
-      syncUpdate(d[idx]).catch(function(){ showToast('시트 동기화 실패 (로컬만 반영됨)', 'error'); });
+      if (doneMemo) enqueuePendingMemo(d[idx].id, d[idx].note);
+      syncUpdate(d[idx])
+        .then(function(){ if (doneMemo) setTimeout(reconcilePendingMemos, 1500); })
+        .catch(function(){ showToast('시트 동기화 실패 (자동 재시도)', 'error'); if (doneMemo) setTimeout(reconcilePendingMemos, 1500); });
     }
   }
   if (doneMemo) showToast('Done 처리 완료 · 메모에 기록됨', 'success');
@@ -3651,7 +3738,11 @@ function saveMemo() {
     saveData(data);
     rec = data[idx];
   }
-  syncUpdate(rec).catch(function(){ showToast('시트 동기화 실패 (로컬만 반영됨)', 'error'); });
+  // 안전망: 시트 반영 확인될 때까지 pending 추적 + 재시도 (신규행 race/네트워크 실패로 인한 소실 방지)
+  enqueuePendingMemo(rec.id, rec.note);
+  syncUpdate(rec)
+    .then(function(){ setTimeout(reconcilePendingMemos, 1500); })
+    .catch(function(){ showToast('메모 저장됨 · 시트 반영 대기(자동 재시도)', 'error'); setTimeout(reconcilePendingMemos, 1500); });
   ta.value = '';
   renderMemoModalList(memos);
   renderTable();
@@ -3816,6 +3907,9 @@ function init() {
   updateAssignBanner();
   updateStaleBanner();
   updateUnassignedBanner();
+  // 메모 안전망: 이전 세션에서 시트 미반영된 메모가 있으면 경고 표시 + 주기적 자동 재시도
+  updatePendingMemoBanner();
+  if (!window.__pendingMemoTimer) window.__pendingMemoTimer = setInterval(reconcilePendingMemos, 60000);
   // 시트가 단일 소스 (n8n이 slack + 수동입력 모두 시트에 동기화)
   // 단, 원본 문의사항은 시트에 없으므로 data/inquiries.json에서 병렬로 받아와서 주입
   Promise.all([
@@ -3825,7 +3919,7 @@ function init() {
       .catch(function(){ return null; })
   ]).then(function(results){
     var records = results[0], inqData = results[1];
-    if (records && records.length) { mergeSheetIntoLocal(records); retryOrphanSyncs(records); }
+    if (records && records.length) { mergeSheetIntoLocal(records); retryOrphanSyncs(records); resendPendingMemos(); }
     if (inqData && inqData.items) {
       inqData.items.forEach(function(it){
         var key = (it.cid || '') + '|' + (it.productId || '') + '|' + (it.timestamp || '');
