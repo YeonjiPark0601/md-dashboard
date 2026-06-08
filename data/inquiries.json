@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-08T02:35:45.178Z",
+  "updated": "2026-06-08T02:40:47.912Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -249,7 +249,7 @@
       "productId": "687efbcf3d86dc978b0ead48",
       "clinic": "",
       "region": "광주시 서구",
-      "caller": "",
+      "caller": "김진석",
       "supplier": "팀엘리시움",
       "payDate": "",
       "payAmount": null,
