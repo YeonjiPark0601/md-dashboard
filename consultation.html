@@ -2470,9 +2470,9 @@ function buildInsightFacts(data, total) {
     .map(function(k){ return { 채널:k, 상담:src[k].t, 결제완료:src[k].w, 전환율: rnd(src[k].w/src[k].t*100) }; });
   var periodKo = ({ year:'2026년', '1m':'최근 1개월', all:'전체 기간', custom:'직접 지정' })[dashPeriod] || String(dashPeriod);
   return {
-    기간: periodKo, 총상담건수: total, 결제완료: won, 전환율: total>0?rnd(won/total*100):0, 목표전환율: TARGET_CONV_RATE,
+    기간: periodKo, 총상담: total, 결제완료: won, 전환율: total>0?rnd(won/total*100):0, 목표전환율: TARGET_CONV_RATE,
     데모전환율: total>0?rnd(demoReach/total*100):0, 클로징전환율: demoReach>0?rnd(won/demoReach*100):0,
-    정체14일이상: stalled, 미배정: unassigned, 공급처별: 공급처별, 채널별: 채널별
+    정체: stalled, 미배정: unassigned, 공급처별: 공급처별, 채널별: 채널별
   };
 }
 function formatBrief(t) { return escHtml(t).replace(/\n/g, '<br>'); }
