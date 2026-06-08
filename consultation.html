@@ -744,6 +744,7 @@ th.sortable:hover { background: #eef0f4; }
   <div class="chart-card" id="sectionSupplierStack">
     <h3>공급처별 월별 인입 추이 <span style="font-weight:400;color:#888;font-size:12px;">누적 막대 · 범례 클릭 시 해당 공급처 켜고 끄기 · 상위 12개 + 기타</span>
       <span style="float:right;font-weight:400;">
+        <input type="text" id="supStackSearch" placeholder="공급처 검색 (기타 포함)" style="font-size:11px;padding:3px 8px;border:1px solid #ccc;border-radius:4px;width:160px;">
         <button type="button" id="supStackAll" style="font-size:11px;padding:3px 10px;border:1px solid #ccc;border-radius:4px;background:#fff;cursor:pointer;">전체 선택</button>
         <button type="button" id="supStackNone" style="font-size:11px;padding:3px 10px;border:1px solid #ccc;border-radius:4px;background:#fff;cursor:pointer;">전체 해제</button>
       </span>
@@ -2839,6 +2840,7 @@ function renderSourceTable(data) {
 // --- 공급처별 월별 인입 누적 그래프 (Chart.js stacked bar, 범례 클릭 시 공급처 토글) ---
 var supplierStackChart = null;
 var SUP_STACK_PALETTE = ['#1a73e8','#0d9488','#f59e0b','#8b5cf6','#ef4444','#10b981','#6366f1','#ec4899','#f97316','#14b8a6','#3b82f6','#a855f7'];
+var supStackState = null; // { months, sups, supTotals, cube }
 function renderSupplierStack(data) {
   var canvas = document.getElementById('supplierStackChart');
   if (!canvas || typeof Chart === 'undefined') return;
@@ -2853,19 +2855,45 @@ function renderSupplierStack(data) {
   });
   var months = Object.keys(monthsSet).sort();
   var sups = Object.keys(supTotals).sort(function(a,b){ return supTotals[b] - supTotals[a]; });
+  supStackState = { months: months, sups: sups, supTotals: supTotals, cube: cube };
+  buildSupStackChart();
+  var btnAll = document.getElementById('supStackAll');
+  var btnNone = document.getElementById('supStackNone');
+  if (btnAll) btnAll.onclick = function(){ setSupStackVisibility(true); };
+  if (btnNone) btnNone.onclick = function(){ setSupStackVisibility(false); };
+  var search = document.getElementById('supStackSearch');
+  if (search && !search._wired) { search._wired = true; search.oninput = buildSupStackChart; }
+}
+function buildSupStackChart() {
+  var canvas = document.getElementById('supplierStackChart');
+  if (!canvas || !supStackState) return;
+  var months = supStackState.months, cube = supStackState.cube;
+  var supTotals = supStackState.supTotals, sups = supStackState.sups;
   if (supplierStackChart) { supplierStackChart.destroy(); supplierStackChart = null; }
   if (months.length === 0) return;
 
-  var TOPN = 12;
-  var top = sups.slice(0, TOPN), rest = sups.slice(TOPN);
-  var datasets = top.map(function(s, i){
-    return { label: s, data: months.map(function(m){ return (cube[s] && cube[s][m]) || 0; }),
-      backgroundColor: SUP_STACK_PALETTE[i % SUP_STACK_PALETTE.length] };
-  });
-  if (rest.length) {
-    datasets.push({ label: '기타(' + rest.length + ')',
-      data: months.map(function(m){ var s = 0; rest.forEach(function(x){ s += (cube[x] && cube[x][m]) || 0; }); return s; }),
-      backgroundColor: '#cbd5e1' });
+  var q = (document.getElementById('supStackSearch') || {}).value || '';
+  q = q.trim().toLowerCase();
+  var datasets;
+  if (q) {
+    // 검색: 매칭되는 공급처를 인입건수 순으로 모두 개별 막대로 (기타에 묶인 것 포함)
+    var matched = sups.filter(function(s){ return s.toLowerCase().indexOf(q) !== -1; });
+    datasets = matched.map(function(s, i){
+      return { label: s, data: months.map(function(m){ return (cube[s] && cube[s][m]) || 0; }),
+        backgroundColor: SUP_STACK_PALETTE[i % SUP_STACK_PALETTE.length] };
+    });
+  } else {
+    var TOPN = 12;
+    var top = sups.slice(0, TOPN), rest = sups.slice(TOPN);
+    datasets = top.map(function(s, i){
+      return { label: s, data: months.map(function(m){ return (cube[s] && cube[s][m]) || 0; }),
+        backgroundColor: SUP_STACK_PALETTE[i % SUP_STACK_PALETTE.length] };
+    });
+    if (rest.length) {
+      datasets.push({ label: '기타(' + rest.length + ')',
+        data: months.map(function(m){ var s = 0; rest.forEach(function(x){ s += (cube[x] && cube[x][m]) || 0; }); return s; }),
+        backgroundColor: '#cbd5e1' });
+    }
   }
   supplierStackChart = new Chart(canvas.getContext('2d'), {
     type: 'bar',
@@ -2877,10 +2905,6 @@ function renderSupplierStack(data) {
       scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true, ticks: { precision: 0 } } }
     }
   });
-  var btnAll = document.getElementById('supStackAll');
-  var btnNone = document.getElementById('supStackNone');
-  if (btnAll) btnAll.onclick = function(){ setSupStackVisibility(true); };
-  if (btnNone) btnNone.onclick = function(){ setSupStackVisibility(false); };
 }
 function setSupStackVisibility(visible) {
   if (!supplierStackChart) return;
