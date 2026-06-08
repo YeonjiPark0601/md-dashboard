@@ -2475,24 +2475,55 @@ function buildInsightFacts(data, total) {
     정체14일이상: stalled, 미배정: unassigned, 공급처별: 공급처별, 채널별: 채널별
   };
 }
+function formatBrief(t) { return escHtml(t).replace(/\n/g, '<br>'); }
+// 간단 CSV 파서 (gviz: 따옴표 필드, 멀티라인 셀 지원)
+function parseBriefCsv(csv) {
+  var rows = [], field = '', row = [], inQ = false;
+  for (var i = 0; i < csv.length; i++) {
+    var ch = csv[i];
+    if (inQ) {
+      if (ch === '"') { if (csv[i+1] === '"') { field += '"'; i++; } else inQ = false; }
+      else field += ch;
+    } else {
+      if (ch === '"') inQ = true;
+      else if (ch === ',') { row.push(field); field = ''; }
+      else if (ch === '\n' || ch === '\r') { if (ch === '\r' && csv[i+1] === '\n') i++; row.push(field); rows.push(row); row = []; field = ''; }
+      else field += ch;
+    }
+  }
+  if (field !== '' || row.length) { row.push(field); rows.push(row); }
+  return rows;
+}
+// 시트(AI브리핑 탭)에서 오늘자 브리핑 조회 → 전원 동일
+function fetchSheetBrief(today) {
+  var url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent('AI브리핑') + '&t=' + (new Date()).getTime();
+  return fetch(url).then(function(r){ return r.text(); }).then(function(csv){
+    var rows = parseBriefCsv(csv);
+    for (var i = 1; i < rows.length; i++) { if (rows[i][0] && rows[i][0].slice(0,10) === today) return rows[i][1] || ''; }
+    return '';
+  });
+}
+function generateAiBrief(data, total, el) {
+  el.innerHTML = '<span style="color:#888;">AI 브리핑 생성 중… (최대 30초)</span>';
+  var facts = buildInsightFacts(data, total);
+  return fetch(WEBHOOK_INSIGHT, { method:'POST', headers:{'Content-Type':'text/plain;charset=UTF-8'}, body: JSON.stringify(facts) })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var t = (d && d.insight) ? d.insight : '';
+      if (t) { el.innerHTML = formatBrief(t); } else { el.innerHTML = '<span style="color:#888;">AI 브리핑을 가져오지 못했습니다. 위 규칙 기반 인사이트를 참고하세요.</span>'; }
+    })
+    .catch(function(){ el.innerHTML = '<span style="color:#888;">AI 브리핑 연결 실패. 규칙 기반 인사이트로 대체합니다.</span>'; });
+}
 function loadAiBrief(data, total, force) {
   var el = document.getElementById('aiBriefBody');
   if (!el) return;
   var today = fmtDate(new Date());
-  if (!force) {
-    var cache = null; try { cache = JSON.parse(localStorage.getItem(AI_BRIEF_CACHE_KEY) || 'null'); } catch(e){}
-    if (cache && cache.date === today && cache.text) { el.innerHTML = escHtml(cache.text).replace(/\n/g, '<br>'); return; }
-  }
-  el.innerHTML = '<span style="color:#888;">AI 브리핑 생성 중… (최대 30초)</span>';
-  var facts = buildInsightFacts(data, total);
-  fetch(WEBHOOK_INSIGHT, { method:'POST', headers:{'Content-Type':'text/plain;charset=UTF-8'}, body: JSON.stringify(facts) })
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      var t = (d && d.insight) ? d.insight : '';
-      if (t) { localStorage.setItem(AI_BRIEF_CACHE_KEY, JSON.stringify({ date: today, text: t })); el.innerHTML = escHtml(t).replace(/\n/g, '<br>'); }
-      else { el.innerHTML = '<span style="color:#888;">AI 브리핑을 가져오지 못했습니다. 위 규칙 기반 인사이트를 참고하세요.</span>'; }
-    })
-    .catch(function(){ el.innerHTML = '<span style="color:#888;">AI 브리핑 연결 실패. 규칙 기반 인사이트로 대체합니다.</span>'; });
+  if (force) { generateAiBrief(data, total, el); return; } // 새로고침: 재생성+시트 덮어쓰기
+  el.innerHTML = '<span style="color:#888;">AI 브리핑 불러오는 중…</span>';
+  fetchSheetBrief(today).then(function(text){
+    if (text) { el.innerHTML = formatBrief(text); }   // 시트에 오늘자 있음 → 전원 동일
+    else { generateAiBrief(data, total, el); }         // 없으면 그날 첫 생성(시트에 저장됨)
+  }).catch(function(){ generateAiBrief(data, total, el); });
 }
 function refreshAiBrief() {
   var d = getDashboardData();
