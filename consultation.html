@@ -304,6 +304,11 @@ th.sortable:hover { background: #eef0f4; }
 .insight-box h4 { font-size:14px; font-weight:700; color:#1a1a2e; margin-bottom:10px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
 .insight-item { display:flex; gap:8px; align-items:flex-start; padding:5px 0; font-size:13px; color:#333; line-height:1.5; }
 .insight-item .insight-icon { flex-shrink:0; }
+.ai-brief { margin-top:12px; padding-top:12px; border-top:1px dashed #d0d8e3; }
+.ai-brief-head { font-size:13px; font-weight:700; color:#6366f1; margin-bottom:8px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.ai-refresh { font-size:11px; font-weight:600; color:#1a73e8; background:#e8f0fe; border:none; border-radius:6px; padding:3px 10px; cursor:pointer; }
+.ai-refresh:hover { background:#d2e3fc; }
+.ai-brief-body { font-size:13px; color:#333; line-height:1.7; }
 
 /* ===== TAB PANELS ===== */
 .tab-panel { display: none; }
@@ -2435,11 +2440,62 @@ function renderInsights(data, total) {
   var box = document.getElementById('dashInsights');
   if (!box) return;
   var ins = buildInsights(data, total);
-  if (!ins.length) { box.innerHTML = ''; return; }
   var items = ins.map(function(i){
     return '<div class="insight-item"><span class="insight-icon">' + i.icon + '</span><span>' + escHtml(i.text) + '</span></div>';
   }).join('');
-  box.innerHTML = '<div class="insight-box"><h4>🧭 오늘의 인사이트 <span style="font-weight:400;color:#888;font-size:11px;">규칙 기반 · 숫자는 실데이터</span></h4>' + items + '</div>';
+  box.innerHTML = '<div class="insight-box"><h4>🧭 오늘의 인사이트 <span style="font-weight:400;color:#888;font-size:11px;">규칙 기반 · 숫자는 실데이터</span></h4>' + items +
+    '<div class="ai-brief"><div class="ai-brief-head">🤖 AI 브리핑 <span style="font-weight:400;color:#888;font-size:11px;">gpt-5-mini · 하루 1회</span> <button type="button" class="ai-refresh" onclick="refreshAiBrief()">새로고침</button></div>' +
+    '<div id="aiBriefBody" class="ai-brief-body"></div></div></div>';
+  loadAiBrief(data, total, false);
+}
+
+// ===== AI 브리핑 (n8n consultation-insight → gpt-5-mini) =====
+var WEBHOOK_INSIGHT = 'https://n8n.datastream.co.kr/webhook/consultation-insight';
+var AI_BRIEF_CACHE_KEY = 'md_consult_ai_brief';
+function buildInsightFacts(data, total) {
+  function rnd(x){ return Math.round(x * 10) / 10; }
+  var won = data.filter(function(r){ return isWon(r.stage); }).length;
+  var demoReach = data.filter(function(r){ return isDemoReached(r.stage); }).length;
+  var today = fmtDate(new Date());
+  var ops = data.filter(function(r){ return r.date && r.date >= LEADING_OPS_START; });
+  var stalled = ops.filter(function(r){ var s=(r.stage||'').trim(); return (s==='Follow'||s==='Demo') && daysBetween(r.date, today) >= 14; }).length;
+  var unassigned = ops.filter(function(r){ return !((r.caller||r.rep||'').trim()); }).length;
+  var sup = {};
+  data.forEach(function(r){ var k=supplierKey(r); if(!sup[k]) sup[k]={t:0,w:0}; sup[k].t++; if(isWon(r.stage)) sup[k].w++; });
+  var suppliers = Object.keys(sup).sort(function(a,b){ return sup[b].t - sup[a].t; }).slice(0,10)
+    .map(function(k){ return { name:k, total:sup[k].t, won:sup[k].w, conv: rnd(sup[k].w/sup[k].t*100) }; });
+  var src = {};
+  data.forEach(function(r){ var k=(r.source||'').trim(); if(!k) return; if(!src[k]) src[k]={t:0,w:0}; src[k].t++; if(isWon(r.stage)) src[k].w++; });
+  var channels = Object.keys(src).sort(function(a,b){ return src[b].t - src[a].t; })
+    .map(function(k){ return { name:k, total:src[k].t, won:src[k].w, conv: rnd(src[k].w/src[k].t*100) }; });
+  return {
+    period: dashPeriod, total: total, won: won, convRate: total>0?rnd(won/total*100):0, target: TARGET_CONV_RATE,
+    demoConv: total>0?rnd(demoReach/total*100):0, closeConv: demoReach>0?rnd(won/demoReach*100):0,
+    stalled: stalled, unassigned: unassigned, suppliers: suppliers, channels: channels
+  };
+}
+function loadAiBrief(data, total, force) {
+  var el = document.getElementById('aiBriefBody');
+  if (!el) return;
+  var today = fmtDate(new Date());
+  if (!force) {
+    var cache = null; try { cache = JSON.parse(localStorage.getItem(AI_BRIEF_CACHE_KEY) || 'null'); } catch(e){}
+    if (cache && cache.date === today && cache.text) { el.innerHTML = escHtml(cache.text).replace(/\n/g, '<br>'); return; }
+  }
+  el.innerHTML = '<span style="color:#888;">AI 브리핑 생성 중… (최대 30초)</span>';
+  var facts = buildInsightFacts(data, total);
+  fetch(WEBHOOK_INSIGHT, { method:'POST', headers:{'Content-Type':'text/plain;charset=UTF-8'}, body: JSON.stringify(facts) })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var t = (d && d.insight) ? d.insight : '';
+      if (t) { localStorage.setItem(AI_BRIEF_CACHE_KEY, JSON.stringify({ date: today, text: t })); el.innerHTML = escHtml(t).replace(/\n/g, '<br>'); }
+      else { el.innerHTML = '<span style="color:#888;">AI 브리핑을 가져오지 못했습니다. 위 규칙 기반 인사이트를 참고하세요.</span>'; }
+    })
+    .catch(function(){ el.innerHTML = '<span style="color:#888;">AI 브리핑 연결 실패. 규칙 기반 인사이트로 대체합니다.</span>'; });
+}
+function refreshAiBrief() {
+  var d = getDashboardData();
+  loadAiBrief(d, d.length, true);
 }
 
 function renderNorthStar(data, total) {
