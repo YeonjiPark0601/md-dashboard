@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-08T06:10:48.113Z",
+  "updated": "2026-06-08T07:25:45.368Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -39,7 +39,7 @@
       "productId": "67bf00ac52b44543385c08d5",
       "clinic": "",
       "region": "전라북도 부안군",
-      "caller": "",
+      "caller": "김진석",
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
