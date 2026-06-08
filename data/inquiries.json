@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-08T02:55:43.770Z",
+  "updated": "2026-06-08T03:10:45.770Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -45,6 +45,27 @@
       "payAmount": null,
       "inquiry": "",
       "leadGrade": ""
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 06. 08 오후 12:06:22",
+      "date": "2026-06-08",
+      "slackTs": "1780887982.995919",
+      "name": "정경화",
+      "cid": "5db7eba90dabe405b156f824",
+      "phone": "010-5016-5400",
+      "product": "[상담하기] 삼성메디슨 초음파장비 상담",
+      "qty": "V8 3P",
+      "price": "N/A",
+      "productId": "66a328fc96e0816c37572d22",
+      "clinic": "경희온맘한의원",
+      "region": "대전시 유성구",
+      "caller": "",
+      "supplier": "삼성메디슨",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "GE Tortus와 비교",
+      "leadGrade": "고가망"
     },
     {
       "source": "일반",
@@ -8528,7 +8549,7 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "",
-      "leadGrade": ""
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
