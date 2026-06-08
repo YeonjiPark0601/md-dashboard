@@ -39,11 +39,11 @@
   .banner span.sub { font-weight: 400; color: #a16207; }
 
   /* 본문 */
-  .container { max-width: 1600px; margin: 0 auto; padding: 20px 30px 80px; }
+  .container { max-width: 1500px; margin: 0 auto; padding: 20px 30px 80px; }
 
-  .card { background: #fff; border: 1px solid #e5e9f0; border-radius: 14px; box-shadow: 0 1px 3px rgba(0,0,0,.05); overflow-x: auto; }
-  table { width: 100%; min-width: 1660px; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
-  thead th { background: #f7f8fa; color: #555; font-weight: 600; font-size: 13px; text-align: left; padding: 10px 12px; border-bottom: 2px solid #e0e0e0; white-space: nowrap; }
+  .card { background: #fff; border: 1px solid #e5e9f0; border-radius: 14px; box-shadow: 0 1px 3px rgba(0,0,0,.05); overflow: visible; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
+  thead th { background: #f7f8fa; color: #555; font-weight: 600; font-size: 13px; text-align: left; padding: 10px 12px; border-bottom: 2px solid #e0e0e0; white-space: nowrap; position: sticky; top: var(--thead-top, 0px); z-index: 30; }
   thead th.center { text-align: center; }
   tbody td { padding: 8px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; overflow: hidden; }
   tbody tr:last-child td { border-bottom: 0; }
@@ -123,9 +123,9 @@
   <div class="card">
     <table>
       <colgroup>
-        <col style="width:190px"><col style="width:100px"><col style="width:104px">
-        <col style="width:200px"><col style="width:130px"><col style="width:140px"><col style="width:180px">
-        <col style="width:200px"><col style="width:170px"><col style="width:180px"><col style="width:62px">
+        <col style="width:13%"><col style="width:7%"><col style="width:9%">
+        <col style="width:12%"><col style="width:8%"><col style="width:9%"><col style="width:11%">
+        <col style="width:12%"><col style="width:8%"><col style="width:7%"><col style="width:4%">
       </colgroup>
       <thead>
         <tr>
@@ -470,8 +470,18 @@ document.addEventListener('keydown', e => { if (e.key==='Escape') document.query
 let toastTimer=null;
 function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2600); }
 
+// 열제목 sticky: 상단 헤더+툴바 높이만큼 thead를 내려 붙임 (툴바 줄바꿈/배너 토글 대응)
+function syncTheadTop() {
+  const st = document.querySelector('.sticky-top');
+  if (st) document.documentElement.style.setProperty('--thead-top', st.offsetHeight + 'px');
+}
+window.addEventListener('resize', syncTheadTop);
+const _stObs = new ResizeObserver(syncTheadTop);
+_stObs.observe(document.querySelector('.sticky-top'));
+
 // init
 initEditorSel();
+syncTheadTop();
 refresh(true).then(startPolling);
 </script>
 </body>
