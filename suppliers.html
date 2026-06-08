@@ -110,11 +110,11 @@
   </div>
   <div class="toolbar">
     <div class="editor-wrap">작성자<select class="editor-sel" id="editorSel" onchange="setEditor(this.value)" title="이력에 기록될 작성자"></select></div>
-    <input class="search" id="fSearch" oninput="render()" placeholder="🔍 공급처 · 담당자 · 제품 검색">
+    <input class="search" id="fSearch" oninput="render()" placeholder="🔍 공급처 · 제품 검색">
     <span class="flabel">총판구분</span>
     <select class="sel" id="fDist" onchange="render()"><option value="">전체</option><option>총판</option><option>비총판</option></select>
     <span class="flabel">데모가능</span>
-    <select class="sel" id="fDemo" onchange="render()"><option value="">전체</option><option>가능(방문)</option><option>가능(센터)</option><option>조건부</option><option>불가</option></select>
+    <select class="sel" id="fDemo" onchange="render()"><option value="">전체</option><option>가능(방문)</option><option>가능(센터)</option><option>가능(센터/방문)</option><option>가능(공급처 방문)</option><option>조건부</option><option>불가</option></select>
     <span class="count-pill" id="countPill">0곳</span>
     <button class="btn btn-light" onclick="refresh(true)">↻ 새로고침</button>
     <button class="btn btn-primary" style="margin-left:auto" onclick="openManual()">＋ 공급처 추가</button>
@@ -126,14 +126,12 @@
   <div class="card">
     <table>
       <colgroup>
-        <col style="width:13%"><col style="width:7%"><col style="width:9%">
-        <col style="width:12%"><col style="width:8%"><col style="width:9%"><col style="width:11%">
-        <col style="width:12%"><col style="width:8%"><col style="width:7%"><col style="width:4%">
+        <col style="width:18%"><col style="width:9%"><col style="width:12%"><col style="width:16%">
+        <col style="width:18%"><col style="width:12%"><col style="width:11%"><col style="width:4%">
       </colgroup>
       <thead>
         <tr>
           <th>공급처명</th><th class="center">총판구분</th><th>데모가능</th><th>데모조건</th>
-          <th>담당자명</th><th>연락처</th><th>이메일</th>
           <th>취급제품</th><th>공급제한</th><th>비고</th><th class="center">이력</th>
         </tr>
       </thead>
@@ -153,15 +151,11 @@
       <div><label>총판구분</label><select id="m_distributorType"><option value=""></option><option>총판</option><option>비총판</option></select></div>
     </div>
     <div class="grid2">
-      <div><label>데모가능</label><select id="m_demoAvailable"><option value=""></option><option>가능(방문)</option><option>가능(센터)</option><option>조건부</option><option>불가</option></select></div>
+      <div><label>데모가능</label><select id="m_demoAvailable"><option value=""></option><option>가능(방문)</option><option>가능(센터)</option><option>가능(센터/방문)</option><option>가능(공급처 방문)</option><option>조건부</option><option>불가</option></select></div>
       <div><label>데모조건 <span class="hint">(데모기 보유, 회수기간 등)</span></label><input id="m_demoCondition"></div>
     </div>
-    <div class="grid2">
-      <div><label>담당자명</label><input id="m_managerName"></div>
-      <div><label>담당자 연락처</label><input id="m_managerPhone" placeholder="010-0000-0000"></div>
-      <div><label>담당자 이메일</label><input id="m_managerEmail"></div>
-      <div><label>취급제품</label><input id="m_products"></div>
-    </div>
+    <label>취급제품</label>
+    <input id="m_products">
     <label>공급제한 <span class="hint">(지역 대리점 제한·독점 등)</span></label>
     <input id="m_supplyLimit">
     <label>비고</label>
@@ -200,7 +194,6 @@ const WEBHOOK_URL = 'https://n8n.datastream.co.kr/webhook/supplier-crud';
 const FIELD_TO_COL = {
   id: 'id', createdAt: '생성일', updatedAt: '수정일',
   supplierName: '공급처명', distributorType: '총판구분', demoAvailable: '데모가능', demoCondition: '데모조건',
-  managerName: '담당자명', managerPhone: '담당자연락처', managerEmail: '담당자이메일',
   products: '취급제품', supplyLimit: '공급제한', remarks: '비고'
 };
 const COL_TO_FIELD = Object.fromEntries(Object.entries(FIELD_TO_COL).map(kv => [kv[1], kv[0]]));
@@ -305,7 +298,7 @@ function setEditor(v) {
 // ============================================================
 // 렌더링
 // ============================================================
-const DEMO_OPTS = ['', '가능(방문)', '가능(센터)', '조건부', '불가'];
+const DEMO_OPTS = ['', '가능(방문)', '가능(센터)', '가능(센터/방문)', '가능(공급처 방문)', '조건부', '불가'];
 const DIST_OPTS = ['', '총판', '비총판'];
 
 function optionsHtml(opts, val) {
@@ -320,7 +313,7 @@ function applyFilters() {
     if (fd && (r.demoAvailable||'') !== fd) return false;
     if (fdist && (r.distributorType||'') !== fdist) return false;
     if (q) {
-      const hay = [r.supplierName,r.distributorType,r.managerName,r.products,r.demoCondition,r.supplyLimit,r.remarks].join(' ').toLowerCase();
+      const hay = [r.supplierName,r.distributorType,r.products,r.demoCondition,r.supplyLimit,r.remarks].join(' ').toLowerCase();
       if (!hay.includes(q)) return false;
     }
     return true;
@@ -354,9 +347,6 @@ function rowHtml(r, histN) {
     <td><select ${S('distributorType')} class="cell dist${distV}">${optionsHtml(DIST_OPTS, r.distributorType)}</select></td>
     <td><select ${S('demoAvailable')} class="cell demo${demoV}">${optionsHtml(DEMO_OPTS, r.demoAvailable)}</select></td>
     <td><input value="${esc(r.demoCondition)}" ${T('demoCondition')} class="cell"></td>
-    <td><input value="${esc(r.managerName)}" ${T('managerName')} class="cell"></td>
-    <td><input value="${esc(r.managerPhone)}" ${T('managerPhone')} class="cell"></td>
-    <td><input value="${esc(r.managerEmail)}" ${T('managerEmail')} class="cell"></td>
     <td><input value="${esc(r.products)}" ${T('products')} class="cell"></td>
     <td><input value="${esc(r.supplyLimit)}" ${T('supplyLimit')} class="cell"></td>
     <td><input value="${esc(r.remarks)}" ${T('remarks')} class="cell"></td>
@@ -420,7 +410,7 @@ function logChange(id, field, fromV, toV) {
 // ============================================================
 function openManual() {
   if (!editorLocked()) { toast('작성자를 먼저 선택하세요'); return; }
-  ['supplierName','distributorType','demoAvailable','demoCondition','managerName','managerPhone','managerEmail','products','supplyLimit','remarks']
+  ['supplierName','distributorType','demoAvailable','demoCondition','products','supplyLimit','remarks']
     .forEach(f => { const el=document.getElementById('m_'+f); if(el) el.value=''; });
   openModal('manualBg');
 }
@@ -429,7 +419,6 @@ function saveManual() {
   const r = {
     id: genId(), createdAt: nowStamp(), updatedAt: '',
     supplierName: g('supplierName'), distributorType: g('distributorType'), demoAvailable: g('demoAvailable'), demoCondition: g('demoCondition'),
-    managerName: g('managerName'), managerPhone: g('managerPhone'), managerEmail: g('managerEmail'),
     products: g('products'), supplyLimit: g('supplyLimit'), remarks: g('remarks')
   };
   if (!r.supplierName) { toast('공급처명은 입력하세요'); return; }
