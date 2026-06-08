@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-08T03:10:45.770Z",
+  "updated": "2026-06-08T03:20:44.072Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -60,7 +60,7 @@
       "productId": "66a328fc96e0816c37572d22",
       "clinic": "경희온맘한의원",
       "region": "대전시 유성구",
-      "caller": "",
+      "caller": "유승준",
       "supplier": "삼성메디슨",
       "payDate": "",
       "payAmount": null,
