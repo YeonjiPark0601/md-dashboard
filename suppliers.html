@@ -48,16 +48,15 @@
   tbody td { padding: 8px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; overflow: hidden; }
   tbody tr:last-child td { border-bottom: 0; }
   tbody tr:hover { background: #f7f9fc; }
-  tbody tr.sel { background: #eaf2fb; }
   .cell { width: 100%; height: 26px; border: 1px solid transparent; background: transparent; padding: 0 8px; font-size: 13px; border-radius: 6px; font-family: inherit; color: #1e293b; transition: border-color .12s, box-shadow .12s, background .12s; }
   .cell:hover { border-color: #e2e8f0; }
   .cell:focus { outline: none; border-color: #1a73e8; background: #fff; box-shadow: 0 0 0 3px rgba(26,115,232,.12); }
   .cell:disabled { color: #94a3b8; cursor: not-allowed; background: transparent !important; }
   .cell.name { font-weight: 600; }
   .cell.demo { font-weight: 600; text-align: center; border-radius: 999px; min-width: 72px; color: #94a3b8; }
-  .cell.demo.v가능 { background: #dcfce7; color: #15803d; }
-  .cell.demo.v조건부 { background: #fef9c3; color: #a16207; }
-  .cell.demo.v불가 { background: #fee2e2; color: #b91c1c; }
+  .cell.demo.vok { background: #dcfce7; color: #15803d; }
+  .cell.demo.vcond { background: #fef9c3; color: #a16207; }
+  .cell.demo.vno { background: #fee2e2; color: #b91c1c; }
   .cell.dist { font-weight: 600; text-align: center; border-radius: 999px; min-width: 64px; color: #94a3b8; }
   .cell.dist.v총판 { background: #dbeafe; color: #1d4ed8; }
   .cell.dist.v비총판 { background: #f1f5f9; color: #64748b; }
@@ -112,10 +111,9 @@
     <span class="flabel">총판구분</span>
     <select class="sel" id="fDist" onchange="render()"><option value="">전체</option><option>총판</option><option>비총판</option></select>
     <span class="flabel">데모가능</span>
-    <select class="sel" id="fDemo" onchange="render()"><option value="">전체</option><option>가능</option><option>조건부</option><option>불가</option></select>
+    <select class="sel" id="fDemo" onchange="render()"><option value="">전체</option><option>가능(방문)</option><option>가능(센터)</option><option>조건부</option><option>불가</option></select>
     <span class="count-pill" id="countPill">0곳</span>
     <button class="btn btn-light" onclick="refresh(true)">↻ 새로고침</button>
-    <button class="btn btn-danger" id="btnDel" onclick="bulkDelete()" disabled>선택 삭제 (0)</button>
     <button class="btn btn-primary" style="margin-left:auto" onclick="openManual()">＋ 공급처 추가</button>
   </div>
   <div class="banner" id="editorBanner">✏️ 편집하려면 먼저 위에서 <b>작성자</b>를 선택하세요. <span class="sub">(한번 선택하면 변경할 수 없습니다)</span></div>
@@ -125,13 +123,12 @@
   <div class="card">
     <table>
       <colgroup>
-        <col style="width:34px"><col style="width:12%"><col style="width:82px"><col style="width:78px">
+        <col style="width:12%"><col style="width:82px"><col style="width:78px">
         <col style="width:13%"><col style="width:9%"><col style="width:9%"><col style="width:11%">
         <col style="width:13%"><col style="width:11%"><col style="width:11%"><col style="width:52px">
       </colgroup>
       <thead>
         <tr>
-          <th><input type="checkbox" id="chkAll" onclick="toggleAll(this)"></th>
           <th>공급처명</th><th class="center">총판구분</th><th>데모가능</th><th>데모조건</th>
           <th>담당자명</th><th>연락처</th><th>이메일</th>
           <th>취급제품</th><th>공급제한</th><th>비고</th><th class="center">이력</th>
@@ -153,7 +150,7 @@
       <div><label>총판구분</label><select id="m_distributorType"><option value=""></option><option>총판</option><option>비총판</option></select></div>
     </div>
     <div class="grid2">
-      <div><label>데모가능</label><select id="m_demoAvailable"><option value=""></option><option>가능</option><option>조건부</option><option>불가</option></select></div>
+      <div><label>데모가능</label><select id="m_demoAvailable"><option value=""></option><option>가능(방문)</option><option>가능(센터)</option><option>조건부</option><option>불가</option></select></div>
       <div><label>데모조건 <span class="hint">(데모기 보유, 회수기간 등)</span></label><input id="m_demoCondition"></div>
     </div>
     <div class="grid2">
@@ -210,7 +207,6 @@ const EDITOR_KEY = 'md_suppliers_editor';
 
 let ROWS = [];
 let HISTORY = [];
-const selected = new Set();
 let pollTimer = null;
 
 function nowStamp() { return new Date().toISOString().slice(0,16).replace('T',' '); }
@@ -276,7 +272,6 @@ function callWebhook(action, payload) {
 }
 function syncCreate(r) { return callWebhook('create', { data: recordToSheetData(r) }); }
 function syncUpdate(r) { return callWebhook('update', { data: recordToSheetData(r) }); }
-function syncDelete(id) { return callWebhook('delete', { id }); }
 
 // ============================================================
 // 작성자 (미선택 시 편집 차단 · 선택 후 잠금)
@@ -307,7 +302,7 @@ function setEditor(v) {
 // ============================================================
 // 렌더링
 // ============================================================
-const DEMO_OPTS = ['', '가능', '조건부', '불가'];
+const DEMO_OPTS = ['', '가능(방문)', '가능(센터)', '조건부', '불가'];
 const DIST_OPTS = ['', '총판', '비총판'];
 
 function optionsHtml(opts, val) {
@@ -337,20 +332,21 @@ function render() {
   const histCount = {};
   HISTORY.forEach(h => { const k=h['공급처id']; histCount[k]=(histCount[k]||0)+1; });
   tb.innerHTML = list.map(r => rowHtml(r, histCount[r.id]||0)).join('');
-  updateDelBtn();
 }
 
+function demoKey(v) {
+  return (v||'').startsWith('가능') ? 'ok' : v==='조건부' ? 'cond' : v==='불가' ? 'no' : '';
+}
 function rowHtml(r, histN) {
-  const sel = selected.has(r.id);
   const dis = editorLocked() ? '' : ' disabled';
   const F = (f) => `onfocus="cellFocus('${r.id}','${f}',this)"`;
   const T = (f) => `${F(f)} oninput="edit('${r.id}','${f}',this.value)" onchange="cellCommit('${r.id}','${f}',this)"${dis}`;
   const S = (f) => `${F(f)} onchange="edit('${r.id}','${f}',this.value);cellCommit('${r.id}','${f}',this)"${dis}`;
-  const demoV = r.demoAvailable ? ' v'+r.demoAvailable : '';
+  const dk = demoKey(r.demoAvailable);
+  const demoV = dk ? ' v'+dk : '';
   const distV = r.distributorType ? ' v'+r.distributorType : '';
   const histBtn = `<button class="btn-hist${histN?'':' nohist'}" onclick="openHist('${r.id}')">🕘${histN?' '+histN:''}</button>`;
-  return `<tr data-id="${r.id}" class="${sel?'sel':''}">
-    <td><input type="checkbox" ${sel?'checked':''} onclick="toggleSel('${r.id}',this)"${dis}></td>
+  return `<tr data-id="${r.id}">
     <td><input value="${esc(r.supplierName)}" ${T('supplierName')} class="cell name"></td>
     <td><select ${S('distributorType')} class="cell dist${distV}">${optionsHtml(DIST_OPTS, r.distributorType)}</select></td>
     <td><select ${S('demoAvailable')} class="cell demo${demoV}">${optionsHtml(DEMO_OPTS, r.demoAvailable)}</select></td>
@@ -414,35 +410,6 @@ function logChange(id, field, fromV, toV) {
   HISTORY.unshift(entry);
   render();
   callWebhook('log', { log: entry }).catch(()=>console.warn('이력 저장 실패'));
-}
-
-// ============================================================
-// 선택 / 삭제
-// ============================================================
-function toggleSel(id, cb) {
-  if (cb.checked) selected.add(id); else selected.delete(id);
-  cb.closest('tr').classList.toggle('sel', cb.checked);
-  updateDelBtn();
-}
-function toggleAll(cb) {
-  applyFilters().forEach(r => { if (cb.checked) selected.add(r.id); else selected.delete(r.id); });
-  render();
-}
-function updateDelBtn() {
-  const n = selected.size;
-  const b = document.getElementById('btnDel');
-  b.disabled = n === 0; b.textContent = `선택 삭제 (${n})`;
-  document.getElementById('chkAll').checked = applyFilters().length>0 && applyFilters().every(r=>selected.has(r.id));
-}
-function bulkDelete() {
-  const ids = [...selected];
-  if (!ids.length || !confirm(`${ids.length}곳을 삭제할까요? 시트에서도 영구 삭제됩니다.`)) return;
-  ROWS = ROWS.filter(r => !selected.has(r.id));
-  selected.clear(); render();
-  (async () => {
-    for (const id of ids) { try { await syncDelete(id); } catch(e){ console.warn('삭제 실패', id, e); } }
-    flashSync(); toast('삭제 완료'); setTimeout(()=>refresh(false), 1200);
-  })();
 }
 
 // ============================================================
