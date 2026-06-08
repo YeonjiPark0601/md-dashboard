@@ -2462,16 +2462,17 @@ function buildInsightFacts(data, total) {
   var unassigned = ops.filter(function(r){ return !((r.caller||r.rep||'').trim()); }).length;
   var sup = {};
   data.forEach(function(r){ var k=supplierKey(r); if(!sup[k]) sup[k]={t:0,w:0}; sup[k].t++; if(isWon(r.stage)) sup[k].w++; });
-  var suppliers = Object.keys(sup).sort(function(a,b){ return sup[b].t - sup[a].t; }).slice(0,10)
-    .map(function(k){ return { name:k, total:sup[k].t, won:sup[k].w, conv: rnd(sup[k].w/sup[k].t*100) }; });
+  var 공급처별 = Object.keys(sup).sort(function(a,b){ return sup[b].t - sup[a].t; }).slice(0,10)
+    .map(function(k){ return { 공급처:k, 상담:sup[k].t, 결제완료:sup[k].w, 전환율: rnd(sup[k].w/sup[k].t*100) }; });
   var src = {};
   data.forEach(function(r){ var k=(r.source||'').trim(); if(!k) return; if(!src[k]) src[k]={t:0,w:0}; src[k].t++; if(isWon(r.stage)) src[k].w++; });
-  var channels = Object.keys(src).sort(function(a,b){ return src[b].t - src[a].t; })
-    .map(function(k){ return { name:k, total:src[k].t, won:src[k].w, conv: rnd(src[k].w/src[k].t*100) }; });
+  var 채널별 = Object.keys(src).sort(function(a,b){ return src[b].t - src[a].t; })
+    .map(function(k){ return { 채널:k, 상담:src[k].t, 결제완료:src[k].w, 전환율: rnd(src[k].w/src[k].t*100) }; });
+  var periodKo = ({ year:'2026년', '1m':'최근 1개월', all:'전체 기간', custom:'직접 지정' })[dashPeriod] || String(dashPeriod);
   return {
-    period: dashPeriod, total: total, won: won, convRate: total>0?rnd(won/total*100):0, target: TARGET_CONV_RATE,
-    demoConv: total>0?rnd(demoReach/total*100):0, closeConv: demoReach>0?rnd(won/demoReach*100):0,
-    stalled: stalled, unassigned: unassigned, suppliers: suppliers, channels: channels
+    기간: periodKo, 총상담건수: total, 결제완료: won, 전환율: total>0?rnd(won/total*100):0, 목표전환율: TARGET_CONV_RATE,
+    데모전환율: total>0?rnd(demoReach/total*100):0, 클로징전환율: demoReach>0?rnd(won/demoReach*100):0,
+    정체14일이상: stalled, 미배정: unassigned, 공급처별: 공급처별, 채널별: 채널별
   };
 }
 function loadAiBrief(data, total, force) {
