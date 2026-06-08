@@ -1065,6 +1065,12 @@ function findRecordAnywhereById(id) {
   if (r) return r;
   return EXTERNAL_DATA.find(function(x){ return x.id === id; }) || null;
 }
+// 저장 성공 즉시 호출 → 배너 바로 제거 (webhook upsert라 200 응답 = 영구 저장 확정)
+function clearPendingMemo(id) {
+  var p = loadPendingMemos();
+  if (p[id]) { delete p[id]; savePendingMemos(p); }
+  updatePendingMemoBanner();
+}
 // pending 메모를 시트로 재전송 (행이 늦게 생겨도 결국 반영됨)
 function resendPendingMemos() {
   var p = loadPendingMemos();
@@ -3597,7 +3603,7 @@ document.addEventListener('change', function(e){
       enqueuePendingMemo(id, serialized);
     }
     callWebhook('update', { data: payload })
-      .then(function(){ if (doneMemo) setTimeout(reconcilePendingMemos, 1500); })
+      .then(function(){ if (doneMemo) clearPendingMemo(id); })
       .catch(function(){ showToast('시트 동기화 실패 (자동 재시도)', 'error'); if (doneMemo) setTimeout(reconcilePendingMemos, 1500); });
   } else {
     var d = loadLocalOnly();
@@ -3611,8 +3617,9 @@ document.addEventListener('change', function(e){
       }
       saveData(d);
       if (doneMemo) enqueuePendingMemo(d[idx].id, d[idx].note);
+      var doneRecId = d[idx].id;
       syncUpdate(d[idx])
-        .then(function(){ if (doneMemo) setTimeout(reconcilePendingMemos, 1500); })
+        .then(function(){ if (doneMemo) clearPendingMemo(doneRecId); })
         .catch(function(){ showToast('시트 동기화 실패 (자동 재시도)', 'error'); if (doneMemo) setTimeout(reconcilePendingMemos, 1500); });
     }
   }
@@ -3741,7 +3748,7 @@ function saveMemo() {
   // 안전망: 시트 반영 확인될 때까지 pending 추적 + 재시도 (신규행 race/네트워크 실패로 인한 소실 방지)
   enqueuePendingMemo(rec.id, rec.note);
   syncUpdate(rec)
-    .then(function(){ setTimeout(reconcilePendingMemos, 1500); })
+    .then(function(){ clearPendingMemo(rec.id); })
     .catch(function(){ showToast('메모 저장됨 · 시트 반영 대기(자동 재시도)', 'error'); setTimeout(reconcilePendingMemos, 1500); });
   ta.value = '';
   renderMemoModalList(memos);
@@ -3909,7 +3916,7 @@ function init() {
   updateUnassignedBanner();
   // 메모 안전망: 이전 세션에서 시트 미반영된 메모가 있으면 경고 표시 + 주기적 자동 재시도
   updatePendingMemoBanner();
-  if (!window.__pendingMemoTimer) window.__pendingMemoTimer = setInterval(reconcilePendingMemos, 60000);
+  if (!window.__pendingMemoTimer) window.__pendingMemoTimer = setInterval(reconcilePendingMemos, 20000);
   // 시트가 단일 소스 (n8n이 slack + 수동입력 모두 시트에 동기화)
   // 단, 원본 문의사항은 시트에 없으므로 data/inquiries.json에서 병렬로 받아와서 주입
   Promise.all([
