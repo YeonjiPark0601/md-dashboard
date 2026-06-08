@@ -191,7 +191,7 @@
 const SHEET_ID = '1kK6YcXGQ87Fep5i1d__YPI7PLuLeUiLat2lX0Mh21hM';
 const SHEET_TAB = '시트1';
 const HIST_TAB = '변경이력';
-const csvUrl = (tab) => 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(tab);
+const csvUrl = (tab) => 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv&headers=1&sheet=' + encodeURIComponent(tab);
 const WEBHOOK_URL = 'https://n8n.datastream.co.kr/webhook/supplier-crud';
 
 const FIELD_TO_COL = {
