@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-08T06:01:06.563Z",
+  "updated": "2026-06-08T06:10:48.113Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -81,7 +81,7 @@
       "productId": "618c881fbc63410023476154",
       "clinic": "더편한 한의원",
       "region": "강원도 동해시",
-      "caller": "",
+      "caller": "김태호",
       "supplier": "프리시젼바이오",
       "payDate": "",
       "payAmount": null,
