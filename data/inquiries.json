@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-09T10:10:48.451Z",
+  "updated": "2026-06-09T10:40:46.253Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -102,7 +102,7 @@
       "productId": "6a22965b79d189589b8a0c18",
       "clinic": "동보한의원",
       "region": "경기도 안산시",
-      "caller": "",
+      "caller": "이예림",
       "supplier": "",
       "payDate": "",
       "payAmount": null,
