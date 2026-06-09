@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-09T03:15:48.675Z",
+  "updated": "2026-06-09T04:01:00.566Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -44,6 +44,27 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "위상각 측정되는 PWA 제품으로 상담 원합니다.",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 06. 09 오후 12:59:36",
+      "date": "2026-06-09",
+      "slackTs": "1780977576.440949",
+      "name": "김희원",
+      "cid": "62fc7c710b5b9e002b2e038c",
+      "phone": "010-5546-3126",
+      "product": "[라메디텍] 퓨라셀 MX(FX-7000)",
+      "qty": 1,
+      "price": "1000",
+      "productId": "6a057b0fa01aaa992bcf44a8",
+      "clinic": "바올한의원",
+      "region": "대구시 북구",
+      "caller": "",
+      "supplier": "라메디텍",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
       "leadGrade": "고가망"
     },
     {
