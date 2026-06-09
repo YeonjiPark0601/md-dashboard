@@ -180,7 +180,6 @@ tr:hover { background: #f7f9fc; }
         <div class="sub-row"><span><span id="kpiMonthTarget">목표: -</span> <a href="https://docs.google.com/spreadsheets/d/1MGm8lbvYnXOb5KnKUlDODrCPrMiiidHo8mVcsVIYmKU/edit?gid=1201277991#gid=1201277991" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="목표 출처 시트" style="color:#888;text-decoration:none;font-size:11px;">↗</a></span><span id="kpiMonthYoy"></span></div>
         <div class="sub-row" id="kpiMonthCountRow" style="display:none;"><span id="kpiMonthCount"></span></div>
         <div class="sub-row" id="kpiMonthProfitRow" style="display:none;"><span id="kpiMonthProfit"></span></div>
-        <div class="sub-row" id="kpiMonthMargin7040Row" style="display:none;font-size:12px;color:#0d9488;font-weight:600;"><span id="kpiMonthMargin7040"></span></div>
         <div class="sub-row" id="kpiMonthNonSonoRow" style="display:none;font-size:12px;color:#888;"><span id="kpiMonthNonSono">초음파 제외: -</span></div>
         <div class="progress-bar"><div class="progress-fill" id="kpiMonthBar" style="width:0;background:#34a853;"></div></div>
       </div>
@@ -192,6 +191,13 @@ tr:hover { background: #f7f9fc; }
         <div class="sub-row" id="kpiQtrProfitRow" style="display:none;"><span id="kpiQtrProfit"></span></div>
         <div class="sub-row" id="kpiQtrNonSonoRow" style="display:none;font-size:12px;color:#888;"><span id="kpiQtrNonSono">초음파 제외: -</span></div>
         <div class="progress-bar"><div class="progress-fill" id="kpiQtrBar" style="width:0;background:#fbbc04;"></div></div>
+      </div>
+    </div>
+    <div id="marginKpiRow" style="display:none;margin-bottom:20px;">
+      <div class="kpi-card" style="background:linear-gradient(135deg,#0d9488,#0f766e);box-shadow:0 2px 8px rgba(13,148,136,0.25);">
+        <div class="label" style="color:rgba(255,255,255,0.85);">📈 이번 달 매출총이익률 <span style="font-weight:400;">· 삼성메디슨·클래스 제외</span></div>
+        <div class="main-row"><div class="value" id="marginKpiValue" style="color:#fff;font-size:32px;">-</div><div class="rate" id="marginKpiMom" style="font-size:15px;font-weight:600;"></div></div>
+        <div class="sub-row" style="color:rgba(255,255,255,0.78);"><span id="marginKpiSub"></span></div>
       </div>
     </div>
     <div id="kpiDetailRow" class="chart-row-full" style="display:none;">
@@ -1063,7 +1069,7 @@ function render(){
   // 의료기기/초음파/클래스/전체: 주별 매출 트렌드 표시, chartRow3를 detailRow 하단으로 이동
   document.getElementById('weeklyTrendRow').style.display=(isMD||isSono||isClass||isAll||isShockwave)?'':'none';
   document.getElementById('marginRow').style.display=isAll?'':'none';
-  if(!isAll){document.getElementById('kpiMonthMargin7040Row').style.display='none'}
+  if(!isAll){document.getElementById('marginKpiRow').style.display='none'}
   const _wkRow=document.getElementById('weeklyTrendRow');
   if(isClass){document.getElementById('classTrendRow').after(_wkRow)}else{document.getElementById('trendRow').after(_wkRow)}
   const _chartRow3=document.getElementById('chartRow3');const _detailRow=document.getElementById('detailRow');
@@ -1401,14 +1407,22 @@ function genMonthRange(start,end){
 function renderMarginChart(){
   const rows=[...marginData].sort((a,b)=>a.월<b.월?-1:1);
   // 이번 달 총이익률 KPI (이번 달 매출 카드 하단)
-  const _mRow=document.getElementById('kpiMonthMargin7040Row'),_mEl=document.getElementById('kpiMonthMargin7040');
-  if(_mEl&&rows.length){
+  // 이번 달 총이익률 강조 카드
+  const _kRow=document.getElementById('marginKpiRow');
+  if(rows.length){
     const now=new Date();const curYm=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
-    let cur=rows.find(r=>r.월===curYm),lbl='이번 달';
-    if(!cur){cur=rows[rows.length-1];lbl=cur.월+' 기준'}
-    _mEl.textContent='총이익률('+lbl+'): '+cur.이익률+'% · 삼성·클래스 제외';
-    if(_mRow)_mRow.style.display='';
-  }else if(_mRow){_mRow.style.display='none'}
+    let idx=rows.findIndex(r=>r.월===curYm);if(idx<0)idx=rows.length-1;
+    const cur=rows[idx],prev=idx>0?rows[idx-1]:null,isCur=cur.월===curYm;
+    const avg=Math.round(rows.reduce((s,r)=>s+r.이익률,0)/rows.length*10)/10;
+    document.getElementById('marginKpiValue').textContent=cur.이익률+'%';
+    const momEl=document.getElementById('marginKpiMom');
+    if(prev){const d=Math.round((cur.이익률-prev.이익률)*10)/10;
+      momEl.textContent=(d>0?'▲ +':d<0?'▼ ':'– ')+Math.abs(d)+'%p';
+      momEl.style.color=d>=0?'#a7f3d0':'#fecaca';
+    }else{momEl.textContent=''}
+    document.getElementById('marginKpiSub').textContent=(isCur?'이번 달 '+cur.월:cur.월+' 기준')+(prev?' · 전월 '+prev.이익률+'%':'')+' · 누적 평균 '+avg+'%';
+    if(_kRow)_kRow.style.display='';
+  }else if(_kRow){_kRow.style.display='none'}
   if(!rows.length){if(marginChart){marginChart.destroy();marginChart=null}return}
   const labels=rows.map(r=>r.월.substring(2));
   const vals=rows.map(r=>r.이익률);
