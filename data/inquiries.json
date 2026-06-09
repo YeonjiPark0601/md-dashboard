@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-09T04:01:00.566Z",
+  "updated": "2026-06-09T04:55:49.905Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -66,6 +66,27 @@
       "payAmount": null,
       "inquiry": "",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 06. 09 오후 01:50:52",
+      "date": "2026-06-09",
+      "slackTs": "1780980652.030409",
+      "name": "장혁",
+      "cid": "5f323888a0b91001bf48c0eb",
+      "phone": "010-7979-6310",
+      "product": "[DSE] 의료용 석션기 (SSB EVA)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "67e2322d9d6aa764d124103e",
+      "clinic": "광주상무 끗한의원",
+      "region": "광주시 서구",
+      "caller": "",
+      "supplier": "DSE",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
