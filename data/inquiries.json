@@ -1,9 +1,30 @@
 {
-  "updated": "2026-06-09T00:05:46.091Z",
+  "updated": "2026-06-09T03:10:50.800Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "일반",
+      "timestamp": "2026. 06. 09 오후 12:07:38",
+      "date": "2026-06-09",
+      "slackTs": "1780974458.177689",
+      "name": "김재확",
+      "cid": "5e85617bbfe42609447849d1",
+      "phone": "010-9537-1075",
+      "product": "초음파 치료기 ST-10A",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "60b722fec1908b001a64a31e",
+      "clinic": "고잔최고한의원",
+      "region": "경기도 안산시",
+      "caller": "",
+      "supplier": "팀엘리시움",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
+    },
     {
       "source": "일반",
       "timestamp": "2026. 06. 08 오전 10:38:52",
