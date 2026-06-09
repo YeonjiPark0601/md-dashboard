@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-09T05:10:47.873Z",
+  "updated": "2026-06-09T09:45:46.568Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -102,7 +102,7 @@
       "productId": "67e2322d9d6aa764d124103e",
       "clinic": "광주상무 끗한의원",
       "region": "광주시 서구",
-      "caller": "",
+      "caller": "이예림",
       "supplier": "DSE",
       "payDate": "",
       "payAmount": null,
