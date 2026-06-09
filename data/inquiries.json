@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-09T03:10:50.800Z",
+  "updated": "2026-06-09T03:15:48.675Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -24,6 +24,27 @@
       "payAmount": null,
       "inquiry": "",
       "leadGrade": ""
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 06. 09 오후 12:11:59",
+      "date": "2026-06-09",
+      "slackTs": "1780974719.567959",
+      "name": "최무환",
+      "cid": "5dcd18c02bb59605ca3cfe5e",
+      "phone": "010-5296-1075",
+      "product": "[아큐닉] 체성분분석기 BC380 PLUS",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "671f207808965d9e4d18c387",
+      "clinic": "나비한의원",
+      "region": "경기도 안양시",
+      "caller": "",
+      "supplier": "아큐닉",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "위상각 측정되는 PWA 제품으로 상담 원합니다.",
+      "leadGrade": "고가망"
     },
     {
       "source": "일반",
@@ -4076,7 +4097,7 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "",
-      "leadGrade": ""
+      "leadGrade": "고가망"
     },
     {
       "source": "일반",
