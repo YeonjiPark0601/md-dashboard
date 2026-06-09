@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-08T07:25:45.368Z",
+  "updated": "2026-06-09T00:05:46.091Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -104,8 +104,8 @@
       "region": "경기도 성남시",
       "caller": "이예림",
       "supplier": "이앤에스헬스케어",
-      "payDate": "",
-      "payAmount": null,
+      "payDate": "2026-06-08",
+      "payAmount": 6900000,
       "inquiry": "",
       "leadGrade": ""
     },
@@ -146,8 +146,8 @@
       "region": "대구시 북구",
       "caller": "김진석",
       "supplier": "DSE",
-      "payDate": "",
-      "payAmount": null,
+      "payDate": "2026-06-08",
+      "payAmount": 4800000,
       "inquiry": "엔디야그 가격도 궁금합니다",
       "leadGrade": "고가망"
     },
@@ -2246,8 +2246,8 @@
       "region": "전라남도 여수시",
       "caller": "김진석",
       "supplier": "영일엠",
-      "payDate": "",
-      "payAmount": null,
+      "payDate": "2026-06-08",
+      "payAmount": 3116913,
       "inquiry": "",
       "leadGrade": "고가망"
     },
@@ -3401,8 +3401,8 @@
       "region": "전라남도 여수시",
       "caller": "이예림",
       "supplier": "팀엘리시움",
-      "payDate": "",
-      "payAmount": null,
+      "payDate": "2026-06-08",
+      "payAmount": 5907327,
       "inquiry": "견적",
       "leadGrade": "고가망"
     },
