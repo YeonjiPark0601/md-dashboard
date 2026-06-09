@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-09T05:05:53.194Z",
+  "updated": "2026-06-09T05:10:47.873Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -81,7 +81,7 @@
       "productId": "6a0d376f7dc34bd6d0797bea",
       "clinic": "경희나래한의원",
       "region": "서울시 성동구",
-      "caller": "",
+      "caller": "김태호",
       "supplier": "바이오시그널랩",
       "payDate": "",
       "payAmount": null,
