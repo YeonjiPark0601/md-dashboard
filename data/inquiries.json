@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-09T09:45:46.568Z",
+  "updated": "2026-06-09T10:10:48.451Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -87,6 +87,27 @@
       "payAmount": null,
       "inquiry": "가격",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 06. 09 오후 07:08:36",
+      "date": "2026-06-09",
+      "slackTs": "1780999716.097279",
+      "name": "조평근",
+      "cid": "5d83468b3f0e6805c47067c9",
+      "phone": "010-9064-2731",
+      "product": "[매트릭스] 아산화질소 가스진정기 (N20)",
+      "qty": 1,
+      "price": "1200",
+      "productId": "6a22965b79d189589b8a0c18",
+      "clinic": "동보한의원",
+      "region": "경기도 안산시",
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "총판기기",
