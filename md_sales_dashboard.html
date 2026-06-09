@@ -162,6 +162,7 @@ tr:hover { background: #f7f9fc; }
         <div class="main-row"><div class="value" id="kpiMonthSales">-</div><div class="rate" id="kpiMonthRate">-</div></div>
         <div class="sub-row"><span id="kpiMonthTarget">목표: -</span><span id="kpiMonthYoy"></span></div>
         <div class="sub-row" id="kpiMonthCountRow" style="display:none;"><span id="kpiMonthCount"></span></div>
+        <div class="sub-row" id="kpiMonthMargin7040Row" style="display:none;font-size:12px;color:#0d9488;font-weight:600;"><span id="kpiMonthMargin7040"></span></div>
         <div class="progress-bar"><div class="progress-fill" id="kpiMonthBar" style="width:0;background:#34a853;"></div></div>
       </div>
       <div class="kpi-card">
@@ -754,6 +755,7 @@ function render(){
     document.getElementById('chartRow3').style.display='none';
   }
   document.getElementById('marginRow').style.display=isAll?'':'none';
+  if(!isAll){document.getElementById('kpiMonthMargin7040Row').style.display='none'}
   renderKPIs();renderTrendChart(data);
   if(isAll){try{renderMarginChart()}catch(e){console.warn('이익률 차트 에러',e)}}
   if(currentTab==='클래스')renderTypeChart(data);
@@ -964,6 +966,14 @@ function renderKPIs(){
 
 function renderMarginChart(){
   const rows=[...marginData].sort((a,b)=>a.월<b.월?-1:1);
+  const _mRow=document.getElementById('kpiMonthMargin7040Row'),_mEl=document.getElementById('kpiMonthMargin7040');
+  if(_mEl&&rows.length){
+    const now=new Date();const curYm=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+    let cur=rows.find(r=>r.월===curYm),lbl='이번 달';
+    if(!cur){cur=rows[rows.length-1];lbl=cur.월+' 기준'}
+    _mEl.textContent='총이익률('+lbl+'): '+cur.이익률+'% · 삼성·클래스 제외';
+    if(_mRow)_mRow.style.display='';
+  }else if(_mRow){_mRow.style.display='none'}
   if(!rows.length){if(marginChart){marginChart.destroy();marginChart=null}return}
   const labels=rows.map(r=>r.월.substring(2));
   const vals=rows.map(r=>r.이익률);
