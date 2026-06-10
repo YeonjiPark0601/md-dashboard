@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-10T00:45:46.807Z",
+  "updated": "2026-06-10T02:01:14.443Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -5771,7 +5771,7 @@
       "price": "N/A",
       "productId": "68c27626b9972879bbfef389",
       "clinic": "",
-      "region": "경기도 남양주시",
+      "region": "경기도 안양시",
       "caller": "조성갑",
       "supplier": "파이주식회사",
       "payDate": "",
