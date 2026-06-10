@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-10T08:05:46.469Z",
+  "updated": "2026-06-10T08:10:47.083Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -65,6 +65,27 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "얼마인가요",
+      "leadGrade": "가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 06. 10 오후 05:05:38",
+      "date": "2026-06-10",
+      "slackTs": "1781078738.488489",
+      "name": "심성은",
+      "cid": "5ffd8728d6491c001b17888b",
+      "phone": "010-9654-9825",
+      "product": "굿플 체외충격파 치료기 GP-707SW",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "5ea7b4021a3ca36b96784caf",
+      "clinic": "경희예한의원",
+      "region": "경기도 하남시",
+      "caller": "",
+      "supplier": "굿플",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "금액",
       "leadGrade": "가망"
     },
     {
