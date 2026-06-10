@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-09T10:40:46.253Z",
+  "updated": "2026-06-10T00:05:45.564Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -62,8 +62,8 @@
       "region": "대구시 북구",
       "caller": "",
       "supplier": "라메디텍",
-      "payDate": "",
-      "payAmount": null,
+      "payDate": "2026-06-09",
+      "payAmount": 10900000,
       "inquiry": "",
       "leadGrade": "고가망"
     },
