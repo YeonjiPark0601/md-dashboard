@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-10T08:55:47.580Z",
+  "updated": "2026-06-10T09:20:43.865Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -60,7 +60,7 @@
       "productId": "617b4cd2bc63410023471ef3",
       "clinic": "",
       "region": "충청남도 천안시",
-      "caller": "",
+      "caller": "김진석",
       "supplier": "선웅메디테크",
       "payDate": "",
       "payAmount": null,
