@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-11T04:50:51.689Z",
+  "updated": "2026-06-11T05:10:59.573Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -23,6 +23,27 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "이게 영일엠에서 제일 저렴한거 맞나요?? 얼만지 궁금합니다.",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 06. 11 오후 02:06:06",
+      "date": "2026-06-11",
+      "slackTs": "1781154366.905299",
+      "name": "송주한",
+      "cid": "5d931dd90dabe405b156d660",
+      "phone": "010-7457-8600",
+      "product": "베젤 장운동기 (HERA-110)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "69afbeef154f6f36296af64e",
+      "clinic": "신정네거리한의원",
+      "region": "서울시 양천구",
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "구매가와 체험가능한 매장이 있는지 문의드립니다.",
       "leadGrade": "고가망"
     },
     {
