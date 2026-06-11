@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-10T22:45:42.913Z",
+  "updated": "2026-06-11T00:05:44.876Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -188,8 +188,8 @@
       "region": "경기도 안양시",
       "caller": "김진석",
       "supplier": "아큐닉",
-      "payDate": "",
-      "payAmount": null,
+      "payDate": "2026-06-10",
+      "payAmount": 4900000,
       "inquiry": "위상각 측정되는 PWA 제품으로 상담 원합니다.",
       "leadGrade": "고가망"
     },
