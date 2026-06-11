@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-11T05:15:50.995Z",
+  "updated": "2026-06-11T12:45:44.248Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -149,6 +149,27 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "충격파와 초음파가 궁금합니다.",
+      "leadGrade": "가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 06. 11 오후 09:43:54",
+      "date": "2026-06-11",
+      "slackTs": "1781181834.264089",
+      "name": "정시화",
+      "cid": "5d60d2194e77525ec5ca1459",
+      "phone": "010-9311-9405",
+      "product": "체형진단기 아이밸런스 iBalance (v2)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "687efbcf3d86dc978b0ead48",
+      "clinic": "픽스포츠한의원",
+      "region": "서울시 구로구",
+      "caller": "",
+      "supplier": "팀엘리시움",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "비용 문의",
       "leadGrade": "가망"
     },
     {
@@ -1451,7 +1472,7 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "",
-      "leadGrade": ""
+      "leadGrade": "가망"
     },
     {
       "source": "일반",
@@ -7772,7 +7793,7 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "",
-      "leadGrade": ""
+      "leadGrade": "가망"
     },
     {
       "source": "총판기기",
