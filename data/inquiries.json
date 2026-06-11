@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-11T00:40:47.806Z",
+  "updated": "2026-06-11T01:15:45.275Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -45,6 +45,27 @@
       "payAmount": null,
       "inquiry": "가격",
       "leadGrade": "고가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 06. 11 오전 10:12:22",
+      "date": "2026-06-11",
+      "slackTs": "1781140342.518589",
+      "name": "김재홍",
+      "cid": "5e7c6ecabfe426094478439d",
+      "phone": "010-4071-0000",
+      "product": "[웰코멧] LDM ECO10",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "69dc792afe738d9beeb4db2a",
+      "clinic": "척척척한의원",
+      "region": "경상북도 경산시",
+      "caller": "",
+      "supplier": "웰코멧코리아",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": ""
     },
     {
       "source": "일반",
