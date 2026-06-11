@@ -1,9 +1,30 @@
 {
-  "updated": "2026-06-11T03:01:08.376Z",
+  "updated": "2026-06-11T03:55:51.151Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "일반",
+      "timestamp": "2026. 06. 11 오후 12:54:44",
+      "date": "2026-06-11",
+      "slackTs": "1781150084.389789",
+      "name": "곽호경",
+      "cid": "5d6685134e77525ec5ca17b2",
+      "phone": "010-9675-0090",
+      "product": "영일엠 라파엘 404 추나베드",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "63e0ed4d8757650022268174",
+      "clinic": "예반한의원",
+      "region": "대전시 서구",
+      "caller": "",
+      "supplier": "영일엠",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "이게 영일엠에서 제일 저렴한거 맞나요?? 얼만지 궁금합니다.",
+      "leadGrade": "고가망"
+    },
     {
       "source": "총판기기",
       "timestamp": "2026. 06. 11 오전 07:41:44",
