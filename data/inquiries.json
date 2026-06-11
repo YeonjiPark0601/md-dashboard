@@ -1,9 +1,30 @@
 {
-  "updated": "2026-06-11T12:45:44.248Z",
+  "updated": "2026-06-11T15:30:43.485Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
   "items": [
+    {
+      "source": "일반",
+      "timestamp": "2026. 06. 12 오전 12:28:05",
+      "date": "2026-06-12",
+      "slackTs": "1781191685.816239",
+      "name": "김수경",
+      "cid": "5fd092a01c6ef3001a114e72",
+      "phone": "010-6629-2566",
+      "product": "[클래시스] 울핏 블랙 Ulfit Black",
+      "qty": 1,
+      "price": "없음",
+      "productId": "69ef006fd7f4e29462a57910",
+      "clinic": "봄봄한의원",
+      "region": "전라남도 무안군",
+      "caller": "",
+      "supplier": "",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "지방as와 교육",
+      "leadGrade": "가망"
+    },
     {
       "source": "일반",
       "timestamp": "2026. 06. 11 오후 12:54:44",
