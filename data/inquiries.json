@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-11T00:05:44.876Z",
+  "updated": "2026-06-11T00:40:47.806Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -24,6 +24,27 @@
       "payAmount": null,
       "inquiry": "체외충격파 처음입니다",
       "leadGrade": "가망"
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 06. 11 오전 09:35:46",
+      "date": "2026-06-11",
+      "slackTs": "1781138146.394369",
+      "name": "정준수",
+      "cid": "5d9ec59f0dabe405b156e209",
+      "phone": "010-9711-5875",
+      "product": "[은성] V-메타쉐이프 (Meta Shape)",
+      "qty": 1,
+      "price": "알아보는 중입니다 ㅎㅎ",
+      "productId": "693960a721009623ac43112a",
+      "clinic": "선운수한의원",
+      "region": "광주시 광산구",
+      "caller": "",
+      "supplier": "은성",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격",
+      "leadGrade": "고가망"
     },
     {
       "source": "일반",
