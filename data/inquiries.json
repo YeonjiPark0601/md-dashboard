@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-11T04:25:48.756Z",
+  "updated": "2026-06-11T04:50:51.689Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -108,6 +108,27 @@
       "payAmount": null,
       "inquiry": "",
       "leadGrade": ""
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 06. 11 오후 01:49:31",
+      "date": "2026-06-11",
+      "slackTs": "1781153371.778919",
+      "name": "김준석",
+      "cid": "5da03a4c0dabe405b156e4bb",
+      "phone": "010-3360-8497",
+      "product": "[제우스웨이브] 체외충격파 (ESWT Piezo+Airgun-type)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "6911d93b35ae28ff04ea58a0",
+      "clinic": "푸른솔한의원",
+      "region": "경기도 시흥시",
+      "caller": "",
+      "supplier": "다이나믹솔루션",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "충격파와 초음파가 궁금합니다.",
+      "leadGrade": "가망"
     },
     {
       "source": "일반",
