@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-12T04:05:44.176Z",
+  "updated": "2026-06-12T04:25:45.752Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -87,6 +87,27 @@
       "payAmount": null,
       "inquiry": "",
       "leadGrade": ""
+    },
+    {
+      "source": "총판기기",
+      "timestamp": "2026. 06. 12 오후 01:21:48",
+      "date": "2026-06-12",
+      "slackTs": "1781238108.170019",
+      "name": "박지식",
+      "cid": "5d60d5374e77525ec5ca1471",
+      "phone": "010-9775-4370",
+      "product": "[제우스웨이브] 체외충격파 (ESWT Piezo+Airgun-type)",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "6911d93b35ae28ff04ea58a0",
+      "clinic": "경희약손한의원",
+      "region": "전라남도 목포시",
+      "caller": "이예림",
+      "supplier": "다이나믹솔루션",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
+      "leadGrade": "가망"
     },
     {
       "source": "일반",
