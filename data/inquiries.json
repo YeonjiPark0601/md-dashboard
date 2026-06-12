@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-12T01:45:45.265Z",
+  "updated": "2026-06-12T01:50:49.253Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -186,7 +186,7 @@
       "productId": "687efbcf3d86dc978b0ead48",
       "clinic": "픽스포츠한의원",
       "region": "서울시 구로구",
-      "caller": "",
+      "caller": "김진석",
       "supplier": "팀엘리시움",
       "payDate": "",
       "payAmount": null,
