@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-12T04:25:45.752Z",
+  "updated": "2026-06-12T08:05:46.511Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -18,7 +18,7 @@
       "productId": "69ef006fd7f4e29462a57910",
       "clinic": "봄봄한의원",
       "region": "전라남도 무안군",
-      "caller": "",
+      "caller": "이예림",
       "supplier": "",
       "payDate": "",
       "payAmount": null,
