@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-14T10:20:51.402Z",
+  "updated": "2026-06-14T11:20:51.351Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -24,6 +24,27 @@
       "payAmount": null,
       "inquiry": "얼굴구멍 뚫을 수 있는지, 6개 구매시 추가할인 있는지, 열선장착여부, 원터치페달여부",
       "leadGrade": ""
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 06. 14 오후 08:18:52",
+      "date": "2026-06-14",
+      "slackTs": "1781435932.639509",
+      "name": "이경숙",
+      "cid": "62341431f967570023fafbf4",
+      "phone": "010-7708-3039",
+      "product": "[리메드] 요실금치료기 UI CUBE",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "683d30f5a0b2ff81f784fdb2",
+      "clinic": "경희우소한의원",
+      "region": "경기도 오산시",
+      "caller": "",
+      "supplier": "메디스트림",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "가격이 얼마예요",
+      "leadGrade": "고가망"
     },
     {
       "source": "총판기기",
