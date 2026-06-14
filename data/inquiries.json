@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-14T13:45:50.611Z",
+  "updated": "2026-06-14T15:01:00.284Z",
   "month": "2026-06",
   "rollingMonths": 3,
   "enrichedFrom": "redash:5229 + slack:C02ULDA8NUE + redash:5243",
@@ -44,6 +44,27 @@
       "payDate": "",
       "payAmount": null,
       "inquiry": "가격이 얼마예요",
+      "leadGrade": "고가망"
+    },
+    {
+      "source": "일반",
+      "timestamp": "2026. 06. 14 오후 11:55:26",
+      "date": "2026-06-14",
+      "slackTs": "1781448926.374729",
+      "name": "우혜린",
+      "cid": "5e0007724267e105dffefd44",
+      "phone": "010-5432-7409",
+      "product": "[일광] 무압력 스텐/옹기 약탕기",
+      "qty": 1,
+      "price": "N/A",
+      "productId": "60bd7a630ccc56001bc7fe19",
+      "clinic": "",
+      "region": "서울시 강남구",
+      "caller": "",
+      "supplier": "일광",
+      "payDate": "",
+      "payAmount": null,
+      "inquiry": "",
       "leadGrade": "고가망"
     },
     {
